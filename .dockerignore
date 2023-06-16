@@ -1,0 +1,12 @@
+**/node_modules/
+**/dist
+**/tests
+
+.git
+npm-debug.log
+.coverage
+.coverage.*
+.env
+.aws
+
+**/README.md

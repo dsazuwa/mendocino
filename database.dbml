@@ -1,0 +1,97 @@
+Project spoons_db {
+  database_type: 'PostgreSQL'
+  Note: 'A database for a restaurant website'
+}
+
+Table users {
+  id integer [primary key]
+  first_name varchar
+  last_name varchar
+  email varchar
+  password varchar
+  role user_role
+  status user_status
+  created_at timestamp
+  updated_at timestamp
+}
+
+Enum user_role {
+  admin
+  client
+}
+
+Enum user_status {
+  active
+  inactive
+  pending
+}
+
+Table addresses {
+  id integer [primary key]
+  user_id integer
+  address_line1 varchar
+  address_line2 varchar
+  city varchar
+  state varchar
+  postal_code varchar
+}
+
+Table orders {
+  id integer [primary key]
+  order_number integer
+  user_id integer
+  total decimal
+  status order_status
+  created_at timestamp
+  updated_at timestamp
+}
+
+Enum order_status {
+  pending
+  processing
+  confirmed
+  delivered
+}
+
+Table order_items {
+  id integer [primary key]
+  order_id integer
+  menu_item_id integer
+  quantity integer
+  price decimal
+}
+
+Table menu_items {
+  id integer [primary key]
+  name varchar
+  description varchar
+  category varchar
+  tag varchar
+  photourl varchar
+  status menu_item_status
+  price decimal
+  created_at timestamp
+  updated_at timestamp
+}
+
+Enum menu_item_status {
+  Available
+  Out of Stock
+  Discontinued
+  Special
+  Coming soon
+}
+
+Table cart {
+  id integer [primary key]
+  user_id integer
+  menu_item_id integer
+  quantity integer
+  created_at timestamp
+  updated_at timestamp
+}
+
+Ref: addresses.user_id > users.id
+Ref: orders.user_id > users.id
+Ref: order_items.order_id > orders.id
+Ref: order_items.menu_item_id > menu_items.id
