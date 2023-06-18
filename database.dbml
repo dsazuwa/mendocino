@@ -5,6 +5,7 @@ Project spoons_db {
 
 Table users {
   id integer [primary key]
+  uuid string
   first_name varchar
   last_name varchar
   email varchar
