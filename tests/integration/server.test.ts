@@ -1,4 +1,4 @@
-import { request } from "./supertest.helper";
+import { request } from "../utils/supertest.helper";
 
 describe('server', () => {
   it('should return this message', async () => {

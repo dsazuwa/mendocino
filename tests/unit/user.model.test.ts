@@ -2,7 +2,7 @@ import { config } from 'dotenv';
 import { sign } from "jsonwebtoken";
 import { v4 as uuidv4 } from 'uuid';
 import User, { UserRoleType, UserStatusType } from '../../src/models/User';
-import './db-setup';
+import '../utils/db-setup';
 
 config();
 
@@ -135,7 +135,7 @@ describe('User Model', () => {
       password: 'passwor',
     };
 
-    expect(User.create(data)).rejects.toThrowError();
+    expect(User.create(data)).rejects.toThrow();
 
     const data1 = {
       uuid: uuidv4(),
@@ -145,7 +145,7 @@ describe('User Model', () => {
       password: 'janetD0ePa$$janetD0ePa$$janetD0ePa$$janetD0ePa$$janetD0ePa$$',
     }
 
-    expect(User.create(data1)).rejects.toThrowError();
+    expect(User.create(data1)).rejects.toThrow();
   });
 
   it('should hash the password', async () => {
