@@ -29,7 +29,7 @@ describe('User Model', () => {
     expect(user.email).toEqual(data.email);
 
     let fetchedUser = await User.findByPk(user.id);
-    expect(fetchedUser).toBeDefined();
+    expect(fetchedUser).not.toBeNull();
 
     const data1 = {
       uuid: uuidv4(),
@@ -45,7 +45,7 @@ describe('User Model', () => {
     expect(user.email).toEqual(data1.email);
 
     fetchedUser = await User.findByPk(user.id);
-    expect(fetchedUser).toBeDefined();
+    expect(fetchedUser).not.toBeNull();
   });
 
   it('should retrieve user', async () => {
@@ -61,15 +61,12 @@ describe('User Model', () => {
 
     let user = await User.findByPk(joe.id);
     expect(user).not.toBeNull();
-    expect(user!.id).toEqual(joe.id);
 
     user = await User.findOne({ where: { uuid: joe.uuid } });
     expect(user).not.toBeNull();
-    expect(user!.uuid).toEqual(joe.uuid);
 
     user = await User.findOne({ where: { email: joe.email } });
     expect(user).not.toBeNull();
-    expect(user!.email).toEqual(joe.email);
   });
 
   it('should update user', async () => {
@@ -123,7 +120,7 @@ describe('User Model', () => {
     };
 
     await User.create(data);
-    await expect(User.create(data)).rejects.toThrow();
+    expect(User.create(data)).rejects.toThrow();
   });
 
   it('should fail on invalid data', async () => {

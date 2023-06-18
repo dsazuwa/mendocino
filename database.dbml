@@ -77,10 +77,24 @@ Table menu_items {
 
 Enum menu_item_status {
   Available
-  Out of Stock
+  OutOfStock
   Discontinued
   Special
-  Coming soon
+  ComingSoon
+}
+
+Table menu_tags {
+  id integer [primary key]
+  name varchar
+}
+
+Table menu_item_tags {
+  tag_id integer
+  menu_item_id integer
+
+  indexes {
+    (tag_id, menu_item_id) [pk]
+  }
 }
 
 Table cart {
@@ -96,3 +110,5 @@ Ref: addresses.user_id > users.id
 Ref: orders.user_id > users.id
 Ref: order_items.order_id > orders.id
 Ref: order_items.menu_item_id > menu_items.id
+Ref: menu_item_tags.tag_id > tags.id
+Ref: menu_item_tags.menu_item_id > menu_items.id

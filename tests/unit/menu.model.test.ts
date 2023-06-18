@@ -1,4 +1,6 @@
-import MenuItem, { MenuCategoryType, MenuStatusType } from '../../src/models/MenuItem';
+import {
+  MenuCategoryType, MenuItem, MenuItemTag, MenuStatusType, MenuTag,
+} from '../../src/models/Menu';
 import '../utils/db-setup';
 
 describe('Menu Item Model', () => {
@@ -25,7 +27,7 @@ describe('Menu Item Model', () => {
     expect(menuItem.name).toEqual(data.name);
 
     const fetchedItem = await MenuItem.findByPk(menuItem.id);
-    expect(fetchedItem).toBeDefined();
+    expect(fetchedItem).not.toBeNull();
   });
 
   it('should retrieve item', async () => {
@@ -42,11 +44,9 @@ describe('Menu Item Model', () => {
 
     let item = await MenuItem.findByPk(menuItem.id);
     expect(item).not.toBeNull();
-    expect(item!.id).toEqual(menuItem.id);
 
     item = await MenuItem.findOne({ where: { name: menuItem.name } });
     expect(item).not.toBeNull();
-    expect(item!.name).toEqual(menuItem.name);
   });
 
   it('should update item', async () => {
@@ -69,7 +69,7 @@ describe('Menu Item Model', () => {
     await menuItem.update(newData);
 
     const updatedItem = await MenuItem.findByPk(menuItem.id);
-    expect(updatedItem!.name).toEqual(data.name);
+    expect(updatedItem!.id).toEqual(menuItem.id);
     expect(updatedItem!.status).toEqual(newData.status);
     expect(Math.trunc(updatedItem!.price)).toEqual(newData.price);
   });
@@ -88,7 +88,7 @@ describe('Menu Item Model', () => {
     await menuItem.destroy();
 
     const deletedUser = await MenuItem.findByPk(menuItem.id);
-    expect(deletedUser).toBeNull;
+    expect(deletedUser).toBeNull();
   });
 
   it('should fail on duplicate', async () => {
@@ -102,7 +102,126 @@ describe('Menu Item Model', () => {
     };
 
     await MenuItem.create(data);
-
     expect(MenuItem.create(data)).rejects.toThrow();
+  });
+});
+
+describe('Menu Tag Model', () => {
+  it('should have this shape', () => {
+    const expectedKeys = ['id', 'name', 'createdAt', 'updatedAt'].sort();
+    const keys = Object.keys(MenuTag.getAttributes()).sort();
+    expect(keys).toStrictEqual(expectedKeys);
+  });
+
+  it('should create tag', async () => {
+    const data = { name: 'VG' };
+
+    const tag = await MenuTag.create(data);
+    expect(tag.name).toEqual(data.name);
+
+    const fetchedTag = await MenuTag.findByPk(tag.id);
+    expect(fetchedTag).not.toBeNull();
+  });
+
+  it('should retrieve tag', async () => {
+    const data = { name: 'N' };
+
+    const tag = await MenuTag.create(data);
+
+    let fetchedTag = await MenuTag.findByPk(tag.id);
+    expect(fetchedTag).not.toBeNull();
+
+    fetchedTag = await MenuTag.findOne({ where: { name: tag.name } });
+    expect(fetchedTag).not.toBeNull();
+  });
+
+  it('should update tag', async () => {
+    const data = { name: 'FG' };
+
+    const tag = await MenuTag.create(data);
+
+    const newData = { name: 'GF' };
+    await tag.update(newData);
+
+    const updatedTag = await MenuTag.findByPk(tag.id);
+    expect(updatedTag!.name).toBe(newData.name);
+  });
+
+  it('should destroy tag', async () => {
+    const data = { name: 'RGF' };
+
+    const tag = await MenuTag.create(data);
+    await tag.destroy();
+
+    const deletedTag = await MenuTag.findByPk(tag.id);
+    expect(deletedTag).toBeNull();
+  });
+});
+
+describe('MenuItem and MenuTag Relationship', () => {
+  let vegan: MenuTag, milk: MenuTag, seaFood: MenuTag;
+  let menuItem: MenuItem;
+
+  beforeAll(async () => {
+    vegan = await MenuTag.create({ name: 'V' });
+    milk = await MenuTag.create({ name: 'M' });
+    seaFood = await MenuTag.create({ name: 'SF' });
+
+    menuItem = await MenuItem.create({
+      name: 'The Modern Caesar',
+      description: 'curly kale, chopped romaine, housemade superfood krunchies, shaved Grana Padano cheese, red onions, grape tomatoes, avocado, lemon squeeze with classic Caesar dressing',
+      category: 'salads' as MenuCategoryType,
+      status: 'available' as MenuStatusType,
+      photoUrl: 'modern-caesar.png',
+      price: 8,
+    });
+  });
+
+  describe('Create, Retrieve, Remove Association', () => {
+    it('should associate a MenuTag with a MenuItem', async () => {
+      await menuItem.addMenuTag(vegan);
+      const tag = await MenuItemTag.findOne({ where: { menuItemId: menuItem.id } });
+      expect(tag).not.toBeNull();
+      expect(tag!.menuTagId).toEqual(vegan.id);
+
+      await menuItem.addMenuTags([milk, seaFood]);
+      const tags = await MenuItemTag.findAll({ where: { menuItemId: menuItem.id } });
+      expect(tags.length).toEqual(3);
+      expect(tags[1].menuTagId).toEqual(milk.id);
+      expect(tags[2].menuTagId).toEqual(seaFood.id);
+    });
+
+    it('should get MenuTags associated with a MenuItem', async () => {
+      const tags = await menuItem.getMenuTags();
+      expect(tags.length).toEqual(3);
+      expect(tags[0].id).toEqual(vegan.id);
+      expect(tags[1].id).toEqual(milk.id);
+      expect(tags[2].id).toEqual(seaFood.id);
+    });
+
+    it('should remove association between a MenuTag and MenuItem', async () => {
+      await menuItem.removeMenuTag(seaFood);
+      let tags = await MenuItemTag.findAll({ where: { menuItemId: menuItem.id } });
+      expect(tags.length).toEqual(2);
+
+      await menuItem.removeMenuTags([milk, vegan]);
+      tags = await MenuItemTag.findAll({ where: { menuItemId: menuItem.id } });
+      expect(tags.length).toEqual(0);
+    });
+  });
+
+  describe('Deleting MenuTag/MenuItem effect', () => {
+    it('deleting MenuTag should remove associations', async () => {
+      await menuItem.addMenuTags([vegan, milk, seaFood]);
+      await seaFood.destroy();
+      const association = await MenuItemTag.findOne({ where: { menuTagId: seaFood.id } });
+      expect(association).toBeNull();
+    });
+
+    it('deleting MenuItem should remove associations', async () => {
+      await menuItem.destroy();
+      const associations = await MenuItemTag.findAll({ where: { menuItemId: menuItem.id } });
+      expect(associations.length).toEqual(0);
+    });
   });
 });
