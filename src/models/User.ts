@@ -4,16 +4,14 @@ import { sign } from 'jsonwebtoken';
 import {
   CreationOptional,
   DataTypes,
-  HasManyAddAssociationMixin,
   HasManyCreateAssociationMixin,
   HasManyGetAssociationsMixin,
-  HasManyRemoveAssociationMixin,
-  HasManyRemoveAssociationsMixin,
   InferAttributes,
   InferCreationAttributes,
   Model,
 } from 'sequelize';
 import sequelize from '../db';
+import Cart from './Cart';
 
 config();
 
@@ -22,7 +20,7 @@ type UserRoleType = 'admin' | 'client';
 
 class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
   declare id: CreationOptional<number>;
-  declare uuid: string;
+  declare uuid: CreationOptional<string>;
   declare firstName: string;
   declare lastName: string;
   declare email: string;
@@ -32,13 +30,11 @@ class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
   declare createdAt: CreationOptional<Date>;
   declare updatedAt: CreationOptional<Date>;
 
-  declare addAddress: HasManyAddAssociationMixin<Address, Address['id']>;
   declare createAddress: HasManyCreateAssociationMixin<Address>;
   declare getAddresses: HasManyGetAssociationsMixin<Address>;
-  declare removeAddress: HasManyRemoveAssociationMixin<Address, Address['id']>;
-  declare removeAddresses: HasManyRemoveAssociationsMixin<Address, Address['id']>;
 
-  public declare static readonly tableName = 'users';
+  declare createCart: HasManyCreateAssociationMixin<Cart>;
+  declare getCarts: HasManyGetAssociationsMixin<Cart>;
 
   public static async hashPassword(user: User) {
     if (!user.changed('password')) return;
@@ -85,7 +81,6 @@ User.init(
       allowNull: false,
       validate: {
         len: [1, 255],
-        // is: /^[\w\s]+$/,
       },
     },
     lastName: {
@@ -93,7 +88,6 @@ User.init(
       allowNull: false,
       validate: {
         len: [1, 255],
-        // is: /^[\w\s]+$/,
       },
     },
     email: {
@@ -133,7 +127,6 @@ User.init(
   },
   {
     sequelize,
-    tableName: User.tableName,
     underscored: true,
     hooks: {
       beforeSave: User.hashPassword,
@@ -158,13 +151,7 @@ Address.init(
       primaryKey: true,
       autoIncrement: true,
     },
-    userId: {
-      type: DataTypes.INTEGER,
-      references: {
-        model: User,
-        key: 'id',
-      },
-    },
+    userId: DataTypes.INTEGER,
     addressLine1: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -185,12 +172,11 @@ Address.init(
   },
   {
     sequelize,
-    tableName: Address.tableName,
     underscored: true,
   },
 );
 
-User.hasMany(Address, { onDelete: 'CASCADE' });
-Address.belongsTo(User, { onDelete: 'CASCADE' });
+User.hasMany(Address, { foreignKey: 'userId', onDelete: 'CASCADE' });
+Address.belongsTo(User, { foreignKey: 'userId', onDelete: 'CASCADE' });
 
-export { User, UserRoleType, UserStatusType, Address };
+export { Address, User, UserRoleType, UserStatusType };

@@ -26,7 +26,6 @@ describe('User Model', () => {
 
   it('should create user', async () => {
     const data = {
-      uuid: uuidv4(),
       firstName: 'John',
       lastName: 'Doe',
       email: 'johnDoe@gmail.com',
@@ -200,7 +199,8 @@ describe('User and Address Relationship', () => {
   });
 
   it('should create address', async () => {
-    let data = {
+    const data = {
+      userId: user.id,
       addressLine1: '1957 Kembery Drive',
       city: 'Roselle',
       state: 'IL',
@@ -208,19 +208,17 @@ describe('User and Address Relationship', () => {
     };
 
     let address = await Address.create(data);
-
-    await user.addAddress(address);
     let retrievedAddress = await Address.findOne({ where: { id: address.id, userId: user.id } });
     expect(retrievedAddress).not.toBeNull();
 
-    data = {
+    const data1 = {
       addressLine1: '1957 Kembery Drive',
       city: 'Roselle',
       state: 'IL',
       postalCode: '60172',
     };
 
-    address = await user.createAddress(data);
+    address = await user.createAddress(data1);
     retrievedAddress = await Address.findOne({ where: { id: address.id } });
     expect(retrievedAddress).not.toBeNull();
   });
@@ -261,25 +259,21 @@ describe('User and Address Relationship', () => {
     expect(deletedAddress).toBeNull();
   });
 
-  it('should remove association on Address delete', async () => {
+  it('should not delete User on address delete', async () => {
     const data = {
-      addressLine1: '495 Point Street1',
-      city: 'Chicago',
+      addressLine1: '4921 Flinderation Road',
+      city: 'Arlington Heights',
       state: 'IL',
-      postalCode: '61602',
+      postalCode: '60005',
     };
 
-    const address = await Address.create(data);
-    await user.addAddress(address);
+    const address = await user.createAddress(data);
+    await address!.destroy();
 
-    const length = (await user.getAddresses()).length;
-    await address.destroy();
-
-    const userAddresses = await user.getAddresses();
-    expect(userAddresses.length).toEqual(length - 1);
+    expect(User.findByPk(user.id)).resolves.not.toBeNull();
   });
 
-  it('should delete address on User delete', async () => {
+  it('should delete Address on User delete', async () => {
     const data = {
       addressLine1: '962 University Drive',
       city: 'Chicago',
