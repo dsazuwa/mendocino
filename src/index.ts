@@ -1,7 +1,7 @@
-import { config } from "dotenv";
-import { Server } from "http";
-import { createApp } from "./app";
-import sequelize from "./db";
+import { config } from 'dotenv';
+import { Server } from 'http';
+import { createApp } from './app';
+import sequelize from './db';
 
 config();
 
@@ -10,12 +10,15 @@ const { API_PORT } = process.env;
 let server: Server;
 const app = createApp();
 
-sequelize.authenticate()
+sequelize
+  .authenticate()
   .then(() => {
     console.log('Connection to DB has been established');
-    app.listen(API_PORT, () => console.log(`The application is listening on port ${API_PORT}`));
+    app.listen(API_PORT, () => {
+      console.log(`The application is listening on port ${API_PORT}`);
+    });
   })
-  .catch(err => {
+  .catch((err) => {
     console.error('Connection Error:', err);
     process.exit(1);
   });
@@ -33,7 +36,7 @@ process.on('unhandledRejection', (reason, promise) => {
   // throw reason;
 });
 
-process.on('uncaughtException', err => {
+process.on('uncaughtException', (err) => {
   console.error('There was an uncaught error', err);
   server.close(() => {
     sequelize.close();

@@ -1,16 +1,25 @@
 import { config } from 'dotenv';
-import { sign } from "jsonwebtoken";
+import { sign } from 'jsonwebtoken';
 import { v4 as uuidv4 } from 'uuid';
 import User, { UserRoleType, UserStatusType } from '../../src/models/User';
 import '../utils/db-setup';
+import sequelize from '../../src/db';
 
 config();
 
 describe('User Model', () => {
   it('should have this shape', () => {
     const expectedKeys = [
-      'id', 'uuid', 'firstName', 'lastName', 'email', 'password',
-      'role', 'status', 'createdAt', 'updatedAt',
+      'id',
+      'uuid',
+      'firstName',
+      'lastName',
+      'email',
+      'password',
+      'role',
+      'status',
+      'createdAt',
+      'updatedAt',
     ].sort();
     const keys = Object.keys(User.getAttributes()).sort();
     expect(keys).toStrictEqual(expectedKeys);
@@ -39,7 +48,7 @@ describe('User Model', () => {
       password: 'jackD0ePa$$',
       status: 'pending' as UserStatusType,
       role: 'client' as UserRoleType,
-    }
+    };
 
     user = await User.create(data1);
     expect(user.email).toEqual(data1.email);
@@ -140,7 +149,7 @@ describe('User Model', () => {
       lastName: 'Doe',
       email: 'janetdoe@gmail.com',
       password: 'janetD0ePa$$janetD0ePa$$janetD0ePa$$janetD0ePa$$janetD0ePa$$',
-    }
+    };
 
     expect(User.create(data1)).rejects.toThrow();
   });

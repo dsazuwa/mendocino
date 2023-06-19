@@ -4,12 +4,23 @@ import {
   BelongsToManyGetAssociationsMixin,
   BelongsToManyRemoveAssociationMixin,
   BelongsToManyRemoveAssociationsMixin,
-  CreationOptional, DataTypes,
-  InferAttributes, InferCreationAttributes, Model,
-} from "sequelize";
-import sequelize from "../db";
+  CreationOptional,
+  DataTypes,
+  InferAttributes,
+  InferCreationAttributes,
+  Model,
+} from 'sequelize';
+import sequelize from '../db';
 
-type MenuCategoryType = '1/2 sandwich combos' | 'bowls' | 'craveable classics' | 'deli sides' | 'kids' | 'salads' | 'sandwiches' | 'soup';
+type MenuCategoryType =
+  | '1/2 sandwich combos'
+  | 'bowls'
+  | 'craveable classics'
+  | 'deli sides'
+  | 'kids'
+  | 'salads'
+  | 'sandwiches'
+  | 'soup';
 type MenuStatusType = 'available' | 'out of stock' | 'discontinued' | 'special' | 'coming soon';
 
 class MenuItem extends Model<InferAttributes<MenuItem>, InferCreationAttributes<MenuItem>> {
@@ -29,7 +40,7 @@ class MenuItem extends Model<InferAttributes<MenuItem>, InferCreationAttributes<
   declare removeMenuTag: BelongsToManyRemoveAssociationMixin<MenuTag, MenuTag['id']>;
   declare removeMenuTags: BelongsToManyRemoveAssociationsMixin<MenuTag, MenuTag['id']>;
 
-  declare public static readonly tableName = 'menu_items';
+  public declare static readonly tableName = 'menu_items';
 }
 
 MenuItem.init(
@@ -56,14 +67,19 @@ MenuItem.init(
     },
     category: {
       type: DataTypes.ENUM(
-        '1/2 sandwich combos', 'bowls', 'craveable classics', 'deli sides', 'kids', 'salads', 'sandwiches', 'soup',
+        '1/2 sandwich combos',
+        'bowls',
+        'craveable classics',
+        'deli sides',
+        'kids',
+        'salads',
+        'sandwiches',
+        'soup',
       ),
       allowNull: false,
     },
     status: {
-      type: DataTypes.ENUM(
-        'available', 'out of stock', 'discontinued', 'special', 'coming soon',
-      ),
+      type: DataTypes.ENUM('available', 'out of stock', 'discontinued', 'special', 'coming soon'),
       allowNull: false,
     },
     photoUrl: {
@@ -96,7 +112,7 @@ class MenuTag extends Model<InferAttributes<MenuTag>, InferCreationAttributes<Me
   declare createdAt: CreationOptional<Date>;
   declare updatedAt: CreationOptional<Date>;
 
-  declare public static readonly tableName = 'menu_tags';
+  public declare static readonly tableName = 'menu_tags';
 }
 
 MenuTag.init(
@@ -125,7 +141,7 @@ class MenuItemTag extends Model<InferAttributes<MenuItemTag>, InferCreationAttri
   declare menuItemId: number;
   declare menuTagId: number;
 
-  declare public static readonly tableName = 'menu_items_tags';
+  public declare static readonly tableName = 'menu_items_tags';
 }
 
 MenuItemTag.init(

@@ -1,10 +1,8 @@
-import { compareSync, hash } from "bcryptjs";
-import { config } from "dotenv";
-import { sign } from "jsonwebtoken";
-import {
-  CreationOptional, DataTypes, InferAttributes, InferCreationAttributes, Model,
-} from "sequelize";
-import sequelize from "../db";
+import { compareSync, hash } from 'bcryptjs';
+import { config } from 'dotenv';
+import { sign } from 'jsonwebtoken';
+import { CreationOptional, DataTypes, InferAttributes, InferCreationAttributes, Model } from 'sequelize';
+import sequelize from '../db';
 
 config();
 
@@ -23,7 +21,7 @@ class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
   declare createdAt: CreationOptional<Date>;
   declare updatedAt: CreationOptional<Date>;
 
-  declare public static readonly tableName = 'users';
+  public declare static readonly tableName = 'users';
 
   public static async hashPassword(user: User) {
     if (!user.changed('password')) return;
@@ -95,10 +93,11 @@ User.init(
       allowNull: false,
       validate: {
         isValid(value: string) {
-          if (value.length > 50)
+          if (value.length > 50) {
             throw new Error('Password should bot exceed 50 character');
-          if (value.length < 8)
+          } else if (value.length < 8) {
             throw new Error('Password should be at least 8 characters long');
+          }
         },
       },
     },

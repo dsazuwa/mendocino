@@ -1,5 +1,5 @@
-import express, { Request, Response } from "express";
-import cors from "cors";
+import express, { Request, Response } from 'express';
+import cors from 'cors';
 import morgan from 'morgan';
 
 export const createApp = () => {
@@ -10,8 +10,9 @@ export const createApp = () => {
   app.use(express.json());
   app.use(morgan('tiny'));
 
-  app.get('/', (req: Request, res: Response) =>
-    res.status(200).json({ message: "Welcome to Spoons API." }));
+  app.get('/', (req: Request, res: Response) => {
+    res.status(200).json({ message: 'Welcome to Spoons API.' });
+  });
 
   return app;
 };

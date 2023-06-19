@@ -1,13 +1,18 @@
-import {
-  MenuCategoryType, MenuItem, MenuItemTag, MenuStatusType, MenuTag,
-} from '../../src/models/Menu';
+import { MenuCategoryType, MenuItem, MenuItemTag, MenuStatusType, MenuTag } from '../../src/models/Menu';
 import '../utils/db-setup';
 
 describe('Menu Item Model', () => {
   it('should have this shape', () => {
     const expectedKeys = [
-      'id', 'name', 'description', 'category', 'photoUrl',
-      'status', 'price', 'createdAt', 'updatedAt',
+      'id',
+      'name',
+      'description',
+      'category',
+      'photoUrl',
+      'status',
+      'price',
+      'createdAt',
+      'updatedAt',
     ].sort();
     const keys = Object.keys(MenuItem.getAttributes()).sort();
     expect(keys).toStrictEqual(expectedKeys);
@@ -15,8 +20,9 @@ describe('Menu Item Model', () => {
 
   it('should create item', async () => {
     const data = {
-      name: 'Mrs. Goldfarb\'s Unreal Reuben',
-      description: 'plant-based corned beef from Unreal Deli, havarti cheese, apple & celery root slaw, housemade bread & butter pickles, smoky thousand island on panini-pressed rye',
+      name: "Mrs. Goldfarb's Unreal Reuben",
+      description:
+        'plant-based corned beef from Unreal Deli, havarti cheese, apple & celery root slaw, housemade bread & butter pickles, smoky thousand island on panini-pressed rye',
       category: 'sandwiches' as MenuCategoryType,
       status: 'available' as MenuStatusType,
       photoUrl: 'mrs-goldfarbs-unreal-reuben.png',
@@ -33,7 +39,8 @@ describe('Menu Item Model', () => {
   it('should retrieve item', async () => {
     const data = {
       name: 'A Sandwich Study of Heat',
-      description: 'shaved, roasted turkey breast, smoked gouda, smashed avocado, sriracha mayo, housemade jalapeno salsa verde, tomatoes, romaine lettuce on panini-pressed rustic white served with an extra side of jalapeno salsa verde',
+      description:
+        'shaved, roasted turkey breast, smoked gouda, smashed avocado, sriracha mayo, housemade jalapeno salsa verde, tomatoes, romaine lettuce on panini-pressed rustic white served with an extra side of jalapeno salsa verde',
       category: 'craveable classics' as MenuCategoryType,
       status: 'available' as MenuStatusType,
       photoUrl: 'sandwich-study-heat.png',
@@ -77,7 +84,8 @@ describe('Menu Item Model', () => {
   it('should delete item', async () => {
     const data = {
       name: 'Chicken Pesto Caprese',
-      description: 'shaved, roasted chicken breast, fresh mozzarella, marinated red peppers, basil pesto, mixed greens, balsamic glaze drizzle on panini-pressed ciabatta',
+      description:
+        'shaved, roasted chicken breast, fresh mozzarella, marinated red peppers, basil pesto, mixed greens, balsamic glaze drizzle on panini-pressed ciabatta',
       category: 'craveable classics' as MenuCategoryType,
       status: 'available' as MenuStatusType,
       photoUrl: 'chicken-pesto-caprese.png',
@@ -169,7 +177,8 @@ describe('MenuItem and MenuTag Relationship', () => {
 
     menuItem = await MenuItem.create({
       name: 'The Modern Caesar',
-      description: 'curly kale, chopped romaine, housemade superfood krunchies, shaved Grana Padano cheese, red onions, grape tomatoes, avocado, lemon squeeze with classic Caesar dressing',
+      description:
+        'curly kale, chopped romaine, housemade superfood krunchies, shaved Grana Padano cheese, red onions, grape tomatoes, avocado, lemon squeeze with classic Caesar dressing',
       category: 'salads' as MenuCategoryType,
       status: 'available' as MenuStatusType,
       photoUrl: 'modern-caesar.png',
