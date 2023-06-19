@@ -1,13 +1,24 @@
 import { compareSync, hash } from 'bcryptjs';
 import { config } from 'dotenv';
 import { sign } from 'jsonwebtoken';
-import { CreationOptional, DataTypes, InferAttributes, InferCreationAttributes, Model } from 'sequelize';
+import {
+  CreationOptional,
+  DataTypes,
+  HasManyAddAssociationMixin,
+  HasManyCreateAssociationMixin,
+  HasManyGetAssociationsMixin,
+  HasManyRemoveAssociationMixin,
+  HasManyRemoveAssociationsMixin,
+  InferAttributes,
+  InferCreationAttributes,
+  Model,
+} from 'sequelize';
 import sequelize from '../db';
 
 config();
 
-export type UserStatusType = 'active' | 'inactive' | 'pending';
-export type UserRoleType = 'admin' | 'client';
+type UserStatusType = 'active' | 'inactive' | 'pending';
+type UserRoleType = 'admin' | 'client';
 
 class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
   declare id: CreationOptional<number>;
@@ -21,6 +32,12 @@ class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
   declare createdAt: CreationOptional<Date>;
   declare updatedAt: CreationOptional<Date>;
 
+  declare addAddress: HasManyAddAssociationMixin<Address, Address['id']>;
+  declare createAddress: HasManyCreateAssociationMixin<Address>;
+  declare getAddresses: HasManyGetAssociationsMixin<Address>;
+  declare removeAddress: HasManyRemoveAssociationMixin<Address, Address['id']>;
+  declare removeAddresses: HasManyRemoveAssociationsMixin<Address, Address['id']>;
+
   public declare static readonly tableName = 'users';
 
   public static async hashPassword(user: User) {
@@ -31,7 +48,6 @@ class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
       user.password = hashed;
     } catch (err) {
       throw new Error('Failed to hash password');
-      // logger.error('Failed to hash password', err);
     }
   }
 
@@ -95,7 +111,8 @@ User.init(
         isValid(value: string) {
           if (value.length > 50) {
             throw new Error('Password should bot exceed 50 character');
-          } else if (value.length < 8) {
+          }
+          if (value.length < 8) {
             throw new Error('Password should be at least 8 characters long');
           }
         },
@@ -116,7 +133,7 @@ User.init(
   },
   {
     sequelize,
-    tableName: 'users',
+    tableName: User.tableName,
     underscored: true,
     hooks: {
       beforeSave: User.hashPassword,
@@ -124,4 +141,56 @@ User.init(
   },
 );
 
-export default User;
+class Address extends Model<InferAttributes<Address>, InferCreationAttributes<Address>> {
+  declare id: CreationOptional<number>;
+  declare userId: CreationOptional<number>;
+  declare addressLine1: string;
+  declare addressLine2: CreationOptional<string>;
+  declare city: string;
+  declare state: string;
+  declare postalCode: string;
+}
+
+Address.init(
+  {
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+    },
+    userId: {
+      type: DataTypes.INTEGER,
+      references: {
+        model: User,
+        key: 'id',
+      },
+    },
+    addressLine1: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    addressLine2: DataTypes.STRING,
+    city: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    state: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    postalCode: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+  },
+  {
+    sequelize,
+    tableName: Address.tableName,
+    underscored: true,
+  },
+);
+
+User.hasMany(Address, { onDelete: 'CASCADE' });
+Address.belongsTo(User, { onDelete: 'CASCADE' });
+
+export { User, UserRoleType, UserStatusType, Address };
