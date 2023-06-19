@@ -1,7 +1,7 @@
-import { MenuCategoryType, MenuItem, MenuItemTag, MenuStatusType, MenuTag } from '../../src/models/Menu';
+import { Menu, MenuCategoryType, MenuStatusType, MenuMenuTag, MenuTag } from '../../src/models/Menu';
 import '../utils/db-setup';
 
-describe('Menu Item Model', () => {
+describe('Menu Model', () => {
   it('should have this shape', () => {
     const expectedKeys = [
       'id',
@@ -14,7 +14,7 @@ describe('Menu Item Model', () => {
       'createdAt',
       'updatedAt',
     ].sort();
-    const keys = Object.keys(MenuItem.getAttributes()).sort();
+    const keys = Object.keys(Menu.getAttributes()).sort();
     expect(keys).toStrictEqual(expectedKeys);
   });
 
@@ -29,10 +29,10 @@ describe('Menu Item Model', () => {
       price: 9,
     };
 
-    const menuItem = await MenuItem.create(data);
+    const menuItem = await Menu.create(data);
     expect(menuItem.name).toEqual(data.name);
 
-    const fetchedItem = await MenuItem.findByPk(menuItem.id);
+    const fetchedItem = await Menu.findByPk(menuItem.id);
     expect(fetchedItem).not.toBeNull();
   });
 
@@ -47,12 +47,12 @@ describe('Menu Item Model', () => {
       price: 10,
     };
 
-    const menuItem = await MenuItem.create(data);
+    const menuItem = await Menu.create(data);
 
-    let item = await MenuItem.findByPk(menuItem.id);
+    let item = await Menu.findByPk(menuItem.id);
     expect(item).not.toBeNull();
 
-    item = await MenuItem.findOne({ where: { name: menuItem.name } });
+    item = await Menu.findOne({ where: { name: menuItem.name } });
     expect(item).not.toBeNull();
   });
 
@@ -66,7 +66,7 @@ describe('Menu Item Model', () => {
       price: 10,
     };
 
-    const menuItem = await MenuItem.create(data);
+    const menuItem = await Menu.create(data);
 
     const newData = {
       status: 'out of stock' as MenuStatusType,
@@ -75,7 +75,7 @@ describe('Menu Item Model', () => {
 
     await menuItem.update(newData);
 
-    const updatedItem = await MenuItem.findByPk(menuItem.id);
+    const updatedItem = await Menu.findByPk(menuItem.id);
     expect(updatedItem!.id).toEqual(menuItem.id);
     expect(updatedItem!.status).toEqual(newData.status);
     expect(Math.trunc(updatedItem!.price)).toEqual(newData.price);
@@ -92,10 +92,10 @@ describe('Menu Item Model', () => {
       price: 10,
     };
 
-    const menuItem = await MenuItem.create(data);
+    const menuItem = await Menu.create(data);
     await menuItem.destroy();
 
-    const deletedUser = await MenuItem.findByPk(menuItem.id);
+    const deletedUser = await Menu.findByPk(menuItem.id);
     expect(deletedUser).toBeNull();
   });
 
@@ -109,8 +109,8 @@ describe('Menu Item Model', () => {
       price: 10,
     };
 
-    await MenuItem.create(data);
-    expect(MenuItem.create(data)).rejects.toThrow();
+    await Menu.create(data);
+    expect(Menu.create(data)).rejects.toThrow();
   });
 });
 
@@ -168,14 +168,14 @@ describe('Menu Tag Model', () => {
 
 describe('MenuItem and MenuTag Relationship', () => {
   let vegan: MenuTag, milk: MenuTag, seaFood: MenuTag;
-  let menuItem: MenuItem;
+  let menuItem: Menu;
 
   beforeAll(async () => {
     vegan = await MenuTag.create({ name: 'V' });
     milk = await MenuTag.create({ name: 'M' });
     seaFood = await MenuTag.create({ name: 'SF' });
 
-    menuItem = await MenuItem.create({
+    menuItem = await Menu.create({
       name: 'The Modern Caesar',
       description:
         'curly kale, chopped romaine, housemade superfood krunchies, shaved Grana Padano cheese, red onions, grape tomatoes, avocado, lemon squeeze with classic Caesar dressing',
@@ -189,12 +189,12 @@ describe('MenuItem and MenuTag Relationship', () => {
   describe('Create, Retrieve, Remove Association', () => {
     it('should associate a MenuTag with a MenuItem', async () => {
       await menuItem.addMenuTag(vegan);
-      const tag = await MenuItemTag.findOne({ where: { menuItemId: menuItem.id } });
+      const tag = await MenuMenuTag.findOne({ where: { menuId: menuItem.id } });
       expect(tag).not.toBeNull();
       expect(tag!.menuTagId).toEqual(vegan.id);
 
       await menuItem.addMenuTags([milk, seaFood]);
-      const tags = await MenuItemTag.findAll({ where: { menuItemId: menuItem.id } });
+      const tags = await MenuMenuTag.findAll({ where: { menuId: menuItem.id } });
       expect(tags.length).toEqual(3);
       expect(tags[1].menuTagId).toEqual(milk.id);
       expect(tags[2].menuTagId).toEqual(seaFood.id);
@@ -210,11 +210,11 @@ describe('MenuItem and MenuTag Relationship', () => {
 
     it('should remove association between a MenuTag and MenuItem', async () => {
       await menuItem.removeMenuTag(seaFood);
-      let tags = await MenuItemTag.findAll({ where: { menuItemId: menuItem.id } });
+      let tags = await MenuMenuTag.findAll({ where: { menuId: menuItem.id } });
       expect(tags.length).toEqual(2);
 
       await menuItem.removeMenuTags([milk, vegan]);
-      tags = await MenuItemTag.findAll({ where: { menuItemId: menuItem.id } });
+      tags = await MenuMenuTag.findAll({ where: { menuId: menuItem.id } });
       expect(tags.length).toEqual(0);
     });
   });
@@ -223,13 +223,13 @@ describe('MenuItem and MenuTag Relationship', () => {
     it('deleting MenuTag should remove associations', async () => {
       await menuItem.addMenuTags([vegan, milk, seaFood]);
       await seaFood.destroy();
-      const association = await MenuItemTag.findOne({ where: { menuTagId: seaFood.id } });
+      const association = await MenuMenuTag.findOne({ where: { menuTagId: seaFood.id } });
       expect(association).toBeNull();
     });
 
     it('deleting MenuItem should remove associations', async () => {
       await menuItem.destroy();
-      const associations = await MenuItemTag.findAll({ where: { menuItemId: menuItem.id } });
+      const associations = await MenuMenuTag.findAll({ where: { menuId: menuItem.id } });
       expect(associations.length).toEqual(0);
     });
   });

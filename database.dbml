@@ -57,25 +57,25 @@ Enum order_status {
 Table order_items {
   id integer [primary key]
   order_id integer
-  menu_item_id integer
+  menu_id integer
   quantity integer
   price decimal
 }
 
-Table menu_items {
+Table menu {
   id integer [primary key]
   name varchar
   description varchar
   category varchar
   tag varchar
   photourl varchar
-  status menu_item_status
+  status menu_status
   price decimal
   created_at timestamp
   updated_at timestamp
 }
 
-Enum menu_item_status {
+Enum menu_status {
   Available
   OutOfStock
   Discontinued
@@ -88,19 +88,19 @@ Table menu_tags {
   name varchar
 }
 
-Table menu_item_tags {
+Table menu_menu_tags {
   tag_id integer
-  menu_item_id integer
+  menu_id integer
 
   indexes {
-    (tag_id, menu_item_id) [pk]
+    (tag_id, menu_id) [pk]
   }
 }
 
-Table cart {
+Table carts {
   id integer [primary key]
   user_id integer
-  menu_item_id integer
+  menu_id integer
   quantity integer
   created_at timestamp
   updated_at timestamp
@@ -109,6 +109,8 @@ Table cart {
 Ref: addresses.user_id > users.id
 Ref: orders.user_id > users.id
 Ref: order_items.order_id > orders.id
-Ref: order_items.menu_item_id > menu_items.id
-Ref: menu_item_tags.tag_id > tags.id
-Ref: menu_item_tags.menu_item_id > menu_items.id
+Ref: order_items.menu_id > menu.id
+Ref: menu_menu_tags.tag_id > menu_tags.id
+Ref: menu_menu_tags.menu_id > menu.id
+Ref: carts.user_id > user.id
+Ref: carts.menu_id > menu.id

@@ -21,9 +21,10 @@ type MenuCategoryType =
   | 'salads'
   | 'sandwiches'
   | 'soup';
+
 type MenuStatusType = 'available' | 'out of stock' | 'discontinued' | 'special' | 'coming soon';
 
-class MenuItem extends Model<InferAttributes<MenuItem>, InferCreationAttributes<MenuItem>> {
+class Menu extends Model<InferAttributes<Menu>, InferCreationAttributes<Menu>> {
   declare id: CreationOptional<number>;
   declare name: string;
   declare description: string;
@@ -39,11 +40,9 @@ class MenuItem extends Model<InferAttributes<MenuItem>, InferCreationAttributes<
   declare getMenuTags: BelongsToManyGetAssociationsMixin<MenuTag>;
   declare removeMenuTag: BelongsToManyRemoveAssociationMixin<MenuTag, MenuTag['id']>;
   declare removeMenuTags: BelongsToManyRemoveAssociationsMixin<MenuTag, MenuTag['id']>;
-
-  public declare static readonly tableName = 'menu_items';
 }
 
-MenuItem.init(
+Menu.init(
   {
     id: {
       type: DataTypes.INTEGER,
@@ -101,7 +100,7 @@ MenuItem.init(
   },
   {
     sequelize,
-    tableName: MenuItem.tableName,
+    tableName: 'menu',
     underscored: true,
   },
 );
@@ -111,8 +110,6 @@ class MenuTag extends Model<InferAttributes<MenuTag>, InferCreationAttributes<Me
   declare name: string;
   declare createdAt: CreationOptional<Date>;
   declare updatedAt: CreationOptional<Date>;
-
-  public declare static readonly tableName = 'menu_tags';
 }
 
 MenuTag.init(
@@ -137,27 +134,26 @@ MenuTag.init(
   },
 );
 
-class MenuItemTag extends Model<InferAttributes<MenuItemTag>, InferCreationAttributes<MenuItemTag>> {
-  declare menuItemId: number;
+class MenuMenuTag extends Model<InferAttributes<MenuMenuTag>, InferCreationAttributes<MenuMenuTag>> {
+  declare menuId: number;
   declare menuTagId: number;
 
-  public declare static readonly tableName = 'menu_items_tags';
+  public declare static readonly tableName = 'menu_menu_tags';
 }
 
-MenuItemTag.init(
+MenuMenuTag.init(
   {
-    menuItemId: DataTypes.INTEGER,
+    menuId: DataTypes.INTEGER,
     menuTagId: DataTypes.INTEGER,
   },
   {
     sequelize,
-    tableName: MenuItemTag.tableName,
     underscored: true,
     timestamps: false,
   },
 );
 
-MenuItem.belongsToMany(MenuTag, { through: MenuItemTag, foreignKey: 'menuItemId' });
-MenuTag.belongsToMany(MenuItem, { through: MenuItemTag, foreignKey: 'menuTagId' });
+Menu.belongsToMany(MenuTag, { through: MenuMenuTag, foreignKey: 'menuId' });
+MenuTag.belongsToMany(Menu, { through: MenuMenuTag, foreignKey: 'menuTagId' });
 
-export { MenuCategoryType, MenuStatusType, MenuItem, MenuItemTag, MenuTag };
+export { MenuCategoryType, MenuStatusType, Menu, MenuTag, MenuMenuTag };

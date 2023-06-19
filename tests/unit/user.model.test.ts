@@ -164,7 +164,6 @@ describe('User Model', () => {
 
     const user = await User.create(data);
     expect(user.password).not.toEqual(data.password);
-    console.log(user.password, data.password);
     expect(user.comparePasswords(data.password)).toBeTruthy();
   });
 
