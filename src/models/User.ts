@@ -12,6 +12,7 @@ import {
 } from 'sequelize';
 import sequelize from '../db';
 import Cart from './Cart';
+import { Order } from './Order';
 
 config();
 
@@ -35,6 +36,9 @@ class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
 
   declare createCart: HasManyCreateAssociationMixin<Cart>;
   declare getCarts: HasManyGetAssociationsMixin<Cart>;
+
+  declare createOrder: HasManyCreateAssociationMixin<Order>;
+  declare getOrders: HasManyGetAssociationsMixin<Order>;
 
   public static async hashPassword(user: User) {
     if (!user.changed('password')) return;

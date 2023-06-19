@@ -2,6 +2,7 @@ import { CreationOptional, DataTypes, InferAttributes, InferCreationAttributes, 
 import sequelize from '../db';
 
 class Cart extends Model<InferAttributes<Cart>, InferCreationAttributes<Cart>> {
+  declare id: CreationOptional<number>;
   declare userId: CreationOptional<number>;
   declare menuId: number;
   declare quantity: number;
@@ -11,13 +12,18 @@ class Cart extends Model<InferAttributes<Cart>, InferCreationAttributes<Cart>> {
 
 Cart.init(
   {
-    userId: {
+    id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
+      autoIncrement: true,
+    },
+    userId: {
+      type: DataTypes.INTEGER,
+      unique: 'compositeIndex',
     },
     menuId: {
       type: DataTypes.INTEGER,
-      primaryKey: true,
+      unique: 'compositeIndex',
     },
     quantity: {
       type: DataTypes.INTEGER,

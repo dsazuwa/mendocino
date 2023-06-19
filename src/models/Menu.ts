@@ -143,8 +143,14 @@ class MenuMenuTag extends Model<InferAttributes<MenuMenuTag>, InferCreationAttri
 
 MenuMenuTag.init(
   {
-    menuId: DataTypes.INTEGER,
-    menuTagId: DataTypes.INTEGER,
+    menuId: {
+      type: DataTypes.INTEGER,
+      unique: 'compositeIndex',
+    },
+    menuTagId: {
+      type: DataTypes.INTEGER,
+      unique: 'compositeIndex',
+    },
   },
   {
     sequelize,

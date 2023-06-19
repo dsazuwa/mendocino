@@ -90,14 +90,9 @@ describe('Cart Model', () => {
     const cartItem = await Cart.create(data);
     await cartItem.update({ quantity: 4 });
 
-    const retrievedItem = await Cart.findOne({
-      where: {
-        userId: user.id,
-        menuId: cartItem.menuId,
-        quantity: 4,
-      },
-    });
+    const retrievedItem = await Cart.findByPk(cartItem.id);
     expect(retrievedItem).not.toBeNull();
+    expect(retrievedItem?.quantity).toBe(4);
   });
 
   it('should delete cart', async () => {
@@ -110,12 +105,7 @@ describe('Cart Model', () => {
 
     await cartItem!.destroy();
 
-    const deletedItem = await Cart.findOne({
-      where: {
-        userId: user.id,
-        menuId: menu[2].id,
-      },
-    });
+    const deletedItem = await Cart.findByPk(cartItem!.id);
 
     expect(deletedItem).toBeNull();
   });
