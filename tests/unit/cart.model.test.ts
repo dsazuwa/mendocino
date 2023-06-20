@@ -13,7 +13,7 @@ const menuData = [
     name: 'Avocado & Quinoa Superfood Ensalada',
     description:
       'chopped romaine, curly kale, quinoa & millet, housemade superfood krunchies, succotash with roasted corn, black beans & jicama, red onions, cilantro, cotija cheese, grape tomatoes, avocado with chipotle vinaigrette',
-    category: 'salads' as MenuCategoryType,
+    category: 'soulful salads' as MenuCategoryType,
     status: 'available' as MenuStatusType,
     photoUrl: 'avocado-quinoa-superfood-ensalada.png',
     price: 13,
@@ -21,7 +21,7 @@ const menuData = [
   {
     name: 'The Farm Club',
     description:
-      'shaved, roasted turkey breast, smashed avocado, nitrate-free Applewood smoked bacon, herb aioli, tomatoes, mixed greens, pickled red onions on Mom’s seeded whole wheat',
+      "shaved, roasted turkey breast, smashed avocado, nitrate-free Applewood smoked bacon, herb aioli, tomatoes, mixed greens, pickled red onions on Mom's seeded whole wheat",
     category: 'craveable classics' as MenuCategoryType,
     status: 'available' as MenuStatusType,
     photoUrl: 'the-farm-club.png',

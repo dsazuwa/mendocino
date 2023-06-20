@@ -13,14 +13,14 @@ import {
 import sequelize from '../db';
 
 type MenuCategoryType =
-  | '1/2 sandwich combos'
-  | 'bowls'
+  | "chef's creations"
+  | 'cheffy sandwiches'
   | 'craveable classics'
-  | 'deli sides'
+  | 'soulful salads'
+  | '1/2 sandwich combos'
   | 'kids'
-  | 'salads'
-  | 'sandwiches'
-  | 'soup';
+  | 'bowls'
+  | 'deli sides & soups';
 
 type MenuStatusType = 'available' | 'out of stock' | 'discontinued' | 'special' | 'coming soon';
 
@@ -66,14 +66,14 @@ Menu.init(
     },
     category: {
       type: DataTypes.ENUM(
-        '1/2 sandwich combos',
-        'bowls',
+        "chef's creations",
+        'cheffy sandwiches',
         'craveable classics',
-        'deli sides',
+        'soulful salads',
+        '1/2 sandwich combos',
         'kids',
-        'salads',
-        'sandwiches',
-        'soup',
+        'bowls',
+        'deli sides & soups',
       ),
       allowNull: false,
     },
@@ -84,6 +84,9 @@ Menu.init(
     photoUrl: {
       type: DataTypes.STRING,
       allowNull: false,
+      validate: {
+        len: [1, 50],
+      },
     },
     price: {
       type: DataTypes.DECIMAL(10, 4),
@@ -108,8 +111,11 @@ Menu.init(
 class MenuTag extends Model<InferAttributes<MenuTag>, InferCreationAttributes<MenuTag>> {
   declare id: CreationOptional<number>;
   declare name: string;
+  declare description: string;
   declare createdAt: CreationOptional<Date>;
   declare updatedAt: CreationOptional<Date>;
+
+  declare addMenus: BelongsToManyAddAssociationsMixin<Menu, Menu['id']>;
 }
 
 MenuTag.init(
@@ -123,6 +129,16 @@ MenuTag.init(
       type: DataTypes.STRING,
       allowNull: false,
       unique: true,
+      validate: {
+        len: [1, 10],
+      },
+    },
+    description: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+        len: [1, 50],
+      },
     },
     createdAt: DataTypes.DATE,
     updatedAt: DataTypes.DATE,
@@ -143,14 +159,8 @@ class MenuMenuTag extends Model<InferAttributes<MenuMenuTag>, InferCreationAttri
 
 MenuMenuTag.init(
   {
-    menuId: {
-      type: DataTypes.INTEGER,
-      unique: 'compositeIndex',
-    },
-    menuTagId: {
-      type: DataTypes.INTEGER,
-      unique: 'compositeIndex',
-    },
+    menuId: DataTypes.INTEGER,
+    menuTagId: DataTypes.INTEGER,
   },
   {
     sequelize,

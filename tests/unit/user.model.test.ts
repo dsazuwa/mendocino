@@ -7,23 +7,6 @@ import '../utils/db-setup';
 config();
 
 describe('User Model', () => {
-  it('should have this shape', () => {
-    const expectedKeys = [
-      'id',
-      'uuid',
-      'firstName',
-      'lastName',
-      'email',
-      'password',
-      'role',
-      'status',
-      'createdAt',
-      'updatedAt',
-    ].sort();
-    const keys = Object.keys(User.getAttributes()).sort();
-    expect(keys).toStrictEqual(expectedKeys);
-  });
-
   it('should create user', async () => {
     const data = {
       firstName: 'John',

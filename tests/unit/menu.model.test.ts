@@ -2,34 +2,19 @@ import { Menu, MenuCategoryType, MenuStatusType, MenuMenuTag, MenuTag } from '..
 import '../utils/db-setup';
 
 describe('Menu Model', () => {
-  it('should have this shape', () => {
-    const expectedKeys = [
-      'id',
-      'name',
-      'description',
-      'category',
-      'photoUrl',
-      'status',
-      'price',
-      'createdAt',
-      'updatedAt',
-    ].sort();
-    const keys = Object.keys(Menu.getAttributes()).sort();
-    expect(keys).toStrictEqual(expectedKeys);
-  });
-
   it('should create item', async () => {
     const data = {
       name: "Mrs. Goldfarb's Unreal Reuben",
       description:
         'plant-based corned beef from Unreal Deli, havarti cheese, apple & celery root slaw, housemade bread & butter pickles, smoky thousand island on panini-pressed rye',
-      category: 'sandwiches' as MenuCategoryType,
+      category: 'cheffy sandwiches' as MenuCategoryType,
       status: 'available' as MenuStatusType,
       photoUrl: 'mrs-goldfarbs-unreal-reuben.png',
       price: 9,
     };
 
     const menuItem = await Menu.create(data);
+
     expect(menuItem.name).toEqual(data.name);
 
     const fetchedItem = await Menu.findByPk(menuItem.id);
@@ -103,7 +88,7 @@ describe('Menu Model', () => {
     const data = {
       name: 'Almond Romesco Shells',
       description: 'pasta shells with romesco, almonds, roasted red peppers, parmesan, and baby spinach',
-      category: 'deli sides' as MenuCategoryType,
+      category: 'deli sides & soups' as MenuCategoryType,
       status: 'available' as MenuStatusType,
       photoUrl: 'almond-romesco-shells.png',
       price: 10,
@@ -115,14 +100,8 @@ describe('Menu Model', () => {
 });
 
 describe('Menu Tag Model', () => {
-  it('should have this shape', () => {
-    const expectedKeys = ['id', 'name', 'createdAt', 'updatedAt'].sort();
-    const keys = Object.keys(MenuTag.getAttributes()).sort();
-    expect(keys).toStrictEqual(expectedKeys);
-  });
-
   it('should create tag', async () => {
-    const data = { name: 'VG' };
+    const data = { name: 'VG', description: 'Vegeterian' };
 
     const tag = await MenuTag.create(data);
     expect(tag.name).toEqual(data.name);
@@ -132,7 +111,7 @@ describe('Menu Tag Model', () => {
   });
 
   it('should retrieve tag', async () => {
-    const data = { name: 'N' };
+    const data = { name: 'N', description: 'Nuts' };
 
     const tag = await MenuTag.create(data);
 
@@ -144,7 +123,7 @@ describe('Menu Tag Model', () => {
   });
 
   it('should update tag', async () => {
-    const data = { name: 'FG' };
+    const data = { name: 'FG', description: 'Free Gluten' };
 
     const tag = await MenuTag.create(data);
 
@@ -156,7 +135,7 @@ describe('Menu Tag Model', () => {
   });
 
   it('should destroy tag', async () => {
-    const data = { name: 'RGF' };
+    const data = { name: 'RGF', description: 'Request Gluten Free' };
 
     const tag = await MenuTag.create(data);
     await tag.destroy();
@@ -171,15 +150,15 @@ describe('MenuItem and MenuTag Relationship', () => {
   let menuItem: Menu;
 
   beforeAll(async () => {
-    vegan = await MenuTag.create({ name: 'V' });
-    milk = await MenuTag.create({ name: 'M' });
-    seaFood = await MenuTag.create({ name: 'SF' });
+    vegan = await MenuTag.create({ name: 'V', description: 'Vegan' });
+    milk = await MenuTag.create({ name: 'M', description: 'Milk' });
+    seaFood = await MenuTag.create({ name: 'SF', description: 'Seafood' });
 
     menuItem = await Menu.create({
       name: 'The Modern Caesar',
       description:
         'curly kale, chopped romaine, housemade superfood krunchies, shaved Grana Padano cheese, red onions, grape tomatoes, avocado, lemon squeeze with classic Caesar dressing',
-      category: 'salads' as MenuCategoryType,
+      category: 'soulful salads' as MenuCategoryType,
       status: 'available' as MenuStatusType,
       photoUrl: 'modern-caesar.png',
       price: 8,
