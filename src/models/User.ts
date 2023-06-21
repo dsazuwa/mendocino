@@ -177,6 +177,7 @@ Address.init(
   {
     sequelize,
     underscored: true,
+    timestamps: false,
   },
 );
 
