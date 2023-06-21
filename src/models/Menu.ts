@@ -89,7 +89,7 @@ Menu.init(
       },
     },
     price: {
-      type: DataTypes.DECIMAL(10, 4),
+      type: DataTypes.DECIMAL(10, 2),
       allowNull: false,
       validate: {
         min: {

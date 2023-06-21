@@ -16,7 +16,7 @@ class Order extends Model<InferAttributes<Order>, InferCreationAttributes<Order>
   declare uuid: CreationOptional<string>;
   declare userId: CreationOptional<number>;
   declare total: number;
-  declare orderStatus: CreationOptional<OrderStatusType>;
+  declare status: CreationOptional<OrderStatusType>;
   declare createdAt: CreationOptional<Date>;
   declare updatedAt: CreationOptional<Date>;
 
@@ -39,10 +39,10 @@ Order.init(
     },
     userId: DataTypes.INTEGER,
     total: {
-      type: DataTypes.DECIMAL(19, 4),
+      type: DataTypes.DECIMAL(19, 2),
       allowNull: false,
     },
-    orderStatus: {
+    status: {
       type: DataTypes.ENUM('pending', 'processing', 'confirmed', 'delivered'),
       defaultValue: 'pending',
       allowNull: false,
