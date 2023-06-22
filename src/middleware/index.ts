@@ -1,4 +1,4 @@
-import { authenticate, configureJWTStrategy } from './auth.middleware';
+import { authenticate, configureJWTStrategy, permitOnlyPendingUsers } from './auth.middleware';
 import { loginRules, registerRules, validate } from './validator.middleware';
 
-export { authenticate, configureJWTStrategy, loginRules, registerRules, validate };
+export { authenticate, configureJWTStrategy, loginRules, permitOnlyPendingUsers, registerRules, validate };
