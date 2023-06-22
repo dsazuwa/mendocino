@@ -37,6 +37,9 @@ class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
   declare createCart: HasManyCreateAssociationMixin<Cart>;
   declare getCarts: HasManyGetAssociationsMixin<Cart>;
 
+  declare createToken: HasManyCreateAssociationMixin<Token>;
+  declare getTokens: HasManyGetAssociationsMixin<Token>;
+
   declare createOrder: HasManyCreateAssociationMixin<Order>;
   declare getOrders: HasManyGetAssociationsMixin<Order>;
 
@@ -184,4 +187,58 @@ Address.init(
 User.hasMany(Address, { foreignKey: 'userId', onDelete: 'CASCADE' });
 Address.belongsTo(User, { foreignKey: 'userId', onDelete: 'CASCADE' });
 
-export { Address, User, UserRoleType, UserStatusType };
+type TokenType = 'verify' | 'password';
+
+class Token extends Model<InferAttributes<Token>, InferCreationAttributes<Token>> {
+  declare userId: CreationOptional<number>;
+  declare type: TokenType;
+  declare code: string;
+  declare expiresAt: Date;
+
+  public static generateCode() {
+    const numbers = [];
+
+    for (let i = 0; i < 4; i++) {
+      const randomNum = Math.floor(Math.random() * 10);
+      numbers.push(randomNum);
+    }
+
+    return numbers.toString().replace(/,/g, '');
+  }
+
+  public static getExpiration() {
+    return new Date(new Date().getTime() + 30 * 60000);
+  }
+}
+
+Token.init(
+  {
+    userId: {
+      type: DataTypes.INTEGER,
+      unique: 'compositeIndex',
+    },
+    type: {
+      type: DataTypes.ENUM('verify', 'password'),
+      unique: 'compositeIndex',
+      allowNull: false,
+    },
+    code: {
+      type: DataTypes.STRING(4),
+      allowNull: false,
+    },
+    expiresAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+    },
+  },
+  {
+    sequelize,
+    underscored: true,
+    timestamps: false,
+  },
+);
+
+User.hasMany(Token, { foreignKey: 'userId', onDelete: 'CASCADE' });
+Token.belongsTo(User, { foreignKey: 'userId', onDelete: 'CASCADE' });
+
+export { Address, Token, TokenType, User, UserRoleType, UserStatusType };

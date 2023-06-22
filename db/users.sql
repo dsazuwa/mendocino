@@ -4,13 +4,19 @@ DROP TYPE IF EXISTS "enum_users_role" CASCADE;
 
 DROP TYPE IF EXISTS "enum_users_status" CASCADE;
 
+DROP TYPE IF EXISTS "enum_tokens_type" CASCADE;
+
 DROP TABLE IF EXISTS "users" CASCADE;
 
 DROP TABLE IF EXISTS "addresses" CASCADE;
 
+DROP TABLE IF EXISTS "tokens" CASCADE;
+
 CREATE TYPE enum_users_role AS ENUM ('admin', 'client');
 
 CREATE TYPE enum_users_status AS ENUM ('active', 'inactive', 'pending');
+
+CREATE TYPE enum_tokens_type AS ENUM ('verify', 'password');
 
 CREATE TABLE IF NOT EXISTS users (
   "id" SERIAL PRIMARY KEY,
@@ -33,6 +39,15 @@ CREATE TABLE IF NOT EXISTS addresses (
   "city" VARCHAR(255) NOT NULL,
   "state" VARCHAR(255) NOT NULL,
   "postal_code" VARCHAR(10) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS tokens (
+  "id" SERIAL PRIMARY KEY,
+  "user_id" INTEGER REFERENCES users (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  "type" enum_tokens_type NOT NULL,
+  "code" VARCHAR(4) NOT NULL,
+  "expires_at" TIMESTAMP WITH TIME ZONE NOT NULL,
+  UNIQUE ("user_id", "type")
 );
 
 INSERT INTO

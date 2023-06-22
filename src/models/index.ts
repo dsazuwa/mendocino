@@ -1,7 +1,7 @@
 import Cart from './Cart';
 import { Menu, MenuCategoryType, MenuMenuTag, MenuStatusType, MenuTag } from './Menu';
 import { Order, OrderItem, OrderStatusType } from './Order';
-import { Address, User, UserRoleType, UserStatusType } from './User';
+import { Address, Token, TokenType, User, UserRoleType, UserStatusType } from './User';
 
 User.hasMany(Cart, { foreignKey: 'userId', onDelete: 'CASCADE' });
 Cart.belongsTo(User, { foreignKey: 'userId', onDelete: 'CASCADE' });
@@ -26,6 +26,8 @@ export {
   Order,
   OrderItem,
   OrderStatusType,
+  Token,
+  TokenType,
   User,
   UserRoleType,
   UserStatusType,

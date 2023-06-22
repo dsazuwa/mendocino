@@ -1,7 +1,7 @@
 import { config } from 'dotenv';
 import { sign } from 'jsonwebtoken';
 import { v4 as uuidv4 } from 'uuid';
-import { Address, User, UserRoleType, UserStatusType } from '../../src/models/User';
+import { Address, Token, User, UserRoleType, UserStatusType } from '../../src/models/User';
 import '../utils/db-setup';
 
 config();
@@ -168,7 +168,7 @@ describe('User Model', () => {
   });
 });
 
-describe('User and Address Relationship', () => {
+describe('Address Model', () => {
   let user: User;
 
   beforeAll(async () => {
@@ -271,5 +271,98 @@ describe('User and Address Relationship', () => {
     const retrievedAddress = await Address.findByPk(address.id);
 
     expect(retrievedAddress).toBeNull();
+  });
+});
+
+describe('Token Model', () => {
+  let user: User;
+
+  beforeAll(async () => {
+    user = await User.create({
+      firstName: 'Jaque',
+      lastName: 'Doe',
+      email: 'jaquedoe@gmail.com',
+      password: 'jackD0epa$$',
+    });
+  });
+
+  it('should create token', async () => {
+    let token = await Token.create({
+      userId: user.id,
+      type: 'verify',
+      code: Token.generateCode(),
+      expiresAt: Token.getExpiration(),
+    });
+    let retrievedToken = await Token.findOne({ where: { userId: user.id, type: 'verify' } });
+    expect(retrievedToken).not.toBeNull();
+
+    token = await Token.create({
+      userId: user.id,
+      type: 'password',
+      code: Token.generateCode(),
+      expiresAt: new Date(),
+    });
+    retrievedToken = await Token.findOne({ where: { userId: user.id, type: 'password' } });
+    expect(retrievedToken).not.toBeNull();
+  });
+
+  it('should fail to create duplicate token', async () => {
+    expect(
+      Token.create({
+        userId: user.id,
+        type: 'verify',
+        code: Token.generateCode(),
+        expiresAt: Token.getExpiration(),
+      }),
+    ).rejects.toThrow();
+
+    expect(
+      Token.create({
+        userId: user.id,
+        type: 'password',
+        code: Token.generateCode(),
+        expiresAt: Token.getExpiration(),
+      }),
+    ).rejects.toThrow();
+  });
+
+  it('should retrieve token', async () => {
+    const tokens = await user.getTokens();
+    expect(tokens.length).toEqual(2);
+  });
+
+  it('should delete token', async () => {
+    const token = await Token.findOne({ where: { userId: user.id, type: 'verify' } });
+    await token!.destroy();
+
+    const destroyedToken = await Token.findOne({ where: { userId: user.id, type: 'verify' } });
+    expect(destroyedToken).toBeNull();
+  });
+
+  it('deleting Token should not delete User', async () => {
+    const token = await Token.findOne({ where: { userId: user.id, type: 'password' } });
+    await token!.destroy();
+
+    const retrieveUser = await User.findByPk(user.id);
+    expect(retrieveUser).not.toBeNull();
+  });
+
+  it('deleting User should delete Token', async () => {
+    const token = await user.createToken({
+      type: 'password',
+      code: Token.generateCode(),
+      expiresAt: Token.getExpiration(),
+    });
+
+    await user.destroy();
+
+    const retrievedToken = await Token.findOne({ where: { userId: user.id, type: 'password' } });
+    expect(retrievedToken).toBeNull();
+  });
+
+  it('should generate unique code', async () => {
+    const code = Token.generateCode();
+    expect(code.length).toBe(4);
+    expect(parseInt(code)).toBeDefined();
   });
 });
