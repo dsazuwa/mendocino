@@ -3,7 +3,7 @@ import express, { Request, Response } from 'express';
 import morgan from 'morgan';
 import passport from 'passport';
 import { authRouter, usersRouter } from './routes';
-import { configureJWTStrategy } from './utilities';
+import { configureJWTStrategy } from './middleware';
 
 export const createApp = () => {
   const app = express();

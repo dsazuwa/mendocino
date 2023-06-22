@@ -8,7 +8,7 @@ describe('Authentication', () => {
   const data = {
     firstName: 'Jessica',
     lastName: 'Doe',
-    email: 'jessicaDoe@gmail.com',
+    email: 'jessicadoe@gmail.com',
     password: 'jessicaD0epa$$',
   };
 
