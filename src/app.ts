@@ -1,7 +1,9 @@
-import express, { Request, Response } from 'express';
 import cors from 'cors';
+import express, { Request, Response } from 'express';
 import morgan from 'morgan';
-import { authRouter } from './routes/auth';
+import passport from 'passport';
+import { authRouter, usersRouter } from './routes';
+import { configureJWTStrategy } from './utilities';
 
 export const createApp = () => {
   const app = express();
@@ -10,13 +12,17 @@ export const createApp = () => {
   app.use(express.urlencoded({ extended: true }));
   app.use(express.json());
   app.use(morgan('tiny'));
+  app.use(passport.initialize());
+
+  configureJWTStrategy(passport);
 
   app.get('/', (req: Request, res: Response) => {
     res.status(200).json({ message: 'Welcome to Spoons API.' });
   });
 
-  // routes
+  // Routes
   app.use('/api/auth', authRouter);
+  app.use('/api/users', usersRouter);
 
   return app;
 };
