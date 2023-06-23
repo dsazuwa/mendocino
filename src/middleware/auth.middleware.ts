@@ -40,7 +40,7 @@ export const authenticate = (req: Request, res: Response, next: NextFunction) =>
 };
 
 export const permitOnlyPendingUsers = (req: Request, res: Response, next: NextFunction) => {
-  const user = req.user! as User;
+  const user = req.user as User;
 
   if (user.status !== 'pending') return res.status(401).json({ message: 'Unauthorized: Account already verified' });
 

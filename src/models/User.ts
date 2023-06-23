@@ -108,16 +108,6 @@ User.init(
     password: {
       type: DataTypes.STRING,
       allowNull: false,
-      validate: {
-        isValid(value: string) {
-          if (value.length > 50) {
-            throw new Error('Password should bot exceed 50 character');
-          }
-          if (value.length < 8) {
-            throw new Error('Password should be at least 8 characters long');
-          }
-        },
-      },
     },
     role: {
       type: DataTypes.ENUM('admin', 'client'),

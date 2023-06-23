@@ -123,16 +123,6 @@ describe('User Model', () => {
     };
 
     expect(User.create(data)).rejects.toThrow();
-
-    const data1 = {
-      uuid: uuidv4(),
-      firstName: 'Janet',
-      lastName: 'Doe',
-      email: 'janetdoe@gmail.com',
-      password: 'janetD0ePa$$janetD0ePa$$janetD0ePa$$janetD0ePa$$janetD0ePa$$',
-    };
-
-    expect(User.create(data1)).rejects.toThrow();
   });
 
   it('should hash the password', async () => {

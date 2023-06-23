@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import { FieldValidationError, Result, body, validationResult } from 'express-validator';
 
-const passwordRules = body('password')
+export const passwordRules = body('password')
   .exists()
   .isLength({ min: 8, max: 50 })
   .withMessage('must be between 8 - 20 characters')
