@@ -137,12 +137,14 @@ CREATE OR REPLACE FUNCTION populate_orders()
 DECLARE
   u_id INTEGER;
   i INTEGER;
+  num_orders INTEGER;
   order_date DATE;
   order_id INTEGER;
   order_total NUMERIC;
 BEGIN
   FOR u_id IN 1..11 LOOP
-    FOR i IN 0..19 LOOP
+    num_orders := 1 + floor(random() * 50);
+    FOR i IN 0..num_orders LOOP
       order_date = generate_random_datetime();
       INSERT INTO 
         orders (
