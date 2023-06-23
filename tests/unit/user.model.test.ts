@@ -153,7 +153,9 @@ describe('User Model', () => {
     const token = user.generateJWT();
     expect(token).toBeDefined();
 
-    const decoded = sign({ uuid: user.uuid, email: user.email }, `${process.env.JWT_SECRET}`, { expiresIn: '60 days' });
+    const decoded = sign({ uuid: user.uuid, email: user.email }, `${process.env.JWT_SECRET}`, {
+      expiresIn: '60 days',
+    });
     expect(token).toEqual(decoded);
   });
 });

@@ -62,7 +62,10 @@ describe('User Verification', () => {
       expiresAt: Token.getExpiration(),
     });
 
-    await request.put(`${BASE_URL}/me/verify/${code.code}`).auth(token, { type: 'bearer' }).expect(200);
+    await request
+      .put(`${BASE_URL}/me/verify/${code.code}`)
+      .auth(token, { type: 'bearer' })
+      .expect(200);
 
     const retrievedUser = await User.findOne({ where: { email: data.email } });
     expect(retrievedUser!.status).toEqual('active');
@@ -92,6 +95,7 @@ describe('Password Reset', () => {
     expect(code).not.toBeNull();
 
     await request.post(`${BASE_URL}/me/reset`).auth(token, { type: 'bearer' }).expect(200);
+    
     const newCode = await Token.findOne({ where: { userId: user.id, type: 'password' } });
     expect(newCode).not.toBeNull();
     expect(newCode!.code).not.toEqual(code!.code);
@@ -153,7 +157,10 @@ describe('Password Reset', () => {
       .expect(200);
 
     // User should be able to login with new credentials
-    await request.post(`/api/auth/login`).send({ email: user.email, password: 'janetsNewD0epa$$' }).expect(200);
+    await request
+      .post(`/api/auth/login`)
+      .send({ email: user.email, password: 'janetsNewD0epa$$' })
+      .expect(200);
 
     // Reset code should now be invalid i.e. deleted
     const usedCode = await Token.findOne({ where: { userId: user.id, type: 'password' } });

@@ -7,7 +7,8 @@ export const verifyEmail = async (req: Request, res: Response, next: NextFunctio
     const { code } = req.params;
 
     const vCode = await Token.findOne({ where: { userId: user.id, type: 'verify', code } });
-    if (!vCode || vCode.expiresAt < new Date()) return res.status(400).json({ message: 'Invalid code' });
+    if (!vCode || vCode.expiresAt < new Date())
+      return res.status(400).json({ message: 'Invalid code' });
 
     await user.update({ status: 'active' });
     await vCode.destroy();
@@ -62,7 +63,8 @@ export const resetPassword = async (req: Request, res: Response, next: NextFunct
 
     const resetCode = await Token.findOne({ where: { userId: user.id, type: 'password', code } });
 
-    if (!resetCode || resetCode.expiresAt < new Date()) return res.status(400).json({ message: 'Invalid code' });
+    if (!resetCode || resetCode.expiresAt < new Date())
+      return res.status(400).json({ message: 'Invalid code' });
 
     await user.update({ password });
     await resetCode.destroy();

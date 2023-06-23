@@ -32,7 +32,8 @@ export const authenticate = (req: Request, res: Response, next: NextFunction) =>
 
     if (!user) return res.status(401).json({ message: 'Unauthorized: invalid access token' });
 
-    if (user.status === 'inactive') return res.status(401).json({ message: 'Unauthorized: deactivated account' });
+    if (user.status === 'inactive')
+      return res.status(401).json({ message: 'Unauthorized: deactivated account' });
 
     req.user = user;
     next();
@@ -42,7 +43,8 @@ export const authenticate = (req: Request, res: Response, next: NextFunction) =>
 export const permitOnlyPendingUsers = (req: Request, res: Response, next: NextFunction) => {
   const user = req.user as User;
 
-  if (user.status !== 'pending') return res.status(401).json({ message: 'Unauthorized: Account already verified' });
+  if (user.status !== 'pending')
+    return res.status(401).json({ message: 'Unauthorized: Account already verified' });
 
   next();
 };

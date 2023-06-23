@@ -1,5 +1,10 @@
 import { Request, Response, Router } from 'express';
-import { requestResetCode, resendVerify, resetPassword, verifyEmail } from '../controllers/users.controller';
+import {
+  requestResetCode,
+  resendVerify,
+  resetPassword,
+  verifyEmail,
+} from '../controllers/users.controller';
 import { authenticate, validate } from '../middleware';
 import { permitOnlyPendingUsers } from '../middleware/auth.middleware';
 import { passwordRules } from '../middleware/validator.middleware';

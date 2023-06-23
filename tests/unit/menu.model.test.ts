@@ -1,4 +1,10 @@
-import { Menu, MenuCategoryType, MenuStatusType, MenuMenuTag, MenuTag } from '../../src/models/Menu';
+import {
+  Menu,
+  MenuCategoryType,
+  MenuStatusType,
+  MenuMenuTag,
+  MenuTag,
+} from '../../src/models/Menu';
 import '../utils/db-setup';
 
 describe('Menu Model', () => {
@@ -87,7 +93,8 @@ describe('Menu Model', () => {
   it('should fail on duplicate', async () => {
     const data = {
       name: 'Almond Romesco Shells',
-      description: 'pasta shells with romesco, almonds, roasted red peppers, parmesan, and baby spinach',
+      description:
+        'pasta shells with romesco, almonds, roasted red peppers, parmesan, and baby spinach',
       category: 'deli sides & soups' as MenuCategoryType,
       status: 'available' as MenuStatusType,
       photoUrl: 'almond-romesco-shells.png',

@@ -150,7 +150,10 @@ MenuTag.init(
   },
 );
 
-class MenuMenuTag extends Model<InferAttributes<MenuMenuTag>, InferCreationAttributes<MenuMenuTag>> {
+class MenuMenuTag extends Model<
+  InferAttributes<MenuMenuTag>,
+  InferCreationAttributes<MenuMenuTag>
+> {
   declare menuId: number;
   declare menuTagId: number;
 
