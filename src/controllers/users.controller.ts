@@ -71,7 +71,6 @@ export const resetPassword = async (req: Request, res: Response, next: NextFunct
 
     res.status(200).json({ message: 'Password successfully reset!' });
   } catch (e) {
-    console.log(e);
     next(e);
   }
 };

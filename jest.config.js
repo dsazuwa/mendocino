@@ -4,6 +4,6 @@ module.exports = {
   testEnvironment: 'node',
   rootDir: '.',
   collectCoverage: true,
-  coverageReporters: ["cobertura", "text"],
-  reporters: ["default", "jest-junit"],
+  coverageReporters: ['cobertura', 'text'],
+  reporters: ['default', 'jest-junit'],
 };

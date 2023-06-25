@@ -68,7 +68,7 @@ describe('User Verification', () => {
       .expect(200);
 
     const retrievedUser = await User.findOne({ where: { email: data.email } });
-    expect(retrievedUser!.status).toEqual('active');
+    expect(retrievedUser?.status).toEqual('active');
   });
 });
 
@@ -95,10 +95,10 @@ describe('Password Reset', () => {
     expect(code).not.toBeNull();
 
     await request.post(`${BASE_URL}/me/reset`).auth(token, { type: 'bearer' }).expect(200);
-    
+
     const newCode = await Token.findOne({ where: { userId: user.id, type: 'password' } });
     expect(newCode).not.toBeNull();
-    expect(newCode!.code).not.toEqual(code!.code);
+    expect(newCode?.id).not.toEqual(code?.id);
   });
 
   it('PUT /me/reset/:code should fail on invalid password', async () => {

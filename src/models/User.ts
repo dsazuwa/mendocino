@@ -180,6 +180,7 @@ Address.belongsTo(User, { foreignKey: 'userId', onDelete: 'CASCADE' });
 type TokenType = 'verify' | 'password';
 
 class Token extends Model<InferAttributes<Token>, InferCreationAttributes<Token>> {
+  declare id: CreationOptional<number>;
   declare userId: CreationOptional<number>;
   declare type: TokenType;
   declare code: string;
@@ -203,6 +204,11 @@ class Token extends Model<InferAttributes<Token>, InferCreationAttributes<Token>
 
 Token.init(
   {
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+    },
     userId: {
       type: DataTypes.INTEGER,
       unique: 'compositeIndex',

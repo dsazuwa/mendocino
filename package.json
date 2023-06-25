@@ -12,7 +12,7 @@
     "build": "rimraf ./dist && tsc --project tsconfig.build.json",
     "start": "node ./dist/index.js",
     "start:dev": "nodemon ./src/index.ts",
-    "test": "jest",
+    "test": "jest --silent --runInBand",
     "format": "prettier --write src/ tests/",
     "lint": "eslint ./src",
     "lint-staged": "lint-staged"
@@ -40,7 +40,8 @@
     "rimraf": "^5.0.1",
     "sequelize": "^6.32.0",
     "sequelize-typescript": "^2.1.5",
-    "uuid": "^9.0.0"
+    "uuid": "^9.0.0",
+    "winston": "^3.9.0"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.2",

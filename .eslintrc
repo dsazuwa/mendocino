@@ -12,7 +12,7 @@
     "ecmaVersion": 2018,
     "sourceType": "module",
     "project": [
-      "./tsconfig.json"
+      "./tsconfig.eslint.json"
     ]
   },
   "rules": {
@@ -20,5 +20,8 @@
       "argsIgnorePattern": "next"
     }],
     "prettier/prettier": ["error"]
-  }
+  },
+  "overrides" : [
+    
+  ]
 }
