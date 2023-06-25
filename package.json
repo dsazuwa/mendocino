@@ -14,8 +14,9 @@
     "start:dev": "nodemon ./src/index.ts",
     "test": "jest --silent --runInBand",
     "format": "prettier --write src/ tests/",
-    "lint": "eslint ./src",
-    "lint-staged": "lint-staged"
+    "lint": "eslint .",
+    "lint-staged": "lint-staged",
+    "prepare": "husky install"
   },
   "lint-staged": {
     "./**/*.{js,ts}": [
