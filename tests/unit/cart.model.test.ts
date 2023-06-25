@@ -103,9 +103,9 @@ describe('Cart Model', () => {
       },
     });
 
-    await cartItem!.destroy();
+    await cartItem?.destroy();
 
-    const deletedItem = await Cart.findByPk(cartItem!.id);
+    const deletedItem = await Cart.findByPk(cartItem?.id);
 
     expect(deletedItem).toBeNull();
   });
@@ -143,9 +143,9 @@ describe('Cart Model', () => {
         },
       });
 
-      await cartItem!.destroy();
+      await cartItem?.destroy();
 
-      expect(Menu.findByPk(cartItem!.menuId)).resolves.toBeDefined();
+      expect(Menu.findByPk(cartItem?.menuId)).resolves.toBeDefined();
     });
 
     it('should not delete User on Cart delete', async () => {
@@ -156,7 +156,7 @@ describe('Cart Model', () => {
         },
       });
 
-      await cartItem!.destroy();
+      await cartItem?.destroy();
 
       expect(User.findByPk(user.id)).resolves.toBeDefined();
     });

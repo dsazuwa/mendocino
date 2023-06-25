@@ -1,4 +1,3 @@
-import { NextFunction, Request, Response } from 'express';
 import { User } from '../../src/models';
 import '../utils/db-setup';
 import { request } from '../utils/supertest.helper';
@@ -39,17 +38,10 @@ describe('Authentication Middleware', () => {
 });
 
 describe('PermitOnlyPendingUsers middleware', () => {
-  let req: Request;
-  let res: Response;
-  let next: NextFunction;
   let user: User;
   let token: string;
 
   beforeAll(async () => {
-    req = {} as Request;
-    res = {} as Response;
-    next = jest.fn();
-
     user = await User.create({
       firstName: 'Janice',
       lastName: 'Doe',

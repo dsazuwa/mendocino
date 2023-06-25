@@ -79,9 +79,9 @@ describe('User Model', () => {
     await user.update(newData);
 
     const updatedUser = await User.findByPk(user.id);
-    expect(updatedUser!.firstName).toEqual(newData.firstName);
-    expect(updatedUser!.lastName).toEqual(newData.lastName);
-    expect(updatedUser!.email).toEqual(newData.email);
+    expect(updatedUser?.firstName).toEqual(newData.firstName);
+    expect(updatedUser?.lastName).toEqual(newData.lastName);
+    expect(updatedUser?.email).toEqual(newData.email);
   });
 
   it('should delete user', async () => {
@@ -199,9 +199,9 @@ describe('Address Model', () => {
   });
 
   it('should retrieve address', async () => {
-    let addresses = await user.getAddresses();
+    const addresses = await user.getAddresses();
     expect(addresses.length).toEqual(2);
-    expect(addresses[0]!).toHaveProperty('addressLine1');
+    expect(addresses[0]).toHaveProperty('addressLine1');
   });
 
   it('should update address', async () => {
@@ -216,7 +216,7 @@ describe('Address Model', () => {
     await address.update({ city: 'Rock Island' });
 
     const retrievedAddress = await Address.findOne({ where: { id: address.id } });
-    expect(retrievedAddress!.city).toEqual('Rock Island');
+    expect(retrievedAddress?.city).toEqual('Rock Island');
   });
 
   it('should delete address', async () => {
@@ -243,7 +243,7 @@ describe('Address Model', () => {
     };
 
     const address = await user.createAddress(data);
-    await address!.destroy();
+    await address?.destroy();
 
     expect(User.findByPk(user.id)).resolves.not.toBeNull();
   });
@@ -279,7 +279,7 @@ describe('Token Model', () => {
   });
 
   it('should create token', async () => {
-    let token = await Token.create({
+    await Token.create({
       userId: user.id,
       type: 'verify',
       code: Token.generateCode(),
@@ -288,7 +288,7 @@ describe('Token Model', () => {
     let retrievedToken = await Token.findOne({ where: { userId: user.id, type: 'verify' } });
     expect(retrievedToken).not.toBeNull();
 
-    token = await Token.create({
+    await Token.create({
       userId: user.id,
       type: 'password',
       code: Token.generateCode(),
@@ -325,7 +325,7 @@ describe('Token Model', () => {
 
   it('should delete token', async () => {
     const token = await Token.findOne({ where: { userId: user.id, type: 'verify' } });
-    await token!.destroy();
+    await token?.destroy();
 
     const destroyedToken = await Token.findOne({ where: { userId: user.id, type: 'verify' } });
     expect(destroyedToken).toBeNull();
@@ -333,14 +333,14 @@ describe('Token Model', () => {
 
   it('deleting Token should not delete User', async () => {
     const token = await Token.findOne({ where: { userId: user.id, type: 'password' } });
-    await token!.destroy();
+    await token?.destroy();
 
     const retrieveUser = await User.findByPk(user.id);
     expect(retrieveUser).not.toBeNull();
   });
 
   it('deleting User should delete Token', async () => {
-    const token = await user.createToken({
+    await user.createToken({
       type: 'password',
       code: Token.generateCode(),
       expiresAt: Token.getExpiration(),

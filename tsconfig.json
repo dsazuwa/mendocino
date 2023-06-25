@@ -7,11 +7,12 @@
   },
   "include": [
     "src/**/*",
-    "@types"
+    "@types",
+    "tests/**/*",
+    "jest.config.js"
   ],
   "exclude": [
     "node_modules",
-    "tests/**/*"
   ],
   "compilerOptions": {
     /* Visit https://aka.ms/tsconfig to read more about this file */

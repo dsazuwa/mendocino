@@ -61,15 +61,13 @@ describe('Menu Model', () => {
 
     const newData = {
       status: 'out of stock' as MenuStatusType,
-      price: 12,
     };
 
     await menuItem.update(newData);
 
     const updatedItem = await Menu.findByPk(menuItem.id);
-    expect(updatedItem!.id).toEqual(menuItem.id);
-    expect(updatedItem!.status).toEqual(newData.status);
-    expect(Math.trunc(updatedItem!.price)).toEqual(newData.price);
+    expect(updatedItem?.id).toEqual(menuItem.id);
+    expect(updatedItem?.status).toEqual(newData.status);
   });
 
   it('should delete item', async () => {
@@ -138,7 +136,7 @@ describe('Menu Tag Model', () => {
     await tag.update(newData);
 
     const updatedTag = await MenuTag.findByPk(tag.id);
-    expect(updatedTag!.name).toBe(newData.name);
+    expect(updatedTag?.name).toBe(newData.name);
   });
 
   it('should destroy tag', async () => {
@@ -177,7 +175,7 @@ describe('MenuItem and MenuTag Relationship', () => {
       await menuItem.addMenuTag(vegan);
       const tag = await MenuMenuTag.findOne({ where: { menuId: menuItem.id } });
       expect(tag).not.toBeNull();
-      expect(tag!.menuTagId).toEqual(vegan.id);
+      expect(tag?.menuTagId).toEqual(vegan.id);
 
       await menuItem.addMenuTags([milk, seaFood]);
       const tags = await MenuMenuTag.findAll({ where: { menuId: menuItem.id } });

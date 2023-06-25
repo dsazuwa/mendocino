@@ -108,11 +108,11 @@ describe('Order Item Model', () => {
       price: 13,
     });
 
-    expect(order).not.toBeNull();
+    expect(orderItem).not.toBeNull();
   });
 
   it('should retrieve order item', async () => {
-    const orderItem = await OrderItem.create({
+    await OrderItem.create({
       orderId: order.id,
       menuId: menu[1].id,
       quantity: 2,
@@ -158,7 +158,7 @@ describe('Order Item Model', () => {
 
     const orderItem = await OrderItem.findOne({ where: data });
 
-    await orderItem!.destroy();
+    await orderItem?.destroy();
 
     const deletedOrder = await OrderItem.findOne({ where: data });
 
@@ -191,7 +191,7 @@ describe('Order and Order Item Relationship', () => {
     });
 
     expect(retrievedOrderItem).not.toBeNull();
-    expect(retrievedOrderItem!.orderId).toBe(order.id);
+    expect(retrievedOrderItem?.orderId).toBe(order.id);
   });
 
   it('should retrieve Order Item with Order', async () => {

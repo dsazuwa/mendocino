@@ -60,13 +60,12 @@ describe('Authentication', () => {
 });
 
 /********************* HELPER FUNCTION *********************/
-const getTokenFrom = (cookies: String[]) => {
+const getTokenFrom = (cookies: string[]) => {
   if (!cookies) return '';
 
   const cookie = cookies.find((c) => c.includes('access-token'));
 
   if (!cookie) return '';
 
-  const [name, token] = cookie.split(';')[0].split('=');
-  return token;
+  return cookie.split(';')[0].split('=')[1];
 };
