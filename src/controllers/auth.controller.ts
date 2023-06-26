@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
-import { User } from '../models';
+import { Token, User } from '../models';
 
 export const register = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -42,6 +42,51 @@ export const logout = async (req: Request, res: Response, next: NextFunction) =>
   try {
     res.clearCookie('access-token');
     res.status(200).json({ message: 'Successfully logged out' });
+  } catch (e) {
+    next(e);
+  }
+};
+
+export const requestPasswordRecovery = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { email } = req.body;
+
+    const user = await User.findOne({ where: { email } });
+
+    if (!user) return res.status(400).json({ message: 'Account does not exist' });
+
+    await Token.destroy({ where: { userId: user.id, type: 'password' } });
+
+    await user.createToken({
+      type: 'password',
+      code: Token.generateCode(),
+      expiresAt: Token.getExpiration(),
+    });
+
+    res.status(200).json({ message: 'Password reset code sent' });
+  } catch (e) {
+    next(e);
+  }
+};
+
+export const recoverPassword = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { code } = req.params;
+    const { email, password } = req.body;
+
+    const user = await User.findOne({ where: { email } });
+
+    if (!user) return res.status(400).json({ message: 'Account does not exist' });
+
+    const resetCode = await Token.findOne({ where: { userId: user.id, type: 'password', code } });
+
+    if (!resetCode || resetCode.expiresAt < new Date())
+      return res.status(400).json({ message: 'Invalid code' });
+
+    await user.update({ password });
+    await resetCode.destroy();
+
+    res.status(200).json({ message: 'Password successfully reset!' });
   } catch (e) {
     next(e);
   }
