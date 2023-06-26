@@ -56,7 +56,7 @@ Follow the steps below to get the Spoons API up and running:
 7. The Spoons API should now be running at `http://localhost:3000`.
 
 ## API Documentation
-For detailed information about the available API endpoints, please refer to the [API Documentation](todo).
+For detailed information about the available API endpoints, please refer to the [API Documentation](https://documenter.getpostman.com/view/19231873/2s93z86NgN).
 
 ## Testing
 Ensure that the test database container is running. Then run the test by executing the following command:

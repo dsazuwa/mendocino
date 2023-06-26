@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 import { FieldValidationError, Result, body, validationResult } from 'express-validator';
 
 export const passwordRules = body('password')
+  .trim()
   .exists()
   .isLength({ min: 8, max: 50 })
   .withMessage('must be between 8 - 20 characters')
@@ -16,15 +17,15 @@ export const passwordRules = body('password')
   .withMessage('no leading or trailing spaces');
 
 export const registerRules = [
-  body('firstName').notEmpty().trim(),
-  body('lastName').notEmpty().trim(),
-  body('email').notEmpty().trim().isEmail().normalizeEmail(),
+  body('firstName').trim().notEmpty(),
+  body('lastName').trim().notEmpty(),
+  body('email').trim().notEmpty().isEmail().normalizeEmail(),
   passwordRules,
 ];
 
 export const loginRules = [
-  body('email', 'valid email not provided').notEmpty().isEmail().normalizeEmail().trim(),
-  body('password', 'password not provided').notEmpty(),
+  body('email', 'valid email not provided').trim().notEmpty().isEmail().normalizeEmail().trim(),
+  body('password', 'password not provided').trim().notEmpty(),
 ];
 
 export const validate = (req: Request, res: Response, next: NextFunction) => {
