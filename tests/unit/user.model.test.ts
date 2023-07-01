@@ -354,7 +354,7 @@ describe('Token Model', () => {
 
   it('should generate unique code', async () => {
     const code = Token.generateCode();
-    expect(code.length).toBe(4);
+    expect(code.length).toBe(6);
     expect(parseInt(code)).toBeDefined();
   });
 });

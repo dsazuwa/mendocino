@@ -11,10 +11,16 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
 
     user = await User.create({ firstName, lastName, email, password });
 
+    await user.createToken({
+      type: 'verify',
+      code: Token.generateCode(),
+      expiresAt: Token.getExpiration(),
+    });
+
     res
       .cookie('access-token', user.generateJWT(), { expires: new Date(Date.now() + 86400 * 1000) })
       .status(200)
-      .json({ message: 'Successfully registered' });
+      .json({ message: 'Successfully registered', user: user.hidePassword() });
   } catch (e) {
     next(e);
   }
@@ -32,7 +38,7 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
     res
       .cookie('access-token', user.generateJWT(), { expires: new Date(Date.now() + 86400 * 1000) })
       .status(200)
-      .json({ message: 'Successfully logged in' });
+      .json({ message: 'Successfully logged in', user: user.hidePassword() });
   } catch (e) {
     next(e);
   }
@@ -53,7 +59,7 @@ export const requestPasswordRecovery = async (req: Request, res: Response, next:
 
     const user = await User.findOne({ where: { email } });
 
-    if (!user) return res.status(400).json({ message: 'Account does not exist' });
+    if (!user) return res.status(200).json({ message: 'Password reset code sent' });
 
     await Token.destroy({ where: { userId: user.id, type: 'password' } });
 

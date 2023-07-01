@@ -45,145 +45,50 @@ CREATE TABLE IF NOT EXISTS tokens (
   "id" SERIAL PRIMARY KEY,
   "user_id" INTEGER REFERENCES users (id) ON DELETE CASCADE ON UPDATE CASCADE,
   "type" enum_tokens_type NOT NULL,
-  "code" VARCHAR(4) NOT NULL,
+  "code" VARCHAR(6) NOT NULL,
   "expires_at" TIMESTAMP WITH TIME ZONE NOT NULL,
   UNIQUE ("user_id", "type")
 );
 
-INSERT INTO
-  users (
-    "id",
-    "uuid",
-    "first_name",
-    "last_name",
-    "email",
-    "password",
-    "status",
-    "created_at",
-    "updated_at"
-  )
-VALUES
-  (
-    DEFAULT,
-    uuid_generate_v4(),
-    'Joe',
-    'Doe',
-    'joedoe@gmail.com',
-    '$2a$10$XQ9.649wP9jV9.6dptwQv.5G2i5LwP6ZL/eihMCsxqV4imQTQXbuG',
-    'active',
-    CURRENT_TIMESTAMP,
-    CURRENT_TIMESTAMP
-  ),
-  (
-    DEFAULT,
-    uuid_generate_v4(),
-    'Jane',
-    'Doe',
-    'janedoe@gmail.com',
-    '$2a$10$XQ9.649wP9jV9.6dptwQv.5G2i5LwP6ZL/eihMCsxqV4imQTQXbuG',
-    'active',
-    CURRENT_TIMESTAMP,
-    CURRENT_TIMESTAMP
-  ),
-  (
-    DEFAULT,
-    uuid_generate_v4(),
-    'Jay',
-    'Doe',
-    'jaydoe@gmail.com',
-    '$2a$10$XQ9.649wP9jV9.6dptwQv.5G2i5LwP6ZL/eihMCsxqV4imQTQXbuG',
-    'active',
-    CURRENT_TIMESTAMP,
-    CURRENT_TIMESTAMP
-  ),
-  (
-    DEFAULT,
-    uuid_generate_v4(),
-    'Josh',
-    'Doe',
-    'joshdoe@gmail.com',
-    '$2a$10$XQ9.649wP9jV9.6dptwQv.5G2i5LwP6ZL/eihMCsxqV4imQTQXbuG',
-    'active',
-    CURRENT_TIMESTAMP,
-    CURRENT_TIMESTAMP
-  ),
-  (
-    DEFAULT,
-    uuid_generate_v4(),
-    'June',
-    'Doe',
-    'junedoe@gmail.com',
-    '$2a$10$XQ9.649wP9jV9.6dptwQv.5G2i5LwP6ZL/eihMCsxqV4imQTQXbuG',
-    'active',
-    CURRENT_TIMESTAMP,
-    CURRENT_TIMESTAMP
-  ),
-  (
-    DEFAULT,
-    uuid_generate_v4(),
-    'Jen',
-    'Doe',
-    'jendoe@gmail.com',
-    '$2a$10$XQ9.649wP9jV9.6dptwQv.5G2i5LwP6ZL/eihMCsxqV4imQTQXbuG',
-    'active',
-    CURRENT_TIMESTAMP,
-    CURRENT_TIMESTAMP
-  ),
-  (
-    DEFAULT,
-    uuid_generate_v4(),
-    'Jax',
-    'Doe',
-    'jaxdoe@gmail.com',
-    '$2a$10$XQ9.649wP9jV9.6dptwQv.5G2i5LwP6ZL/eihMCsxqV4imQTQXbuG',
-    'active',
-    CURRENT_TIMESTAMP,
-    CURRENT_TIMESTAMP
-  ),
-  (
-    DEFAULT,
-    uuid_generate_v4(),
-    'Jeff',
-    'Doe',
-    'jeffdoe@gmail.com',
-    '$2a$10$XQ9.649wP9jV9.6dptwQv.5G2i5LwP6ZL/eihMCsxqV4imQTQXbuG',
-    'active',
-    CURRENT_TIMESTAMP,
-    CURRENT_TIMESTAMP
-  ),
-  (
-    DEFAULT,
-    uuid_generate_v4(),
-    'James',
-    'Doe',
-    'jamesdoe@gmail.com',
-    '$2a$10$XQ9.649wP9jV9.6dptwQv.5G2i5LwP6ZL/eihMCsxqV4imQTQXbuG',
-    'active',
-    CURRENT_TIMESTAMP,
-    CURRENT_TIMESTAMP
-  ),
-  (
-    DEFAULT,
-    uuid_generate_v4(),
-    'Jack',
-    'Doe',
-    'jackdoe@gmail.com',
-    '$2a$10$XQ9.649wP9jV9.6dptwQv.5G2i5LwP6ZL/eihMCsxqV4imQTQXbuG',
-    'active',
-    CURRENT_TIMESTAMP,
-    CURRENT_TIMESTAMP
-  ),
-  (
-    DEFAULT,
-    uuid_generate_v4(),
-    'Joy',
-    'Doe',
-    'joydoe@gmail.com',
-    '$2a$10$XQ9.649wP9jV9.6dptwQv.5G2i5LwP6ZL/eihMCsxqV4imQTQXbuG',
-    'active',
-    CURRENT_TIMESTAMP,
-    CURRENT_TIMESTAMP
-  );
+CREATE OR REPLACE FUNCTION populate_users()
+  RETURNS VOID AS $$
+DECLARE
+  names text[] := ARRAY ['James', 'Jack', 'Jackson', 'John', 'Joseph', 'Jacob', 'Julian', 'Jayden', 'Josiah', 'Jonathan', 'Jameson', 'Jose', 'Jeremiah', 'Jace', 'Josephine', 'Jaxson', 'Jasper', 'Jade', 'Jonah', 'Juan', 'Jason', 'Julia', 'Juniper', 'Jayce', 'Jude', 'Josie', 'Judah', 'Justin', 'Jesse', 'Jett', 'Joel', 'June', 'Juliette', 'Jasmine', 'Journee', 'Javier', 'Jeremy', 'Jordyn', 'Juliana', 'Jax', 'Jorge', 'Jensen', 'Josue', 'Jaylen', 'Journey', 'Jane', 'Jaden', 'Juliet', 'Jocelyn', 'Joanna', 'Julianna', 'Jayla', 'Julius', 'Jay', 'Jared', 'Jamie', 'Johnny', 'Jaziel', 'Jake', 'Julietta', 'Joy', 'Jaiden', 'Jeffrey', 'Jasiah', 'Jaxton', 'Jolene', 'Justice', 'Jimena', 'Jennifer', 'Jacqueline', 'Jessica', 'Jamari', 'Jaz', 'Jalen', 'Jamir', 'Jase', 'Julio', 'Jayson', 'Jessie', 'Jonas', 'Jaime', 'Jamison', 'Johan', 'Jayleen', 'Jaliyah', 'Journi', 'Jenesis', 'Jenna', 'Janelle', 'Julien', 'Jazmin', 'Joey', 'Jemma', 'Julie', 'Jovie', 'Jakari', 'Joelle', 'Jaylin', 'Joan', 'Jolie', 'Johanna', 'Jaxxon', 'Jerry', 'Jayda', 'Jada', 'Jagger'];
+  user_name text;
+  user_email text;
+BEGIN
+  FOREACH user_name IN ARRAY NAMES LOOP
+    user_email := LOWER(user_name || 'doe@gmail.com');
+    INSERT INTO
+      users (
+        "id",
+        "uuid",
+        "first_name",
+        "last_name",
+        "email",
+        "password",
+        "status",
+        "created_at",
+        "updated_at"
+      )
+    VALUES
+      (
+        DEFAULT,
+        uuid_generate_v4(),
+        user_name,
+        'Doe',
+        user_email,
+        '$2a$10$XQ9.649wP9jV9.6dptwQv.5G2i5LwP6ZL/eihMCsxqV4imQTQXbuG',
+        'active',
+        CURRENT_TIMESTAMP,
+        CURRENT_TIMESTAMP
+      );
+  END LOOP;
+END;
+$$ LANGUAGE plpgsql;
+
+SELECT populate_users();
+
 
 INSERT INTO
   addresses (

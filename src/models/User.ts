@@ -13,6 +13,7 @@ import {
 import sequelize from '../db';
 import Cart from './Cart';
 import { Order } from './Order';
+import { randomBytes } from 'crypto';
 
 config();
 
@@ -67,6 +68,16 @@ class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
 
     const payload = { uuid: this.uuid, email: this.email };
     return sign(payload, `${secret}`, { expiresIn: '60 days' });
+  }
+
+  hidePassword() {
+    return {
+      firstName: this.firstName,
+      lastName: this.lastName,
+      email: this.email,
+      role: this.role,
+      status: this.status,
+    };
   }
 }
 
@@ -187,14 +198,9 @@ class Token extends Model<InferAttributes<Token>, InferCreationAttributes<Token>
   declare expiresAt: Date;
 
   public static generateCode() {
-    const numbers = [];
-
-    for (let i = 0; i < 4; i++) {
-      const randomNum = Math.floor(Math.random() * 10);
-      numbers.push(randomNum);
-    }
-
-    return numbers.toString().replace(/,/g, '');
+    const bytes = randomBytes(3);
+    const code = bytes.readUIntBE(0, 3) % 1000000;
+    return code.toString().padStart(6, '0');
   }
 
   public static getExpiration() {
@@ -219,7 +225,7 @@ Token.init(
       allowNull: false,
     },
     code: {
-      type: DataTypes.STRING(4),
+      type: DataTypes.STRING(6),
       allowNull: false,
     },
     expiresAt: {

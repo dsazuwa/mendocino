@@ -1,6 +1,15 @@
 import { NextFunction, Request, Response } from 'express';
 import { Token, User } from '../models';
 
+export const getUser = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const user = req.user as User;
+    res.status(200).json({ user: user.hidePassword() });
+  } catch (e) {
+    next(e);
+  }
+};
+
 export const verifyEmail = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const user = req.user as User;
@@ -13,7 +22,7 @@ export const verifyEmail = async (req: Request, res: Response, next: NextFunctio
     await user.update({ status: 'active' });
     await vCode.destroy();
 
-    res.status(200).json({ message: 'Successfully Verified!' });
+    res.status(200).json({ message: 'Successfully Verified!', user: user.hidePassword() });
   } catch (e) {
     next(e);
   }
