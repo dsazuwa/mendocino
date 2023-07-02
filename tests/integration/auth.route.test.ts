@@ -97,9 +97,17 @@ describe('Password Recover', () => {
     expect(newCode?.id).not.toEqual(code?.id);
   });
 
+  it('POST /me/recover/:code should verify user account for recovery', async () => {
+    const code = await Token.findOne({ where: { userId: user.id, type: 'password' } });
+
+    await request.post(`${BASE_URL}/recover/${code?.code}`).send({ email: user.email }).expect(200);
+
+    await request.post(`${BASE_URL}/recover/121241`).send({ email: user.email }).expect(400);
+  });
+
   it('PUT /recover/:code should fail on invalid password', async () => {
     await request
-      .put(`${BASE_URL}/recover/:code`)
+      .put(`${BASE_URL}/recover/132424`)
       .send({ email: user.email, password: 'newpassword' })
       .expect(400);
   });

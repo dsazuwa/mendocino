@@ -125,7 +125,7 @@ describe('User Model', () => {
     expect(User.create(data)).rejects.toThrow();
   });
 
-  it('should hash the password', async () => {
+  it('should hash the password on create', async () => {
     const data = {
       uuid: uuidv4(),
       firstName: 'Jane',
@@ -137,6 +137,23 @@ describe('User Model', () => {
     const user = await User.create(data);
     expect(user.password).not.toEqual(data.password);
     expect(user.comparePasswords(data.password)).toBeTruthy();
+  });
+
+  it('should hash the password on update', async () => {
+    const data = {
+      uuid: uuidv4(),
+      firstName: 'Julius',
+      lastName: 'Doe',
+      email: 'juliusDoe@gmail.com',
+      password: 'juliusD0ePa$$',
+    };
+    const newPassword = 'newJul1usPa$$';
+
+    const user = await User.create(data);
+    await user.update({ password: newPassword });
+
+    expect(user.comparePasswords(data.password)).toBeFalsy();
+    expect(user.comparePasswords(newPassword)).toBeTruthy();
   });
 
   it('should generate a valid JWT token', async () => {

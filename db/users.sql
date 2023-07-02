@@ -80,7 +80,7 @@ BEGIN
         user_email,
         '$2a$10$XQ9.649wP9jV9.6dptwQv.5G2i5LwP6ZL/eihMCsxqV4imQTQXbuG',
         'active',
-        CURRENT_TIMESTAMP,
+        '2023-01-01 00:00:00',
         CURRENT_TIMESTAMP
       );
   END LOOP;

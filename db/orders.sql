@@ -1,5 +1,5 @@
 -- Populate users table first
-\i db/users.sql;
+-- \i db/users.sql;
 
 DROP TYPE IF EXISTS "enum_orders_status" CASCADE;
 
@@ -135,14 +135,18 @@ $$ LANGUAGE plpgsql;
 CREATE OR REPLACE FUNCTION populate_orders()
   RETURNS VOID as $$
 DECLARE
-  u_id INTEGER;
+  user_row RECORD;
   i INTEGER;
   num_orders INTEGER;
   order_date DATE;
   order_id INTEGER;
   order_total NUMERIC;
 BEGIN
-  FOR u_id IN 1..11 LOOP
+  FOR user_row IN SELECT * FROM users LOOP
+    IF user_row.role = 'admin' THEN
+      CONTINUE;
+    END IF;
+
     num_orders := 1 + floor(random() * 50);
     FOR i IN 0..num_orders LOOP
       order_date = generate_random_datetime();
@@ -160,7 +164,7 @@ BEGIN
         (
           DEFAULT,
           uuid_generate_v4(),
-          u_id,
+          user_row.id,
           0,
           'delivered',
           order_date,
