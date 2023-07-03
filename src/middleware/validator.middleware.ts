@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
-import { FieldValidationError, Result, body, validationResult } from 'express-validator';
+import { FieldValidationError, Result, body, query, validationResult } from 'express-validator';
 
 export const passwordRules = body('password')
   .trim()
@@ -26,6 +26,18 @@ export const registerRules = [
 export const loginRules = [
   body('email', 'valid email not provided').trim().notEmpty().isEmail().normalizeEmail().trim(),
   body('password', 'password not provided').trim().notEmpty(),
+];
+
+export const allowedGroupByFields = ['category', 'status'];
+
+export const menuGroupingRules = [
+  query('by')
+    .notEmpty()
+    .withMessage('Missing groupBy paramater')
+    .custom((value) => {
+      if (!allowedGroupByFields.includes(value)) throw new Error('Invalid groupBy paramater');
+      return true;
+    }),
 ];
 
 export const validate = (req: Request, res: Response, next: NextFunction) => {

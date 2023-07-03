@@ -3,7 +3,7 @@ import express, { Request, Response } from 'express';
 import morgan from 'morgan';
 import passport from 'passport';
 import { configureJWTStrategy, errorMiddleware, notFoundHandler } from './middleware';
-import { authRouter, usersRouter } from './routes';
+import { authRouter, menuRouter, usersRouter } from './routes';
 import logger from './utils/Logger';
 
 export const createApp = () => {
@@ -31,6 +31,7 @@ export const createApp = () => {
 
   // Routes
   app.use('/api/auth', authRouter);
+  app.use('/api/menu', menuRouter);
   app.use('/api/users', usersRouter);
 
   // Error Middleware
