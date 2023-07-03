@@ -3,6 +3,7 @@ import '../utils/db-setup';
 import { request } from '../utils/supertest.helper';
 
 const BASE_URL = '/api/menu';
+
 describe('Menu', () => {
   const menuData = [
     {
@@ -37,14 +38,14 @@ describe('Menu', () => {
     await Menu.bulkCreate(menuData);
   });
 
-  it('should retrieve all menu items', async () => {
+  it('GET /api/menu/ should retrieve all menu items', async () => {
     const response = await request.get(BASE_URL);
     expect(response.status).toBe(200);
     expect(response.body).toHaveProperty('menu');
     expect(response.body.menu).toHaveLength(menuData.length);
   });
 
-  it('should retrieve menu items grouped by a category', async () => {
+  it('GET /api/menu/group?by=category should retrieve menu items grouped by a category', async () => {
     const response = await request.get(`${BASE_URL}/group`).query({ by: 'category' });
     expect(response.status).toBe(200);
     expect(response.body).toHaveProperty('menu');
@@ -55,7 +56,7 @@ describe('Menu', () => {
     expect(response.body.menu[2].items.length).toBe(1);
   });
 
-  it('should retrieve menu items grouped by a status', async () => {
+  it('GET /api/menu/group?by=status should retrieve menu items grouped by a status', async () => {
     const response = await request.get(`${BASE_URL}/group`).query({ by: 'status' });
     expect(response.status).toBe(200);
     expect(response.body).toHaveProperty('menu');
@@ -64,7 +65,17 @@ describe('Menu', () => {
     expect(response.body.menu[0].items.length).toBe(3);
   });
 
-  it('should return error on request to retrieve menu items grouped by a non permitted field', async () => {
+  it('GET /api/menu/group?by=tag should retrieve menu items grouped by a tag', async () => {
+    const response = await request.get(`${BASE_URL}/group`).query({ by: 'tag' });
+    expect(response.status).toBe(200);
+    expect(response.body).toHaveProperty('menu');
+    expect(response.body.menu).toHaveLength(1);
+
+    expect(response.body.menu[0].items.length).toBe(3);
+    expect(response.body.menu[0].tag).toBeNull();
+  });
+
+  it('GET /api/menu/group?by=random should return error on request', async () => {
     const response = await request.get(`${BASE_URL}/group`).query({ by: 'price' });
     expect(response.status).toBe(400);
     expect(response.body.message).toEqual('API Validation Error');

@@ -1,6 +1,6 @@
 import { query } from 'express-validator';
 
-export const allowedGroupByFields = ['category', 'status'];
+export const allowedGroupByFields = ['category', 'status', 'tag'];
 
 export const menuGroupingRules = [
   query('by')
