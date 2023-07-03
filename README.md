@@ -53,7 +53,7 @@ Follow the steps below to get the Spoons API up and running:
    npm run build
    npm start
 
-7. The Spoons API should now be running at `http://localhost:3000`.
+7. The Spoons API should now be running at `http://localhost:<PORT>`.
 
 ## API Documentation
 For detailed information about the available API endpoints, please refer to the [API Documentation](https://documenter.getpostman.com/view/19231873/2s93z86NgN).
