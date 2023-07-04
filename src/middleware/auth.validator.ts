@@ -1,7 +1,6 @@
 import { body, param } from 'express-validator';
 
 export const passwordRules = body('password')
-  .trim()
   .exists()
   .isLength({ min: 8, max: 64 })
   .withMessage('must be between 8 - 64 characters')
@@ -16,15 +15,15 @@ export const passwordRules = body('password')
   .withMessage('no leading or trailing spaces');
 
 export const registerRules = [
-  body('firstName').trim().notEmpty(),
-  body('lastName').trim().notEmpty(),
-  body('email').trim().notEmpty().isEmail().normalizeEmail(),
+  body('firstName').notEmpty(),
+  body('lastName').notEmpty(),
+  body('email').notEmpty().isEmail().normalizeEmail(),
   passwordRules,
 ];
 
 export const loginRules = [
-  body('email', 'valid email not provided').trim().notEmpty().isEmail().normalizeEmail().trim(),
-  body('password', 'password not provided').trim().notEmpty(),
+  body('email', 'valid email not provided').notEmpty().isEmail().normalizeEmail(),
+  body('password', 'password not provided').notEmpty(),
 ];
 
 export const codeRules = param('code')
