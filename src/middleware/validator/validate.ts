@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import { FieldValidationError, Result, validationResult } from 'express-validator';
-import { ApiError } from '../utils';
+import { ApiError } from '../../utils';
 
 const validate = (req: Request, res: Response, next: NextFunction) => {
   const result: Result = validationResult(req);

@@ -41,11 +41,39 @@ export const authenticate = (req: Request, res: Response, next: NextFunction) =>
   })(req, res, next);
 };
 
-export const permitOnlyPendingUsers = (req: Request, res: Response, next: NextFunction) => {
+export const permitOnlyPending = (req: Request, res: Response, next: NextFunction) => {
   const user = req.user as User;
 
   if (user.status !== 'pending')
     return res.status(401).json({ message: 'Unauthorized: Account already verified' });
+
+  next();
+};
+
+export const permitOnlyActive = (req: Request, res: Response, next: NextFunction) => {
+  const user = req.user as User;
+
+  if (user.status !== 'active')
+    return res.status(401).json({ message: 'Unauthorized: Unverified' });
+
+  next();
+};
+
+export const permitOnlyClient = (req: Request, res: Response, next: NextFunction) => {
+  const user = req.user as User;
+
+  if (user.role !== 'client') return res.status(403).json({ message: 'Access Denied' });
+
+  next();
+};
+
+export const permitOnlyAdmin = (req: Request, res: Response, next: NextFunction) => {
+  const user = req.user as User;
+
+  if (user.status !== 'active')
+    return res.status(403).json({ message: 'Access Denied: Unverified' });
+
+  if (user.role != 'admin') return res.status(403).json({ message: 'Access Denied' });
 
   next();
 };

@@ -7,13 +7,12 @@ import {
   requestPasswordRecovery,
   verifyRecoveryCode,
 } from '../controllers/auth.controller';
-import {
+import validate, {
   codeRules,
   loginRules,
   recoverPasswordRules,
   registerRules,
-} from '../middleware/auth.validator';
-import validate from '../middleware/validate';
+} from '../middleware/validator';
 import { trimRequestBody } from '../middleware/trim.middleware';
 
 export const authRouter = Router();

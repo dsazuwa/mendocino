@@ -1,7 +1,6 @@
 import { Router } from 'express';
 import { getMenu, getMenuGroupedBy, getMenuItemById } from '../controllers/menu.controller';
-import { getByIdRules, menuGroupingRules } from '../middleware/menu.validator';
-import validate from '../middleware/validate';
+import validate, { getByIdRules, menuGroupingRules } from '../middleware/validator';
 
 export const menuRouter = Router();
 
