@@ -1,4 +1,4 @@
-import { query } from 'express-validator';
+import { param, query } from 'express-validator';
 
 export const allowedGroupByFields = ['category', 'status', 'tag'];
 
@@ -10,4 +10,8 @@ export const menuGroupingRules = [
       if (!allowedGroupByFields.includes(value)) throw new Error('Invalid groupBy paramater');
       return true;
     }),
+];
+
+export const getByIdRules = [
+  param('id').notEmpty().isNumeric().withMessage('Expected a numeric ID'),
 ];

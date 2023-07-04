@@ -80,4 +80,29 @@ describe('Menu', () => {
     expect(response.status).toBe(400);
     expect(response.body.message).toEqual('API Validation Error');
   });
+
+  it('GET /api/menu/:id should retrieve menu item by id', async () => {
+    let response = await request.get(`${BASE_URL}/1`);
+    let item = response.body.item;
+    expect(response.status).toBe(200);
+    expect(item.id).toBe(1);
+    expect(item.name).toBe(menuData[0].name);
+
+    response = await request.get(`${BASE_URL}/2`);
+    item = response.body.item;
+    expect(response.status).toBe(200);
+    expect(item.id).toBe(2);
+    expect(item.name).toBe(menuData[1].name);
+
+    response = await request.get(`${BASE_URL}/2000`);
+    item = response.body.item;
+    expect(response.status).toBe(200);
+    expect(item).toBeDefined();
+    expect(item).not.toHaveProperty('id');
+  });
+
+  it('GET /api/menu/:id should return error on invalid id', async () => {
+    await request.get(`${BASE_URL}/invalid`).expect(400);
+    await request.get(`${BASE_URL}/132423frev`).expect(400);
+  });
 });

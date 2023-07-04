@@ -12,7 +12,7 @@ const getMenuQuery = `
     LEFT JOIN menu_tags AS t ON mmt.menu_tag_id = t.id
   GROUP BY
     m.id
-  ORDER BY category`;
+  ORDER BY id`;
 
 export const getMenu = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -62,6 +62,29 @@ export const getMenuGroupedBy = async (req: Request, res: Response, next: NextFu
     const result = await sequelize.query(query, { type: QueryTypes.SELECT });
 
     res.status(200).json({ menu: result, message: `Retrieved Menu Items grouped by ${field}` });
+  } catch (e) {
+    next(e);
+  }
+};
+
+export const getMenuItemById = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { id } = req.params;
+
+    const query = `
+        SELECT
+          m.id, m.name, m.description, m.category, m.status, m.price, m.photo_url, 
+          ARRAY_AGG(t.name) AS tags
+        FROM
+          menu AS m
+          LEFT JOIN menu_menu_tags AS mmt ON m.id = mmt.menu_id
+          LEFT JOIN menu_tags AS t ON mmt.menu_tag_id = t.id
+        WHERE m.id = ${id}
+        GROUP BY m.id`;
+
+    const result = await sequelize.query(query, { type: QueryTypes.SELECT });
+
+    res.status(200).json({ item: result.length === 0 ? {} : result[0] });
   } catch (e) {
     next(e);
   }
