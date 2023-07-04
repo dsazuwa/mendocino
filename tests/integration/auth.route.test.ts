@@ -13,49 +13,41 @@ describe('Authentication', () => {
   };
 
   it(`POST ${BASE_URL}/register`, async () => {
-    await request
-      .post(`${BASE_URL}/register`)
-      .send(data)
-      .expect(200)
-      .then(async () => {
-        const user = await User.findOne({ where: { email: data.email } });
-        expect(user).not.toBeNull();
-      });
+    const response = await request.post(`${BASE_URL}/register`).send(data);
+    expect(response.status).toBe(200);
+
+    const user = await User.findOne({ where: { email: data.email } });
+    expect(user).not.toBeNull();
 
     await request.post(`${BASE_URL}/register`).send(data).expect(409);
   });
 
   it(`POST ${BASE_URL}/login`, async () => {
-    await request
+    let response = await request
       .post(`${BASE_URL}/login`)
-      .send({ email: data.email, password: data.password })
-      .expect(200)
-      .then((response) => {
-        const cookies = response.headers['set-cookie'];
-        const token = getTokenFrom(cookies);
-        expect(token).not.toEqual('');
-      });
+      .send({ email: data.email, password: data.password });
 
-    await request
+    expect(response.status).toBe(200);
+    let cookies = response.headers['set-cookie'];
+    let token = getTokenFrom(cookies);
+    expect(token).not.toEqual('');
+
+    response = await request
       .post(`${BASE_URL}/login`)
-      .send({ email: data.email, password: 'wrong-password' })
-      .expect(401)
-      .then((response) => {
-        const cookies = response.headers['set-cookie'];
-        const token = getTokenFrom(cookies);
-        expect(token).toEqual('');
-      });
+      .send({ email: data.email, password: 'wrong-password' });
+
+    expect(response.status).toBe(401);
+    cookies = response.headers['set-cookie'];
+    token = getTokenFrom(cookies);
+    expect(token).toEqual('');
   });
 
   it(`POST ${BASE_URL}/logout`, async () => {
-    await request
-      .post(`${BASE_URL}/logout`)
-      .expect(200)
-      .then((response) => {
-        const cookies = response.headers['set-cookie'];
-        const token = getTokenFrom(cookies);
-        expect(token).toEqual('');
-      });
+    const response = await request.post(`${BASE_URL}/logout`);
+    expect(response.status).toBe(200);
+    const cookies = response.headers['set-cookie'];
+    const token = getTokenFrom(cookies);
+    expect(token).toEqual('');
   });
 });
 
@@ -113,13 +105,12 @@ describe('Password Recover', () => {
   });
 
   it('PUT /recover/:code should fail on invalid code', async () => {
-    await request
+    const response = await request
       .put(`${BASE_URL}/recover/0111`)
-      .send({ email: user.email, password: 'janetsNewD0epa$$' })
-      .expect(400)
-      .then((response) => {
-        expect(response.body.message).toEqual('Invalid code');
-      });
+      .send({ email: user.email, password: 'janetsNewD0epa$$' });
+
+    expect(response.status).toBe(400);
+    expect(response.body.message).toEqual('Invalid code');
   });
 
   it('PUT /recover/:code should fail on expired code', async () => {
@@ -132,13 +123,11 @@ describe('Password Recover', () => {
       expiresAt: new Date(),
     });
 
-    await request
+    const response = await request
       .put(`${BASE_URL}/recover/${code.code}`)
-      .send({ email: user.email, password: 'janetsNewD0epa$$' })
-      .expect(400)
-      .then((response) => {
-        expect(response.body.message).toEqual('Invalid code');
-      });
+      .send({ email: user.email, password: 'janetsNewD0epa$$' });
+    expect(response.status).toBe(400);
+    expect(response.body.message).toEqual('Invalid code');
   });
 
   it('PUT /recover/:code should reset password ', async () => {

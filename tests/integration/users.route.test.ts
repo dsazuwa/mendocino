@@ -22,19 +22,15 @@ describe('User Routes', () => {
 
   describe('CRUD User', () => {
     it('GET /me should return basic user information', async () => {
-      await request
-        .get(`${BASE_URL}/me`)
-        .auth(token, { type: 'bearer' })
-        .expect(200)
-        .then((response) => {
-          expect(response.body.user).toBeDefined();
-          const user = response.body.user;
+      const response = await request.get(`${BASE_URL}/me`).auth(token, { type: 'bearer' });
+      expect(response.status).toBe(200);
+      expect(response.body.user).toBeDefined();
 
-          expect(user.firstName).toEqual(data.firstName);
-          expect(user.lastName).toEqual(data.lastName);
-          expect(user.email).toEqual(data.email);
-          expect(user.password).not.toBeDefined();
-        });
+      const user = response.body.user;
+      expect(user.firstName).toEqual(data.firstName);
+      expect(user.lastName).toEqual(data.lastName);
+      expect(user.email).toEqual(data.email);
+      expect(user.password).not.toBeDefined();
     });
   });
 
@@ -44,23 +40,21 @@ describe('User Routes', () => {
     });
 
     it('PUT /me/verify/:code should fail on invalid code', async () => {
-      await request
-        .put(`${BASE_URL}/me/verify/111111`)
-        .auth(token, { type: 'bearer' })
-        .expect(400)
-        .then((response) => {
-          expect(response.body.message).toEqual('Invalid code');
-        });
+      const response = await request
+        .put(`${BASE_URL}/me/verify/111`)
+        .auth(token, { type: 'bearer' });
+
+      expect(response.status).toBe(400);
+      expect(response.body.message).toEqual('Invalid code');
     });
 
     it('PUT /me/verify/:code should fail on non-numeric code', async () => {
-      await request
+      const response = await request
         .put(`${BASE_URL}/me/verify/11fjfd1111`)
-        .auth(token, { type: 'bearer' })
-        .expect(400)
-        .then((response) => {
-          expect(response.body.message).toEqual('API Validation Error');
-        });
+        .auth(token, { type: 'bearer' });
+
+      expect(response.status).toBe(400);
+      expect(response.body.message).toEqual('API Validation Error');
     });
 
     it('PUT /me/verify/:code should fail on expired code', async () => {
@@ -73,13 +67,12 @@ describe('User Routes', () => {
         expiresAt: new Date(),
       });
 
-      await request
+      const response = await request
         .put(`${BASE_URL}/me/verify/${code.code}`)
-        .auth(token, { type: 'bearer' })
-        .expect(400)
-        .then((response) => {
-          expect(response.body.message).toEqual('Invalid code');
-        });
+        .auth(token, { type: 'bearer' });
+
+      expect(response.status).toBe(400);
+      expect(response.body.message).toEqual('Invalid code');
     });
 
     it('PUT /me/verify/:code should verify user ', async () => {
