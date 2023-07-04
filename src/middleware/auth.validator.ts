@@ -1,4 +1,4 @@
-import { body } from 'express-validator';
+import { body, param } from 'express-validator';
 
 export const passwordRules = body('password')
   .trim()
@@ -26,3 +26,10 @@ export const loginRules = [
   body('email', 'valid email not provided').trim().notEmpty().isEmail().normalizeEmail().trim(),
   body('password', 'password not provided').trim().notEmpty(),
 ];
+
+export const codeRules = param('code')
+  .notEmpty()
+  .isNumeric()
+  .withMessage('Expected a numeric code');
+
+export const recoverPasswordRules = [codeRules, passwordRules];

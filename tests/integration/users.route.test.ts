@@ -45,11 +45,21 @@ describe('User Routes', () => {
 
     it('PUT /me/verify/:code should fail on invalid code', async () => {
       await request
-        .put(`${BASE_URL}/me/verify/evrecercrcode`)
+        .put(`${BASE_URL}/me/verify/111111`)
         .auth(token, { type: 'bearer' })
         .expect(400)
         .then((response) => {
           expect(response.body.message).toEqual('Invalid code');
+        });
+    });
+
+    it('PUT /me/verify/:code should fail on non-numeric code', async () => {
+      await request
+        .put(`${BASE_URL}/me/verify/11fjfd1111`)
+        .auth(token, { type: 'bearer' })
+        .expect(400)
+        .then((response) => {
+          expect(response.body.message).toEqual('API Validation Error');
         });
     });
 
