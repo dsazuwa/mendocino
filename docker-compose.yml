@@ -41,5 +41,5 @@ services:
     depends_on:
       - dev-db
     environment:
-      - DB_URL=postgres://${DB_USER}:${DB_PASSWORD}@dev-db:${DEV_DB_CONTAINER_PORT}/${DEV_DB_NAME}
-      - TEST_DB_URL=postgres://${DB_USER}:${DB_PASSWORD}@test-db:${TEST_DB_CONTAINER_PORT}/${TEST_DB_NAME}
+      - DB_URL=postgres://${DB_USER}:${DB_PASSWORD}@dev-db:${DEV_DB_HOST_PORT}/${DEV_DB_NAME}
+      - TEST_DB_URL=postgres://${DB_USER}:${DB_PASSWORD}@test-db:${TEST_DB_HOST_PORT}/${TEST_DB_NAME}

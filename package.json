@@ -11,7 +11,7 @@
   "scripts": {
     "build": "rimraf ./dist && tsc --project tsconfig.build.json",
     "start": "node ./dist/index.js",
-    "start:dev": "nodemon ./src/index.ts",
+    "start:dev": "nodemon --delay 2 ./src/index.ts",
     "test": "jest --silent --runInBand",
     "format": "prettier --write src/ tests/",
     "lint": "eslint .",
