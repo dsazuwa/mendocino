@@ -1,5 +1,4 @@
-import ApiError from './ApiError';
-import errorHandler from './ErrorHandler';
-import logger from './Logger';
+import ApiError from './api-error';
+import logger from './logger';
 
-export { ApiError, errorHandler, logger };
+export { ApiError, logger };

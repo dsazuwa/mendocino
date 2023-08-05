@@ -1,18 +1,32 @@
 import cors from 'cors';
 import express, { Request, Response } from 'express';
+import helmet from 'helmet';
 import morgan from 'morgan';
-import passport from 'passport';
-import { configureJWTStrategy, errorMiddleware, notFoundHandler } from './middleware';
-import { authRouter, menuRouter, usersRouter } from './routes';
-import logger from './utils/Logger';
 
-export const createApp = () => {
+import {
+  errorHandler,
+  notFoundHandler,
+  syntaxErrorHandlier,
+} from './middleware/error';
+import logger from './utils/logger';
+
+const createApp = () => {
   const app = express();
 
+  app.use(cors({ origin: true, credentials: true }));
+  app.use(express.urlencoded({ extended: true }));
+  app.use(express.json());
+
   app.use(
-    cors({ origin: true, credentials: true }),
-    express.urlencoded({ extended: true }),
-    express.json(),
+    helmet({
+      hidePoweredBy: true,
+      frameguard: { action: 'deny' },
+      xssFilter: true,
+      noSniff: true,
+    }),
+  );
+
+  app.use(
     morgan('tiny', {
       stream: {
         write: (message) => {
@@ -20,23 +34,17 @@ export const createApp = () => {
         },
       },
     }),
-    passport.initialize(),
   );
 
-  configureJWTStrategy(passport);
-
-  app.get('/', (req: Request, res: Response) => {
+  app.get('/api', (req: Request, res: Response) => {
     res.status(200).json({ message: 'Welcome to Spoons API.' });
   });
 
-  // Routes
-  app.use('/api/auth', authRouter);
-  app.use('/api/menu', menuRouter);
-  app.use('/api/users', usersRouter);
-
-  // Error Middleware
   app.use(notFoundHandler);
-  app.use(errorMiddleware);
+  app.use(syntaxErrorHandlier);
+  app.use(errorHandler);
 
   return app;
 };
+
+export default createApp;

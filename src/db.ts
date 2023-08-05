@@ -1,29 +1,32 @@
 import { config } from 'dotenv';
 import { Sequelize } from 'sequelize';
-import { errorHandler } from './utils';
-import logger from './utils/Logger';
+
+import { logger } from './utils';
 
 config();
 
-const { NODE_ENV, DB_URL, TEST_DB_URL } = process.env;
+const { NODE_ENV, TEST_DB_URL, DB_URL } = process.env;
 
 const url = NODE_ENV === 'test' ? TEST_DB_URL : DB_URL;
 
-let sequelize: Sequelize;
+let db: Sequelize;
 
 try {
-  sequelize = new Sequelize(url as string, {
+  db = new Sequelize(url, {
+    dialect: 'postgres',
     benchmark: true,
     logging:
-      process.env.NODE_ENV === 'production'
+      NODE_ENV === 'production'
         ? false
         : (query: string, timing: number | undefined) => {
             logger.debug(`SQL Query: ${query} Execution Time: ${timing} ms`);
           },
   });
-} catch (e) {
-  errorHandler.handleError(e, 'Error on DB instantiation:');
+} catch (error) {
+  logger.error('Error on DB instantiation:', error);
   process.exit(1);
 }
+
+const sequelize = db;
 
 export default sequelize;
