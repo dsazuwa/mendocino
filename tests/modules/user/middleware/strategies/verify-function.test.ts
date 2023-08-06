@@ -1,9 +1,8 @@
-import { Request } from 'express';
-import { Profile } from 'passport-google-oauth20';
+import { Profile } from 'passport';
 
 import ApiError from '@utils/api-error';
 
-import { googleVerifyFunction } from '@user/middleware/strategies/google.strategy';
+import verifyFunction from '@user/middleware/strategies/verify-function';
 import { User, UserAccount, UserIdentity } from '@user/models';
 import authService from '@user/services/auth.service';
 import messages from '@user/utils/messages';
@@ -19,15 +18,13 @@ describe('Google Auth Verify Function', () => {
     lastName: string,
     email: string,
   ) => {
-    const req = {} as Request;
-
     const profile = {
       id,
       emails: [{ value: email }],
       name: { givenName: firsName, familyName: lastName },
     } as unknown as Profile;
 
-    await googleVerifyFunction(req, 'access', 'refresh', profile, done);
+    await verifyFunction(profile, done, 'google');
   };
 
   it('User does not exist', async () => {
