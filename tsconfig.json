@@ -11,7 +11,8 @@
     "paths": {
       "@App/*": ["src/*"],
       "@middleware/*": ["src/middleware/*"],
-      "@utils/*": ["src/utils/*"]
+      "@utils/*": ["src/utils/*"],
+      "@user/*":["src/modules/user/*"]
     },
     "types": ["node", "jest"],
     "resolveJsonModule": true,

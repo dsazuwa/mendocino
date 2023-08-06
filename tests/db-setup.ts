@@ -1,4 +1,4 @@
-import sequelize from 'db';
+import sequelize from '@App/db';
 
 beforeAll(async () => {
   await sequelize.sync({ force: true });

@@ -1,0 +1,65 @@
+Table users {
+  user_id integer [primary key]
+  first_name varchar
+  last_name varchar
+  phone varchar
+  created_at datetime
+  updated_at datetime
+}
+
+Table user_identities {
+  id string
+  user_id integer [ref: > users.user_id]
+  provider_type enum_provider_type
+  status enum_user_identities_status
+  created_at datetime
+  updated_at datetime
+
+  Indexes {
+    (user_id, provider_type) [unique]
+  }
+}
+
+Enum enum_provider_type {
+  google
+  facebook
+}
+
+Enum enum_user_identities_status {
+  active
+  inactive
+}
+
+Table user_accounts {
+  user_id integer [primary key]
+  email varchar
+  password varchar
+  status enum_user_account_status 
+  created_at datetime
+  updated_at datetime
+}
+
+Enum enum_user_account_status {
+  active
+  inactive
+  pending
+}
+
+Ref: user_accounts.user_id - users.user_id
+
+Table otp {
+  id integer [primary key]
+  user_id integer [ref: > user_accounts.user_id]
+  type  enum_otp_type
+  password varchar
+  expires_at datetime
+
+  Indexes {
+    (user_id, type) [unique]
+  }
+}
+
+Enum enum_otp_type {
+  password
+  verify
+}
