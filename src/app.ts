@@ -11,7 +11,11 @@ import {
 } from './middleware/error';
 import logger from './utils/logger';
 
-import { configureJWTStrategy, userRouter } from './modules/user';
+import {
+  configureGoogleStrategy,
+  configureJWTStrategy,
+  userRouter,
+} from './modules/user';
 
 const createApp = () => {
   const app = express();
@@ -42,6 +46,7 @@ const createApp = () => {
   app.use(passport.initialize());
 
   configureJWTStrategy(passport);
+  configureGoogleStrategy(passport);
 
   app.get('/api', (req: Request, res: Response) => {
     res.status(200).json({ message: 'Welcome to Spoons API.' });

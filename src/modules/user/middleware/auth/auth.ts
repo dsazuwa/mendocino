@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import passport from 'passport';
 
-import { messages } from '@user/utils/messages';
+import messages from '@user/utils/messages';
 
 export const authenticate = (
   req: Request,

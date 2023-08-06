@@ -1,5 +1,5 @@
 import { User, UserAccount } from '@user/models';
-import { authService } from '@user/services';
+import authService from '@user/services/auth.service';
 
 import { request } from 'tests/supertest.helper';
 
