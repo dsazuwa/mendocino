@@ -3,6 +3,7 @@ import { NextFunction, Request, Response } from 'express';
 import { ProviderType } from '@user/models';
 import authService from '@user/services/auth.service';
 import userService from '@user/services/user.service';
+import messages from '@user/utils/messages';
 
 export const socialLogin = async (
   req: Request,
@@ -51,6 +52,55 @@ export const facebookLogin = async (
 ) => {
   try {
     await socialLogin(req, res, next, 'facebook');
+  } catch (e) {
+    next(e);
+  }
+};
+
+const authenticateResponse = (
+  res: Response,
+  jwt: string,
+  message: string,
+  user: object | null,
+) => {
+  res.cookie('access-token', jwt, {
+    secure: true,
+    httpOnly: true,
+    expires: new Date(Date.now() + 86400 * 1000),
+  });
+
+  res.status(200).json({ message, user });
+};
+
+export const register = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { firstName, lastName, email, password } = req.body;
+
+    const acct = await authService.getAccount(email);
+
+    if (acct)
+      res.status(409).json({ message: messages.REGISTER_ALREADY_EXISTS });
+    else {
+      const { account } = await authService.createUser(
+        firstName,
+        lastName,
+        email,
+        password,
+      );
+
+      const userData = await userService.getUserData(account.userId);
+
+      authenticateResponse(
+        res,
+        authService.generateJWT(account.userId, 'email'),
+        messages.REGISTER_SUCCESS,
+        userData,
+      );
+    }
   } catch (e) {
     next(e);
   }

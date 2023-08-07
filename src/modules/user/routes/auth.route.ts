@@ -1,7 +1,11 @@
 import { Router } from 'express';
 import passport from 'passport';
 
-import { facebookLogin, googleLogin } from '@user/controllers/auth.controller';
+import {
+  facebookLogin,
+  googleLogin,
+  register,
+} from '@user/controllers/auth.controller';
 
 const authRouter = Router();
 
@@ -30,5 +34,7 @@ authRouter.get(
   passport.authenticate('facebook', { session: false }),
   facebookLogin,
 );
+
+authRouter.post('/register', register);
 
 export default authRouter;

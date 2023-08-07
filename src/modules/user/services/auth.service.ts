@@ -2,7 +2,13 @@ import { sign } from 'jsonwebtoken';
 
 import sequelize from '@App/db';
 
-import { ProviderType, User, UserAccount, UserIdentity } from '@user/models';
+import {
+  AuthOTP,
+  ProviderType,
+  User,
+  UserAccount,
+  UserIdentity,
+} from '@user/models';
 
 type JWTProviderType = ProviderType | 'email';
 
@@ -103,6 +109,40 @@ const authService = {
           providerType,
         )
       : createUserAndUserIdentity(id, firstName, lastName, email, providerType),
+
+  createUser: async (
+    firstName: string,
+    lastName: string,
+    email: string,
+    password: string,
+  ) =>
+    sequelize.transaction(async (transaction) => {
+      const user = await User.create({ firstName, lastName }, { transaction });
+
+      const account = await UserAccount.create(
+        { userId: user.userId, email, password },
+        { transaction },
+      );
+
+      await AuthOTP.destroy({
+        where: { userId: user.userId, type: 'verify' },
+        transaction,
+      });
+
+      const otp = '12345';
+
+      await AuthOTP.create(
+        {
+          userId: user.userId,
+          type: 'verify',
+          password: otp,
+          expiresAt: AuthOTP.getExpiration(),
+        },
+        { transaction },
+      );
+
+      return { user, account, password: otp };
+    }),
 };
 
 export default authService;

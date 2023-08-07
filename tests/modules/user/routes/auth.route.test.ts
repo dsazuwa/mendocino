@@ -90,3 +90,35 @@ describe('Facebook Login', () => {
     );
   });
 });
+
+describe('Email Authentication', () => {
+  const data = {
+    firstName: 'Jessica',
+    lastName: 'Doe',
+    email: 'jessicadoe@gmail.com',
+    password: 'jessicaD0epa$$',
+  };
+
+  describe(`POST ${BASE_URL}/register`, () => {
+    it(`should pass for valid data`, async () => {
+      const response = await request.post(`${BASE_URL}/register`).send(data);
+      expect(response.status).toBe(200);
+
+      const user = await User.findOne({
+        where: { firstName: data.firstName, lastName: data.lastName },
+      });
+
+      const acct = await UserAccount.findOne({ where: { email: data.email } });
+
+      expect(user).not.toBeNull();
+      expect(acct).not.toBeNull();
+
+      expect(user?.userId).toBe(acct?.userId);
+      expect(user?.firstName).toBe(data.firstName);
+    });
+
+    it(`should fail for duplicate email`, async () => {
+      await request.post(`${BASE_URL}/register`).send(data).expect(409);
+    });
+  });
+});
