@@ -6,6 +6,9 @@ const messages = Object.freeze({
 
   REGISTER_ALREADY_EXISTS: 'Email already exists',
   REGISTER_SUCCESS: 'Successfully registered!',
+
+  LOGIN_FAILED: 'Incorrect email or password',
+  LOGIN_SUCCESS: 'Logged in!',
 });
 
 export default messages;

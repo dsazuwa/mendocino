@@ -1,4 +1,5 @@
 import { sign } from 'jsonwebtoken';
+import { Op } from 'sequelize';
 
 import sequelize from '@App/db';
 
@@ -143,6 +144,19 @@ const authService = {
 
       return { user, account, password: otp };
     }),
+
+  loginUser: async (email: string, password: string) => {
+    const account = await UserAccount.findOne({
+      where: {
+        email,
+        password: { [Op.ne]: null },
+      },
+    });
+
+    const isUser = account !== null && account.comparePasswords(password);
+
+    return isUser ? { account, isUser } : { account: null, isUser };
+  },
 };
 
 export default authService;

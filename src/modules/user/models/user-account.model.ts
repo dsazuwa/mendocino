@@ -19,7 +19,7 @@ class UserAccount extends Model<
 
   declare email: string;
 
-  declare password: CreationOptional<string>;
+  declare password: CreationOptional<string | null>;
 
   declare status: CreationOptional<UserAccountStatusType>;
 

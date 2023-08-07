@@ -8,3 +8,8 @@ export const registerRules = [
   body('email').notEmpty().isEmail().normalizeEmail(),
   passwordRules,
 ];
+
+export const loginRules = [
+  body('email').notEmpty().isEmail().normalizeEmail(),
+  body('password').notEmpty(),
+];

@@ -6,9 +6,13 @@ import { trimRequestBody, validate } from '@App/middleware';
 import {
   facebookLogin,
   googleLogin,
+  login,
   register,
 } from '@user/controllers/auth.controller';
-import { registerRules } from '@user/middleware/validators/auth.validator';
+import {
+  loginRules,
+  registerRules,
+} from '@user/middleware/validators/auth.validator';
 
 const authRouter = Router();
 
@@ -47,5 +51,7 @@ authRouter.post(
   validate,
   register,
 );
+
+authRouter.post('/login', trimRequestBody, loginRules, validate, login);
 
 export default authRouter;

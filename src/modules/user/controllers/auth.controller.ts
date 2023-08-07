@@ -105,3 +105,36 @@ export const register = async (
     next(e);
   }
 };
+
+export const login = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { email, password } = req.body;
+
+    const { account, isUser } = await authService.loginUser(email, password);
+
+    if (!isUser) res.status(401).json({ message: messages.LOGIN_FAILED });
+    else {
+      const userData = await userService.getUserData(account.userId);
+
+      if (account.status === 'inactive')
+        res.status(403).json({
+          accessToken: authService.generateJWT(account.userId, 'email'),
+          user: userData,
+          message: messages.ERR_DEACTIVATED_ACCOUNT,
+        });
+      else
+        authenticateResponse(
+          res,
+          authService.generateJWT(account.userId, 'email'),
+          messages.LOGIN_SUCCESS,
+          userData,
+        );
+    }
+  } catch (e) {
+    next(e);
+  }
+};
