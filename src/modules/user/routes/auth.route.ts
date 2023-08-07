@@ -1,11 +1,14 @@
 import { Router } from 'express';
 import passport from 'passport';
 
+import { trimRequestBody, validate } from '@App/middleware';
+
 import {
   facebookLogin,
   googleLogin,
   register,
 } from '@user/controllers/auth.controller';
+import { registerRules } from '@user/middleware/validators/auth.validator';
 
 const authRouter = Router();
 
@@ -16,6 +19,7 @@ authRouter.get(
     scope: ['profile', 'email'],
   }),
 );
+
 authRouter.get(
   '/google/callback',
   passport.authenticate('google', { session: false }),
@@ -29,12 +33,19 @@ authRouter.get(
     scope: ['profile', 'email'],
   }),
 );
+
 authRouter.get(
   '/facebook/callback',
   passport.authenticate('facebook', { session: false }),
   facebookLogin,
 );
 
-authRouter.post('/register', register);
+authRouter.post(
+  '/register',
+  trimRequestBody,
+  registerRules,
+  validate,
+  register,
+);
 
 export default authRouter;
