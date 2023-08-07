@@ -90,16 +90,19 @@ describe('AuthOTP Model', () => {
   });
 
   it('should delete OTP', async () => {
-    await AuthOTP.destroy({ where: { userId } });
+    const numOTPs = (await AuthOTP.findAll({ where: { userId } })).length;
+    const numDeleted = await AuthOTP.destroy({ where: { userId } });
 
-    await AuthOTP.create({
+    expect(numOTPs).toBe(numDeleted);
+
+    const recoverOTP = await AuthOTP.create({
       userId,
       type: 'recover',
       password: '12345',
       expiresAt: new Date(),
     });
 
-    await AuthOTP.destroy({ where: { userId } });
+    await recoverOTP.destroy();
 
     const otp = await AuthOTP.findOne({ where: { userId, type: 'recover' } });
     expect(otp).toBeNull();

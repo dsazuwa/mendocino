@@ -5,7 +5,7 @@ import { User, UserAccount, UserIdentity } from '@user/models';
 import authService from '@user/services/auth.service';
 import userService from '@user/services/user.service';
 
-import { request } from 'tests/supertest.helper';
+import { getTokenFrom, request } from 'tests/supertest.helper';
 
 import 'tests/db-setup';
 
@@ -115,10 +115,84 @@ describe('Email Authentication', () => {
 
       expect(user?.userId).toBe(acct?.userId);
       expect(user?.firstName).toBe(data.firstName);
+
+      const token = getTokenFrom(response.headers['set-cookie']);
+      expect(token).not.toEqual('');
     });
 
     it(`should fail for duplicate email`, async () => {
       await request.post(`${BASE_URL}/register`).send(data).expect(409);
+    });
+  });
+
+  describe(`POST ${BASE_URL}/login`, () => {
+    it('should pass for correct credentials', async () => {
+      const response = await request
+        .post(`${BASE_URL}/login`)
+        .send({ email: data.email, password: data.password });
+
+      expect(response.status).toBe(200);
+
+      const token = getTokenFrom(response.headers['set-cookie']);
+      expect(token).not.toEqual('');
+    });
+
+    it('should fail for wrong password', async () => {
+      const response = await request
+        .post(`${BASE_URL}/login`)
+        .send({ email: data.email, password: 'wrong-password' });
+
+      expect(response.status).toBe(401);
+
+      const token = getTokenFrom(response.headers['set-cookie']);
+      expect(token).toEqual('');
+    });
+
+    it('should fail for deactivated account', async () => {
+      const email = 'jeandoe@gmail.com';
+      const password = 'jeanD0ePa$$';
+
+      const { userId } = await User.create({
+        firstName: 'Jean',
+        lastName: 'Doe',
+      });
+
+      await UserAccount.create({ userId, email, password, status: 'inactive' });
+
+      const response = await request
+        .post(`${BASE_URL}/login`)
+        .send({ email, password });
+
+      expect(response.status).toBe(403);
+
+      const token = getTokenFrom(response.headers['set-cookie']);
+      expect(token).toEqual('');
+
+      const { accessToken, user } = response.body;
+
+      expect(user).toBeDefined();
+      expect(accessToken).toBeDefined();
+    });
+
+    it('should fail for user_account with null password', async () => {
+      const { userId } = await User.create({
+        firstName: 'Jolene',
+        lastName: 'Doe',
+      });
+
+      const { email } = await UserAccount.create({
+        userId,
+        email: 'jolenedoe@gmail.com',
+      });
+
+      const response = await request
+        .post(`${BASE_URL}/login`)
+        .send({ email, password: 'wrong-password' });
+
+      expect(response.status).toBe(401);
+
+      const token = getTokenFrom(response.headers['set-cookie']);
+      expect(token).toEqual('');
     });
   });
 });
