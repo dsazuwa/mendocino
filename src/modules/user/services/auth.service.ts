@@ -5,6 +5,7 @@ import sequelize from '@App/db';
 
 import {
   AuthOTP,
+  AuthOTPType,
   ProviderType,
   User,
   UserAccount,
@@ -94,6 +95,41 @@ const authService = {
       where: { id, providerType },
     }),
 
+  getAuthOTP: async (userId: number, password: string, type: AuthOTPType) => {
+    const authOTP = await AuthOTP.findOne({
+      where: { userId, type },
+    });
+
+    const isValid =
+      authOTP !== null &&
+      authOTP.comparePasswords(password) &&
+      authOTP.expiresAt > new Date();
+
+    return isValid ? { authOTP, isValid } : { authOTP: null, isValid };
+  },
+
+  createAuthOTP: async (userId: number, type: AuthOTPType) =>
+    sequelize.transaction(async (transaction) => {
+      await AuthOTP.destroy({
+        where: { userId, type },
+        transaction,
+      });
+
+      const password = '12345';
+
+      await AuthOTP.create(
+        {
+          userId,
+          type,
+          password,
+          expiresAt: AuthOTP.getExpiration(),
+        },
+        { transaction },
+      );
+
+      return password;
+    }),
+
   createNewIdentity: (
     id: string,
     account: UserAccount | null,
@@ -157,6 +193,23 @@ const authService = {
 
     return isUser ? { account, isUser } : { account: null, isUser };
   },
+
+  recoverPassword: (userId: number, password: string) =>
+    sequelize.transaction(async (transaction) => {
+      await AuthOTP.destroy({
+        where: { userId, type: 'recover' },
+        transaction,
+      });
+
+      await UserAccount.update(
+        { password },
+        {
+          where: { userId },
+          individualHooks: true,
+          transaction,
+        },
+      );
+    }),
 };
 
 export default authService;

@@ -4,6 +4,8 @@ const messages = Object.freeze({
   ERR_ACTIVE_ACCOUNT: 'Active account',
   ERR_VERIFIED_ACCOUNT: 'Account already verified',
 
+  INVALID_AUTH_OTP: 'Invalid OTP',
+
   REGISTER_ALREADY_EXISTS: 'Email already exists',
   REGISTER_SUCCESS: 'Successfully registered!',
 
@@ -11,6 +13,12 @@ const messages = Object.freeze({
   LOGIN_SUCCESS: 'Logged in!',
 
   LOGOUT: 'Logged out!',
+
+  REQUEST_RECOVERY: 'Recovery OTP sent',
+  REQUEST_RECOVERY_FAILED_THIRD_PARTY_AUTH: 'Log in with your social account',
+
+  VERIFY_RECOVERY_SUCCESS: 'Account verified!',
+  RECOVER_PASSWORD_SUCCESS: 'Password successfully reset!',
 });
 
 export default messages;

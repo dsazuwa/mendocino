@@ -8,11 +8,17 @@ import {
   googleLogin,
   login,
   logout,
+  recoverPassword,
   register,
+  requestPasswordRecovery,
+  verifyRecoveryOTP,
 } from '@user/controllers/auth.controller';
 import {
   loginRules,
+  recoverRules,
   registerRules,
+  requestRecoverRules,
+  verifyOTPRules,
 } from '@user/middleware/validators/auth.validator';
 
 const authRouter = Router();
@@ -24,7 +30,6 @@ authRouter.get(
     scope: ['profile', 'email'],
   }),
 );
-
 authRouter.get(
   '/google/callback',
   passport.authenticate('google', { session: false }),
@@ -38,7 +43,6 @@ authRouter.get(
     scope: ['profile', 'email'],
   }),
 );
-
 authRouter.get(
   '/facebook/callback',
   passport.authenticate('facebook', { session: false }),
@@ -56,5 +60,14 @@ authRouter.post(
 authRouter.post('/login', trimRequestBody, loginRules, validate, login);
 
 authRouter.post('/logout', logout);
+
+authRouter.post(
+  '/recover',
+  requestRecoverRules,
+  validate,
+  requestPasswordRecovery,
+);
+authRouter.post('/recover/:otp', verifyOTPRules, validate, verifyRecoveryOTP);
+authRouter.patch('/recover/:otp', recoverRules, validate, recoverPassword);
 
 export default authRouter;

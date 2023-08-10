@@ -21,5 +21,13 @@
     "prettier/prettier": ["error", { "endOfLine": "auto" }],
     "import/prefer-default-export": "off",
     "no-underscore-dangle": ["error", { "allowAfterThis": true }]
-  }
+  },
+  "overrides": [
+    {
+      "files": ["**/controllers/**/*"],
+      "rules": {
+        "consistent-return": "off"
+      }
+    }
+  ]
 }

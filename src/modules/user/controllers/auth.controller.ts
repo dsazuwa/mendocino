@@ -83,24 +83,27 @@ export const register = async (
     const acct = await authService.getAccount(email);
 
     if (acct)
-      res.status(409).json({ message: messages.REGISTER_ALREADY_EXISTS });
-    else {
-      const { account } = await authService.createUser(
-        firstName,
-        lastName,
-        email,
-        password,
-      );
+      return res
+        .status(409)
+        .json({ message: messages.REGISTER_ALREADY_EXISTS });
 
-      const userData = await userService.getUserData(account.userId);
+    const { account } = await authService.createUser(
+      firstName,
+      lastName,
+      email,
+      password,
+    );
 
-      authenticateResponse(
-        res,
-        authService.generateJWT(account.userId, 'email'),
-        messages.REGISTER_SUCCESS,
-        userData,
-      );
-    }
+    const { userId } = account;
+
+    const userData = await userService.getUserData(userId);
+
+    authenticateResponse(
+      res,
+      authService.generateJWT(userId, 'email'),
+      messages.REGISTER_SUCCESS,
+      userData,
+    );
   } catch (e) {
     next(e);
   }
@@ -116,24 +119,26 @@ export const login = async (
 
     const { account, isUser } = await authService.loginUser(email, password);
 
-    if (!isUser) res.status(401).json({ message: messages.LOGIN_FAILED });
-    else {
-      const userData = await userService.getUserData(account.userId);
+    if (!isUser)
+      return res.status(401).json({ message: messages.LOGIN_FAILED });
 
-      if (account.status === 'inactive')
-        res.status(403).json({
-          accessToken: authService.generateJWT(account.userId, 'email'),
-          user: userData,
-          message: messages.ERR_DEACTIVATED_ACCOUNT,
-        });
-      else
-        authenticateResponse(
-          res,
-          authService.generateJWT(account.userId, 'email'),
-          messages.LOGIN_SUCCESS,
-          userData,
-        );
-    }
+    const { userId, status } = account;
+
+    const userData = await userService.getUserData(userId);
+
+    if (status === 'inactive')
+      return res.status(403).json({
+        accessToken: authService.generateJWT(userId, 'email'),
+        user: userData,
+        message: messages.ERR_DEACTIVATED_ACCOUNT,
+      });
+
+    authenticateResponse(
+      res,
+      authService.generateJWT(userId, 'email'),
+      messages.LOGIN_SUCCESS,
+      userData,
+    );
   } catch (e) {
     next(e);
   }
@@ -147,6 +152,97 @@ export const logout = async (
   try {
     res.clearCookie('access-token');
     res.status(200).json({ message: messages.LOGOUT });
+  } catch (e) {
+    next(e);
+  }
+};
+
+export const requestPasswordRecovery = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { email } = req.body;
+
+    const account = await authService.getAccount(email);
+
+    if (!account)
+      return res.status(200).json({ message: messages.REQUEST_RECOVERY });
+
+    if (account.password === null)
+      return res
+        .status(403)
+        .json({ message: messages.REQUEST_RECOVERY_FAILED_THIRD_PARTY_AUTH });
+
+    await authService.createAuthOTP(account.userId, 'recover');
+
+    res.status(200).json({ message: messages.REQUEST_RECOVERY });
+  } catch (e) {
+    next(e);
+  }
+};
+
+export const verifyRecoveryOTP = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { otp } = req.params;
+    const { email } = req.body;
+
+    const account = await authService.getAccount(email);
+
+    if (!account)
+      return res.status(401).json({ message: messages.INVALID_AUTH_OTP });
+
+    const { isValid } = await authService.getAuthOTP(
+      account.userId,
+      otp,
+      'recover',
+    );
+
+    if (!isValid)
+      return res.status(401).json({ message: messages.INVALID_AUTH_OTP });
+
+    res.status(200).json({ message: messages.VERIFY_RECOVERY_SUCCESS });
+  } catch (e) {
+    next(e);
+  }
+};
+
+export const recoverPassword = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { otp } = req.params;
+    const { email, password } = req.body;
+
+    const account = await authService.getAccount(email);
+
+    if (!account)
+      return res.status(401).json({ message: messages.INVALID_AUTH_OTP });
+
+    const { userId } = account;
+
+    const { isValid } = await authService.getAuthOTP(userId, otp, 'recover');
+
+    if (!isValid)
+      return res.status(401).json({ message: messages.INVALID_AUTH_OTP });
+
+    await authService.recoverPassword(userId, password);
+
+    const userData = await userService.getUserData(userId);
+
+    authenticateResponse(
+      res,
+      authService.generateJWT(userId, 'email'),
+      messages.RECOVER_PASSWORD_SUCCESS,
+      userData,
+    );
   } catch (e) {
     next(e);
   }

@@ -16,4 +16,8 @@ export const passwordRules = body('password')
   .matches(/^\s+|\s+$/)
   .withMessage('no leading or trailing spaces');
 
-export const emailRules = body('email').exists().isEmail().toLowerCase();
+export const emailRules = body('email')
+  .notEmpty()
+  .isEmail()
+  .normalizeEmail()
+  .toLowerCase();

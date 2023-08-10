@@ -1,15 +1,18 @@
 import { body } from 'express-validator';
 
-import { passwordRules } from './common.validator';
+import { emailRules, otpRules, passwordRules } from './common.validator';
 
 export const registerRules = [
   body('firstName').notEmpty(),
   body('lastName').notEmpty(),
-  body('email').notEmpty().isEmail().normalizeEmail(),
+  emailRules,
   passwordRules,
 ];
 
-export const loginRules = [
-  body('email').notEmpty().isEmail().normalizeEmail(),
-  body('password').notEmpty(),
-];
+export const loginRules = [emailRules, body('password').notEmpty()];
+
+export const requestRecoverRules = [emailRules];
+
+export const verifyOTPRules = [otpRules, emailRules];
+
+export const recoverRules = [otpRules, emailRules, passwordRules];
