@@ -9,6 +9,8 @@ const messages = Object.freeze({
 
   LOGIN_FAILED: 'Incorrect email or password',
   LOGIN_SUCCESS: 'Logged in!',
+
+  LOGOUT: 'Logged out!',
 });
 
 export default messages;

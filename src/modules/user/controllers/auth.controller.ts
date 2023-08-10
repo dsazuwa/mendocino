@@ -138,3 +138,16 @@ export const login = async (
     next(e);
   }
 };
+
+export const logout = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    res.clearCookie('access-token');
+    res.status(200).json({ message: messages.LOGOUT });
+  } catch (e) {
+    next(e);
+  }
+};

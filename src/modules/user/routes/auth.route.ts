@@ -7,6 +7,7 @@ import {
   facebookLogin,
   googleLogin,
   login,
+  logout,
   register,
 } from '@user/controllers/auth.controller';
 import {
@@ -53,5 +54,7 @@ authRouter.post(
 );
 
 authRouter.post('/login', trimRequestBody, loginRules, validate, login);
+
+authRouter.post('/logout', logout);
 
 export default authRouter;

@@ -195,4 +195,12 @@ describe('Email Authentication', () => {
       expect(token).toEqual('');
     });
   });
+
+  it(`POST ${BASE_URL}/logout`, async () => {
+    const response = await request.post(`${BASE_URL}/logout`);
+    expect(response.status).toBe(200);
+
+    const token = getTokenFrom(response.headers['set-cookie']);
+    expect(token).toEqual('');
+  });
 });
