@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 
 import { ProviderType } from '@user/models';
 import authService from '@user/services/auth.service';
-import userService from '@user/services/user.service';
+import usersService from '@user/services/users.service';
 import messages from '@user/utils/messages';
 
 export const socialLogin = async (
@@ -18,7 +18,7 @@ export const socialLogin = async (
     else {
       const token = authService.generateJWT(userId, providerType);
 
-      const userData = await userService.getUserData(userId);
+      const userData = await usersService.getUserData(userId);
 
       res.redirect(
         `${
@@ -96,7 +96,7 @@ export const register = async (
 
     const { userId } = account;
 
-    const userData = await userService.getUserData(userId);
+    const userData = await usersService.getUserData(userId);
 
     authenticateResponse(
       res,
@@ -124,7 +124,7 @@ export const login = async (
 
     const { userId, status } = account;
 
-    const userData = await userService.getUserData(userId);
+    const userData = await usersService.getUserData(userId);
 
     if (status === 'inactive')
       return res.status(403).json({
@@ -235,7 +235,7 @@ export const recoverPassword = async (
 
     await authService.recoverPassword(userId, password);
 
-    const userData = await userService.getUserData(userId);
+    const userData = await usersService.getUserData(userId);
 
     authenticateResponse(
       res,
@@ -258,7 +258,7 @@ export const reactivate = async (
 
     await authService.reactivate(userId);
 
-    const userData = await userService.getUserData(userId);
+    const userData = await usersService.getUserData(userId);
 
     authenticateResponse(
       res,

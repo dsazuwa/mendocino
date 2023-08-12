@@ -3,11 +3,7 @@ import passport from 'passport';
 
 import messages from '@user/utils/messages';
 
-export const authenticate = (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
+const authenticate = (req: Request, res: Response, next: NextFunction) => {
   passport.authenticate('jwt', (err: Error, user: Express.User) => {
     if (err) next(err);
     else if (!user)
@@ -20,3 +16,5 @@ export const authenticate = (
     }
   })(req, res, next);
 };
+
+export default authenticate;

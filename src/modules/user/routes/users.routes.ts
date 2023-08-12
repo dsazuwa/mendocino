@@ -1,13 +1,16 @@
 import { Request, Response, Router } from 'express';
 
-import { authenticate } from '@user/middleware/auth/auth';
-import { authenticateInactive } from '@user/middleware/auth/inactive.auth';
+import { validate } from '@App/middleware';
+
+import { authenticate, authenticateInactive } from '@user/middleware/auth';
+import permitPending from '@user/middleware/route-guards/permit-pending.guard';
+import {
+  resendVerifyEmail,
+  verifyEmail,
+} from '@user/controllers/users.controller';
+import { verifyEmailRules } from '@user/middleware/validators/users.validator';
 
 const usersRouter = Router();
-
-usersRouter.get('/me/greeting', authenticate, (req: Request, res: Response) => {
-  res.status(200).json({ message: 'Hi!' });
-});
 
 usersRouter.get(
   '/me/inactive/greeting',
@@ -18,5 +21,18 @@ usersRouter.get(
 );
 
 usersRouter.use(authenticate);
+
+usersRouter.get('/me/greeting', (req: Request, res: Response) => {
+  res.status(200).json({ message: 'Hi!' });
+});
+
+usersRouter.post('/me/verify', permitPending, resendVerifyEmail);
+usersRouter.patch(
+  '/me/verify/:otp',
+  verifyEmailRules,
+  validate,
+  permitPending,
+  verifyEmail,
+);
 
 export default usersRouter;

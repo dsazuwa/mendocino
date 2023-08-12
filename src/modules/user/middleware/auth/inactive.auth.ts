@@ -3,7 +3,7 @@ import passport from 'passport';
 
 import messages from '@user/utils/messages';
 
-export const authenticateInactive = (
+const authenticateInactive = (
   req: Request,
   res: Response,
   next: NextFunction,
@@ -20,3 +20,5 @@ export const authenticateInactive = (
     }
   })(req, res, next);
 };
+
+export default authenticateInactive;

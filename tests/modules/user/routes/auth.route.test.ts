@@ -3,7 +3,7 @@ import { Request, Response } from 'express';
 import { facebookLogin, googleLogin } from '@user/controllers/auth.controller';
 import { AuthOTP, User, UserAccount, UserIdentity } from '@user/models';
 import authService from '@user/services/auth.service';
-import userService from '@user/services/user.service';
+import usersService from '@user/services/users.service';
 
 import { getTokenFrom, request } from 'tests/supertest.helper';
 
@@ -37,7 +37,7 @@ describe('Google Login', () => {
     const next = jest.fn();
 
     const token = authService.generateJWT(userId, 'google');
-    const userData = await userService.getUserData(userId);
+    const userData = await usersService.getUserData(userId);
 
     await googleLogin(req, res, next);
 
@@ -77,7 +77,7 @@ describe('Facebook Login', () => {
     const next = jest.fn();
 
     const token = authService.generateJWT(userId, 'facebook');
-    const userData = await userService.getUserData(userId);
+    const userData = await usersService.getUserData(userId);
 
     await facebookLogin(req, res, next);
 

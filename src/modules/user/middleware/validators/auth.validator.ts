@@ -13,6 +13,6 @@ export const loginRules = [emailRules, body('password').notEmpty()];
 
 export const requestRecoverRules = [emailRules];
 
-export const verifyOTPRules = [otpRules, emailRules];
+export const verifyRecoveryOTPRules = [otpRules, emailRules];
 
 export const recoverRules = [otpRules, emailRules, passwordRules];

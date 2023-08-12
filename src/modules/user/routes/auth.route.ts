@@ -14,13 +14,13 @@ import {
   requestPasswordRecovery,
   verifyRecoveryOTP,
 } from '@user/controllers/auth.controller';
-import { authenticateInactive } from '@user/middleware/auth/inactive.auth';
+import { authenticateInactive } from '@user/middleware/auth';
 import {
   loginRules,
   recoverRules,
   registerRules,
   requestRecoverRules,
-  verifyOTPRules,
+  verifyRecoveryOTPRules,
 } from '@user/middleware/validators/auth.validator';
 
 const authRouter = Router();
@@ -69,7 +69,12 @@ authRouter.post(
   validate,
   requestPasswordRecovery,
 );
-authRouter.post('/recover/:otp', verifyOTPRules, validate, verifyRecoveryOTP);
+authRouter.post(
+  '/recover/:otp',
+  verifyRecoveryOTPRules,
+  validate,
+  verifyRecoveryOTP,
+);
 authRouter.patch('/recover/:otp', recoverRules, validate, recoverPassword);
 
 authRouter.patch('/reactivate', authenticateInactive, reactivate);

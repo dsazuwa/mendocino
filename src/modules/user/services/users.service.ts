@@ -2,9 +2,9 @@ import { QueryTypes } from 'sequelize';
 
 import sequelize from '@App/db';
 
-import { User, UserAccount } from '@user/models';
+import { AuthOTP, User, UserAccount } from '@user/models';
 
-const userService = {
+const usersService = {
   getUserData: async (userId: number) => {
     const query = `
         SELECT
@@ -22,6 +22,19 @@ const userService = {
 
     return user.length === 0 ? null : user[0];
   },
+
+  verifyEmail: async (userId: number) =>
+    sequelize.transaction(async (transaction) => {
+      await AuthOTP.destroy({
+        where: { userId, type: 'verify' },
+        transaction,
+      });
+
+      await UserAccount.update(
+        { status: 'active' },
+        { where: { userId }, transaction },
+      );
+    }),
 };
 
-export default userService;
+export default usersService;

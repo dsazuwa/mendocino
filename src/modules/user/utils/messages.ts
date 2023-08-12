@@ -1,10 +1,16 @@
 const messages = Object.freeze({
+  // ERROR MESSAGES
+
   ERR_INVALID_ACCESS_TOKEN: 'Invalid access token',
   ERR_DEACTIVATED_ACCOUNT: 'Deactivated account',
   ERR_ACTIVE_ACCOUNT: 'Active account',
   ERR_VERIFIED_ACCOUNT: 'Account already verified',
 
+  // COMMON MESSAGES
+
   INVALID_AUTH_OTP: 'Invalid OTP',
+
+  // AUTH ROUTER MESSAGES
 
   REGISTER_ALREADY_EXISTS: 'Email already exists',
   REGISTER_SUCCESS: 'Successfully registered!',
@@ -21,6 +27,11 @@ const messages = Object.freeze({
   RECOVER_PASSWORD_SUCCESS: 'Password successfully reset!',
 
   REACTIVATE_SUCCESS: 'Account reactivated!',
+
+  // USERS ROUTER MESSAGES
+
+  REQUEST_VERIFICATION: 'New verification OTP sent',
+  VERIFY_EMAIL_SUCCESS: 'Email Successfully Verified!',
 });
 
 export default messages;
