@@ -27,6 +27,17 @@ describe('Users Routes', () => {
     token = authService.generateJWT(userId, 'email');
   });
 
+  it(`GET ${BASE_URL}/me`, async () => {
+    const response = await request
+      .get(`${BASE_URL}/me`)
+      .auth(token, { type: 'bearer' });
+
+    expect(response.status).toBe(200);
+
+    const { user } = response.body;
+    expect(user).toMatchObject({ firstName, lastName, email, status });
+  });
+
   describe(`POST ${BASE_URL}/me/verify`, () => {
     it('should create a new verification token', async () => {
       let otp = await AuthOTP.findOne({ where: { userId, type: 'verify' } });

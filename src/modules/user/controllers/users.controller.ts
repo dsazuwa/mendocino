@@ -4,6 +4,26 @@ import authService from '@user/services/auth.service';
 import usersService from '@user/services/users.service';
 import messages from '@user/utils/messages';
 
+export const greet = async (req: Request, res: Response) => {
+  res.json({ message: `Hi!` });
+};
+
+export const getUserData = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const userId = req.user?.userId ?? -1;
+
+    const user = await usersService.getUserData(userId);
+
+    res.status(200).json({ user });
+  } catch (e) {
+    next(e);
+  }
+};
+
 export const resendVerifyEmail = async (
   req: Request,
   res: Response,
