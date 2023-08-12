@@ -1,6 +1,12 @@
 import { sign } from 'jsonwebtoken';
 
-import { ProviderType, User, UserAccount, UserIdentity } from '@user/models';
+import {
+  AuthOTP,
+  ProviderType,
+  User,
+  UserAccount,
+  UserIdentity,
+} from '@user/models';
 import authService, {
   createUserAndUserIdentity,
   createUserIdentityForUser,
@@ -33,9 +39,7 @@ describe('Auth service', () => {
       const decoded = sign(
         { userId, providerType: 'email' },
         `${process.env.JWT_SECRET}`,
-        {
-          expiresIn: '1 day',
-        },
+        { expiresIn: '1 day' },
       );
 
       expect(token).toEqual(decoded);
@@ -48,9 +52,7 @@ describe('Auth service', () => {
       const decoded = sign(
         { userId, providerType: 'google' },
         `${process.env.JWT_SECRET}`,
-        {
-          expiresIn: '1 day',
-        },
+        { expiresIn: '1 day' },
       );
 
       expect(token).toEqual(decoded);
@@ -63,9 +65,7 @@ describe('Auth service', () => {
       const decoded = sign(
         { userId, providerType: 'facebook' },
         `${process.env.JWT_SECRET}`,
-        {
-          expiresIn: '1 day',
-        },
+        { expiresIn: '1 day' },
       );
 
       expect(token).toEqual(decoded);
@@ -89,9 +89,11 @@ describe('Auth service', () => {
 
       expect(result).toBeInstanceOf(UserAccount);
 
-      expect(result?.userId).toBe(userId);
-      expect((result as UserAccount).email).toBe(email);
-      expect((result as UserAccount).password).toBe(password);
+      const account = result as UserAccount;
+
+      expect(account.userId).toBe(userId);
+      expect(account.email).toBe(email);
+      expect(account.password).toBe(password);
     });
 
     it('should return user identitiy when provider is google', async () => {
@@ -176,129 +178,113 @@ describe('Auth service', () => {
 
   describe('create new identity', () => {
     it('should create user identity for an existing user account', async () => {
-      const u = await User.create({ firstName: 'Jasmine', lastName: 'Doe' });
+      const id = '12324534675';
+      const providerType = 'google';
+      const firstName = 'Jasmine';
+      const lastName = 'Doe';
+      const email = 'jasminedoe@gmail.com';
 
+      const { userId } = await User.create({ firstName, lastName });
       const a = await UserAccount.create({
-        userId: u.userId,
-        email: 'jasminedoe@gmail.com',
+        userId,
+        email,
         password: 'jasD0epa$$',
         status: 'active',
       });
 
-      const id = '12324534675';
-      const providerType = 'google';
-
       const identity = await authService.createNewIdentity(
         id,
         a,
-        u.firstName,
-        u.lastName,
-        a.email,
+        firstName,
+        lastName,
+        email,
         providerType,
       );
 
       expect(identity.id).toBe(id);
-      expect(identity.userId).toBe(u.userId);
+      expect(identity.userId).toBe(userId);
       expect(identity.providerType).toBe(providerType);
 
-      const retrievedIdentity = await UserIdentity.findOne({
-        where: { id, providerType, userId: u.userId },
+      const i = await UserIdentity.findOne({
+        where: { id, providerType, userId },
       });
-
-      expect(retrievedIdentity).not.toBeNull();
+      expect(i).not.toBeNull();
     });
 
     it('should create a new user and user identity for new user', async () => {
-      const data = {
-        id: '4309372642830289974',
-        email: 'jerichodoe@gmail.com',
-        firstName: 'Jericho',
-        lastName: 'Doe',
-        providerType: 'google' as ProviderType,
-      };
+      const id = '4309372642830289974';
+      const email = 'jerichodoe@gmail.com';
+      const firstName = 'Jericho';
+      const lastName = 'Doe';
+      const providerType = 'google' as ProviderType;
 
-      let u = await User.findOne({
-        where: { firstName: data.firstName, lastName: data.lastName },
-      });
-
+      let u = await User.findOne({ where: { firstName, lastName } });
       expect(u).toBeNull();
 
       const identity = await authService.createNewIdentity(
-        data.id,
+        id,
         null,
-        data.firstName,
-        data.lastName,
-        data.email,
-        data.providerType,
+        firstName,
+        lastName,
+        email,
+        providerType,
       );
 
-      expect(identity.id).toBe(data.id);
-      expect(identity.providerType).toBe(data.providerType);
+      expect(identity.id).toBe(id);
+      expect(identity.providerType).toBe(providerType);
 
-      u = await User.findOne({
-        where: { firstName: data.firstName, lastName: data.lastName },
-      });
-
+      u = await User.findOne({ where: { firstName, lastName } });
       expect(u).not.toBeNull();
 
       const i = await UserIdentity.findOne({
-        where: {
-          id: data.id,
-          providerType: data.providerType,
-          userId: u?.userId,
-        },
+        where: { id, providerType, userId: u?.userId },
       });
-
       expect(i).not.toBeNull();
     });
   });
 
   describe('create user identity for user', () => {
-    it('should create user for user identity and change account status to active', async () => {
-      const u = await User.create({
+    it('should create user identity for user and change account status to active', async () => {
+      const { userId } = await User.create({
         firstName: 'James',
         lastName: 'Doe',
       });
 
-      const a = await UserAccount.create({
-        userId: u.userId,
+      await UserAccount.create({
+        userId,
         email: 'jamesdoe@gmail.com',
         password: 'JamesD0epa$$',
         status: 'pending',
       });
 
       const id = '923849719836872649';
+      const providerType = 'google';
 
-      const i = await createUserIdentityForUser(
+      const result = await createUserIdentityForUser(
         id,
-        u.userId,
-        a.status,
-        'google',
+        userId,
+        'pending',
+        providerType,
       );
+      expect(result.id).toBe(id);
 
-      expect(i.id).toBe(id);
+      const i = UserIdentity.findOne({ where: { userId, providerType } });
+      expect(i).not.toBeNull();
 
-      expect(
-        UserIdentity.findOne({
-          where: { userId: u.userId, providerType: 'google' },
-        }),
-      ).resolves.not.toBeNull();
-
-      const retrievedAccount = await UserAccount.findOne({
-        where: { userId: u.userId },
+      const a = await UserAccount.findOne({
+        where: { userId, status: 'active' },
       });
-
-      expect(retrievedAccount?.status).toBe('active');
+      expect(a).not.toBeNull();
     });
 
     it('should roll back transaction on error', async () => {
-      const u = await User.create({
+      const { userId } = await User.create({
         firstName: 'Jameson',
         lastName: 'Doe',
       });
 
-      const a = await UserAccount.create({
-        userId: u.userId,
+      const { status } = await UserAccount.create({
+        userId,
         email: 'jamesondoe@gmail.com',
         password: 'JamesonD0epa$$',
         status: 'pending',
@@ -307,17 +293,15 @@ describe('Auth service', () => {
       const id = '98979675654556756687';
 
       const { create } = UserIdentity;
-      UserIdentity.create = jest
-        .fn()
-        .mockRejectedValue(new Error('Mock Error'));
+      UserIdentity.create = jest.fn().mockRejectedValue(new Error('Error'));
 
       try {
-        await createUserIdentityForUser(id, u.userId, a.status, 'google');
+        await createUserIdentityForUser(id, userId, status, 'google');
 
         expect(false).toBe(true);
       } catch (e) {
-        const newA = await UserAccount.findByPk(u.userId);
-        expect(newA?.status).toBe('pending');
+        const a = await UserAccount.findOne({ where: { userId, status } });
+        expect(a).not.toBeNull();
       }
 
       UserIdentity.create = create;
@@ -327,77 +311,212 @@ describe('Auth service', () => {
   describe('create user and user identity', () => {
     it('should create user, user account, and user identity', async () => {
       const id = '98098976576567';
+      const firstName = 'Jamal';
+      const lastName = 'Doe';
+      const email = 'jamaldoe@gmail.com';
 
-      const data = {
-        firstName: 'Jamal',
-        lastName: 'Doe',
-        email: 'jamaldoe@gmail.com',
-      };
+      let u = await User.findOne({ where: { firstName, lastName } });
+      expect(u).toBeNull();
 
-      expect(
-        User.findOne({
-          where: { firstName: data.firstName, lastName: data.lastName },
-        }),
-      ).resolves.toBeNull();
+      expect(UserAccount.findOne({ where: { email } })).resolves.toBeNull();
 
-      expect(
-        UserAccount.findOne({ where: { email: data.email } }),
-      ).resolves.toBeNull();
-
-      const i = await createUserAndUserIdentity(
+      const result = await createUserAndUserIdentity(
         id,
-        data.firstName,
-        data.lastName,
-        data.email,
+        firstName,
+        lastName,
+        email,
         'google',
       );
 
-      expect(i.id).toBe(id);
+      expect(result.id).toBe(id);
 
-      expect(
-        UserIdentity.findOne({
-          where: { id, providerType: 'google' },
-        }),
-      ).resolves.not.toBeNull();
-
-      const u = await User.findOne({
-        where: { firstName: data.firstName, lastName: data.lastName },
-      });
-
+      u = await User.findOne({ where: { firstName, lastName } });
       expect(u).not.toBeNull();
 
-      const a = await UserAccount.findOne({ where: { userId: u?.userId } });
+      const a = await UserAccount.findOne({
+        where: { userId: u?.userId, email, status: 'active' },
+      });
       expect(a).not.toBeNull();
-      expect(a?.email).toBe(data.email);
-      expect(a?.status).toBe('active');
+
+      const i = await UserIdentity.findOne({ where: { id } });
+      expect(i).not.toBeNull();
     });
 
     it('should roll back transaction on error', async () => {
       const id = '98098976576567';
 
-      const data = { firstName: 'Jones', lastName: 'Doe' };
+      const firstName = 'Jones';
+      const lastName = 'Doe';
 
       const { create } = UserIdentity;
-      UserIdentity.create = jest
-        .fn()
-        .mockRejectedValue(new Error('Mock Error'));
+      UserIdentity.create = jest.fn().mockRejectedValue(new Error('Error'));
 
       try {
         await createUserAndUserIdentity(
           id,
-          data.firstName,
-          data.lastName,
+          firstName,
+          lastName,
           'jonesdoe@gmail.com',
           'google',
         );
 
         expect(false).toBe(true);
       } catch (e) {
-        const u = await User.findOne({ where: data });
+        const u = await User.findOne({ where: { firstName, lastName } });
         expect(u).toBeNull();
       }
 
       UserIdentity.create = create;
+    });
+  });
+
+  describe('create user', () => {
+    it('should successfully create a user, user account, and verify otp', async () => {
+      const result = await authService.createUser(
+        'Jacqueline',
+        'Doe',
+        'jacquelinedoe@gmail.com',
+        'jacqueD0epas$$',
+      );
+
+      expect(result.user).toBeDefined();
+      expect(result.account).toBeDefined();
+
+      const user = await User.findByPk(result.user.userId);
+      const account = await UserAccount.findByPk(result.account.userId);
+
+      expect(user).not.toBeNull();
+      expect(account).not.toBeNull();
+      expect(user?.userId).toBe(account?.userId);
+
+      const otp = await AuthOTP.findOne({
+        where: { userId: user?.userId, type: 'verify' },
+      });
+
+      expect(otp).not.toBeNull();
+    });
+
+    it('should rollback the transaction on error', async () => {
+      const firstName = 'Jackie';
+      const lastName = 'Doe';
+      const email = 'jackiedoe@gmail.com';
+      const password = 'jackieD0epas$$';
+
+      const { create } = UserAccount;
+      UserAccount.create = jest.fn().mockRejectedValue(new Error('Mock Error'));
+
+      try {
+        await authService.createUser(firstName, lastName, email, password);
+
+        expect(true).toBe(false);
+      } catch (e) {
+        const user = await User.findOne({ where: { firstName, lastName } });
+        const account = await UserAccount.findOne({ where: { email } });
+
+        expect(user).toBeNull();
+        expect(account).toBeNull();
+      }
+
+      UserAccount.create = create;
+    });
+  });
+
+  describe('login', () => {
+    it('should login user on valid data', async () => {
+      const firstName = 'Jan';
+      const lastName = 'Doe';
+      const email = 'jandoe@gmail.com';
+      const password = 'janD0epas$$';
+
+      const { userId } = await User.create({ firstName, lastName });
+      await UserAccount.create({ userId, email, password });
+
+      const { account, isUser } = await authService.loginUser(email, password);
+
+      expect(account).not.toBeNull();
+      expect(account?.userId).toBe(userId);
+      expect(isUser).toBe(true);
+    });
+
+    it('should fail login with wrong password', async () => {
+      const email = 'jandoe@gmail.com';
+      const { account, isUser } = await authService.loginUser(email, '123');
+
+      expect(isUser).toBe(false);
+      expect(account).toBe(null);
+    });
+
+    it('should fail login if user account password is null', async () => {
+      const { userId } = await User.create({
+        firstName: 'Jaff',
+        lastName: 'Doe',
+      });
+
+      const email = 'jaffdoe@gmail.com';
+
+      const a = await UserAccount.create({ userId, email });
+      expect(a.password).toBeNull();
+
+      const { account, isUser } = await authService.loginUser(
+        email,
+        'jazzd0ePa$$',
+      );
+
+      expect(account).toBe(null);
+      expect(isUser).toBe(false);
+    });
+  });
+
+  describe('recover password otp', () => {
+    const userData = {
+      firstName: 'Jack',
+      lastName: 'Doe',
+      email: 'jackdoe@gmail.com',
+      password: 'jackD0epas$$',
+    };
+
+    let userId: number;
+
+    beforeAll(async () => {
+      const u = await User.create(userData);
+      userId = u.userId;
+
+      await UserAccount.create({ userId, ...userData });
+    });
+
+    it('should recover the password successfully', async () => {
+      const newPassword = 'newD0epa$$word';
+      await authService.recoverPassword(userId, newPassword);
+
+      const account = await UserAccount.findOne({ where: { userId } });
+
+      expect(account?.comparePasswords(newPassword)).toBe(true);
+    });
+
+    it('should rollback the transaction on error', async () => {
+      await AuthOTP.create({
+        userId,
+        type: 'recover',
+        password: AuthOTP.generatePassword(),
+        expiresAt: AuthOTP.getExpiration(),
+      });
+
+      const { update } = UserAccount;
+      UserAccount.update = jest.fn().mockRejectedValue(new Error('Mock Error'));
+
+      try {
+        await authService.recoverPassword(userId, 'newPassword123');
+
+        expect(false).toBe(true);
+      } catch (e) {
+        const otp = await AuthOTP.findOne({
+          where: { userId, type: 'recover' },
+        });
+
+        expect(otp).not.toBeNull();
+      }
+
+      UserAccount.update = update;
     });
   });
 });

@@ -6,77 +6,48 @@ import 'tests/db-setup';
 describe('User Service', () => {
   describe('get user data', () => {
     it('pending user account', async () => {
-      const user = await User.create({
-        firstName: 'Joan',
-        lastName: 'Doe',
-      });
+      const firstName = 'Joan';
+      const lastName = 'Doe';
+      const email = 'joandoe@gmail.com';
+      const password = 'joanD0epa$$';
+      const status = 'pending';
 
-      const acct = await UserAccount.create({
-        userId: user.userId,
-        email: 'joandoe@gmail.com',
-        password: 'joanD0epa$$',
-      });
+      const { userId } = await User.create({ firstName, lastName });
+      await UserAccount.create({ userId, email, password, status });
 
-      const data = await userService.getUserData(user.userId);
-
-      expect(data).toMatchObject({
-        firstName: user.firstName,
-        lastName: user.lastName,
-        email: acct.email,
-        status: acct.status,
-      });
+      const data = await userService.getUserData(userId);
+      expect(data).toMatchObject({ firstName, lastName, email, status });
     });
 
     it('active user account', async () => {
-      const u = await User.create({
-        firstName: 'Jeronimo',
-        lastName: 'Doe',
-      });
+      const firstName = 'Jeronimo';
+      const lastName = 'Doe';
+      const email = 'jeronimodoe@gmail.com';
+      const password = 'jeroD0ePa$$';
+      const status = 'active';
 
-      const a = await UserAccount.create({
-        userId: u.userId,
-        email: 'jeronimodoe@gmail.com',
-        password: 'jeroD0ePa$$',
-        status: 'active',
-      });
+      const { userId } = await User.create({ firstName, lastName });
+      await UserAccount.create({ userId, email, password, status });
 
-      const data = await userService.getUserData(u.userId);
-
-      expect(data).toMatchObject({
-        firstName: u.firstName,
-        lastName: u.lastName,
-        email: a.email,
-        status: a.status,
-      });
+      const data = await userService.getUserData(userId);
+      expect(data).toMatchObject({ firstName, lastName, email, status });
     });
 
     it('active user account and user identity', async () => {
-      const u = await User.create({
-        firstName: 'Jonah',
-        lastName: 'Doe',
-      });
+      const firstName = 'Jonah';
+      const lastName = 'Doe';
+      const email = 'jonahdoe@gmail.com';
+      const password = 'jonahD0ePa$$';
+      const status = 'active';
+      const id = '49248923240536542';
+      const providerType = 'google';
 
-      const a = await UserAccount.create({
-        userId: u.userId,
-        email: 'jonahdoe@gmail.com',
-        password: 'jonahD0ePa$$',
-        status: 'active',
-      });
+      const { userId } = await User.create({ firstName, lastName });
+      await UserAccount.create({ userId, email, password, status });
+      await UserIdentity.create({ id, userId, providerType });
 
-      await UserIdentity.create({
-        id: '49248923240536542',
-        userId: u.userId,
-        providerType: 'google',
-      });
-
-      const data = await userService.getUserData(u.userId);
-
-      expect(data).toMatchObject({
-        firstName: u.firstName,
-        lastName: u.lastName,
-        email: a.email,
-        status: a.status,
-      });
+      const data = await userService.getUserData(userId);
+      expect(data).toMatchObject({ firstName, lastName, email, status });
     });
   });
 });
