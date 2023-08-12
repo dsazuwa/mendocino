@@ -369,4 +369,92 @@ describe('Recover Account', () => {
       expect(usedOTP).toBeNull();
     });
   });
+
+  describe(`PATCH ${BASE_URL}/reactivate`, () => {
+    it('should reactivate inactive user', async () => {
+      const status = 'inactive';
+
+      const { userId } = await User.create({
+        firstName: 'Janelle',
+        lastName: 'Doe',
+      });
+
+      await UserAccount.create({
+        userId,
+        email: 'janelledoe@gmail.com',
+        password: 'janelleD0ePa$$',
+        status,
+      });
+
+      const token = authService.generateJWT(userId, 'email');
+
+      let a = await UserAccount.findOne({ where: { userId, status } });
+      expect(a).not.toBeNull();
+
+      await request
+        .patch(`${BASE_URL}/reactivate`)
+        .auth(token, { type: 'bearer' })
+        .expect(200);
+
+      a = await UserAccount.findOne({ where: { userId, status: 'active' } });
+      expect(a).not.toBeNull();
+    });
+
+    it('should fail for active user', async () => {
+      const status = 'active';
+      const { userId } = await User.create({
+        firstName: 'Josee',
+        lastName: 'Doe',
+      });
+
+      await UserAccount.create({
+        userId,
+        email: 'joseedoe@gmail.com',
+        password: 'joseeD0ePa$$',
+        status,
+      });
+
+      const token = authService.generateJWT(userId, 'email');
+
+      let a = UserAccount.findOne({ where: { userId, status } });
+      expect(a).resolves.not.toBeNull();
+
+      await request
+        .patch(`${BASE_URL}/reactivate`)
+        .auth(token, { type: 'bearer' })
+        .expect(401);
+
+      a = UserAccount.findOne({ where: { userId, status } });
+      expect(a).not.toBeNull();
+    });
+
+    it('should fail for pending user', async () => {
+      const status = 'pending';
+
+      const { userId } = await User.create({
+        firstName: 'Jaclyn',
+        lastName: 'Doe',
+      });
+
+      await UserAccount.create({
+        userId,
+        email: 'jaclyndoe@gmail.com',
+        password: 'jaclynD0ePa$$',
+        status,
+      });
+
+      const token = authService.generateJWT(userId, 'email');
+
+      let a = UserAccount.findOne({ where: { userId, status } });
+      expect(a).resolves.not.toBeNull();
+
+      await request
+        .patch(`${BASE_URL}/reactivate`)
+        .auth(token, { type: 'bearer' })
+        .expect(401);
+
+      a = UserAccount.findOne({ where: { userId, status } });
+      expect(a).not.toBeNull();
+    });
+  });
 });

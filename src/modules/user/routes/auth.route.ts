@@ -8,11 +8,13 @@ import {
   googleLogin,
   login,
   logout,
+  reactivate,
   recoverPassword,
   register,
   requestPasswordRecovery,
   verifyRecoveryOTP,
 } from '@user/controllers/auth.controller';
+import { authenticateInactive } from '@user/middleware/auth/inactive.auth';
 import {
   loginRules,
   recoverRules,
@@ -69,5 +71,7 @@ authRouter.post(
 );
 authRouter.post('/recover/:otp', verifyOTPRules, validate, verifyRecoveryOTP);
 authRouter.patch('/recover/:otp', recoverRules, validate, recoverPassword);
+
+authRouter.patch('/reactivate', authenticateInactive, reactivate);
 
 export default authRouter;

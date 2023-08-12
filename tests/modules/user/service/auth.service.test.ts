@@ -519,4 +519,35 @@ describe('Auth service', () => {
       UserAccount.update = update;
     });
   });
+
+  describe('reactivate', () => {
+    let userId: number;
+
+    beforeAll(async () => {
+      const user = await User.create({
+        firstName: 'Jery',
+        lastName: 'Doe',
+      });
+
+      userId = user.userId;
+
+      await UserAccount.create({
+        userId,
+        email: 'jerrydoe@gmail.com',
+        password: 'jerryD0ePa$$',
+        status: 'inactive',
+      });
+    });
+
+    it('should update status', async () => {
+      let account = await UserAccount.findByPk(userId);
+      expect(account?.status).toBe('inactive');
+
+      const result = await authService.reactivate(userId);
+      expect(result[0]).toBe(1);
+
+      account = await UserAccount.findByPk(userId);
+      expect(account?.status).toBe('active');
+    });
+  });
 });

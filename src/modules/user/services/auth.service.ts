@@ -210,6 +210,9 @@ const authService = {
         },
       );
     }),
+
+  reactivate: (userId: number) =>
+    UserAccount.update({ status: 'active' }, { where: { userId } }),
 };
 
 export default authService;

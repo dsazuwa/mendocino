@@ -247,3 +247,26 @@ export const recoverPassword = async (
     next(e);
   }
 };
+
+export const reactivate = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const userId = req.user?.userId ?? -1;
+
+    await authService.reactivate(userId);
+
+    const userData = await userService.getUserData(userId);
+
+    authenticateResponse(
+      res,
+      authService.generateJWT(userId, 'email'),
+      messages.REACTIVATE_SUCCESS,
+      userData,
+    );
+  } catch (e) {
+    next(e);
+  }
+};

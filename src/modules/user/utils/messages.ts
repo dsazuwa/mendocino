@@ -19,6 +19,8 @@ const messages = Object.freeze({
 
   VERIFY_RECOVERY_SUCCESS: 'Account verified!',
   RECOVER_PASSWORD_SUCCESS: 'Password successfully reset!',
+
+  REACTIVATE_SUCCESS: 'Account reactivated!',
 });
 
 export default messages;
