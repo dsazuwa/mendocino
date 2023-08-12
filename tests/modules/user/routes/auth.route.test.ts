@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 
 import { facebookLogin, googleLogin } from '@user/controllers/auth.controller';
-import { User, UserAccount, UserIdentity } from '@user/models';
+import { AuthOTP, User, UserAccount, UserIdentity } from '@user/models';
 import authService from '@user/services/auth.service';
 import userService from '@user/services/user.service';
 
@@ -202,5 +202,171 @@ describe('Email Authentication', () => {
 
     const token = getTokenFrom(response.headers['set-cookie']);
     expect(token).toEqual('');
+  });
+});
+
+describe('Recover Account', () => {
+  const mockOTP = '123456';
+
+  describe(`POST ${BASE_URL}/recover`, () => {
+    it('should create a new recover otp', async () => {
+      const email = 'janetdoe@gmail.com';
+
+      const { userId } = await User.create({
+        firstName: 'Janet',
+        lastName: 'Doe',
+      });
+      await UserAccount.create({ userId, email, password: 'janetD0epa$$' });
+
+      await request.post(`${BASE_URL}/recover`).send({ email }).expect(200);
+
+      const otp = await AuthOTP.findOne({ where: { userId, type: 'recover' } });
+      expect(otp).not.toBeNull();
+
+      await request.post(`${BASE_URL}/recover`).send({ email }).expect(200);
+
+      const newOTP = await AuthOTP.findOne({
+        where: { userId, type: 'recover' },
+      });
+      expect(newOTP).not.toBeNull();
+      expect(newOTP?.id).not.toEqual(otp?.id);
+    });
+
+    it('should fail to create new otp on user_account with null password', async () => {
+      const { userId } = await User.create({
+        firstName: 'Ja',
+        lastName: 'Doe',
+      });
+
+      const email = 'jadoe@gmail.com';
+      await UserAccount.create({ userId, email });
+
+      await request.post(`${BASE_URL}/recover`).send({ email }).expect(403);
+    });
+  });
+
+  describe(`POST ${BASE_URL}/recover/:otp`, () => {
+    const email = 'jdoe@gmail.com';
+    let userId: number;
+
+    beforeAll(async () => {
+      const u = await User.create({ firstName: 'J', lastName: 'Doe' });
+      userId = u.userId;
+
+      await UserAccount.create({ userId, email, password: 'jD0ePa$$' });
+    });
+
+    it('should verify user account for recovery', async () => {
+      await AuthOTP.destroy({
+        where: { userId, type: 'recover' },
+      });
+
+      await AuthOTP.create({
+        userId,
+        type: 'recover',
+        password: mockOTP,
+        expiresAt: AuthOTP.getExpiration(),
+      });
+
+      await request
+        .post(`${BASE_URL}/recover/${mockOTP}`)
+        .send({ email })
+        .expect(200);
+    });
+
+    it('should fail for non-numeric otp', async () => {
+      await request
+        .post(`${BASE_URL}/recover/nonnumeric`)
+        .send({ email })
+        .expect(400);
+    });
+
+    it('should fail for wrong otp', async () => {
+      await request
+        .post(`${BASE_URL}/recover/121241`)
+        .send({ email })
+        .expect(401);
+    });
+  });
+
+  describe(`PATCH ${BASE_URL}/recover/:otp`, () => {
+    const newPassword = 'jinsNewD0epa$$';
+    const email = 'jindoe@gmail.com';
+
+    let userId: number;
+
+    beforeAll(async () => {
+      const u = await User.create({ firstName: 'Jin', lastName: 'Doe' });
+      userId = u.userId;
+
+      await UserAccount.create({ userId, email, password: 'jinD0ePa$$' });
+    });
+    it('should fail on invalid password', async () => {
+      await request
+        .patch(`${BASE_URL}/recover/${mockOTP}`)
+        .send({ email, password: 'newpassword' })
+        .expect(400);
+    });
+
+    it('should fail on non-numeric otp', async () => {
+      await request
+        .patch(`${BASE_URL}/recover/non0numeric`)
+        .send({ email, password: 'newPa$$w0rd' })
+        .expect(400);
+    });
+
+    it('should fail on wrong otp', async () => {
+      await request
+        .patch(`${BASE_URL}/recover/0111`)
+        .send({ email, password: newPassword })
+        .expect(401);
+    });
+
+    it('should fail on expired otp', async () => {
+      await AuthOTP.destroy({
+        where: { userId, type: 'recover' },
+      });
+
+      await AuthOTP.create({
+        userId,
+        type: 'recover',
+        password: mockOTP,
+        expiresAt: new Date(),
+      });
+
+      await request
+        .patch(`${BASE_URL}/recover/${mockOTP}`)
+        .send({ email, password: newPassword })
+        .expect(401);
+    });
+
+    it('should reset password', async () => {
+      await AuthOTP.destroy({
+        where: { userId, type: 'recover' },
+      });
+
+      await AuthOTP.create({
+        userId,
+        type: 'recover',
+        password: mockOTP,
+        expiresAt: AuthOTP.getExpiration(),
+      });
+
+      await request
+        .patch(`${BASE_URL}/recover/${mockOTP}`)
+        .send({ email, password: newPassword })
+        .expect(200);
+
+      await request
+        .post(`/api/auth/login`)
+        .send({ email, password: newPassword })
+        .expect(200);
+
+      const usedOTP = await AuthOTP.findOne({
+        where: { userId, type: 'recover' },
+      });
+
+      expect(usedOTP).toBeNull();
+    });
   });
 });
