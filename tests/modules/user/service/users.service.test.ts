@@ -244,4 +244,118 @@ describe('User Service', () => {
       expect(result).toBe(false);
     });
   });
+
+  describe('revoke social authentication', () => {
+    it('should delete identity if user has an account with a password', async () => {
+      const { userId } = await User.create({
+        firstName: 'Jessica',
+        lastName: 'Doe',
+      });
+
+      const acct = await UserAccount.create({
+        userId,
+        email: 'jessicadoe@gmail.com',
+        password: 'jessicaD0ePa$$',
+      });
+
+      const providerType = 'google';
+
+      expect(acct.password).not.toBeNull();
+
+      await UserIdentity.create({
+        id: '3654755345356474363',
+        userId,
+        providerType,
+      });
+
+      await usersService.revokeSocialAuthentication(userId, providerType);
+
+      const i = await UserIdentity.findOne({ where: { userId, providerType } });
+      expect(i).toBeNull();
+
+      const a = await UserAccount.findByPk(userId);
+      expect(a).not.toBeNull();
+
+      const u = await User.findByPk(userId);
+      expect(u).not.toBeNull();
+    });
+
+    it('should delete identity if user has no account with password but other identities', async () => {
+      const { userId } = await User.create({
+        firstName: 'Jack',
+        lastName: 'Doe',
+      });
+
+      const acct = await UserAccount.create({
+        userId,
+        email: 'jackdoe@gmail.com',
+      });
+
+      expect(acct.password).toBeNull();
+
+      await UserIdentity.create({
+        id: '52429584297428924',
+        userId,
+        providerType: 'google',
+      });
+
+      await UserIdentity.create({
+        id: '5899138892342873973',
+        userId,
+        providerType: 'facebook',
+      });
+
+      await usersService.revokeSocialAuthentication(userId, 'facebook');
+
+      let i = await UserIdentity.findOne({
+        where: { userId, providerType: 'facebook' },
+      });
+      expect(i).toBeNull();
+
+      i = await UserIdentity.findOne({
+        where: { userId, providerType: 'google' },
+      });
+      expect(i).not.toBeNull();
+
+      const a = await UserAccount.findByPk(userId);
+      expect(a).not.toBeNull();
+      expect(a?.password).toBeNull();
+
+      const u = await User.findByPk(userId);
+      expect(u).not.toBeNull();
+    });
+
+    it('should delete user if user has neither an account with a password nor anothor identitiy', async () => {
+      const { userId } = await User.create({
+        firstName: 'Jess',
+        lastName: 'Doe',
+      });
+
+      const acct = await UserAccount.create({
+        userId,
+        email: 'jessdoe@gmail.com',
+      });
+
+      const providerType = 'google';
+
+      expect(acct.password).toBeNull();
+
+      await UserIdentity.create({
+        id: '940442483287498272393',
+        userId,
+        providerType,
+      });
+
+      await usersService.revokeSocialAuthentication(userId, providerType);
+
+      const i = await UserIdentity.findOne({ where: { userId, providerType } });
+      expect(i).toBeNull();
+
+      const a = await UserAccount.findByPk(userId);
+      expect(a).toBeNull();
+
+      const u = await User.findByPk(userId);
+      expect(u).toBeNull();
+    });
+  });
 });

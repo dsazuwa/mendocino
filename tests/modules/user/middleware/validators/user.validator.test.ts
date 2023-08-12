@@ -1,6 +1,7 @@
 import {
   changePasswordSchema,
   createPasswordSchema,
+  revokeSocialAuthenticationSchema,
   verifyEmailSchema,
 } from '@user/middleware/validators/users.validator';
 
@@ -50,6 +51,25 @@ describe('User Validator', () => {
 
     testPasswordRules(changePasswordSchema, {
       currentPassword: 'currentD0ePa$$',
+    });
+  });
+
+  describe('revoke social auth schema', () => {
+    it('should pass for valid provider', () => {
+      let data = { body: { provider: 'google' } };
+      expect(() => revokeSocialAuthenticationSchema.parse(data)).not.toThrow();
+
+      data = { body: { provider: 'facebook' } };
+      expect(() => revokeSocialAuthenticationSchema.parse(data)).not.toThrow();
+    });
+
+    it('should throw error for invalid provider', () => {
+      const providers: string[] = ['g', 'goog', '', ' ', 'yahoo'];
+
+      providers.forEach((provider) => {
+        const data = { body: { provider } };
+        expect(() => revokeSocialAuthenticationSchema.parse(data)).toThrow();
+      });
     });
   });
 });

@@ -21,3 +21,11 @@ export const changePasswordSchema = object({
   path: ['newPassword'],
   message: 'New password and current password must not match',
 });
+
+export const revokeSocialAuthenticationSchema = object({
+  body: object({
+    provider: string().refine((p: string) =>
+      ['google', 'facebook'].includes(p),
+    ),
+  }),
+});

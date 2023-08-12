@@ -1,3 +1,4 @@
+import assert from 'assert';
 import { NextFunction, Request, Response } from 'express';
 
 import authService from '@user/services/auth.service';
@@ -101,6 +102,59 @@ export const changePassword = async (
       return res.status(404).json({ message: messages.PASSWORD_CHANGE_FAILED });
 
     res.status(200).json({ message: messages.PASSWORD_CHANGE_SUCCESS });
+  } catch (e) {
+    next(e);
+  }
+};
+
+export const revokeSocialAuthentication = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const userId = req.user?.userId ?? -1;
+    const { provider } = req.body;
+
+    const { REVOKE_SOCIAL_SUCCEES } = messages;
+
+    const { account, user, identity, otherIdentity } =
+      await usersService.revokeSocialAuthentication(userId, provider);
+
+    if (account) {
+      res.cookie('access-token', authService.generateJWT(userId, 'email'), {
+        secure: true,
+        httpOnly: true,
+        expires: new Date(Date.now() + 86400 * 1000),
+      });
+
+      return res.status(200).json({
+        message: REVOKE_SOCIAL_SUCCEES(provider),
+        effect: 'Switched to email login',
+      });
+    }
+
+    if (user === false) {
+      res.clearCookie('access-token');
+
+      return res.status(200).json({
+        message: REVOKE_SOCIAL_SUCCEES(provider),
+        effect: 'Deleted user',
+      });
+    }
+
+    assert(identity === false);
+
+    res.cookie('access-token', authService.generateJWT(userId, otherIdentity), {
+      secure: true,
+      httpOnly: true,
+      expires: new Date(Date.now() + 86400 * 1000),
+    });
+
+    res.status(200).json({
+      message: REVOKE_SOCIAL_SUCCEES(provider),
+      effect: `Switched to ${otherIdentity} login`,
+    });
   } catch (e) {
     next(e);
   }

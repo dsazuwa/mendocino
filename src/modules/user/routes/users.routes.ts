@@ -8,6 +8,7 @@ import {
   getUserData,
   greet,
   resendVerifyEmail,
+  revokeSocialAuthentication,
   verifyEmail,
 } from '@user/controllers/users.controller';
 import { authenticate, authenticateInactive } from '@user/middleware/auth';
@@ -15,6 +16,7 @@ import { permitPending } from '@user/middleware/route-guards';
 import {
   changePasswordSchema,
   createPasswordSchema,
+  revokeSocialAuthenticationSchema,
   verifyEmailSchema,
 } from '@user/middleware/validators/users.validator';
 
@@ -46,6 +48,12 @@ usersRouter.patch(
   '/me/password',
   validate(changePasswordSchema),
   changePassword,
+);
+
+usersRouter.patch(
+  '/me/revoke-social-auth',
+  validate(revokeSocialAuthenticationSchema),
+  revokeSocialAuthentication,
 );
 
 export default usersRouter;

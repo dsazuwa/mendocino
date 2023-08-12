@@ -2,7 +2,18 @@ import { Op, QueryTypes } from 'sequelize';
 
 import sequelize from '@App/db';
 
-import { AuthOTP, User, UserAccount } from '@user/models';
+import {
+  AuthOTP,
+  ProviderType,
+  User,
+  UserAccount,
+  UserIdentity,
+} from '@user/models';
+
+const deleteUser = (userId: number) => User.destroy({ where: { userId } });
+
+const deleteIdentity = (userId: number, providerType: ProviderType) =>
+  UserIdentity.destroy({ where: { userId, providerType } });
 
 const usersService = {
   getUserData: async (userId: number) => {
@@ -63,6 +74,36 @@ const usersService = {
         individualHooks: true,
       },
     ),
+
+  revokeSocialAuthentication: async (
+    userId: number,
+    providerType: ProviderType,
+  ) => {
+    const account = await UserAccount.findOne({
+      where: { userId, password: { [Op.ne]: null } },
+    });
+
+    if (account) {
+      await deleteIdentity(userId, providerType);
+      return { account: true };
+    }
+
+    const otherIdentities = await UserIdentity.findAll({
+      where: { userId, providerType: { [Op.ne]: providerType } },
+    });
+
+    if (otherIdentities.length === 0) {
+      await deleteUser(userId);
+      return { user: false };
+    }
+
+    await deleteIdentity(userId, providerType);
+
+    return {
+      identity: false,
+      otherIdentity: otherIdentities[0].providerType,
+    };
+  },
 };
 
 export default usersService;

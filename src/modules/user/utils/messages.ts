@@ -1,3 +1,9 @@
+const captitalizaFirst = (str: string) => {
+  if (str.length === 0) return str;
+
+  return str.charAt(0).toUpperCase() + str.slice(1);
+};
+
 const messages = Object.freeze({
   // ERROR MESSAGES
 
@@ -38,6 +44,9 @@ const messages = Object.freeze({
 
   PASSWORD_CHANGE_FAILED: 'User account does not exist',
   PASSWORD_CHANGE_SUCCESS: 'Password Successfully changed!',
+
+  REVOKE_SOCIAL_SUCCEES: (provider: string) =>
+    `Successfully revoked ${captitalizaFirst(provider)} authentication`,
 });
 
 export default messages;

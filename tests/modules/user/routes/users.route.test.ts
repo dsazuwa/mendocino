@@ -1,7 +1,9 @@
-import { AuthOTP, User, UserAccount } from '@user/models';
+import { JwtPayload, verify } from 'jsonwebtoken';
+
+import { AuthOTP, User, UserAccount, UserIdentity } from '@user/models';
 import authService from '@user/services/auth.service';
 
-import { request } from 'tests/supertest.helper';
+import { getTokenFrom, request } from 'tests/supertest.helper';
 
 import 'tests/db-setup';
 
@@ -305,6 +307,132 @@ describe('Users Routes', () => {
         .auth(jwt, { type: 'bearer' })
         .send({ currentPassword: password, password: newPassword })
         .expect(400);
+    });
+  });
+
+  describe(`PATCH ${BASE_URL}/me/revoke-social-auth`, () => {
+    it('should delete identity and swtich to email login if user has an account with a password', async () => {
+      const { userId } = await User.create({
+        firstName: 'Jennifer',
+        lastName: 'Doe',
+      });
+
+      const a = await UserAccount.create({
+        userId,
+        email: 'jennifer@gmail.com',
+        password: 'jessicaD0ePa$$',
+      });
+
+      expect(a.password).not.toBeNull();
+
+      await UserIdentity.create({
+        id: '3654755345356474363',
+        userId,
+        providerType: 'google',
+      });
+
+      const jwt = authService.generateJWT(userId, 'google');
+
+      const response = await request
+        .patch(`${BASE_URL}/me/revoke-social-auth`)
+        .send({ provider: 'google' })
+        .auth(jwt, { type: 'bearer' });
+
+      expect(response.status).toBe(200);
+
+      const accessToken = getTokenFrom(response.headers['set-cookie']);
+      expect(accessToken).not.toEqual('');
+
+      const decoded = verify(accessToken, process.env.JWT_SECRET) as JwtPayload;
+      expect(decoded.userId).toBe(userId);
+      expect(decoded.providerType).toBe('email');
+    });
+
+    it('should delete identity if user has no account with a password, but has some other identity', async () => {
+      const { userId } = await User.create({
+        firstName: 'Jack',
+        lastName: 'Doe',
+      });
+
+      const acct = await UserAccount.create({
+        userId,
+        email: 'jackdoe@gmail.com',
+      });
+
+      expect(acct.password).toBeNull();
+
+      await UserIdentity.create({
+        id: '687453534367486564',
+        userId,
+        providerType: 'google',
+      });
+
+      await UserIdentity.create({
+        id: '234267589676438787',
+        userId,
+        providerType: 'facebook',
+      });
+
+      const jwt = authService.generateJWT(userId, 'google');
+
+      const response = await request
+        .patch(`${BASE_URL}/me/revoke-social-auth`)
+        .send({ provider: 'google' })
+        .auth(jwt, { type: 'bearer' });
+
+      expect(response.status).toBe(200);
+
+      const accessToken = getTokenFrom(response.headers['set-cookie']);
+      expect(accessToken).not.toEqual('');
+
+      const decoded = verify(accessToken, process.env.JWT_SECRET) as JwtPayload;
+      expect(decoded.userId).toBe(userId);
+      expect(decoded.providerType).toBe('facebook');
+
+      let i = await UserIdentity.findOne({
+        where: { userId, providerType: 'google' },
+      });
+      expect(i).toBeNull();
+
+      i = await UserIdentity.findOne({
+        where: { userId, providerType: 'facebook' },
+      });
+      expect(i).not.toBeNull();
+    });
+
+    it('should delete user if user has neither an account with a password, nor some other identity', async () => {
+      const { userId } = await User.create({
+        firstName: 'Jas',
+        lastName: 'Doe',
+      });
+
+      const a = await UserAccount.create({
+        userId,
+        email: 'jasdoe@gmail.com',
+      });
+
+      expect(a.password).toBeNull();
+
+      await UserIdentity.create({
+        id: '7934872657237824972478',
+        userId,
+        providerType: 'google',
+      });
+
+      const jwt = authService.generateJWT(userId, 'google');
+
+      const response = await request
+        .patch(`${BASE_URL}/me/revoke-social-auth`)
+        .send({ provider: 'google' })
+        .auth(jwt, { type: 'bearer' });
+
+      expect(response.status).toBe(200);
+
+      const accessToken = getTokenFrom(response.headers['set-cookie']);
+      expect(accessToken).toEqual('');
+
+      const u = await User.findByPk(userId);
+      expect(u).toBe(null);
     });
   });
 });
