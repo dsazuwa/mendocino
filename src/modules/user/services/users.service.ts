@@ -1,4 +1,4 @@
-import { QueryTypes } from 'sequelize';
+import { Op, QueryTypes } from 'sequelize';
 
 import sequelize from '@App/db';
 
@@ -35,6 +35,25 @@ const usersService = {
         { where: { userId }, transaction },
       );
     }),
+
+  changePassword: async (
+    userId: number,
+    currentPassword: string,
+    newPassword: string,
+  ) => {
+    const account = await UserAccount.findOne({
+      where: { userId, password: { [Op.ne]: null } },
+    });
+
+    if (!account || !account.comparePasswords(currentPassword)) return false;
+
+    await UserAccount.update(
+      { password: newPassword },
+      { where: { userId }, individualHooks: true },
+    );
+
+    return true;
+  },
 };
 
 export default usersService;

@@ -100,4 +100,97 @@ describe('User Service', () => {
       UserAccount.update = update;
     });
   });
+
+  describe('change password', () => {
+    it('should change password and return true for valid userId', async () => {
+      const password = 'jeanD0epa$$';
+      const newPassword = 'newjeanD0epa$$';
+
+      const { userId } = await User.create({
+        firstName: 'Jean Paul',
+        lastName: 'Doe',
+      });
+
+      await UserAccount.create({
+        userId,
+        email: 'jeanpauldoe@gmail.com',
+        password,
+      });
+
+      const result = await usersService.changePassword(
+        userId,
+        password,
+        newPassword,
+      );
+      expect(result).toBe(true);
+
+      const a = await UserAccount.findOne({ where: { userId } });
+      expect(a?.comparePasswords(newPassword)).toBe(true);
+    });
+
+    it('should return false for wrong current password', async () => {
+      const password = 'julietteD0epa$$';
+      const newPassword = 'newjeanD0epa$$';
+
+      const { userId } = await User.create({
+        firstName: 'Juliette',
+        lastName: 'Doe',
+      });
+
+      await UserAccount.create({
+        userId,
+        email: 'juliettepauldoe@gmail.com',
+        password,
+      });
+
+      const result = await usersService.changePassword(
+        userId,
+        newPassword,
+        newPassword,
+      );
+
+      expect(result).toBe(false);
+
+      const a = await UserAccount.findOne({ where: { userId } });
+      expect(a?.comparePasswords(newPassword)).toBe(false);
+      expect(a?.comparePasswords(password)).toBe(true);
+    });
+
+    it('should return false if user_account password is null', async () => {
+      const newPassword = 'newjolieD0epa$$';
+
+      const { userId } = await User.create({
+        firstName: 'Jolie',
+        lastName: 'Doe',
+      });
+
+      const { password } = await UserAccount.create({
+        userId,
+        email: 'joliepauldoe@gmail.com',
+      });
+
+      expect(password).toBeNull();
+
+      const result = await usersService.changePassword(
+        userId,
+        'somePassword',
+        newPassword,
+      );
+
+      expect(result).toBe(false);
+
+      const a = await UserAccount.findByPk(userId);
+      expect(a?.password).toBeNull();
+    });
+
+    it('should return false for invalid userId', async () => {
+      const result = await usersService.changePassword(
+        10000,
+        'wrongOldPassword',
+        'newpassword',
+      );
+
+      expect(result).toBe(false);
+    });
+  });
 });

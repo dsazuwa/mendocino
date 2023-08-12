@@ -32,6 +32,9 @@ const messages = Object.freeze({
 
   REQUEST_VERIFICATION: 'New verification OTP sent',
   VERIFY_EMAIL_SUCCESS: 'Email Successfully Verified!',
+
+  PASSWORD_CHANGE_FAILED: 'User account does not exist',
+  PASSWORD_CHANGE_SUCCESS: 'Password Successfully changed!',
 });
 
 export default messages;

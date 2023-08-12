@@ -3,6 +3,7 @@ import { Router } from 'express';
 import { validate } from '@App/middleware';
 
 import {
+  changePassword,
   getUserData,
   greet,
   resendVerifyEmail,
@@ -10,7 +11,10 @@ import {
 } from '@user/controllers/users.controller';
 import { authenticate, authenticateInactive } from '@user/middleware/auth';
 import { permitPending } from '@user/middleware/route-guards';
-import { verifyEmailSchema } from '@user/middleware/validators/users.validator';
+import {
+  changePasswordSchema,
+  verifyEmailSchema,
+} from '@user/middleware/validators/users.validator';
 
 const usersRouter = Router();
 
@@ -28,6 +32,12 @@ usersRouter.patch(
   validate(verifyEmailSchema),
   permitPending,
   verifyEmail,
+);
+
+usersRouter.patch(
+  '/me/password',
+  validate(changePasswordSchema),
+  changePassword,
 );
 
 export default usersRouter;

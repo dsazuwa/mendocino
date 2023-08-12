@@ -61,3 +61,27 @@ export const verifyEmail = async (
     next(e);
   }
 };
+
+export const changePassword = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const userId = req.user?.userId ?? -1;
+    const { currentPassword, newPassword } = req.body;
+
+    const result = await usersService.changePassword(
+      userId,
+      currentPassword,
+      newPassword,
+    );
+
+    if (!result)
+      return res.status(404).json({ message: messages.PASSWORD_CHANGE_FAILED });
+
+    res.status(200).json({ message: messages.PASSWORD_CHANGE_SUCCESS });
+  } catch (e) {
+    next(e);
+  }
+};
