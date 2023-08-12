@@ -5,7 +5,7 @@ import usersService from '@user/services/users.service';
 import messages from '@user/utils/messages';
 
 export const greet = async (req: Request, res: Response) => {
-  res.json({ message: `Hi!` });
+  res.status(200).json({ message: `Hi!` });
 };
 
 export const getUserData = async (
@@ -57,6 +57,26 @@ export const verifyEmail = async (
     await usersService.verifyEmail(userId);
 
     res.status(200).json({ message: messages.VERIFY_EMAIL_SUCCESS });
+  } catch (e) {
+    next(e);
+  }
+};
+
+export const createPassword = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const userId = req.user?.userId ?? -1;
+    const { password } = req.body;
+
+    const result = await usersService.createPassword(userId, password);
+
+    if (result[0] === 0)
+      return res.status(409).json({ message: messages.CREATE_PASSWORD_FAILED });
+
+    res.status(200).json({ message: messages.CREATE_PASSWORD_SUCCESS });
   } catch (e) {
     next(e);
   }

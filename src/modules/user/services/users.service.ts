@@ -54,6 +54,15 @@ const usersService = {
 
     return true;
   },
+
+  createPassword: (userId: number, password: string) =>
+    UserAccount.update(
+      { password },
+      {
+        where: { userId, password: null },
+        individualHooks: true,
+      },
+    ),
 };
 
 export default usersService;

@@ -101,6 +101,57 @@ describe('User Service', () => {
     });
   });
 
+  describe('create password', () => {
+    it('should create password if user password is null', async () => {
+      const { userId } = await User.create({
+        firstName: 'Josephine',
+        lastName: 'Doe',
+      });
+
+      let a: UserAccount | null = await UserAccount.create({
+        userId,
+        email: 'josephinedoe@gmail.com',
+      });
+
+      await UserIdentity.create({
+        id: '923042892739426871638',
+        userId,
+        providerType: 'google',
+      });
+
+      const password = 'josephineD0ePa$$';
+      expect(a.comparePasswords(password)).toBe(false);
+
+      const result = await usersService.createPassword(userId, password);
+      expect(result[0]).toBe(1);
+
+      a = await UserAccount.findByPk(userId);
+      expect(a?.comparePasswords(password)).toBe(true);
+    });
+
+    it('should not create password if user password is null', async () => {
+      const { userId } = await User.create({
+        firstName: 'Julie',
+        lastName: 'Doe',
+      });
+
+      let a: UserAccount | null = await UserAccount.create({
+        userId,
+        email: 'juliedoe@gmail.com',
+        password: 'julieD0ePa$$',
+      });
+
+      const newPassword = 'newjulieD0ePa$$';
+      expect(a.comparePasswords(newPassword)).toBe(false);
+
+      const result = await usersService.createPassword(userId, newPassword);
+      expect(result[0]).toBe(0);
+
+      a = await UserAccount.findByPk(userId);
+      expect(a?.comparePasswords(newPassword)).toBe(false);
+    });
+  });
+
   describe('change password', () => {
     it('should change password and return true for valid userId', async () => {
       const password = 'jeanD0epa$$';

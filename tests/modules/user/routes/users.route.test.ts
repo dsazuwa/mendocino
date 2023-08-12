@@ -183,6 +183,61 @@ describe('Users Routes', () => {
     });
   });
 
+  describe(`POST ${BASE_URL}/me/password`, () => {
+    it('should create password for account with null password', async () => {
+      const { userId } = await User.create({
+        firstName: 'Jamie',
+        lastName: 'Doe',
+      });
+
+      let a: UserAccount | null = await UserAccount.create({
+        userId,
+        email: 'jaimedoe@gmail.com',
+      });
+
+      const jwt = authService.generateJWT(userId, 'email');
+      const password = 'jaimeD0ePa$$';
+
+      expect(a?.comparePasswords(password)).toBe(false);
+
+      await request
+        .post(`${BASE_URL}/me/password`)
+        .auth(jwt, { type: 'bearer' })
+        .send({ password })
+        .expect(200);
+
+      a = await UserAccount.findByPk(userId);
+      expect(a?.comparePasswords(password)).toBe(true);
+    });
+
+    it('should fail to create password for account with non-null password', async () => {
+      const { userId } = await User.create({
+        firstName: 'Julien',
+        lastName: 'Doe',
+      });
+
+      let a: UserAccount | null = await UserAccount.create({
+        userId,
+        email: 'juliendoe@gmail.com',
+        password: 'julienD0ePa$$',
+      });
+
+      const jwt = authService.generateJWT(userId, 'email');
+      const password = 'newJulienD0ePa$$';
+
+      expect(a?.comparePasswords(password)).toBe(false);
+
+      await request
+        .post(`${BASE_URL}/me/password`)
+        .auth(jwt, { type: 'bearer' })
+        .send({ password })
+        .expect(409);
+
+      a = await UserAccount.findByPk(userId);
+      expect(a?.comparePasswords(password)).toBe(false);
+    });
+  });
+
   describe(`PATCH ${BASE_URL}/me/password`, () => {
     const password = 'jeanD0ePa$$';
 

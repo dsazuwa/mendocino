@@ -4,6 +4,7 @@ import { validate } from '@App/middleware';
 
 import {
   changePassword,
+  createPassword,
   getUserData,
   greet,
   resendVerifyEmail,
@@ -13,6 +14,7 @@ import { authenticate, authenticateInactive } from '@user/middleware/auth';
 import { permitPending } from '@user/middleware/route-guards';
 import {
   changePasswordSchema,
+  createPasswordSchema,
   verifyEmailSchema,
 } from '@user/middleware/validators/users.validator';
 
@@ -32,6 +34,12 @@ usersRouter.patch(
   validate(verifyEmailSchema),
   permitPending,
   verifyEmail,
+);
+
+usersRouter.post(
+  '/me/password',
+  validate(createPasswordSchema),
+  createPassword,
 );
 
 usersRouter.patch(

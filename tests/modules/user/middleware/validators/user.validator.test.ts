@@ -1,5 +1,6 @@
 import {
   changePasswordSchema,
+  createPasswordSchema,
   verifyEmailSchema,
 } from '@user/middleware/validators/users.validator';
 
@@ -8,6 +9,10 @@ import { testOTPRules, testPasswordRules } from './common.validator';
 describe('User Validator', () => {
   describe('verify email schema', () => {
     testOTPRules(verifyEmailSchema);
+  });
+
+  describe('create password', () => {
+    testPasswordRules(createPasswordSchema);
   });
 
   describe('change password schema', () => {

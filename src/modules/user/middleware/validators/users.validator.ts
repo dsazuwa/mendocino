@@ -6,6 +6,12 @@ export const verifyEmailSchema = object({
   params: object({ otp: otpRules }),
 });
 
+export const createPasswordSchema = object({
+  body: object({
+    password: passwordRules,
+  }),
+});
+
 export const changePasswordSchema = object({
   body: object({
     currentPassword: string().trim().nonempty('Current password required'),
