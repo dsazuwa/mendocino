@@ -47,6 +47,8 @@ const messages = Object.freeze({
 
   REVOKE_SOCIAL_SUCCEES: (provider: string) =>
     `Successfully revoked ${captitalizaFirst(provider)} authentication`,
+
+  CLOSE_CLIENT_ACCOUNT: 'Account successfully closed!',
 });
 
 export default messages;

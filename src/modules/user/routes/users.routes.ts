@@ -4,6 +4,7 @@ import { validate } from '@App/middleware';
 
 import {
   changePassword,
+  closeAccount,
   createPassword,
   getUserData,
   greet,
@@ -55,5 +56,7 @@ usersRouter.patch(
   validate(revokeSocialAuthenticationSchema),
   revokeSocialAuthentication,
 );
+
+usersRouter.patch('/me/close', closeAccount);
 
 export default usersRouter;

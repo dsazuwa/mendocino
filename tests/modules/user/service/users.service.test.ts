@@ -358,4 +358,69 @@ describe('User Service', () => {
       expect(u).toBeNull();
     });
   });
+
+  describe('close account', () => {
+    it('should deactivate account if user has an account password', async () => {
+      const { userId } = await User.create({
+        firstName: 'Jeff',
+        lastName: 'Doe',
+      });
+
+      const acct = await UserAccount.create({
+        userId,
+        email: 'jeffdoe@gmail.com',
+        password: 'jeffD0ePa$$',
+      });
+
+      expect(acct.password).not.toBeNull();
+
+      await UserIdentity.create({
+        id: '2435674867433235',
+        userId,
+        providerType: 'google',
+      });
+
+      await usersService.closeAccount(userId);
+
+      const i = await UserIdentity.findOne({ where: { userId } });
+      expect(i).toBeNull();
+
+      const a = await UserAccount.findByPk(userId);
+      expect(a).not.toBeNull();
+
+      const u = await User.findByPk(userId);
+      expect(u).not.toBeNull();
+    });
+
+    it('should delete user if user does not have an account password', async () => {
+      const { userId } = await User.create({
+        firstName: 'James',
+        lastName: 'Doe',
+      });
+
+      const acct = await UserAccount.create({
+        userId,
+        email: 'jamesdoe@gmail.com',
+      });
+
+      expect(acct.password).toBeNull();
+
+      await UserIdentity.create({
+        id: '2327427478162387629874',
+        userId,
+        providerType: 'google',
+      });
+
+      await usersService.closeAccount(userId);
+
+      const i = await UserIdentity.findOne({ where: { userId } });
+      expect(i).toBeNull();
+
+      const a = await UserAccount.findByPk(userId);
+      expect(a).toBeNull();
+
+      const u = await User.findByPk(userId);
+      expect(u).toBeNull();
+    });
+  });
 });

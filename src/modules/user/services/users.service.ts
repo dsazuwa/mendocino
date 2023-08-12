@@ -7,6 +7,7 @@ import {
   ProviderType,
   User,
   UserAccount,
+  UserAccountStatusType,
   UserIdentity,
 } from '@user/models';
 
@@ -14,6 +15,19 @@ const deleteUser = (userId: number) => User.destroy({ where: { userId } });
 
 const deleteIdentity = (userId: number, providerType: ProviderType) =>
   UserIdentity.destroy({ where: { userId, providerType } });
+
+const deactivate = (userId: number) =>
+  sequelize.transaction(async (transaction) => {
+    await UserAccount.update(
+      { status: 'inactive' as UserAccountStatusType },
+      { where: { userId }, transaction },
+    );
+
+    await UserIdentity.destroy({
+      where: { userId },
+      transaction,
+    });
+  });
 
 const usersService = {
   getUserData: async (userId: number) => {
@@ -103,6 +117,14 @@ const usersService = {
       identity: false,
       otherIdentity: otherIdentities[0].providerType,
     };
+  },
+
+  closeAccount: async (userId: number) => {
+    const account = await UserAccount.findOne({
+      where: { userId, password: { [Op.ne]: null } },
+    });
+
+    return account ? deactivate(userId) : deleteUser(userId);
   },
 };
 

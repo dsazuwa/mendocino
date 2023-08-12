@@ -57,11 +57,10 @@ export const facebookLogin = async (
   }
 };
 
-const authenticateResponse = (
+export const authenticateResponse = (
   res: Response,
   jwt: string,
-  message: string,
-  user: object | null,
+  body: object,
 ) => {
   res.cookie('access-token', jwt, {
     secure: true,
@@ -69,7 +68,7 @@ const authenticateResponse = (
     expires: new Date(Date.now() + 86400 * 1000),
   });
 
-  res.status(200).json({ message, user });
+  res.status(200).json({ ...body });
 };
 
 export const register = async (
@@ -98,12 +97,10 @@ export const register = async (
 
     const userData = await usersService.getUserData(userId);
 
-    authenticateResponse(
-      res,
-      authService.generateJWT(userId, 'email'),
-      messages.REGISTER_SUCCESS,
-      userData,
-    );
+    authenticateResponse(res, authService.generateJWT(userId, 'email'), {
+      message: messages.REGISTER_SUCCESS,
+      user: userData,
+    });
   } catch (e) {
     next(e);
   }
@@ -133,12 +130,10 @@ export const login = async (
         message: messages.ERR_DEACTIVATED_ACCOUNT,
       });
 
-    authenticateResponse(
-      res,
-      authService.generateJWT(userId, 'email'),
-      messages.LOGIN_SUCCESS,
-      userData,
-    );
+    authenticateResponse(res, authService.generateJWT(userId, 'email'), {
+      message: messages.LOGIN_SUCCESS,
+      user: userData,
+    });
   } catch (e) {
     next(e);
   }
@@ -237,12 +232,10 @@ export const recoverPassword = async (
 
     const userData = await usersService.getUserData(userId);
 
-    authenticateResponse(
-      res,
-      authService.generateJWT(userId, 'email'),
-      messages.RECOVER_PASSWORD_SUCCESS,
-      userData,
-    );
+    authenticateResponse(res, authService.generateJWT(userId, 'email'), {
+      message: messages.RECOVER_PASSWORD_SUCCESS,
+      user: userData,
+    });
   } catch (e) {
     next(e);
   }
@@ -260,12 +253,10 @@ export const reactivate = async (
 
     const userData = await usersService.getUserData(userId);
 
-    authenticateResponse(
-      res,
-      authService.generateJWT(userId, 'email'),
-      messages.REACTIVATE_SUCCESS,
-      userData,
-    );
+    authenticateResponse(res, authService.generateJWT(userId, 'email'), {
+      message: messages.REACTIVATE_SUCCESS,
+      user: userData,
+    });
   } catch (e) {
     next(e);
   }

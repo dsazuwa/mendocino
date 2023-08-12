@@ -4,6 +4,7 @@ import { NextFunction, Request, Response } from 'express';
 import authService from '@user/services/auth.service';
 import usersService from '@user/services/users.service';
 import messages from '@user/utils/messages';
+import { authenticateResponse } from './auth.controller';
 
 export const greet = async (req: Request, res: Response) => {
   res.status(200).json({ message: `Hi!` });
@@ -145,16 +146,28 @@ export const revokeSocialAuthentication = async (
 
     assert(identity === false);
 
-    res.cookie('access-token', authService.generateJWT(userId, otherIdentity), {
-      secure: true,
-      httpOnly: true,
-      expires: new Date(Date.now() + 86400 * 1000),
-    });
+    const jwt = authService.generateJWT(userId, otherIdentity);
 
-    res.status(200).json({
+    authenticateResponse(res, jwt, {
       message: REVOKE_SOCIAL_SUCCEES(provider),
       effect: `Switched to ${otherIdentity} login`,
     });
+  } catch (e) {
+    next(e);
+  }
+};
+
+export const closeAccount = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const userId = req.user?.userId ?? -1;
+
+    await usersService.closeAccount(userId);
+
+    res.status(200).json({ message: messages.CLOSE_CLIENT_ACCOUNT });
   } catch (e) {
     next(e);
   }

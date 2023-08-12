@@ -435,4 +435,84 @@ describe('Users Routes', () => {
       expect(u).toBe(null);
     });
   });
+
+  describe(`PATCH ${BASE_URL}/me/close`, () => {
+    it('should set account status to inactive if user account has a password', async () => {
+      const { userId } = await User.create({
+        firstName: 'James',
+        lastName: 'Doe',
+      });
+
+      let a = (await UserAccount.create({
+        userId,
+        email: 'jamesdoe@gmail.com',
+        password: 'JairoD0ePa$$',
+      })) as UserAccount | null;
+
+      expect(a?.password).not.toBeNull();
+
+      await UserIdentity.create({
+        id: '493285792423287429704372084',
+        userId,
+        providerType: 'google',
+      });
+
+      const jwt = authService.generateJWT(userId, 'google');
+
+      const response = await request
+        .patch(`${BASE_URL}/me/close`)
+        .send({ provider: 'google' })
+        .auth(jwt, { type: 'bearer' });
+
+      expect(response.status).toBe(200);
+
+      const u = await User.findByPk(userId);
+      expect(u).not.toBeNull();
+
+      a = await UserAccount.findByPk(userId);
+      expect(a).not.toBeNull();
+      expect(a?.status).toBe('inactive');
+
+      const identities = await UserIdentity.findAll({ where: { userId } });
+      expect(identities.length).toBe(0);
+    });
+
+    it('should delete user if account does not have a password', async () => {
+      const { userId } = await User.create({
+        firstName: 'Jairo',
+        lastName: 'Doe',
+      });
+
+      let a = (await UserAccount.create({
+        userId,
+        email: 'jairodoe@gmail.com',
+      })) as UserAccount | null;
+
+      expect(a?.password).toBeNull();
+
+      await UserIdentity.create({
+        id: '8453748265723790274892684232',
+        userId,
+        providerType: 'google',
+      });
+
+      const jwt = authService.generateJWT(userId, 'google');
+
+      const response = await request
+        .patch(`${BASE_URL}/me/close`)
+        .send({ provider: 'google' })
+        .auth(jwt, { type: 'bearer' });
+
+      expect(response.status).toBe(200);
+
+      const u = await User.findByPk(userId);
+      expect(u).toBeNull();
+
+      a = await UserAccount.findByPk(userId);
+      expect(a).toBeNull();
+
+      const identities = await UserIdentity.findAll({ where: { userId } });
+      expect(identities.length).toBe(0);
+    });
+  });
 });
