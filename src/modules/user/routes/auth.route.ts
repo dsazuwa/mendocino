@@ -16,11 +16,11 @@ import {
 } from '@user/controllers/auth.controller';
 import { authenticateInactive } from '@user/middleware/auth';
 import {
-  loginRules,
-  recoverRules,
-  registerRules,
-  requestRecoverRules,
-  verifyRecoveryOTPRules,
+  loginSchema,
+  recoverPasswordSchema,
+  registerSchema,
+  requestRecoverySchema,
+  verifyRecoveryOTPSchema,
 } from '@user/middleware/validators/auth.validator';
 
 const authRouter = Router();
@@ -54,28 +54,29 @@ authRouter.get(
 authRouter.post(
   '/register',
   trimRequestBody,
-  registerRules,
-  validate,
+  validate(registerSchema),
   register,
 );
 
-authRouter.post('/login', trimRequestBody, loginRules, validate, login);
+authRouter.post('/login', trimRequestBody, validate(loginSchema), login);
 
 authRouter.post('/logout', logout);
 
 authRouter.post(
   '/recover',
-  requestRecoverRules,
-  validate,
+  validate(requestRecoverySchema),
   requestPasswordRecovery,
 );
 authRouter.post(
   '/recover/:otp',
-  verifyRecoveryOTPRules,
-  validate,
+  validate(verifyRecoveryOTPSchema),
   verifyRecoveryOTP,
 );
-authRouter.patch('/recover/:otp', recoverRules, validate, recoverPassword);
+authRouter.patch(
+  '/recover/:otp',
+  validate(recoverPasswordSchema),
+  recoverPassword,
+);
 
 authRouter.patch('/reactivate', authenticateInactive, reactivate);
 

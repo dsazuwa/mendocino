@@ -1,18 +1,37 @@
-import { body } from 'express-validator';
+import { object, string } from 'zod';
 
 import { emailRules, otpRules, passwordRules } from './common.validator';
 
-export const registerRules = [
-  body('firstName').notEmpty(),
-  body('lastName').notEmpty(),
-  emailRules,
-  passwordRules,
-];
+export const registerSchema = object({
+  body: object({
+    firstName: string()
+      .trim()
+      .nonempty('First name must contain at least 1 character(s)'),
+    lastName: string()
+      .trim()
+      .nonempty('Last name must contain at least 1 character(s)'),
+    email: emailRules,
+    password: passwordRules,
+  }),
+});
 
-export const loginRules = [emailRules, body('password').notEmpty()];
+export const loginSchema = object({
+  body: object({
+    email: emailRules,
+    password: string().trim().nonempty(),
+  }),
+});
 
-export const requestRecoverRules = [emailRules];
+export const requestRecoverySchema = object({
+  body: object({ email: emailRules }),
+});
 
-export const verifyRecoveryOTPRules = [otpRules, emailRules];
+export const verifyRecoveryOTPSchema = object({
+  params: object({ otp: otpRules }),
+  body: object({ email: emailRules }),
+});
 
-export const recoverRules = [otpRules, emailRules, passwordRules];
+export const recoverPasswordSchema = object({
+  params: object({ otp: otpRules }),
+  body: object({ email: emailRules, password: passwordRules }),
+});

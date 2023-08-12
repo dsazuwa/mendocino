@@ -1,30 +1,35 @@
 import { NextFunction, Request, Response } from 'express';
-import {
-  FieldValidationError,
-  Result,
-  validationResult,
-} from 'express-validator';
+import { AnyZodObject, ZodEffects, ZodError } from 'zod';
 
-import { ApiError } from '@App/utils';
+import ApiError from '@utils/api-error';
 
-const validate = (req: Request, res: Response, next: NextFunction) => {
-  const result: Result = validationResult(req);
+const getErrors = (error: ZodError) => {
+  const errors: string[] = [];
 
-  const errors = result.formatWith((error) => {
-    switch (error.type) {
-      case 'field': {
-        const err = error as FieldValidationError;
-        return `${err.location}[${err.path}]: ${err.msg}`;
-      }
-
-      default:
-        return error.msg;
-    }
+  error.issues.forEach((issue) => {
+    errors.push(`${issue.path[0]}.${issue.path[1]}: ${issue.message}`);
   });
 
-  if (!errors.isEmpty())
-    return next(new ApiError(400, 'API Validation Error', errors.array()));
-  return next();
+  return errors;
 };
+
+const validate =
+  (schema: AnyZodObject | ZodEffects<AnyZodObject>) =>
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      await schema.parseAsync({
+        body: req.body,
+        query: req.query,
+        params: req.params,
+      });
+
+      next();
+    } catch (error) {
+      if (error instanceof ZodError) {
+        const errors = getErrors(error);
+        next(ApiError.badRequest('Validation Error', errors));
+      } else next(error);
+    }
+  };
 
 export default validate;

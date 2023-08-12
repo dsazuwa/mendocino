@@ -1,23 +1,24 @@
-import { body, param } from 'express-validator';
+import { string } from 'zod';
 
-export const otpRules = param('otp').exists().isNumeric();
+export const otpRules = string()
+  .trim()
+  .nonempty()
+  .refine((value) => !Number.isNaN(Number(value)), {
+    message: 'Invalid OTP. Must be a numeric value.',
+    path: ['otp'],
+  })
+  .transform((value) => Number(value));
 
-export const passwordRules = body('password')
-  .exists()
-  .isLength({ min: 8, max: 64 })
-  .withMessage('must be between 8 - 64 characters')
-  .matches(/\d/)
-  .withMessage('must contain at least 1 digit')
-  .matches(/[a-z]/)
-  .withMessage('must contain at least 1 lowercase letter')
-  .matches(/[A-Z]/)
-  .withMessage('must contain at least 1 uppercase letter')
-  .not()
-  .matches(/^\s+|\s+$/)
-  .withMessage('no leading or trailing spaces');
+export const passwordRules = string()
+  .trim()
+  .min(8, { message: 'Password must be 8 or more characters long' })
+  .max(64, { message: 'Password must be 64 or fewer characters long' })
+  .regex(/\d/, { message: 'Password must contain at least 1 digit' })
+  .regex(/[a-z]/, {
+    message: 'Password must contain at least 1 lowercase character',
+  })
+  .regex(/[A-Z]/, {
+    message: 'Password must contain at least 1 uppercase letter',
+  });
 
-export const emailRules = body('email')
-  .notEmpty()
-  .isEmail()
-  .normalizeEmail()
-  .toLowerCase();
+export const emailRules = string().trim().email().toLowerCase();
