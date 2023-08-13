@@ -2,6 +2,7 @@ import cors from 'cors';
 import express, { Request, Response } from 'express';
 import helmet from 'helmet';
 import morgan from 'morgan';
+import passport from 'passport';
 
 import {
   errorHandler,
@@ -9,6 +10,12 @@ import {
   syntaxErrorHandlier,
 } from './middleware/error';
 import logger from './utils/logger';
+
+import {
+  configureGoogleStrategy,
+  configureJWTStrategy,
+  userRouter,
+} from './modules/user';
 
 const createApp = () => {
   const app = express();
@@ -36,9 +43,16 @@ const createApp = () => {
     }),
   );
 
+  app.use(passport.initialize());
+
+  configureJWTStrategy(passport);
+  configureGoogleStrategy(passport);
+
   app.get('/api', (req: Request, res: Response) => {
     res.status(200).json({ message: 'Welcome to Spoons API.' });
   });
+
+  app.use('/api', userRouter);
 
   app.use(notFoundHandler);
   app.use(syntaxErrorHandlier);

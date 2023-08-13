@@ -20,6 +20,12 @@ declare global {
       TEST_DB_URL: string;
 
       JWT_SECRET: string;
+
+      GOOGLE_AUTH_CLIENT_ID: string;
+      GOOGLE_AUTH_CLIENT_SECRET: string;
+
+      FACEBOOK_AUTH_CLIENT_ID: string;
+      FACEBOOK_AUTH_CLIENT_SECRET: string;
     }
   }
 }

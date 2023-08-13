@@ -2,11 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 
 import { ApiError } from '@App/utils';
 
-export const trimRequestBody = (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
+const trimRequestBody = (req: Request, res: Response, next: NextFunction) => {
   try {
     req.body = JSON.parse(
       JSON.stringify(req.body, (key, value) => {
@@ -22,3 +18,5 @@ export const trimRequestBody = (
     next(ApiError.badRequest('Invalid JSON payload'));
   }
 };
+
+export default trimRequestBody;
