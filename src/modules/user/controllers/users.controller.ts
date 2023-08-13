@@ -4,7 +4,7 @@ import { NextFunction, Request, Response } from 'express';
 import authService from '@user/services/auth.service';
 import usersService from '@user/services/users.service';
 import messages from '@user/utils/messages';
-import { authenticateResponse } from './auth.controller';
+import { setAccessTokenCookie } from './auth.controller';
 
 export const greet = async (req: Request, res: Response) => {
   res.status(200).json({ message: `Hi!` });
@@ -123,11 +123,7 @@ export const revokeSocialAuthentication = async (
       await usersService.revokeSocialAuthentication(userId, provider);
 
     if (account) {
-      res.cookie('access-token', authService.generateJWT(userId, 'email'), {
-        secure: true,
-        httpOnly: true,
-        expires: new Date(Date.now() + 86400 * 1000),
-      });
+      setAccessTokenCookie(res, authService.generateJWT(userId, 'email'));
 
       return res.status(200).json({
         message: REVOKE_SOCIAL_SUCCEES(provider),
@@ -135,7 +131,7 @@ export const revokeSocialAuthentication = async (
       });
     }
 
-    if (user === false) {
+    if (user) {
       res.clearCookie('access-token');
 
       return res.status(200).json({
@@ -144,11 +140,11 @@ export const revokeSocialAuthentication = async (
       });
     }
 
-    assert(identity === false);
+    assert(identity);
 
-    const jwt = authService.generateJWT(userId, otherIdentity);
+    setAccessTokenCookie(res, authService.generateJWT(userId, otherIdentity));
 
-    authenticateResponse(res, jwt, {
+    res.status(200).json({
       message: REVOKE_SOCIAL_SUCCEES(provider),
       effect: `Switched to ${otherIdentity} login`,
     });

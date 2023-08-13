@@ -108,13 +108,13 @@ const usersService = {
 
     if (otherIdentities.length === 0) {
       await deleteUser(userId);
-      return { user: false };
+      return { user: true };
     }
 
     await deleteIdentity(userId, providerType);
 
     return {
-      identity: false,
+      identity: true,
       otherIdentity: otherIdentities[0].providerType,
     };
   },

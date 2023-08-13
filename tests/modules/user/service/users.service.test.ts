@@ -268,7 +268,15 @@ describe('User Service', () => {
         providerType,
       });
 
-      await usersService.revokeSocialAuthentication(userId, providerType);
+      const result = await usersService.revokeSocialAuthentication(
+        userId,
+        providerType,
+      );
+
+      expect(result.account).toBe(true);
+      expect(result.user).toBeUndefined();
+      expect(result.identity).toBeUndefined();
+      expect(result.otherIdentity).toBeUndefined();
 
       const i = await UserIdentity.findOne({ where: { userId, providerType } });
       expect(i).toBeNull();
@@ -305,7 +313,15 @@ describe('User Service', () => {
         providerType: 'facebook',
       });
 
-      await usersService.revokeSocialAuthentication(userId, 'facebook');
+      const result = await usersService.revokeSocialAuthentication(
+        userId,
+        'facebook',
+      );
+
+      expect(result.account).toBeUndefined();
+      expect(result.user).toBeUndefined();
+      expect(result.identity).toBe(true);
+      expect(result.otherIdentity).toBe('google');
 
       let i = await UserIdentity.findOne({
         where: { userId, providerType: 'facebook' },
@@ -346,7 +362,15 @@ describe('User Service', () => {
         providerType,
       });
 
-      await usersService.revokeSocialAuthentication(userId, providerType);
+      const result = await usersService.revokeSocialAuthentication(
+        userId,
+        providerType,
+      );
+
+      expect(result.account).toBeUndefined();
+      expect(result.user).toBe(true);
+      expect(result.identity).toBeUndefined();
+      expect(result.otherIdentity).toBeUndefined();
 
       const i = await UserIdentity.findOne({ where: { userId, providerType } });
       expect(i).toBeNull();

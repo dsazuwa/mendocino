@@ -57,18 +57,12 @@ export const facebookLogin = async (
   }
 };
 
-export const authenticateResponse = (
-  res: Response,
-  jwt: string,
-  body: object,
-) => {
+export const setAccessTokenCookie = (res: Response, jwt: string) => {
   res.cookie('access-token', jwt, {
     secure: true,
     httpOnly: true,
     expires: new Date(Date.now() + 86400 * 1000),
   });
-
-  res.status(200).json({ ...body });
 };
 
 export const register = async (
@@ -97,7 +91,9 @@ export const register = async (
 
     const userData = await usersService.getUserData(userId);
 
-    authenticateResponse(res, authService.generateJWT(userId, 'email'), {
+    setAccessTokenCookie(res, authService.generateJWT(userId, 'email'));
+
+    res.status(200).json({
       message: messages.REGISTER_SUCCESS,
       user: userData,
     });
@@ -130,7 +126,9 @@ export const login = async (
         message: messages.ERR_DEACTIVATED_ACCOUNT,
       });
 
-    authenticateResponse(res, authService.generateJWT(userId, 'email'), {
+    setAccessTokenCookie(res, authService.generateJWT(userId, 'email'));
+
+    res.status(200).json({
       message: messages.LOGIN_SUCCESS,
       user: userData,
     });
@@ -232,7 +230,9 @@ export const recoverPassword = async (
 
     const userData = await usersService.getUserData(userId);
 
-    authenticateResponse(res, authService.generateJWT(userId, 'email'), {
+    setAccessTokenCookie(res, authService.generateJWT(userId, 'email'));
+
+    res.status(200).json({
       message: messages.RECOVER_PASSWORD_SUCCESS,
       user: userData,
     });
@@ -253,7 +253,9 @@ export const reactivate = async (
 
     const userData = await usersService.getUserData(userId);
 
-    authenticateResponse(res, authService.generateJWT(userId, 'email'), {
+    setAccessTokenCookie(res, authService.generateJWT(userId, 'email'));
+
+    res.status(200).json({
       message: messages.REACTIVATE_SUCCESS,
       user: userData,
     });
