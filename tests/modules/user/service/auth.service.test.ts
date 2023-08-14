@@ -130,7 +130,7 @@ describe('Auth service', () => {
   });
 
   describe('get user data from identity', () => {
-    it('should return user data if user with id and provider type exists', async () => {
+    it('should return user data if user with identity id and provider type exists', async () => {
       const identityId = '5732021949727250724';
       const providerType = 'facebook';
 
@@ -157,7 +157,7 @@ describe('Auth service', () => {
       expect(result?.roles).toMatchObject(['manager', 'super admin']);
     });
 
-    it('should return undefined if user with id and provider type does not exists', async () => {
+    it('should return undefined if user with identity id and provider type does not exists', async () => {
       const result = await authService.getUserDataFromIdentity(
         '100032049298741',
         'facebook',
@@ -202,7 +202,7 @@ describe('Auth service', () => {
       const identity = await authService.getIdentity(identityId, providerType);
 
       expect(identity).not.toBeNull();
-      expect(identity?.id).toBe(identityId);
+      expect(identity?.identityId).toBe(identityId);
       expect(identity?.providerType).toBe(providerType);
       expect(identity?.userId).toBe(userId);
     });
@@ -215,7 +215,7 @@ describe('Auth service', () => {
 
   describe('create new identity', () => {
     it('should create user identity for an existing user account', async () => {
-      const id = '12324534675';
+      const identityId = '12324534675';
       const providerType = 'google';
 
       const { userId, user, account } = await createUserAccount(
@@ -228,7 +228,7 @@ describe('Auth service', () => {
       );
 
       const identity = await authService.createNewIdentity(
-        id,
+        identityId,
         account,
         user.firstName,
         user.lastName,
@@ -236,18 +236,18 @@ describe('Auth service', () => {
         providerType,
       );
 
-      expect(identity.id).toBe(id);
+      expect(identity.identityId).toBe(identityId);
       expect(identity.userId).toBe(userId);
       expect(identity.providerType).toBe(providerType);
 
       const i = await UserIdentity.findOne({
-        where: { id, providerType, userId },
+        where: { identityId, providerType, userId },
       });
       expect(i).not.toBeNull();
     });
 
     it('should create a new user and user identity for new user', async () => {
-      const id = '4309372642830289974';
+      const identityId = '4309372642830289974';
       const email = 'jerichodoe@gmail.com';
       const firstName = 'Jericho';
       const lastName = 'Doe';
@@ -257,7 +257,7 @@ describe('Auth service', () => {
       expect(u).toBeNull();
 
       const identity = await authService.createNewIdentity(
-        id,
+        identityId,
         null,
         firstName,
         lastName,
@@ -265,14 +265,14 @@ describe('Auth service', () => {
         providerType,
       );
 
-      expect(identity.id).toBe(id);
+      expect(identity.identityId).toBe(identityId);
       expect(identity.providerType).toBe(providerType);
 
       u = await User.findOne({ where: { firstName, lastName } });
       expect(u).not.toBeNull();
 
       const i = await UserIdentity.findOne({
-        where: { id, providerType, userId: u?.userId },
+        where: { identityId, providerType, userId: u?.userId },
       });
       expect(i).not.toBeNull();
     });
@@ -291,16 +291,16 @@ describe('Auth service', () => {
         [1],
       );
 
-      const id = '923849719836872649';
+      const identityId = '923849719836872649';
       const providerType = 'google';
 
       const result = await createUserIdentityForUser(
-        id,
+        identityId,
         userId,
         status,
         providerType,
       );
-      expect(result.id).toBe(id);
+      expect(result.identityId).toBe(identityId);
 
       const i = UserIdentity.findOne({ where: { userId, providerType } });
       expect(i).not.toBeNull();
@@ -323,13 +323,13 @@ describe('Auth service', () => {
         [1],
       );
 
-      const id = '98979675654556756687';
+      const identityId = '98979675654556756687';
 
       const { create } = UserIdentity;
       UserIdentity.create = jest.fn().mockRejectedValue(new Error('Error'));
 
       try {
-        await createUserIdentityForUser(id, userId, status, 'google');
+        await createUserIdentityForUser(identityId, userId, status, 'google');
 
         expect(false).toBe(true);
       } catch (e) {
@@ -343,7 +343,7 @@ describe('Auth service', () => {
 
   describe('create user and user identity', () => {
     it('should create user, user account, and user identity', async () => {
-      const id = '98098976576567';
+      const identityId = '98098976576567';
       const firstName = 'Jamal';
       const lastName = 'Doe';
       const email = 'jamaldoe@gmail.com';
@@ -355,14 +355,14 @@ describe('Auth service', () => {
       expect(a).toBeNull();
 
       const result = await createUserAndUserIdentity(
-        id,
+        identityId,
         firstName,
         lastName,
         email,
         'google',
       );
 
-      expect(result.id).toBe(id);
+      expect(result.identityId).toBe(identityId);
 
       u = await User.findOne({ where: { firstName, lastName } });
       expect(u).not.toBeNull();
@@ -372,12 +372,12 @@ describe('Auth service', () => {
       });
       expect(a).not.toBeNull();
 
-      const i = await UserIdentity.findOne({ where: { id } });
+      const i = await UserIdentity.findOne({ where: { identityId } });
       expect(i).not.toBeNull();
     });
 
     it('should roll back transaction on error', async () => {
-      const id = '98098976576567';
+      const identityId = '98098976576567';
 
       const firstName = 'Jones';
       const lastName = 'Doe';
@@ -387,7 +387,7 @@ describe('Auth service', () => {
 
       try {
         await createUserAndUserIdentity(
-          id,
+          identityId,
           firstName,
           lastName,
           'jonesdoe@gmail.com',

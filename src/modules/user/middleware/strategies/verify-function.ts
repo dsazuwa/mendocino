@@ -14,7 +14,7 @@ const verifyFunction = async (
   providerType: ProviderType,
 ) => {
   try {
-    const { id, emails, name } = profile;
+    const { id: identityId, emails, name } = profile;
 
     const email = emails?.at(0)?.value;
     const firstName = name?.givenName;
@@ -26,7 +26,10 @@ const verifyFunction = async (
         undefined,
       );
 
-    let user = await authService.getUserDataFromIdentity(id, providerType);
+    let user = await authService.getUserDataFromIdentity(
+      identityId,
+      providerType,
+    );
 
     if (user) return done(null, user);
 
@@ -39,7 +42,7 @@ const verifyFunction = async (
       );
 
     const newIdentity = await authService.createNewIdentity(
-      id,
+      identityId,
       account,
       firstName,
       lastName,

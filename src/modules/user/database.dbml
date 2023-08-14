@@ -7,7 +7,7 @@ Table users {
 }
 
 Table user_identities {
-  id string
+  identity_id string
   user_id integer [ref: > users.user_id]
   provider_type enum_provider_type
   status enum_user_identities_status
@@ -47,7 +47,7 @@ Enum enum_user_account_status {
 Ref: user_accounts.user_id - users.user_id
 
 Table otp {
-  id integer [primary key]
+  otp_id integer [primary key]
   user_id integer [ref: > user_accounts.user_id]
   type  enum_otp_type
   password varchar

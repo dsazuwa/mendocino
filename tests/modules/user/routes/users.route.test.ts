@@ -77,7 +77,7 @@ describe('Users Routes', () => {
 
     it('should destroy previous verification token', async () => {
       const otp = await AuthOTP.findOne({ where: { userId, type: 'verify' } });
-      const { id } = otp as AuthOTP;
+      const { otpId } = otp as AuthOTP;
 
       await request
         .post(`${BASE_URL}/me/verify`)
@@ -89,7 +89,7 @@ describe('Users Routes', () => {
 
       const [newOTP] = otps;
       expect(newOTP).not.toBeNull();
-      expect(newOTP?.id).not.toBe(id);
+      expect(newOTP?.otpId).not.toBe(otpId);
     });
 
     it('should fail for active user', async () => {

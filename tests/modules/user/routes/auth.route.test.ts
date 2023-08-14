@@ -221,7 +221,7 @@ describe('Recover Account', () => {
         where: { userId, type: 'recover' },
       });
       expect(newOTP).not.toBeNull();
-      expect(newOTP?.id).not.toEqual(otp?.id);
+      expect(newOTP?.otpId).not.toEqual(otp?.otpId);
     });
 
     it('should fail to create new otp on user_account with null password', async () => {

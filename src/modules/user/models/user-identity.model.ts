@@ -14,7 +14,7 @@ class UserIdentity extends Model<
   InferAttributes<UserIdentity>,
   InferCreationAttributes<UserIdentity>
 > {
-  declare id: string;
+  declare identityId: string;
 
   declare userId: CreationOptional<number>;
 
@@ -27,7 +27,7 @@ class UserIdentity extends Model<
 
 UserIdentity.init(
   {
-    id: {
+    identityId: {
       type: DataTypes.STRING,
       allowNull: false,
     },

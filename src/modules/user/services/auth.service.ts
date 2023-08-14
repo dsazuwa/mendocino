@@ -18,7 +18,7 @@ import { roleConstants } from '@user/utils/constants';
 type JWTProviderType = ProviderType | 'email';
 
 export const createUserIdentityForUser = (
-  id: string,
+  identityId: string,
   userId: number,
   status: string,
   providerType: ProviderType,
@@ -32,7 +32,7 @@ export const createUserIdentityForUser = (
     }
 
     const identity = await UserIdentity.create(
-      { id, userId, providerType },
+      { identityId, userId, providerType },
       { transaction },
     );
 
@@ -40,7 +40,7 @@ export const createUserIdentityForUser = (
   });
 
 export const createUserAndUserIdentity = (
-  id: string,
+  identityId: string,
   firstName: string,
   lastName: string,
   email: string,
@@ -58,7 +58,7 @@ export const createUserAndUserIdentity = (
     );
 
     const identity = await UserIdentity.create(
-      { id, userId, providerType },
+      { identityId, userId, providerType },
       { transaction },
     );
 
@@ -115,7 +115,10 @@ const authService = {
     return result.length === 0 ? undefined : (result[0] as Express.User);
   },
 
-  getUserDataFromIdentity: async (id: string, providerType: ProviderType) => {
+  getUserDataFromIdentity: async (
+    identityId: string,
+    providerType: ProviderType,
+  ) => {
     const query = `
       SELECT
         u.user_id AS "userId",
@@ -135,7 +138,7 @@ const authService = {
       JOIN
         ${Role.tableName} r ON r.role_id = ur.role_id
       WHERE
-        i.id = '${id}' AND u.user_id = i.user_id
+        i.identity_id = '${identityId}' AND u.user_id = i.user_id
       GROUP BY
         u.user_id, u.first_name, u.last_name, a.email;`;
 
@@ -146,9 +149,9 @@ const authService = {
 
   getAccount: (email: string) => UserAccount.findOne({ where: { email } }),
 
-  getIdentity: (id: string, providerType: ProviderType) =>
+  getIdentity: (identityId: string, providerType: ProviderType) =>
     UserIdentity.findOne({
-      where: { id, providerType },
+      where: { identityId, providerType },
     }),
 
   getAuthOTP: async (userId: number, password: string, type: AuthOTPType) => {
@@ -187,7 +190,7 @@ const authService = {
     }),
 
   createNewIdentity: (
-    id: string,
+    identityId: string,
     account: UserAccount | null,
     firstName: string,
     lastName: string,
@@ -196,12 +199,18 @@ const authService = {
   ) =>
     account
       ? createUserIdentityForUser(
-          id,
+          identityId,
           account.userId,
           account.status,
           providerType,
         )
-      : createUserAndUserIdentity(id, firstName, lastName, email, providerType),
+      : createUserAndUserIdentity(
+          identityId,
+          firstName,
+          lastName,
+          email,
+          providerType,
+        ),
 
   createUser: async (
     firstName: string,

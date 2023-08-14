@@ -72,7 +72,7 @@ describe('Users Service', () => {
     });
 
     it('should roll back transaction when an error occurs', async () => {
-      const { id } = await AuthOTP.create({
+      const { otpId } = await AuthOTP.create({
         userId,
         type: 'verify',
         password: '123456',
@@ -87,7 +87,7 @@ describe('Users Service', () => {
 
         expect(false).toBe(true);
       } catch (e) {
-        const otp = await AuthOTP.findByPk(id);
+        const otp = await AuthOTP.findByPk(otpId);
         expect(otp).not.toBeNull();
       }
 
