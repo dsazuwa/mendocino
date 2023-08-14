@@ -8,16 +8,16 @@ export const socialLogin = async (
   req: Request,
   res: Response,
   next: NextFunction,
-  providerType: ProviderType,
+  provider: ProviderType,
 ) => {
   try {
     const userId = req.user?.userId;
 
     if (!userId) res.status(401);
     else {
-      const token = authService.generateJWT(userId, providerType);
+      const token = authService.generateJWT(userId, provider);
 
-      const userData = await authService.getUserData(userId, providerType);
+      const userData = await authService.getUserData(userId, provider);
 
       res.redirect(
         `${

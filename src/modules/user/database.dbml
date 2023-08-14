@@ -9,13 +9,13 @@ Table users {
 Table user_identities {
   identity_id string
   user_id integer [ref: > users.user_id]
-  provider_type enum_provider_type
+  provider enum_provider_type
   status enum_user_identities_status
   created_at datetime
   updated_at datetime
 
   Indexes {
-    (user_id, provider_type) [unique]
+    (user_id, provider) [unique]
   }
 }
 

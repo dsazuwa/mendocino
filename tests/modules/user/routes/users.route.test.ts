@@ -320,7 +320,7 @@ describe('Users Routes', () => {
 
   describe(`PATCH ${BASE_URL}/me/revoke-social-auth`, () => {
     it('should delete identity and swtich to email login if user has an account with a password', async () => {
-      const providerType = 'google';
+      const provider = 'google';
 
       const { userId, account } = await createUserAccountAndIdentity(
         'Jennifer',
@@ -328,17 +328,17 @@ describe('Users Routes', () => {
         'jenniferdoe@gmail.com',
         'jenniferD0ePa$$',
         'active',
-        [{ identityId: '3654755345356474363', providerType }],
+        [{ identityId: '3654755345356474363', provider }],
         [1],
       );
 
       expect(account.password).not.toBeNull();
 
-      const jwt = authService.generateJWT(userId, providerType);
+      const jwt = authService.generateJWT(userId, provider);
 
       const response = await request
         .patch(`${BASE_URL}/me/revoke-social-auth`)
-        .send({ provider: providerType })
+        .send({ provider })
         .auth(jwt, { type: 'bearer' });
 
       expect(response.status).toBe(200);
@@ -348,7 +348,7 @@ describe('Users Routes', () => {
 
       const decoded = verify(accessToken, process.env.JWT_SECRET) as JwtPayload;
       expect(decoded.userId).toBe(userId);
-      expect(decoded.providerType).toBe('email');
+      expect(decoded.provider).toBe('email');
     });
 
     it('should delete identity if user has no account with a password, but has some other identity', async () => {
@@ -359,8 +359,8 @@ describe('Users Routes', () => {
         null,
         'active',
         [
-          { identityId: '687453534367486564', providerType: 'google' },
-          { identityId: '234267589676438787', providerType: 'facebook' },
+          { identityId: '687453534367486564', provider: 'google' },
+          { identityId: '234267589676438787', provider: 'facebook' },
         ],
         [1],
       );
@@ -381,15 +381,15 @@ describe('Users Routes', () => {
 
       const decoded = verify(accessToken, process.env.JWT_SECRET) as JwtPayload;
       expect(decoded.userId).toBe(userId);
-      expect(decoded.providerType).toBe('facebook');
+      expect(decoded.provider).toBe('facebook');
 
       let i = await UserIdentity.findOne({
-        where: { userId, providerType: 'google' },
+        where: { userId, provider: 'google' },
       });
       expect(i).toBeNull();
 
       i = await UserIdentity.findOne({
-        where: { userId, providerType: 'facebook' },
+        where: { userId, provider: 'facebook' },
       });
       expect(i).not.toBeNull();
     });
@@ -401,7 +401,7 @@ describe('Users Routes', () => {
         'jasdoe@gmail.com',
         null,
         'active',
-        [{ identityId: '7934872657237824972478', providerType: 'google' }],
+        [{ identityId: '7934872657237824972478', provider: 'google' }],
         [1],
       );
 
@@ -432,7 +432,7 @@ describe('Users Routes', () => {
         'jamesdoe@gmail.com',
         'JamesD0ePa$$',
         'active',
-        [{ identityId: '493285792423287429704372084', providerType: 'google' }],
+        [{ identityId: '493285792423287429704372084', provider: 'google' }],
         [1],
       );
 
@@ -465,7 +465,7 @@ describe('Users Routes', () => {
         'jairodoe@gmail.com',
         null,
         'active',
-        [{ identityId: '84537482657274892684232', providerType: 'google' }],
+        [{ identityId: '84537482657274892684232', provider: 'google' }],
         [1],
       );
 

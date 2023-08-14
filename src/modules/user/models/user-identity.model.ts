@@ -18,7 +18,7 @@ class UserIdentity extends Model<
 
   declare userId: CreationOptional<number>;
 
-  declare providerType: ProviderType;
+  declare provider: ProviderType;
 
   declare createdAt: CreationOptional<Date>;
 
@@ -36,7 +36,7 @@ UserIdentity.init(
       primaryKey: true,
       allowNull: false,
     },
-    providerType: {
+    provider: {
       type: DataTypes.ENUM('google', 'facebook'),
       primaryKey: true,
       allowNull: false,

@@ -38,7 +38,7 @@ export const createUserAccountAndIdentity = async (
   email: string,
   password: string | null,
   status: UserAccountStatusType,
-  identities: { identityId: string; providerType: ProviderType }[],
+  identities: { identityId: string; provider: ProviderType }[],
   roles: number[],
 ) => {
   const user = await User.create({ firstName, lastName });
@@ -54,11 +54,11 @@ export const createUserAccountAndIdentity = async (
 
   const arr: UserIdentity[] = [];
 
-  identities.forEach(async ({ identityId, providerType }) => {
+  identities.forEach(async ({ identityId, provider }) => {
     const i = await UserIdentity.create({
       userId,
       identityId,
-      providerType,
+      provider,
     });
 
     arr.push(i);

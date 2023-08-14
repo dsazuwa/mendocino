@@ -14,8 +14,8 @@ import {
 
 const deleteUser = (userId: number) => User.destroy({ where: { userId } });
 
-const deleteIdentity = (userId: number, providerType: ProviderType) =>
-  UserIdentity.destroy({ where: { userId, providerType } });
+const deleteIdentity = (userId: number, provider: ProviderType) =>
+  UserIdentity.destroy({ where: { userId, provider } });
 
 const deactivate = (userId: number) =>
   sequelize.transaction(async (transaction) => {
@@ -88,19 +88,19 @@ const usersService = {
 
   revokeSocialAuthentication: async (
     userId: number,
-    providerType: ProviderType,
+    provider: ProviderType,
   ) => {
     const account = await UserAccount.findOne({
       where: { userId, password: { [Op.ne]: null } },
     });
 
     if (account) {
-      await deleteIdentity(userId, providerType);
+      await deleteIdentity(userId, provider);
       return { account: true };
     }
 
     const otherIdentities = await UserIdentity.findAll({
-      where: { userId, providerType: { [Op.ne]: providerType } },
+      where: { userId, provider: { [Op.ne]: provider } },
     });
 
     if (otherIdentities.length === 0) {
@@ -108,11 +108,11 @@ const usersService = {
       return { user: true };
     }
 
-    await deleteIdentity(userId, providerType);
+    await deleteIdentity(userId, provider);
 
     return {
       identity: true,
-      otherIdentity: otherIdentities[0].providerType,
+      otherIdentity: otherIdentities[0].provider,
     };
   },
 

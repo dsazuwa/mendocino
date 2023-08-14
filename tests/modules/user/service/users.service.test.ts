@@ -103,7 +103,7 @@ describe('Users Service', () => {
         'josephinedoe@gmail.com',
         null,
         'active',
-        [{ identityId: '923042892739426871638', providerType: 'google' }],
+        [{ identityId: '923042892739426871638', provider: 'google' }],
         [1],
       );
       const password = 'josephineD0ePa$$';
@@ -226,7 +226,7 @@ describe('Users Service', () => {
 
   describe('revoke social authentication', () => {
     it('should delete identity if user has an account with a password', async () => {
-      const providerType = 'google';
+      const provider = 'google';
 
       const { userId, account } = await createUserAccountAndIdentity(
         'Jessica',
@@ -234,7 +234,7 @@ describe('Users Service', () => {
         'jessicadoe@gmail.com',
         'jessicaD0ePa$$',
         'active',
-        [{ identityId: '3654755345356474363', providerType }],
+        [{ identityId: '3654755345356474363', provider }],
         [1],
       );
 
@@ -242,7 +242,7 @@ describe('Users Service', () => {
 
       const result = await usersService.revokeSocialAuthentication(
         userId,
-        providerType,
+        provider,
       );
 
       expect(result.account).toBe(true);
@@ -250,7 +250,7 @@ describe('Users Service', () => {
       expect(result.identity).toBeUndefined();
       expect(result.otherIdentity).toBeUndefined();
 
-      const i = await UserIdentity.findOne({ where: { userId, providerType } });
+      const i = await UserIdentity.findOne({ where: { userId, provider } });
       expect(i).toBeNull();
 
       const a = await UserAccount.findByPk(userId);
@@ -268,8 +268,8 @@ describe('Users Service', () => {
         null,
         'active',
         [
-          { identityId: '52429584297428924', providerType: 'google' },
-          { identityId: '58991388923428739', providerType: 'facebook' },
+          { identityId: '52429584297428924', provider: 'google' },
+          { identityId: '58991388923428739', provider: 'facebook' },
         ],
         [1],
       );
@@ -287,12 +287,12 @@ describe('Users Service', () => {
       expect(result.otherIdentity).toBe('google');
 
       let i = await UserIdentity.findOne({
-        where: { userId, providerType: 'facebook' },
+        where: { userId, provider: 'facebook' },
       });
       expect(i).toBeNull();
 
       i = await UserIdentity.findOne({
-        where: { userId, providerType: 'google' },
+        where: { userId, provider: 'google' },
       });
       expect(i).not.toBeNull();
 
@@ -305,7 +305,7 @@ describe('Users Service', () => {
     });
 
     it('should delete user if user has neither an account with a password nor anothor identitiy', async () => {
-      const providerType = 'google';
+      const provider = 'google';
 
       const { userId, account } = await createUserAccountAndIdentity(
         'Jess',
@@ -313,7 +313,7 @@ describe('Users Service', () => {
         'jessdoe@gmail.com',
         null,
         'active',
-        [{ identityId: '94044248328749827', providerType }],
+        [{ identityId: '94044248328749827', provider }],
         [1],
       );
 
@@ -321,7 +321,7 @@ describe('Users Service', () => {
 
       const result = await usersService.revokeSocialAuthentication(
         userId,
-        providerType,
+        provider,
       );
 
       expect(result.account).toBeUndefined();
@@ -329,7 +329,7 @@ describe('Users Service', () => {
       expect(result.identity).toBeUndefined();
       expect(result.otherIdentity).toBeUndefined();
 
-      const i = await UserIdentity.findOne({ where: { userId, providerType } });
+      const i = await UserIdentity.findOne({ where: { userId, provider } });
       expect(i).toBeNull();
 
       const a = await UserAccount.findByPk(userId);
@@ -348,7 +348,7 @@ describe('Users Service', () => {
         'jeffdoe@gmail.com',
         'jeffD0ePa$$',
         'active',
-        [{ identityId: '2435674867433235', providerType: 'google' }],
+        [{ identityId: '2435674867433235', provider: 'google' }],
         [1],
       );
 
@@ -373,7 +373,7 @@ describe('Users Service', () => {
         'jamesdoe@gmail.com',
         null,
         'active',
-        [{ identityId: '23274274781623876298', providerType: 'google' }],
+        [{ identityId: '23274274781623876298', provider: 'google' }],
         [1],
       );
 

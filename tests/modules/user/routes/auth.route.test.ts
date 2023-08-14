@@ -22,7 +22,7 @@ describe('Google Login', () => {
   });
 
   it('google callback controller', async () => {
-    const providerType = 'google';
+    const provider = 'google';
 
     const { userId } = await createUserAccountAndIdentity(
       'Jay',
@@ -30,7 +30,7 @@ describe('Google Login', () => {
       'jaydoe@gmail.com',
       'jayD0ePa$$',
       'active',
-      [{ identityId: '428402371863284', providerType: 'facebook' }],
+      [{ identityId: '428402371863284', provider }],
       [1],
     );
 
@@ -38,8 +38,10 @@ describe('Google Login', () => {
     const res = { redirect: jest.fn() } as unknown as Response;
     const next = jest.fn();
 
-    const token = authService.generateJWT(userId, providerType);
-    const userData = await authService.getUserData(userId, providerType);
+    const token = authService.generateJWT(userId, provider);
+
+    const userData = await authService.getUserData(userId, provider);
+    expect(userData).toBeDefined();
 
     await googleLogin(req, res, next);
 
@@ -60,7 +62,7 @@ describe('Facebook Login', () => {
   // });
 
   it('facebook callback controller', async () => {
-    const providerType = 'facebook';
+    const provider = 'facebook';
 
     const { userId } = await createUserAccountAndIdentity(
       'Jaz',
@@ -68,7 +70,7 @@ describe('Facebook Login', () => {
       'jazdoe@gmail.com',
       'jazD0ePa$$',
       'active',
-      [{ identityId: '42942742739273298', providerType }],
+      [{ identityId: '42942742739273298', provider }],
       [1],
     );
 
@@ -76,8 +78,10 @@ describe('Facebook Login', () => {
     const res = { redirect: jest.fn() } as unknown as Response;
     const next = jest.fn();
 
-    const token = authService.generateJWT(userId, providerType);
-    const userData = await authService.getUserData(userId, providerType);
+    const token = authService.generateJWT(userId, provider);
+
+    const userData = await authService.getUserData(userId, provider);
+    expect(userData).toBeDefined();
 
     await facebookLogin(req, res, next);
 

@@ -22,7 +22,7 @@ describe('Verify Function', () => {
     firsName: string,
     lastName: string,
     email: string,
-    providerType: ProviderType,
+    provider: ProviderType,
   ) => {
     const profile = {
       id: identityId,
@@ -30,7 +30,7 @@ describe('Verify Function', () => {
       name: { givenName: firsName, familyName: lastName },
     } as unknown as Profile;
 
-    await verifyFunction(profile, done, providerType);
+    await verifyFunction(profile, done, provider);
   };
 
   it('should create user if user does not exists', async () => {
@@ -56,7 +56,7 @@ describe('Verify Function', () => {
 
     expect(
       UserIdentity.findOne({
-        where: { identityId, userId: u?.userId, providerType: 'google' },
+        where: { identityId, userId: u?.userId, provider: 'google' },
       }),
     ).resolves.not.toBeNull();
   });
@@ -67,7 +67,7 @@ describe('Verify Function', () => {
     const lastName = 'Doe';
     const email = 'jacquelindoe@gmail.com';
     const password = 'jacqD0ePa$$';
-    const providerType = 'facebook';
+    const provider = 'facebook';
 
     const { userId } = await createUserAccount(
       firstName,
@@ -81,10 +81,10 @@ describe('Verify Function', () => {
     let i = await UserIdentity.findOne({ where: { identityId, userId } });
     expect(i).toBeNull();
 
-    await callVerify(identityId, firstName, lastName, email, providerType);
+    await callVerify(identityId, firstName, lastName, email, provider);
 
     i = await UserIdentity.findOne({
-      where: { identityId, userId, providerType },
+      where: { identityId, userId, provider },
     });
     expect(i).not.toBeNull();
   });
@@ -112,7 +112,7 @@ describe('Verify Function', () => {
     await callVerify(identityId, firstName, lastName, email, 'facebook');
 
     const i = await UserIdentity.findOne({
-      where: { identityId, userId, providerType: 'facebook' },
+      where: { identityId, userId, provider: 'facebook' },
     });
     expect(i).not.toBeNull();
 
@@ -126,6 +126,7 @@ describe('Verify Function', () => {
     const lastName = 'Doe';
     const email = 'julesdoe@gmail.com';
     const password = 'julesD0ePa$$';
+    const provider = 'google';
 
     await createUserAccountAndIdentity(
       firstName,
@@ -133,7 +134,7 @@ describe('Verify Function', () => {
       email,
       password,
       'active',
-      [{ identityId, providerType: 'google' }],
+      [{ identityId, provider }],
       [1],
     );
 
@@ -141,7 +142,7 @@ describe('Verify Function', () => {
     const c = jest.fn();
     authService.createNewIdentity = c;
 
-    await callVerify(identityId, firstName, lastName, email, 'google');
+    await callVerify(identityId, firstName, lastName, email, provider);
 
     expect(c).not.toHaveBeenCalled();
     authService.createNewIdentity = createNewIdentity;

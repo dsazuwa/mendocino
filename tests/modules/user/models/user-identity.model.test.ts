@@ -12,14 +12,14 @@ describe('User Identity', () => {
     const data = {
       identityId: '12243531q39fds24843193402',
       userId,
-      providerType: 'google' as ProviderType,
+      provider: 'google' as ProviderType,
     };
 
     const identity = await UserIdentity.create(data);
 
     expect(identity.identityId).toBe(data.identityId);
     expect(identity.userId).toBe(data.userId);
-    expect(identity.providerType).toBe(data.providerType);
+    expect(identity.provider).toBe(data.provider);
   });
 
   it('should retrieve user udentity', async () => {
@@ -28,14 +28,14 @@ describe('User Identity', () => {
       lastName: 'Doe',
     });
 
-    const { identityId, providerType } = await UserIdentity.create({
+    const { identityId, provider } = await UserIdentity.create({
       identityId: '1239024wqijs013984213',
       userId,
-      providerType: 'google',
+      provider: 'google',
     });
 
     const retrievedIdentity = await UserIdentity.findOne({
-      where: { identityId, userId, providerType },
+      where: { identityId, userId, provider },
     });
 
     expect(retrievedIdentity).not.toBeNull();
@@ -47,21 +47,21 @@ describe('User Identity', () => {
       lastName: 'Doe',
     });
 
-    const { identityId, providerType } = await UserIdentity.create({
+    const { identityId, provider } = await UserIdentity.create({
       identityId: '5903837842q81938400',
       userId,
-      providerType: 'google',
+      provider: 'google',
     });
 
     const newId = '122940897435678';
 
     await UserIdentity.update(
       { identityId: newId },
-      { where: { identityId, userId, providerType } },
+      { where: { identityId, userId, provider } },
     );
 
     const retrievedIdentity = await UserIdentity.findOne({
-      where: { providerType, userId },
+      where: { provider, userId },
     });
 
     expect(retrievedIdentity).not.toBeNull();
@@ -74,16 +74,16 @@ describe('User Identity', () => {
       lastName: 'Doe',
     });
 
-    const { identityId, providerType } = await UserIdentity.create({
+    const { identityId, provider } = await UserIdentity.create({
       identityId: '402847752019382974',
       userId,
-      providerType: 'google',
+      provider: 'google',
     });
 
     await UserIdentity.destroy({ where: {} });
 
     const deletedIdentity = await UserIdentity.findOne({
-      where: { userId, identityId, providerType },
+      where: { userId, identityId, provider },
     });
 
     expect(deletedIdentity).toBeNull();
@@ -105,7 +105,7 @@ describe('User Identity and User Relationship', () => {
     await UserIdentity.create({
       userId,
       identityId: '4289324735691231',
-      providerType: 'google' as ProviderType,
+      provider: 'google' as ProviderType,
     });
 
     await UserIdentity.destroy({ where: { userId } });
@@ -131,7 +131,7 @@ describe('User Identity and User Relationship', () => {
     await UserIdentity.create({
       userId,
       identityId: '9209324877376132',
-      providerType: 'google' as ProviderType,
+      provider: 'google' as ProviderType,
     });
 
     await User.destroy({ where: { userId } });

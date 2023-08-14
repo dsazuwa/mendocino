@@ -21,7 +21,7 @@ export const createUserIdentityForUser = (
   identityId: string,
   userId: number,
   status: string,
-  providerType: ProviderType,
+  provider: ProviderType,
 ) =>
   sequelize.transaction(async (transaction) => {
     if (status === 'pending') {
@@ -32,7 +32,7 @@ export const createUserIdentityForUser = (
     }
 
     const identity = await UserIdentity.create(
-      { identityId, userId, providerType },
+      { identityId, userId, provider },
       { transaction },
     );
 
@@ -44,7 +44,7 @@ export const createUserAndUserIdentity = (
   firstName: string,
   lastName: string,
   email: string,
-  providerType: ProviderType,
+  provider: ProviderType,
 ) =>
   sequelize.transaction(async (transaction) => {
     const { userId } = await User.create(
@@ -58,7 +58,7 @@ export const createUserAndUserIdentity = (
     );
 
     const identity = await UserIdentity.create(
-      { identityId, userId, providerType },
+      { identityId, userId, provider },
       { transaction },
     );
 
@@ -71,20 +71,20 @@ export const createUserAndUserIdentity = (
   });
 
 const authService = {
-  generateJWT: (userId: number, providerType: JWTProviderType) =>
-    sign({ userId, providerType }, process.env.JWT_SECRET, {
+  generateJWT: (userId: number, provider: JWTProviderType) =>
+    sign({ userId, provider }, process.env.JWT_SECRET, {
       expiresIn: '1 day',
     }),
 
-  getUserData: async (userId: number, providerType: JWTProviderType) => {
-    const isEmailAuth = providerType === 'email';
+  getUserData: async (userId: number, provider: JWTProviderType) => {
+    const isEmailAuth = provider === 'email';
 
     const statusField = isEmailAuth ? 'a.status' : "'active'";
 
     const identityJoin = isEmailAuth
       ? ''
       : `JOIN ${UserIdentity.tableName} i 
-            ON u.user_id = i.user_id AND i.provider_type = '${providerType}'`;
+            ON u.user_id = i.user_id AND i.provider = '${provider}'`;
 
     const statusGroupBy = isEmailAuth ? 'a.status,' : '';
 
@@ -117,7 +117,7 @@ const authService = {
 
   getUserDataFromIdentity: async (
     identityId: string,
-    providerType: ProviderType,
+    provider: ProviderType,
   ) => {
     const query = `
       SELECT
@@ -132,7 +132,7 @@ const authService = {
       JOIN
         ${UserAccount.tableName} a ON u.user_id = a.user_id
       JOIN 
-        ${UserIdentity.tableName} i ON u.user_id = i.user_id AND i.provider_type = '${providerType}'
+        ${UserIdentity.tableName} i ON u.user_id = i.user_id AND i.provider = '${provider}'
       JOIN
         ${UserRole.tableName} ur ON u.user_id = ur.user_id
       JOIN
@@ -149,9 +149,9 @@ const authService = {
 
   getAccount: (email: string) => UserAccount.findOne({ where: { email } }),
 
-  getIdentity: (identityId: string, providerType: ProviderType) =>
+  getIdentity: (identityId: string, provider: ProviderType) =>
     UserIdentity.findOne({
-      where: { identityId, providerType },
+      where: { identityId, provider },
     }),
 
   getAuthOTP: async (userId: number, password: string, type: AuthOTPType) => {
@@ -195,21 +195,21 @@ const authService = {
     firstName: string,
     lastName: string,
     email: string,
-    providerType: ProviderType,
+    provider: ProviderType,
   ) =>
     account
       ? createUserIdentityForUser(
           identityId,
           account.userId,
           account.status,
-          providerType,
+          provider,
         )
       : createUserAndUserIdentity(
           identityId,
           firstName,
           lastName,
           email,
-          providerType,
+          provider,
         ),
 
   createUser: async (

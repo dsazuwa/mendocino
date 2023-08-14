@@ -11,7 +11,7 @@ import messages from '@user/utils/messages';
 const verifyFunction = async (
   profile: Profile,
   done: (error: any, user?: Express.User, info?: any) => void,
-  providerType: ProviderType,
+  provider: ProviderType,
 ) => {
   try {
     const { id: identityId, emails, name } = profile;
@@ -26,10 +26,7 @@ const verifyFunction = async (
         undefined,
       );
 
-    let user = await authService.getUserDataFromIdentity(
-      identityId,
-      providerType,
-    );
+    let user = await authService.getUserDataFromIdentity(identityId, provider);
 
     if (user) return done(null, user);
 
@@ -47,10 +44,10 @@ const verifyFunction = async (
       firstName,
       lastName,
       email,
-      providerType,
+      provider,
     );
 
-    user = await authService.getUserData(newIdentity.userId, providerType);
+    user = await authService.getUserData(newIdentity.userId, provider);
 
     return done(null, user);
   } catch (err) {

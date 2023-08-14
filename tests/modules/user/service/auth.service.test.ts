@@ -40,7 +40,7 @@ describe('Auth service', () => {
       expect(token).toBeDefined();
 
       const decoded = sign(
-        { userId, providerType: 'email' },
+        { userId, provider: 'email' },
         `${process.env.JWT_SECRET}`,
         { expiresIn: '1 day' },
       );
@@ -53,7 +53,7 @@ describe('Auth service', () => {
       expect(token).toBeDefined();
 
       const decoded = sign(
-        { userId, providerType: 'google' },
+        { userId, provider: 'google' },
         `${process.env.JWT_SECRET}`,
         { expiresIn: '1 day' },
       );
@@ -66,7 +66,7 @@ describe('Auth service', () => {
       expect(token).toBeDefined();
 
       const decoded = sign(
-        { userId, providerType: 'facebook' },
+        { userId, provider: 'facebook' },
         `${process.env.JWT_SECRET}`,
         { expiresIn: '1 day' },
       );
@@ -103,7 +103,7 @@ describe('Auth service', () => {
         'juanadoe@gmail.com',
         null,
         'active',
-        [{ identityId: '9043859372838624', providerType: 'google' }],
+        [{ identityId: '9043859372838624', provider: 'google' }],
         [2, 3],
       );
 
@@ -132,7 +132,7 @@ describe('Auth service', () => {
   describe('get user data from identity', () => {
     it('should return user data if user with identity id and provider type exists', async () => {
       const identityId = '5732021949727250724';
-      const providerType = 'facebook';
+      const provider = 'facebook';
 
       const { userId, user, account } = await createUserAccountAndIdentity(
         'Juan',
@@ -140,13 +140,13 @@ describe('Auth service', () => {
         'juandoe@gmail.com',
         null,
         'active',
-        [{ identityId, providerType }],
+        [{ identityId, provider }],
         [4, 5],
       );
 
       const result = await authService.getUserDataFromIdentity(
         identityId,
-        providerType,
+        provider,
       );
 
       expect(result?.userId).toBe(userId);
@@ -187,7 +187,7 @@ describe('Auth service', () => {
   describe('get identity', () => {
     it('should return identity', async () => {
       const identityId = '93248271642884';
-      const providerType = 'google';
+      const provider = 'google';
 
       const { userId } = await createUserAccountAndIdentity(
         'Juanita',
@@ -195,15 +195,15 @@ describe('Auth service', () => {
         'juanitadoe@gmail.com',
         null,
         'active',
-        [{ identityId, providerType }],
+        [{ identityId, provider }],
         [1],
       );
 
-      const identity = await authService.getIdentity(identityId, providerType);
+      const identity = await authService.getIdentity(identityId, provider);
 
       expect(identity).not.toBeNull();
       expect(identity?.identityId).toBe(identityId);
-      expect(identity?.providerType).toBe(providerType);
+      expect(identity?.provider).toBe(provider);
       expect(identity?.userId).toBe(userId);
     });
 
@@ -216,7 +216,7 @@ describe('Auth service', () => {
   describe('create new identity', () => {
     it('should create user identity for an existing user account', async () => {
       const identityId = '12324534675';
-      const providerType = 'google';
+      const provider = 'google';
 
       const { userId, user, account } = await createUserAccount(
         'Jasmine',
@@ -233,15 +233,15 @@ describe('Auth service', () => {
         user.firstName,
         user.lastName,
         account.email,
-        providerType,
+        provider,
       );
 
       expect(identity.identityId).toBe(identityId);
       expect(identity.userId).toBe(userId);
-      expect(identity.providerType).toBe(providerType);
+      expect(identity.provider).toBe(provider);
 
       const i = await UserIdentity.findOne({
-        where: { identityId, providerType, userId },
+        where: { identityId, provider, userId },
       });
       expect(i).not.toBeNull();
     });
@@ -251,7 +251,7 @@ describe('Auth service', () => {
       const email = 'jerichodoe@gmail.com';
       const firstName = 'Jericho';
       const lastName = 'Doe';
-      const providerType = 'google' as ProviderType;
+      const provider = 'google' as ProviderType;
 
       let u = await User.findOne({ where: { firstName, lastName } });
       expect(u).toBeNull();
@@ -262,17 +262,17 @@ describe('Auth service', () => {
         firstName,
         lastName,
         email,
-        providerType,
+        provider,
       );
 
       expect(identity.identityId).toBe(identityId);
-      expect(identity.providerType).toBe(providerType);
+      expect(identity.provider).toBe(provider);
 
       u = await User.findOne({ where: { firstName, lastName } });
       expect(u).not.toBeNull();
 
       const i = await UserIdentity.findOne({
-        where: { identityId, providerType, userId: u?.userId },
+        where: { identityId, provider, userId: u?.userId },
       });
       expect(i).not.toBeNull();
     });
@@ -292,17 +292,17 @@ describe('Auth service', () => {
       );
 
       const identityId = '923849719836872649';
-      const providerType = 'google';
+      const provider = 'google';
 
       const result = await createUserIdentityForUser(
         identityId,
         userId,
         status,
-        providerType,
+        provider,
       );
       expect(result.identityId).toBe(identityId);
 
-      const i = UserIdentity.findOne({ where: { userId, providerType } });
+      const i = UserIdentity.findOne({ where: { userId, provider } });
       expect(i).not.toBeNull();
 
       const a = await UserAccount.findOne({
