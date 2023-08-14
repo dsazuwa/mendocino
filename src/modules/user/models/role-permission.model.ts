@@ -43,6 +43,7 @@ RolePermission.init(
   {
     sequelize,
     underscored: true,
+    tableName: 'roles_permissions',
   },
 );
 
