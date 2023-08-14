@@ -26,11 +26,17 @@ const verifyFunction = async (
         undefined,
       );
 
-    const { user, userExists, identityExists } =
+    const { user, userExists, identityExists, isCustomer } =
       await authService.getUserForSocialAuthentication(
         identityId,
         provider,
         email,
+      );
+
+    if (userExists && !isCustomer)
+      return done(
+        ApiError.unauthorized(messages.ERR_NON_CUSTOMER_THIRD_PARTY_AUTH),
+        undefined,
       );
 
     if (identityExists) return done(null, user);

@@ -141,7 +141,7 @@ describe('Auth service', () => {
         [roleConstants.CUSTOMER.roleId],
       );
 
-      const { user, userExists, identityExists } =
+      const { user, userExists, identityExists, isCustomer } =
         await authService.getUserForSocialAuthentication(
           identityId,
           provider,
@@ -150,6 +150,7 @@ describe('Auth service', () => {
 
       expect(userExists).toBe(true);
       expect(identityExists).toBe(true);
+      expect(isCustomer).toBe(true);
       expect(user).toMatchObject({
         userId: u.userId,
         firstName: u.firstName,
@@ -173,7 +174,7 @@ describe('Auth service', () => {
         [roleConstants.CUSTOMER.roleId],
       );
 
-      const { user, userExists, identityExists } =
+      const { user, userExists, identityExists, isCustomer } =
         await authService.getUserForSocialAuthentication(
           identityId,
           provider,
@@ -182,6 +183,7 @@ describe('Auth service', () => {
 
       expect(userExists).toBe(true);
       expect(identityExists).toBe(false);
+      expect(isCustomer).toBe(true);
       expect(user).toMatchObject({
         userId: u.userId,
         firstName: u.firstName,
@@ -192,8 +194,41 @@ describe('Auth service', () => {
       });
     });
 
+    it('should return false if user exists but does not have customer role', async () => {
+      const identityId = '85930847728963982469';
+      const provider = 'facebook';
+
+      const { user: u, account } = await createUserAccount(
+        'Juniper',
+        'Die',
+        'juniperdoe@gmail.com',
+        null,
+        'active',
+        [roleConstants.ADMIN.roleId],
+      );
+
+      const { user, userExists, identityExists, isCustomer } =
+        await authService.getUserForSocialAuthentication(
+          identityId,
+          provider,
+          account.email,
+        );
+
+      expect(userExists).toBe(true);
+      expect(identityExists).toBe(false);
+      expect(isCustomer).toBe(false);
+      expect(user).toMatchObject({
+        userId: u.userId,
+        firstName: u.firstName,
+        lastName: u.lastName,
+        email: account.email,
+        status: account.status,
+        roles: [roleConstants.ADMIN.name],
+      });
+    });
+
     it('should return undefined if user does not exists', async () => {
-      const { user, userExists, identityExists } =
+      const { user, userExists, identityExists, isCustomer } =
         await authService.getUserForSocialAuthentication(
           '693904397428648349',
           'facebook',
@@ -203,6 +238,7 @@ describe('Auth service', () => {
       expect(user).not.toBeDefined();
       expect(userExists).toBe(false);
       expect(identityExists).toBe(false);
+      expect(isCustomer).toBe(false);
     });
   });
 

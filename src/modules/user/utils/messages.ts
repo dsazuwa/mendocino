@@ -11,6 +11,8 @@ const messages = {
   ERR_DEACTIVATED_ACCOUNT: 'Deactivated account',
   ERR_ACTIVE_ACCOUNT: 'Active account',
   ERR_VERIFIED_ACCOUNT: 'Account already verified',
+  ERR_NON_CUSTOMER_THIRD_PARTY_AUTH:
+    'Only customers can use third party authenticators',
 
   // COMMON MESSAGES
 

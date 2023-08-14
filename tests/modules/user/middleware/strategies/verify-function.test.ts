@@ -178,6 +178,36 @@ describe('Verify Function', () => {
     authService.createUserIdentityForUser = createUserIdentityForUser;
   });
 
+  it('should return an error if user exists, but is not a customer', async () => {
+    const identityId = '6988232978752892';
+    const firstName = 'Jerome';
+    const lastName = 'Doe';
+    const email = 'jeromedoe@gmail.com';
+    const password = 'jeromeD0ePa$$';
+
+    const { userId } = await createUserAccount(
+      firstName,
+      lastName,
+      email,
+      password,
+      'active',
+      [roleConstants.ADMIN.roleId],
+    );
+
+    const i = await UserIdentity.findOne({
+      where: { identityId, userId },
+      raw,
+    });
+    expect(i).toBeNull();
+
+    await callVerify(identityId, firstName, lastName, email, 'google');
+
+    expect(done).toHaveBeenLastCalledWith(
+      ApiError.unauthorized(messages.ERR_NON_CUSTOMER_THIRD_PARTY_AUTH),
+      undefined,
+    );
+  });
+
   it('should return an error if User Account exists (inactive)', async () => {
     const identityId = '6988232978752892';
     const firstName = 'Jacquet';

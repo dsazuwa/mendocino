@@ -98,19 +98,21 @@ const authService = {
         : (result[0] as Express.User & { identityId: string });
 
     if (user === undefined)
-      return { user: undefined, userExists: false, identityExists: false };
-
-    if (user.identityId !== null)
       return {
-        user: user as Express.User,
-        userExists: true,
-        identityExists: true,
+        user: undefined,
+        userExists: false,
+        identityExists: false,
+        isCustomer: false,
       };
+
+    const isCustomer = user.roles.includes(roleConstants.CUSTOMER.name);
+    const identityExists = user.identityId !== null;
 
     return {
       user: user as Express.User,
       userExists: true,
-      identityExists: false,
+      identityExists,
+      isCustomer,
     };
   },
 
