@@ -17,59 +17,6 @@ import { roleConstants } from '@user/utils/constants';
 
 type JWTProviderType = ProviderType | 'email';
 
-export const createUserIdentityForUser = (
-  identityId: string,
-  userId: number,
-  status: string,
-  provider: ProviderType,
-) =>
-  sequelize.transaction(async (transaction) => {
-    if (status === 'pending') {
-      await UserAccount.update(
-        { status: 'active' },
-        { where: { userId }, transaction },
-      );
-    }
-
-    const identity = await UserIdentity.create(
-      { identityId, userId, provider },
-      { transaction },
-    );
-
-    return identity;
-  });
-
-export const createUserAndUserIdentity = (
-  identityId: string,
-  firstName: string,
-  lastName: string,
-  email: string,
-  provider: ProviderType,
-) =>
-  sequelize.transaction(async (transaction) => {
-    const { userId } = await User.create(
-      { firstName, lastName },
-      { transaction },
-    );
-
-    await UserAccount.create(
-      { userId, email, status: 'active' },
-      { transaction },
-    );
-
-    const identity = await UserIdentity.create(
-      { identityId, userId, provider },
-      { transaction },
-    );
-
-    await UserRole.create(
-      { userId, roleId: roleConstants.CUSTOMER.roleId },
-      { transaction },
-    );
-
-    return identity;
-  });
-
 const authService = {
   generateJWT: (userId: number, provider: JWTProviderType) =>
     sign({ userId, provider }, process.env.JWT_SECRET, {
@@ -115,9 +62,10 @@ const authService = {
     return result.length === 0 ? undefined : (result[0] as Express.User);
   },
 
-  getUserDataFromIdentity: async (
+  getUserForSocialAuthentication: async (
     identityId: string,
     provider: ProviderType,
+    email: string,
   ) => {
     const query = `
       SELECT
@@ -125,26 +73,45 @@ const authService = {
         u.first_name AS "firstName",
         u.last_name AS "lastName",
         a.email AS email,
-        'active' AS status,
-        array_agg(r.name) AS roles
+        a.status AS status,
+        array_agg(r.name) AS roles,
+        i.identity_id AS "identityId"
       FROM
         ${User.tableName} u
       JOIN
         ${UserAccount.tableName} a ON u.user_id = a.user_id
-      JOIN 
-        ${UserIdentity.tableName} i ON u.user_id = i.user_id AND i.provider = '${provider}'
-      JOIN
+      LEFT JOIN 
+        ${UserIdentity.tableName} i ON u.user_id = i.user_id AND (i.provider = '${provider}' AND i.identity_id = '${identityId}')
+      LEFT JOIN
         ${UserRole.tableName} ur ON u.user_id = ur.user_id
-      JOIN
+      LEFT JOIN
         ${Role.tableName} r ON r.role_id = ur.role_id
       WHERE
-        i.identity_id = '${identityId}' AND u.user_id = i.user_id
+        a.email = '${email}' OR (i.identity_id = '${identityId}' AND u.user_id = i.user_id)
       GROUP BY
-        u.user_id, u.first_name, u.last_name, a.email;`;
+        u.user_id, u.first_name, u.last_name, a.email, a.status, i.identity_id;`;
 
     const result = await sequelize.query(query, { type: QueryTypes.SELECT });
+    const user =
+      result.length === 0
+        ? undefined
+        : (result[0] as Express.User & { identityId: string });
 
-    return result.length === 0 ? undefined : (result[0] as Express.User);
+    if (user === undefined)
+      return { user: undefined, userExists: false, identityExists: false };
+
+    if (user.identityId !== null)
+      return {
+        user: user as Express.User,
+        userExists: true,
+        identityExists: true,
+      };
+
+    return {
+      user: user as Express.User,
+      userExists: true,
+      identityExists: false,
+    };
   },
 
   getAccount: (email: string, raw: boolean = false) =>
@@ -193,28 +160,58 @@ const authService = {
       return password;
     }),
 
-  createNewIdentity: (
+  createUserIdentityForUser: (
     identityId: string,
-    account: UserAccount | null,
+    userId: number,
+    status: string,
+    provider: ProviderType,
+  ) =>
+    sequelize.transaction(async (transaction) => {
+      if (status === 'pending') {
+        await UserAccount.update(
+          { status: 'active' },
+          { where: { userId }, transaction },
+        );
+      }
+
+      const identity = await UserIdentity.create(
+        { identityId, userId, provider },
+        { transaction },
+      );
+
+      return identity;
+    }),
+
+  createUserAndUserIdentity: (
+    identityId: string,
     firstName: string,
     lastName: string,
     email: string,
     provider: ProviderType,
   ) =>
-    account
-      ? createUserIdentityForUser(
-          identityId,
-          account.userId,
-          account.status,
-          provider,
-        )
-      : createUserAndUserIdentity(
-          identityId,
-          firstName,
-          lastName,
-          email,
-          provider,
-        ),
+    sequelize.transaction(async (transaction) => {
+      const { userId } = await User.create(
+        { firstName, lastName },
+        { transaction },
+      );
+
+      await UserAccount.create(
+        { userId, email, status: 'active' },
+        { transaction },
+      );
+
+      const identity = await UserIdentity.create(
+        { identityId, userId, provider },
+        { transaction },
+      );
+
+      await UserRole.create(
+        { userId, roleId: roleConstants.CUSTOMER.roleId },
+        { transaction },
+      );
+
+      return identity;
+    }),
 
   createUser: async (
     firstName: string,

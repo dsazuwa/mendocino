@@ -22,7 +22,7 @@ describe('Verify Function', () => {
 
   const callVerify = async (
     identityId: string,
-    firsName: string,
+    firstName: string,
     lastName: string,
     email: string,
     provider: ProviderType,
@@ -30,7 +30,7 @@ describe('Verify Function', () => {
     const profile = {
       id: identityId,
       emails: [{ value: email }],
-      name: { givenName: firsName, familyName: lastName },
+      name: { givenName: firstName, familyName: lastName },
     } as unknown as Profile;
 
     await verifyFunction(profile, done, provider);
@@ -160,14 +160,22 @@ describe('Verify Function', () => {
       [roleConstants.CUSTOMER.roleId],
     );
 
-    const { createNewIdentity } = authService;
-    const c = jest.fn();
-    authService.createNewIdentity = c;
+    const { createUserAndUserIdentity, createUserIdentityForUser } =
+      authService;
+
+    const a = jest.fn();
+    const b = jest.fn();
+
+    authService.createUserAndUserIdentity = a;
+    authService.createUserIdentityForUser = b;
 
     await callVerify(identityId, firstName, lastName, email, provider);
 
-    expect(c).not.toHaveBeenCalled();
-    authService.createNewIdentity = createNewIdentity;
+    expect(a).not.toHaveBeenCalled();
+    expect(b).not.toHaveBeenCalled();
+
+    authService.createUserAndUserIdentity = createUserAndUserIdentity;
+    authService.createUserIdentityForUser = createUserIdentityForUser;
   });
 
   it('should return an error if User Account exists (inactive)', async () => {

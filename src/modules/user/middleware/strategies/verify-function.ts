@@ -26,30 +26,38 @@ const verifyFunction = async (
         undefined,
       );
 
-    let user = await authService.getUserDataFromIdentity(identityId, provider);
+    const { user, userExists, identityExists } =
+      await authService.getUserForSocialAuthentication(
+        identityId,
+        provider,
+        email,
+      );
 
-    if (user) return done(null, user);
+    if (identityExists) return done(null, user);
 
-    const account = await authService.getAccount(email, true);
-
-    if (account?.status === 'inactive')
+    if (userExists && user?.status === 'inactive')
       return done(
         ApiError.unauthorized(messages.ERR_DEACTIVATED_ACCOUNT),
         undefined,
       );
 
-    const newIdentity = await authService.createNewIdentity(
-      identityId,
-      account,
-      firstName,
-      lastName,
-      email,
-      provider,
-    );
+    const newIdentity = await (userExists
+      ? authService.createUserIdentityForUser(
+          identityId,
+          user?.userId as number,
+          user?.status as string,
+          provider,
+        )
+      : authService.createUserAndUserIdentity(
+          identityId,
+          firstName,
+          lastName,
+          email,
+          provider,
+        ));
 
-    user = await authService.getUserData(newIdentity.userId, provider);
-
-    return done(null, user);
+    const u = await authService.getUserData(newIdentity.userId, provider);
+    return done(null, u);
   } catch (err) {
     return done(err, undefined);
   }
