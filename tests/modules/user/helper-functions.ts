@@ -5,7 +5,7 @@ import {
   UserAccountStatusType,
   UserIdentity,
   UserRole,
-} from '@App/modules/user/models';
+} from '@user/models';
 
 export const createUserAccount = async (
   firstName: string,

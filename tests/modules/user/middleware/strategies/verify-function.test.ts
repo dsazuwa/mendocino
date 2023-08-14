@@ -5,6 +5,7 @@ import ApiError from '@utils/api-error';
 import verifyFunction from '@user/middleware/strategies/verify-function';
 import { ProviderType, User, UserAccount, UserIdentity } from '@user/models';
 import authService from '@user/services/auth.service';
+import { roleConstants } from '@user/utils/constants';
 import messages from '@user/utils/messages';
 
 import {
@@ -75,7 +76,7 @@ describe('Verify Function', () => {
       email,
       password,
       'active',
-      [1],
+      [roleConstants.CUSTOMER.roleId],
     );
 
     let i = await UserIdentity.findOne({ where: { identityId, userId } });
@@ -102,7 +103,7 @@ describe('Verify Function', () => {
       email,
       password,
       'pending',
-      [1],
+      [roleConstants.CUSTOMER.roleId],
     );
 
     expect(
@@ -135,7 +136,7 @@ describe('Verify Function', () => {
       password,
       'active',
       [{ identityId, provider }],
-      [1],
+      [roleConstants.CUSTOMER.roleId],
     );
 
     const { createNewIdentity } = authService;
@@ -161,7 +162,7 @@ describe('Verify Function', () => {
       email,
       password,
       'inactive',
-      [1],
+      [roleConstants.CUSTOMER.roleId],
     );
 
     const i = await UserIdentity.findOne({ where: { identityId, userId } });

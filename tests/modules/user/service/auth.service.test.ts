@@ -11,6 +11,7 @@ import authService, {
   createUserAndUserIdentity,
   createUserIdentityForUser,
 } from '@user/services/auth.service';
+import { roleConstants } from '@user/utils/constants';
 
 import {
   createUserAccount,
@@ -30,7 +31,7 @@ describe('Auth service', () => {
         'janicedoe@gmail.com',
         'janiceD0epas$$',
         'active',
-        [1],
+        [roleConstants.CUSTOMER.roleId],
       );
       userId = user.userId;
     });
@@ -77,13 +78,15 @@ describe('Auth service', () => {
 
   describe('get user data', () => {
     it('should return user data when provider is email', async () => {
+      const { CUSTOMER } = roleConstants;
+
       const { userId, user, account } = await createUserAccount(
         'Jacinto',
         'Doe',
         'jacintodoe@gmail.com',
         'jacD0epa$$',
         'active',
-        [1],
+        [CUSTOMER.roleId],
       );
 
       const result = await authService.getUserData(userId, 'email');
@@ -93,10 +96,12 @@ describe('Auth service', () => {
       expect(result?.lastName).toBe(user.lastName);
       expect(result?.email).toBe(account.email);
       expect(result?.roles.length).toBe(1);
-      expect(result?.roles).toMatchObject(['customer']);
+      expect(result?.roles).toMatchObject([CUSTOMER.name]);
     });
 
     it('should return user data when provider is google', async () => {
+      const { MANAGER, DELIVERY_DRIVER } = roleConstants;
+
       const { userId, user, account } = await createUserAccountAndIdentity(
         'Juana',
         'Doe',
@@ -104,7 +109,7 @@ describe('Auth service', () => {
         null,
         'active',
         [{ identityId: '9043859372838624', provider: 'google' }],
-        [2, 3],
+        [DELIVERY_DRIVER.roleId, MANAGER.roleId],
       );
 
       const result = await authService.getUserData(userId, 'google');
@@ -114,10 +119,7 @@ describe('Auth service', () => {
       expect(result?.lastName).toBe(user.lastName);
       expect(result?.email).toBe(account.email);
       expect(result?.roles.length).toBe(2);
-      expect(result?.roles).toMatchObject([
-        'delivery driver',
-        'customer service representative',
-      ]);
+      expect(result?.roles).toMatchObject([DELIVERY_DRIVER.name, MANAGER.name]);
     });
 
     it('should return undefined if user does not exist', async () => {
@@ -134,6 +136,8 @@ describe('Auth service', () => {
       const identityId = '5732021949727250724';
       const provider = 'facebook';
 
+      const { DELIVERY_DRIVER, CUSTOMER_SUPPORT } = roleConstants;
+
       const { userId, user, account } = await createUserAccountAndIdentity(
         'Juan',
         'Doe',
@@ -141,7 +145,7 @@ describe('Auth service', () => {
         null,
         'active',
         [{ identityId, provider }],
-        [4, 5],
+        [DELIVERY_DRIVER.roleId, CUSTOMER_SUPPORT.roleId],
       );
 
       const result = await authService.getUserDataFromIdentity(
@@ -154,7 +158,11 @@ describe('Auth service', () => {
       expect(result?.lastName).toBe(user.lastName);
       expect(result?.email).toBe(account.email);
       expect(result?.roles.length).toBe(2);
-      expect(result?.roles).toMatchObject(['manager', 'super admin']);
+
+      expect(result?.roles).toMatchObject([
+        DELIVERY_DRIVER.name,
+        CUSTOMER_SUPPORT.name,
+      ]);
     });
 
     it('should return undefined if user with identity id and provider type does not exists', async () => {
@@ -171,7 +179,9 @@ describe('Auth service', () => {
       const email = 'jazzdoe@gmail.com';
       const password = 'jazzD0ePa$$';
 
-      await createUserAccount('Jazz', 'Doe', email, password, 'active', [1]);
+      await createUserAccount('Jazz', 'Doe', email, password, 'active', [
+        roleConstants.CUSTOMER.roleId,
+      ]);
 
       const account = await authService.getAccount(email);
       expect(account).not.toBeNull();
@@ -196,7 +206,7 @@ describe('Auth service', () => {
         null,
         'active',
         [{ identityId, provider }],
-        [1],
+        [roleConstants.CUSTOMER.roleId],
       );
 
       const identity = await authService.getIdentity(identityId, provider);
@@ -224,7 +234,7 @@ describe('Auth service', () => {
         'jasminedoe@gmail.com',
         'jasD0epa$$',
         'active',
-        [1],
+        [roleConstants.CUSTOMER.roleId],
       );
 
       const identity = await authService.createNewIdentity(
@@ -288,7 +298,7 @@ describe('Auth service', () => {
         'jamesdoe@gmail.com',
         'jamesD0epa$$',
         status,
-        [1],
+        [roleConstants.CUSTOMER.roleId],
       );
 
       const identityId = '923849719836872649';
@@ -320,7 +330,7 @@ describe('Auth service', () => {
         'jamesondoe@gmail.com',
         'JamesonD0epa$$',
         status,
-        [1],
+        [roleConstants.CUSTOMER.roleId],
       );
 
       const identityId = '98979675654556756687';
@@ -466,7 +476,7 @@ describe('Auth service', () => {
         email,
         password,
         'active',
-        [1],
+        [roleConstants.CUSTOMER.roleId],
       );
 
       const { account, isUser } = await authService.loginUser(email, password);
@@ -493,7 +503,7 @@ describe('Auth service', () => {
         email,
         null,
         'active',
-        [1],
+        [roleConstants.CUSTOMER.roleId],
       );
 
       expect(a.password).toBeNull();
@@ -518,7 +528,7 @@ describe('Auth service', () => {
         'jackdoe@gmail.com',
         'jackD0epas$$',
         'active',
-        [1],
+        [roleConstants.CUSTOMER.roleId],
       );
 
       userId = user.userId;
@@ -571,7 +581,7 @@ describe('Auth service', () => {
         'jerydoe@gmail.com',
         'jerryD0ePa$$',
         'inactive',
-        [1],
+        [roleConstants.CUSTOMER.roleId],
       );
 
       userId = user.userId;

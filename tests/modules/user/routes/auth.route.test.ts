@@ -3,6 +3,7 @@ import { Request, Response } from 'express';
 import { facebookLogin, googleLogin } from '@user/controllers/auth.controller';
 import { AuthOTP, User, UserAccount } from '@user/models';
 import authService from '@user/services/auth.service';
+import { roleConstants } from '@user/utils/constants';
 
 import { getTokenFrom, request } from 'tests/supertest.helper';
 
@@ -31,7 +32,7 @@ describe('Google Login', () => {
       'jayD0ePa$$',
       'active',
       [{ identityId: '428402371863284', provider }],
-      [1],
+      [roleConstants.CUSTOMER.roleId],
     );
 
     const req = { user: { userId, status: 'active' } } as Request;
@@ -71,7 +72,7 @@ describe('Facebook Login', () => {
       'jazD0ePa$$',
       'active',
       [{ identityId: '42942742739273298', provider }],
-      [1],
+      [roleConstants.CUSTOMER.roleId],
     );
 
     const req = { user: { userId, status: 'active' } } as Request;
@@ -156,7 +157,9 @@ describe('Email Authentication', () => {
       const email = 'jeandoe@gmail.com';
       const password = 'jeanD0ePa$$';
 
-      await createUserAccount('Jean', 'Doe', email, password, 'inactive', [1]);
+      await createUserAccount('Jean', 'Doe', email, password, 'inactive', [
+        roleConstants.CUSTOMER.roleId,
+      ]);
 
       const response = await request
         .post(`${BASE_URL}/login`)
@@ -176,7 +179,9 @@ describe('Email Authentication', () => {
     it('should fail for user_account with null password', async () => {
       const email = 'jolenedoe@gmail.com';
 
-      await createUserAccount('Jolene', 'Doe', email, null, 'active', [1]);
+      await createUserAccount('Jolene', 'Doe', email, null, 'active', [
+        roleConstants.CUSTOMER.roleId,
+      ]);
 
       const response = await request
         .post(`${BASE_URL}/login`)
@@ -211,7 +216,7 @@ describe('Recover Account', () => {
         email,
         'janetD0epa$$',
         'active',
-        [1],
+        [roleConstants.CUSTOMER.roleId],
       );
 
       await request.post(`${BASE_URL}/recover`).send({ email }).expect(200);
@@ -231,7 +236,9 @@ describe('Recover Account', () => {
     it('should fail to create new otp on user_account with null password', async () => {
       const email = 'jadoe@gmail.com';
 
-      await createUserAccount('Ja', 'Doe', email, null, 'active', [1]);
+      await createUserAccount('Ja', 'Doe', email, null, 'active', [
+        roleConstants.CUSTOMER.roleId,
+      ]);
 
       await request.post(`${BASE_URL}/recover`).send({ email }).expect(403);
     });
@@ -248,7 +255,7 @@ describe('Recover Account', () => {
         email,
         'jD0ePa$$',
         'active',
-        [1],
+        [roleConstants.CUSTOMER.roleId],
       );
       userId = user.userId;
     });
@@ -299,7 +306,7 @@ describe('Recover Account', () => {
         email,
         'jinD0ePa$$',
         'active',
-        [1],
+        [roleConstants.CUSTOMER.roleId],
       );
       userId = user.userId;
     });
@@ -383,7 +390,7 @@ describe('Recover Account', () => {
         'janelledoe@gmail.com',
         'janelleD0ePa$$',
         status,
-        [1],
+        [roleConstants.CUSTOMER.roleId],
       );
 
       const token = authService.generateJWT(userId, 'email');
@@ -409,7 +416,7 @@ describe('Recover Account', () => {
         'joseedoe@gmail.com',
         'joseeD0ePa$$',
         status,
-        [1],
+        [roleConstants.CUSTOMER.roleId],
       );
 
       const token = authService.generateJWT(userId, 'email');
@@ -435,7 +442,7 @@ describe('Recover Account', () => {
         'jaclyndoe@gmail.com',
         'jaclynD0ePa$$',
         status,
-        [1],
+        [roleConstants.CUSTOMER.roleId],
       );
 
       const token = authService.generateJWT(userId, 'email');

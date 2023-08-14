@@ -1,6 +1,8 @@
+import { Request } from 'express';
+
+import { roleConstants } from '@user/utils/constants';
 import { AuthOTP, User, UserAccount, UserIdentity } from '@user/models';
 import usersService from '@user/services/users.service';
-import { Request } from 'express';
 
 import {
   createUserAccount,
@@ -54,7 +56,7 @@ describe('Users Service', () => {
         'jodoe@gmail.com',
         'joD0ePa$$',
         'pending',
-        [1],
+        [roleConstants.CUSTOMER.roleId],
       );
       userId = user.userId;
     });
@@ -104,7 +106,7 @@ describe('Users Service', () => {
         null,
         'active',
         [{ identityId: '923042892739426871638', provider: 'google' }],
-        [1],
+        [roleConstants.CUSTOMER.roleId],
       );
       const password = 'josephineD0ePa$$';
       expect(account.comparePasswords(password)).toBe(false);
@@ -123,7 +125,7 @@ describe('Users Service', () => {
         'juliedoe@gmail.com',
         'julieD0ePa$$',
         'active',
-        [1],
+        [roleConstants.CUSTOMER.roleId],
       );
       const newPassword = 'newjulieD0ePa$$';
       expect(account.comparePasswords(newPassword)).toBe(false);
@@ -147,7 +149,7 @@ describe('Users Service', () => {
         'jeanpauldoe@gmail.com',
         password,
         'active',
-        [1],
+        [roleConstants.CUSTOMER.roleId],
       );
 
       const result = await usersService.changePassword(
@@ -171,7 +173,7 @@ describe('Users Service', () => {
         'juliettepauldoe@gmail.com',
         password,
         'active',
-        [1],
+        [roleConstants.CUSTOMER.roleId],
       );
 
       const result = await usersService.changePassword(
@@ -196,7 +198,7 @@ describe('Users Service', () => {
         'joliepauldoe@gmail.com',
         null,
         'active',
-        [1],
+        [roleConstants.CUSTOMER.roleId],
       );
 
       expect(account.password).toBeNull();
@@ -235,7 +237,7 @@ describe('Users Service', () => {
         'jessicaD0ePa$$',
         'active',
         [{ identityId: '3654755345356474363', provider }],
-        [1],
+        [roleConstants.CUSTOMER.roleId],
       );
 
       expect(account.password).not.toBeNull();
@@ -271,7 +273,7 @@ describe('Users Service', () => {
           { identityId: '52429584297428924', provider: 'google' },
           { identityId: '58991388923428739', provider: 'facebook' },
         ],
-        [1],
+        [roleConstants.CUSTOMER.roleId],
       );
 
       expect(account.password).toBeNull();
@@ -314,7 +316,7 @@ describe('Users Service', () => {
         null,
         'active',
         [{ identityId: '94044248328749827', provider }],
-        [1],
+        [roleConstants.CUSTOMER.roleId],
       );
 
       expect(account.password).toBeNull();
@@ -349,7 +351,7 @@ describe('Users Service', () => {
         'jeffD0ePa$$',
         'active',
         [{ identityId: '2435674867433235', provider: 'google' }],
-        [1],
+        [roleConstants.CUSTOMER.roleId],
       );
 
       expect(account.password).not.toBeNull();
@@ -374,7 +376,7 @@ describe('Users Service', () => {
         null,
         'active',
         [{ identityId: '23274274781623876298', provider: 'google' }],
-        [1],
+        [roleConstants.CUSTOMER.roleId],
       );
 
       expect(account.password).toBeNull();

@@ -1,15 +1,18 @@
 import sequelize from '@App/db';
-import { Permission, Role, RolePermission } from '@App/modules/user/models';
+
+import { Permission, Role, RolePermission } from '@user/models';
+import { roleConstants } from '@user/utils/constants';
 
 beforeAll(async () => {
   await sequelize.sync({ force: true });
 
   await Role.bulkCreate([
-    { name: 'customer' },
-    { name: 'delivery driver' },
-    { name: 'customer service representative' },
-    { name: 'manager' },
-    { name: 'super admin' },
+    roleConstants.CUSTOMER,
+    roleConstants.DELIVERY_DRIVER,
+    roleConstants.CUSTOMER_SUPPORT,
+    roleConstants.MANAGER,
+    roleConstants.ADMIN,
+    roleConstants.ROOT,
   ]);
 
   await Permission.bulkCreate([
@@ -38,6 +41,7 @@ beforeAll(async () => {
     { roleId: 1, permissionId: 2 },
     { roleId: 1, permissionId: 3 },
     { roleId: 1, permissionId: 5 },
+
     { roleId: 2, permissionId: 1 },
     { roleId: 2, permissionId: 5 },
     { roleId: 2, permissionId: 6 },

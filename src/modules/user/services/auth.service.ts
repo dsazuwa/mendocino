@@ -63,7 +63,7 @@ export const createUserAndUserIdentity = (
     );
 
     await UserRole.create(
-      { userId, roleId: roleConstants.CUSTOMER },
+      { userId, roleId: roleConstants.CUSTOMER.roleId },
       { transaction },
     );
 
@@ -244,7 +244,7 @@ const authService = {
       );
 
       await UserRole.create(
-        { userId: user.userId, roleId: roleConstants.CUSTOMER },
+        { userId: user.userId, roleId: roleConstants.CUSTOMER.roleId },
         { transaction },
       );
 
