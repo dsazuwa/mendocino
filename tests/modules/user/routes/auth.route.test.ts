@@ -1,13 +1,17 @@
 import { Request, Response } from 'express';
 
 import { facebookLogin, googleLogin } from '@user/controllers/auth.controller';
-import { AuthOTP, User, UserAccount, UserIdentity } from '@user/models';
+import { AuthOTP, User, UserAccount } from '@user/models';
 import authService from '@user/services/auth.service';
-import usersService from '@user/services/users.service';
 
 import { getTokenFrom, request } from 'tests/supertest.helper';
 
-import 'tests/db-setup';
+import {
+  createUserAccount,
+  createUserAccountAndIdentity,
+} from 'tests/modules/user/helper-functions';
+
+import 'tests/modules/user/user.mock.db';
 
 const BASE_URL = '/api/auth';
 
@@ -18,30 +22,28 @@ describe('Google Login', () => {
   });
 
   it('google callback controller', async () => {
-    const { userId } = await User.create({ firstName: 'Jay', lastName: 'Doe' });
+    const providerType = 'google';
 
-    await UserAccount.create({
-      userId,
-      email: 'jaydoe@gmail.com',
-      password: 'jayD0ePa$$',
-    });
-
-    await UserIdentity.create({
-      userId,
-      id: '428402371863284',
-      providerType: 'google',
-    });
+    const { userId } = await createUserAccountAndIdentity(
+      'Jay',
+      'Doe',
+      'jaydoe@gmail.com',
+      'jayD0ePa$$',
+      'active',
+      [{ identityId: '428402371863284', providerType: 'facebook' }],
+      [1],
+    );
 
     const req = { user: { userId, status: 'active' } } as Request;
     const res = { redirect: jest.fn() } as unknown as Response;
     const next = jest.fn();
 
-    const token = authService.generateJWT(userId, 'google');
-    const userData = await usersService.getUserData(userId);
+    const token = authService.generateJWT(userId, providerType);
+    const userData = await authService.getUserData(userId, providerType);
 
     await googleLogin(req, res, next);
 
-    expect(res.redirect).toHaveBeenCalledWith(
+    expect(res.redirect).toHaveBeenLastCalledWith(
       `${
         process.env.FRONTEND_BASE_URL
       }/OAuthRedirecting?token=${token}&user=${encodeURIComponent(
@@ -58,30 +60,28 @@ describe('Facebook Login', () => {
   // });
 
   it('facebook callback controller', async () => {
-    const { userId } = await User.create({ firstName: 'Jaz', lastName: 'Doe' });
+    const providerType = 'facebook';
 
-    await UserAccount.create({
-      userId,
-      email: 'jazdoe@gmail.com',
-      password: 'jazD0ePa$$',
-    });
-
-    await UserIdentity.create({
-      userId,
-      id: '42942742739273298',
-      providerType: 'facebook',
-    });
+    const { userId } = await createUserAccountAndIdentity(
+      'Jaz',
+      'Doe',
+      'jazdoe@gmail.com',
+      'jazD0ePa$$',
+      'active',
+      [{ identityId: '42942742739273298', providerType }],
+      [1],
+    );
 
     const req = { user: { userId, status: 'active' } } as Request;
     const res = { redirect: jest.fn() } as unknown as Response;
     const next = jest.fn();
 
-    const token = authService.generateJWT(userId, 'facebook');
-    const userData = await usersService.getUserData(userId);
+    const token = authService.generateJWT(userId, providerType);
+    const userData = await authService.getUserData(userId, providerType);
 
     await facebookLogin(req, res, next);
 
-    expect(res.redirect).toHaveBeenCalledWith(
+    expect(res.redirect).toHaveBeenLastCalledWith(
       `${
         process.env.FRONTEND_BASE_URL
       }/OAuthRedirecting?token=${token}&user=${encodeURIComponent(
@@ -152,12 +152,7 @@ describe('Email Authentication', () => {
       const email = 'jeandoe@gmail.com';
       const password = 'jeanD0ePa$$';
 
-      const { userId } = await User.create({
-        firstName: 'Jean',
-        lastName: 'Doe',
-      });
-
-      await UserAccount.create({ userId, email, password, status: 'inactive' });
+      await createUserAccount('Jean', 'Doe', email, password, 'inactive', [1]);
 
       const response = await request
         .post(`${BASE_URL}/login`)
@@ -175,15 +170,9 @@ describe('Email Authentication', () => {
     });
 
     it('should fail for user_account with null password', async () => {
-      const { userId } = await User.create({
-        firstName: 'Jolene',
-        lastName: 'Doe',
-      });
+      const email = 'jolenedoe@gmail.com';
 
-      const { email } = await UserAccount.create({
-        userId,
-        email: 'jolenedoe@gmail.com',
-      });
+      await createUserAccount('Jolene', 'Doe', email, null, 'active', [1]);
 
       const response = await request
         .post(`${BASE_URL}/login`)
@@ -212,11 +201,14 @@ describe('Recover Account', () => {
     it('should create a new recover otp', async () => {
       const email = 'janetdoe@gmail.com';
 
-      const { userId } = await User.create({
-        firstName: 'Janet',
-        lastName: 'Doe',
-      });
-      await UserAccount.create({ userId, email, password: 'janetD0epa$$' });
+      const { userId } = await createUserAccount(
+        'Janet',
+        'Doe',
+        email,
+        'janetD0epa$$',
+        'active',
+        [1],
+      );
 
       await request.post(`${BASE_URL}/recover`).send({ email }).expect(200);
 
@@ -233,13 +225,9 @@ describe('Recover Account', () => {
     });
 
     it('should fail to create new otp on user_account with null password', async () => {
-      const { userId } = await User.create({
-        firstName: 'Ja',
-        lastName: 'Doe',
-      });
-
       const email = 'jadoe@gmail.com';
-      await UserAccount.create({ userId, email });
+
+      await createUserAccount('Ja', 'Doe', email, null, 'active', [1]);
 
       await request.post(`${BASE_URL}/recover`).send({ email }).expect(403);
     });
@@ -250,10 +238,15 @@ describe('Recover Account', () => {
     let userId: number;
 
     beforeAll(async () => {
-      const u = await User.create({ firstName: 'J', lastName: 'Doe' });
-      userId = u.userId;
-
-      await UserAccount.create({ userId, email, password: 'jD0ePa$$' });
+      const { user } = await createUserAccount(
+        'J',
+        'Doe',
+        email,
+        'jD0ePa$$',
+        'active',
+        [1],
+      );
+      userId = user.userId;
     });
 
     it('should verify user account for recovery', async () => {
@@ -296,11 +289,17 @@ describe('Recover Account', () => {
     let userId: number;
 
     beforeAll(async () => {
-      const u = await User.create({ firstName: 'Jin', lastName: 'Doe' });
-      userId = u.userId;
-
-      await UserAccount.create({ userId, email, password: 'jinD0ePa$$' });
+      const { user } = await createUserAccount(
+        'Jin',
+        'Doe',
+        email,
+        'jinD0ePa$$',
+        'active',
+        [1],
+      );
+      userId = user.userId;
     });
+
     it('should fail on invalid password', async () => {
       await request
         .patch(`${BASE_URL}/recover/${mockOTP}`)
@@ -374,17 +373,14 @@ describe('Recover Account', () => {
     it('should reactivate inactive user', async () => {
       const status = 'inactive';
 
-      const { userId } = await User.create({
-        firstName: 'Janelle',
-        lastName: 'Doe',
-      });
-
-      await UserAccount.create({
-        userId,
-        email: 'janelledoe@gmail.com',
-        password: 'janelleD0ePa$$',
+      const { userId } = await createUserAccount(
+        'Janelle',
+        'Doe',
+        'janelledoe@gmail.com',
+        'janelleD0ePa$$',
         status,
-      });
+        [1],
+      );
 
       const token = authService.generateJWT(userId, 'email');
 
@@ -402,17 +398,15 @@ describe('Recover Account', () => {
 
     it('should fail for active user', async () => {
       const status = 'active';
-      const { userId } = await User.create({
-        firstName: 'Josee',
-        lastName: 'Doe',
-      });
 
-      await UserAccount.create({
-        userId,
-        email: 'joseedoe@gmail.com',
-        password: 'joseeD0ePa$$',
+      const { userId } = await createUserAccount(
+        'Josee',
+        'Doe',
+        'joseedoe@gmail.com',
+        'joseeD0ePa$$',
         status,
-      });
+        [1],
+      );
 
       const token = authService.generateJWT(userId, 'email');
 
@@ -431,17 +425,14 @@ describe('Recover Account', () => {
     it('should fail for pending user', async () => {
       const status = 'pending';
 
-      const { userId } = await User.create({
-        firstName: 'Jaclyn',
-        lastName: 'Doe',
-      });
-
-      await UserAccount.create({
-        userId,
-        email: 'jaclyndoe@gmail.com',
-        password: 'jaclynD0ePa$$',
+      const { userId } = await createUserAccount(
+        'Jaclyn',
+        'Doe',
+        'jaclyndoe@gmail.com',
+        'jaclynD0ePa$$',
         status,
-      });
+        [1],
+      );
 
       const token = authService.generateJWT(userId, 'email');
 

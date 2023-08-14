@@ -7,7 +7,12 @@ import { ProviderType, User, UserAccount, UserIdentity } from '@user/models';
 import authService from '@user/services/auth.service';
 import messages from '@user/utils/messages';
 
-import 'tests/db-setup';
+import {
+  createUserAccount,
+  createUserAccountAndIdentity,
+} from 'tests/modules/user/helper-functions';
+
+import 'tests/modules/user/user.mock.db';
 
 describe('Verify Function', () => {
   const done = jest.fn();
@@ -63,8 +68,14 @@ describe('Verify Function', () => {
     const email = 'jacquelindoe@gmail.com';
     const password = 'jacqD0ePa$$';
 
-    const { userId } = await User.create({ firstName, lastName });
-    await UserAccount.create({ userId, email, password, status: 'active' });
+    const { userId } = await createUserAccount(
+      firstName,
+      lastName,
+      email,
+      password,
+      'active',
+      [1],
+    );
 
     expect(UserIdentity.findOne({ where: { id, userId } })).resolves.toBeNull();
 
@@ -82,8 +93,14 @@ describe('Verify Function', () => {
     const email = 'jeandoe@gmail.com';
     const password = 'jeanD0ePa$$';
 
-    const { userId } = await User.create({ firstName, lastName });
-    await UserAccount.create({ userId, email, password, status: 'pending' });
+    const { userId } = await createUserAccount(
+      firstName,
+      lastName,
+      email,
+      password,
+      'pending',
+      [1],
+    );
 
     expect(UserIdentity.findOne({ where: { id, userId } })).resolves.toBeNull();
 
@@ -104,9 +121,15 @@ describe('Verify Function', () => {
     const email = 'julesdoe@gmail.com';
     const password = 'julesD0ePa$$';
 
-    const { userId } = await User.create({ firstName, lastName });
-    await UserAccount.create({ userId, email, password });
-    await UserIdentity.create({ userId, id, providerType: 'google' });
+    await createUserAccountAndIdentity(
+      firstName,
+      lastName,
+      email,
+      password,
+      'active',
+      [{ identityId: id, providerType: 'google' }],
+      [1],
+    );
 
     const { createNewIdentity } = authService;
     const c = jest.fn();
@@ -125,8 +148,14 @@ describe('Verify Function', () => {
     const email = 'jacquetdoe@gmail.com';
     const password = 'jacquetD0ePa$$';
 
-    const { userId } = await User.create({ firstName, lastName });
-    await UserAccount.create({ userId, email, password, status: 'inactive' });
+    const { userId } = await createUserAccount(
+      firstName,
+      lastName,
+      email,
+      password,
+      'inactive',
+      [1],
+    );
 
     expect(UserIdentity.findOne({ where: { id, userId } })).resolves.toBeNull();
 

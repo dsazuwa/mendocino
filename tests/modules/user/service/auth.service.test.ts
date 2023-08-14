@@ -12,24 +12,27 @@ import authService, {
   createUserIdentityForUser,
 } from '@user/services/auth.service';
 
-import 'tests/db-setup';
+import {
+  createUserAccount,
+  createUserAccountAndIdentity,
+} from 'tests/modules/user/helper-functions';
+
+import 'tests/modules/user/user.mock.db';
 
 describe('Auth service', () => {
   describe('generate JWT token', () => {
-    const userData = {
-      firstName: 'Janice',
-      lastName: 'Doe',
-      email: 'janicedoe@gmail.com',
-      password: 'janiceD0epas$$',
-    };
-
     let userId: number;
 
     beforeAll(async () => {
-      const u = await User.create(userData);
-      userId = u.userId;
-
-      await UserAccount.create({ userId, ...userData });
+      const { user } = await createUserAccount(
+        'Janice',
+        'Doe',
+        'janicedoe@gmail.com',
+        'janiceD0epas$$',
+        'active',
+        [1],
+      );
+      userId = user.userId;
     });
 
     it('should generate a token for email', async () => {
@@ -72,75 +75,107 @@ describe('Auth service', () => {
     });
   });
 
-  describe('get user from jwt payload', () => {
-    it('should return user account when provider is email', async () => {
-      const { userId } = await User.create({
-        firstName: 'Jacinto',
-        lastName: 'Doe',
-      });
+  describe('get user data', () => {
+    it('should return user data when provider is email', async () => {
+      const { userId, user, account } = await createUserAccount(
+        'Jacinto',
+        'Doe',
+        'jacintodoe@gmail.com',
+        'jacD0epa$$',
+        'active',
+        [1],
+      );
 
-      const { email, password } = await UserAccount.create({
-        userId,
-        email: 'jacintodoe@gmail.com',
-        password: 'jacD0epa$$',
-      });
-
-      const result = await authService.getUserFromJWTPayload('email', userId);
-
-      expect(result).toBeInstanceOf(UserAccount);
-
-      const account = result as UserAccount;
-
-      expect(account.userId).toBe(userId);
-      expect(account.email).toBe(email);
-      expect(account.password).toBe(password);
-    });
-
-    it('should return user identitiy when provider is google', async () => {
-      const { userId } = await User.create({
-        firstName: 'Juana',
-        lastName: 'Doe',
-      });
-
-      const { id, providerType } = await UserIdentity.create({
-        id: '9043859372838624',
-        userId,
-        providerType: 'google',
-      });
-
-      const result = await authService.getUserFromJWTPayload('google', userId);
-
-      expect(result).toBeInstanceOf(UserIdentity);
+      const result = await authService.getUserData(userId, 'email');
 
       expect(result?.userId).toBe(userId);
-      expect((result as UserIdentity).id).toBe(id);
-      expect((result as UserIdentity).providerType).toBe(providerType);
+      expect(result?.firstName).toBe(user.firstName);
+      expect(result?.lastName).toBe(user.lastName);
+      expect(result?.email).toBe(account.email);
+      expect(result?.roles.length).toBe(1);
+      expect(result?.roles).toMatchObject(['customer']);
+    });
+
+    it('should return user data when provider is google', async () => {
+      const { userId, user, account } = await createUserAccountAndIdentity(
+        'Juana',
+        'Doe',
+        'juanadoe@gmail.com',
+        null,
+        'active',
+        [{ identityId: '9043859372838624', providerType: 'google' }],
+        [2, 3],
+      );
+
+      const result = await authService.getUserData(userId, 'google');
+
+      expect(result?.userId).toBe(userId);
+      expect(result?.firstName).toBe(user.firstName);
+      expect(result?.lastName).toBe(user.lastName);
+      expect(result?.email).toBe(account.email);
+      expect(result?.roles.length).toBe(2);
+      expect(result?.roles).toMatchObject([
+        'delivery driver',
+        'customer service representative',
+      ]);
     });
 
     it('should return undefined if user does not exist', async () => {
-      let result = await authService.getUserFromJWTPayload('email', 1000);
-      expect(result).toBe(undefined);
+      let result = await authService.getUserData(1000, 'email');
+      expect(result).not.toBeDefined();
 
-      result = await authService.getUserFromJWTPayload('google', 1000);
-      expect(result).toBe(undefined);
+      result = await authService.getUserData(1000, 'google');
+      expect(result).not.toBeDefined();
+    });
+  });
+
+  describe('get user data from identity', () => {
+    it('should return user data if user with id and provider type exists', async () => {
+      const identityId = '5732021949727250724';
+      const providerType = 'facebook';
+
+      const { userId, user, account } = await createUserAccountAndIdentity(
+        'Juan',
+        'Doe',
+        'juandoe@gmail.com',
+        null,
+        'active',
+        [{ identityId, providerType }],
+        [4, 5],
+      );
+
+      const result = await authService.getUserDataFromIdentity(
+        identityId,
+        providerType,
+      );
+
+      expect(result?.userId).toBe(userId);
+      expect(result?.firstName).toBe(user.firstName);
+      expect(result?.lastName).toBe(user.lastName);
+      expect(result?.email).toBe(account.email);
+      expect(result?.roles.length).toBe(2);
+      expect(result?.roles).toMatchObject(['manager', 'super admin']);
+    });
+
+    it('should return undefined if user with id and provider type does not exists', async () => {
+      const result = await authService.getUserDataFromIdentity(
+        '100032049298741',
+        'facebook',
+      );
+      expect(result).not.toBeDefined();
     });
   });
 
   describe('get account', () => {
     it('should return account', async () => {
-      const { userId } = await User.create({
-        firstName: 'Jazz',
-        lastName: 'Doe',
-      });
+      const email = 'jazzdoe@gmail.com';
+      const password = 'jazzD0ePa$$';
 
-      const { email } = await UserAccount.create({
-        userId,
-        email: 'jazzdoe@gmail.com',
-        password: 'jazzD0ePa$$',
-      });
+      await createUserAccount('Jazz', 'Doe', email, password, 'active', [1]);
 
       const account = await authService.getAccount(email);
       expect(account).not.toBeNull();
+      expect(account?.comparePasswords(password)).toBe(true);
     });
 
     it('should return null for non-existent account', async () => {
@@ -151,21 +186,23 @@ describe('Auth service', () => {
 
   describe('get identity', () => {
     it('should return identity', async () => {
-      const { userId } = await User.create({
-        firstName: 'Juanita',
-        lastName: 'Doe',
-      });
+      const identityId = '93248271642884';
+      const providerType = 'google';
 
-      const { id, providerType } = await UserIdentity.create({
-        id: '93248271642884',
-        userId,
-        providerType: 'google',
-      });
+      const { userId } = await createUserAccountAndIdentity(
+        'Juanita',
+        'Doe',
+        'juanitadoe@gmail.com',
+        null,
+        'active',
+        [{ identityId, providerType }],
+        [1],
+      );
 
-      const identity = await authService.getIdentity(id, providerType);
+      const identity = await authService.getIdentity(identityId, providerType);
 
       expect(identity).not.toBeNull();
-      expect(identity?.id).toBe(id);
+      expect(identity?.id).toBe(identityId);
       expect(identity?.providerType).toBe(providerType);
       expect(identity?.userId).toBe(userId);
     });
@@ -180,24 +217,22 @@ describe('Auth service', () => {
     it('should create user identity for an existing user account', async () => {
       const id = '12324534675';
       const providerType = 'google';
-      const firstName = 'Jasmine';
-      const lastName = 'Doe';
-      const email = 'jasminedoe@gmail.com';
 
-      const { userId } = await User.create({ firstName, lastName });
-      const a = await UserAccount.create({
-        userId,
-        email,
-        password: 'jasD0epa$$',
-        status: 'active',
-      });
+      const { userId, user, account } = await createUserAccount(
+        'Jasmine',
+        'Doe',
+        'jasminedoe@gmail.com',
+        'jasD0epa$$',
+        'active',
+        [1],
+      );
 
       const identity = await authService.createNewIdentity(
         id,
-        a,
-        firstName,
-        lastName,
-        email,
+        account,
+        user.firstName,
+        user.lastName,
+        account.email,
         providerType,
       );
 
@@ -245,17 +280,16 @@ describe('Auth service', () => {
 
   describe('create user identity for user', () => {
     it('should create user identity for user and change account status to active', async () => {
-      const { userId } = await User.create({
-        firstName: 'James',
-        lastName: 'Doe',
-      });
+      const status = 'pending';
 
-      await UserAccount.create({
-        userId,
-        email: 'jamesdoe@gmail.com',
-        password: 'JamesD0epa$$',
-        status: 'pending',
-      });
+      const { userId } = await createUserAccount(
+        'James',
+        'Doe',
+        'jamesdoe@gmail.com',
+        'jamesD0epa$$',
+        status,
+        [1],
+      );
 
       const id = '923849719836872649';
       const providerType = 'google';
@@ -263,7 +297,7 @@ describe('Auth service', () => {
       const result = await createUserIdentityForUser(
         id,
         userId,
-        'pending',
+        status,
         providerType,
       );
       expect(result.id).toBe(id);
@@ -278,17 +312,16 @@ describe('Auth service', () => {
     });
 
     it('should roll back transaction on error', async () => {
-      const { userId } = await User.create({
-        firstName: 'Jameson',
-        lastName: 'Doe',
-      });
+      const status = 'pending';
 
-      const { status } = await UserAccount.create({
-        userId,
-        email: 'jamesondoe@gmail.com',
-        password: 'JamesonD0epa$$',
-        status: 'pending',
-      });
+      const { userId } = await createUserAccount(
+        'Jameson',
+        'Doe',
+        'jamesondoe@gmail.com',
+        'JamesonD0epa$$',
+        status,
+        [1],
+      );
 
       const id = '98979675654556756687';
 
@@ -318,7 +351,8 @@ describe('Auth service', () => {
       let u = await User.findOne({ where: { firstName, lastName } });
       expect(u).toBeNull();
 
-      expect(UserAccount.findOne({ where: { email } })).resolves.toBeNull();
+      let a = await UserAccount.findOne({ where: { email } });
+      expect(a).toBeNull();
 
       const result = await createUserAndUserIdentity(
         id,
@@ -333,7 +367,7 @@ describe('Auth service', () => {
       u = await User.findOne({ where: { firstName, lastName } });
       expect(u).not.toBeNull();
 
-      const a = await UserAccount.findOne({
+      a = await UserAccount.findOne({
         where: { userId: u?.userId, email, status: 'active' },
       });
       expect(a).not.toBeNull();
@@ -423,13 +457,17 @@ describe('Auth service', () => {
 
   describe('login', () => {
     it('should login user on valid data', async () => {
-      const firstName = 'Jan';
-      const lastName = 'Doe';
       const email = 'jandoe@gmail.com';
       const password = 'janD0epas$$';
 
-      const { userId } = await User.create({ firstName, lastName });
-      await UserAccount.create({ userId, email, password });
+      const { userId } = await createUserAccount(
+        'Jan',
+        'Doe',
+        email,
+        password,
+        'active',
+        [1],
+      );
 
       const { account, isUser } = await authService.loginUser(email, password);
 
@@ -447,14 +485,17 @@ describe('Auth service', () => {
     });
 
     it('should fail login if user account password is null', async () => {
-      const { userId } = await User.create({
-        firstName: 'Jaff',
-        lastName: 'Doe',
-      });
-
       const email = 'jaffdoe@gmail.com';
 
-      const a = await UserAccount.create({ userId, email });
+      const { account: a } = await createUserAccount(
+        'Jeff',
+        'Doe',
+        email,
+        null,
+        'active',
+        [1],
+      );
+
       expect(a.password).toBeNull();
 
       const { account, isUser } = await authService.loginUser(
@@ -468,24 +509,24 @@ describe('Auth service', () => {
   });
 
   describe('recover password otp', () => {
-    const userData = {
-      firstName: 'Jack',
-      lastName: 'Doe',
-      email: 'jackdoe@gmail.com',
-      password: 'jackD0epas$$',
-    };
-
     let userId: number;
 
     beforeAll(async () => {
-      const u = await User.create(userData);
-      userId = u.userId;
+      const user = await createUserAccount(
+        'Jack',
+        'Doe',
+        'jackdoe@gmail.com',
+        'jackD0epas$$',
+        'active',
+        [1],
+      );
 
-      await UserAccount.create({ userId, ...userData });
+      userId = user.userId;
     });
 
     it('should recover the password successfully', async () => {
       const newPassword = 'newD0epa$$word';
+
       await authService.recoverPassword(userId, newPassword);
 
       const account = await UserAccount.findOne({ where: { userId } });
@@ -524,19 +565,16 @@ describe('Auth service', () => {
     let userId: number;
 
     beforeAll(async () => {
-      const user = await User.create({
-        firstName: 'Jery',
-        lastName: 'Doe',
-      });
+      const { user } = await createUserAccount(
+        'Jery',
+        'Doe',
+        'jerydoe@gmail.com',
+        'jerryD0ePa$$',
+        'inactive',
+        [1],
+      );
 
       userId = user.userId;
-
-      await UserAccount.create({
-        userId,
-        email: 'jerrydoe@gmail.com',
-        password: 'jerryD0ePa$$',
-        status: 'inactive',
-      });
     });
 
     it('should update status', async () => {

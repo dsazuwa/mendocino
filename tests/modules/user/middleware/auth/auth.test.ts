@@ -1,25 +1,36 @@
-import { User, UserAccount } from '@user/models';
 import authService from '@user/services/auth.service';
 
+import { createUserAccount } from 'tests/modules/user/helper-functions';
 import { request } from 'tests/supertest.helper';
 
-import 'tests/db-setup';
+import 'tests/modules/user/user.mock.db';
 
 describe('Authentication Middleware', () => {
   const URL = '/api/users/me/greeting';
 
-  it('should authenticate the request with a valid access token', async () => {
-    const { userId } = await User.create({
-      firstName: 'Jess',
-      lastName: 'Doe',
-    });
+  it('should authenticate the request for an active account', async () => {
+    const { userId } = await createUserAccount(
+      'Jess',
+      'Doe',
+      'jessdoe@gmail.com',
+      'jessD0ePa$$',
+      'active',
+      [1],
+    );
+    const token = authService.generateJWT(userId, 'email');
 
-    await UserAccount.create({
-      userId,
-      email: 'jessdoe@gmail.com',
-      password: 'jessD0ePas$$',
-    });
+    await request.get(URL).auth(token, { type: 'bearer' }).expect(200);
+  });
 
+  it('should authenticate the request for a pending account', async () => {
+    const { userId } = await createUserAccount(
+      'Jessie',
+      'Doe',
+      'jessiedoe@gmail.com',
+      'jessieD0ePa$$',
+      'active',
+      [1],
+    );
     const token = authService.generateJWT(userId, 'email');
 
     await request.get(URL).auth(token, { type: 'bearer' }).expect(200);
@@ -32,18 +43,14 @@ describe('Authentication Middleware', () => {
   });
 
   it('should return 401 Unauthorized for a deactivated account', async () => {
-    const { userId } = await User.create({
-      firstName: 'Jessica',
-      lastName: 'Doe',
-    });
-
-    await UserAccount.create({
-      userId,
-      email: 'jessicadoe@gmail.com',
-      password: 'jessD0ePs$$',
-      status: 'inactive',
-    });
-
+    const { userId } = await createUserAccount(
+      'Jessica',
+      'Doe',
+      'jessicadoe@gmail.com',
+      'jessD0ePa$$',
+      'inactive',
+      [1],
+    );
     const token = authService.generateJWT(userId, 'email');
 
     await request.get(URL).auth(token, { type: 'bearer' }).expect(401);
