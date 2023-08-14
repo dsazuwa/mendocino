@@ -92,6 +92,7 @@ const usersService = {
   ) => {
     const account = await UserAccount.findOne({
       where: { userId, password: { [Op.ne]: null } },
+      raw: true,
     });
 
     if (account) {
@@ -101,6 +102,7 @@ const usersService = {
 
     const otherIdentities = await UserIdentity.findAll({
       where: { userId, provider: { [Op.ne]: provider } },
+      raw: true,
     });
 
     if (otherIdentities.length === 0) {
@@ -119,6 +121,7 @@ const usersService = {
   closeAccount: async (userId: number) => {
     const account = await UserAccount.findOne({
       where: { userId, password: { [Op.ne]: null } },
+      raw: true,
     });
 
     return account ? deactivate(userId) : deleteUser(userId);

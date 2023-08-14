@@ -2,6 +2,8 @@ import { Role, User, UserAccount, UserRole } from '@user/models';
 
 import 'tests/db-setup';
 
+const raw = true;
+
 describe('User Role Model', () => {
   let userId: number;
   let roleId: number;
@@ -32,31 +34,31 @@ describe('User Role Model', () => {
   });
 
   it('deleting user role should delete neither user nor role', async () => {
-    const userRole = await UserRole.findOne({ where: { userId, roleId } });
+    const userRole = await UserRole.findOne({ where: { userId, roleId }, raw });
     expect(userRole).not.toBeNull();
 
     await UserRole.destroy({ where: { userId, roleId } });
 
-    const uR = await UserRole.findOne({ where: { userId, roleId } });
+    const uR = await UserRole.findOne({ where: { userId, roleId }, raw });
     expect(uR).toBeNull();
 
-    const u = await User.findByPk(userId);
+    const u = await User.findByPk(userId, { raw });
     expect(u).not.toBeNull();
 
-    const r = await Role.findByPk(roleId);
+    const r = await Role.findByPk(roleId, { raw });
     expect(r).not.toBeNull();
   });
 
   it('deleting role should delete user role', async () => {
     await Role.destroy({ where: { roleId } });
 
-    const r = await Role.findByPk(roleId);
+    const r = await Role.findByPk(roleId, { raw });
     expect(r).toBeNull();
 
-    const u = await User.findByPk(userId);
+    const u = await User.findByPk(userId, { raw });
     expect(u).not.toBeNull();
 
-    const uR = await UserRole.findOne({ where: { userId, roleId } });
+    const uR = await UserRole.findOne({ where: { userId, roleId }, raw });
     expect(uR).toBeNull();
   });
 
@@ -66,13 +68,13 @@ describe('User Role Model', () => {
 
     await User.destroy({ where: { userId } });
 
-    const u = await User.findByPk(userId);
+    const u = await User.findByPk(userId, { raw });
     expect(u).toBeNull();
 
-    const r = await Role.findByPk(role.roleId);
+    const r = await Role.findByPk(role.roleId, { raw });
     expect(r).not.toBeNull();
 
-    const uR = await UserRole.findOne({ where: { userId, roleId } });
+    const uR = await UserRole.findOne({ where: { userId, roleId }, raw });
     expect(uR).toBeNull();
   });
 });

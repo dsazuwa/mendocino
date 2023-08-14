@@ -30,7 +30,7 @@ const verifyFunction = async (
 
     if (user) return done(null, user);
 
-    const account = await authService.getAccount(email);
+    const account = await authService.getAccount(email, true);
 
     if (account?.status === 'inactive')
       return done(

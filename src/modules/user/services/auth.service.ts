@@ -147,17 +147,21 @@ const authService = {
     return result.length === 0 ? undefined : (result[0] as Express.User);
   },
 
-  getAccount: (email: string) => UserAccount.findOne({ where: { email } }),
+  getAccount: (email: string, raw: boolean = false) =>
+    UserAccount.findOne({ where: { email }, raw }),
 
-  getIdentity: (identityId: string, provider: ProviderType) =>
+  getIdentity: (
+    identityId: string,
+    provider: ProviderType,
+    raw: boolean = false,
+  ) =>
     UserIdentity.findOne({
       where: { identityId, provider },
+      raw,
     }),
 
   getAuthOTP: async (userId: number, password: string, type: AuthOTPType) => {
-    const authOTP = await AuthOTP.findOne({
-      where: { userId, type },
-    });
+    const authOTP = await AuthOTP.findOne({ where: { userId, type } });
 
     const isValid =
       authOTP !== null &&

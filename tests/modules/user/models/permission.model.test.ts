@@ -2,6 +2,8 @@ import { Permission } from '@user/models';
 
 import 'tests/db-setup';
 
+const raw = true;
+
 describe('Permission Model', () => {
   it('should create permission', async () => {
     const name = 'VIEW_ORDERS';
@@ -22,11 +24,11 @@ describe('Permission Model', () => {
 
     const { permissionId } = await Permission.create({ name });
 
-    let retrievedPermission = await Permission.findByPk(permissionId);
+    let retrievedPermission = await Permission.findByPk(permissionId, { raw });
     expect(retrievedPermission).not.toBeNull();
     expect(retrievedPermission?.name).toBe(name);
 
-    retrievedPermission = await Permission.findOne({ where: { name } });
+    retrievedPermission = await Permission.findOne({ where: { name }, raw });
     expect(retrievedPermission).not.toBeNull();
   });
 
@@ -40,6 +42,7 @@ describe('Permission Model', () => {
 
     let retrievedPermission = await Permission.findOne({
       where: { permissionId: permission.permissionId, name: newName },
+      raw,
     });
     expect(retrievedPermission).not.toBeNull();
 
@@ -47,6 +50,7 @@ describe('Permission Model', () => {
 
     retrievedPermission = await Permission.findOne({
       where: { permissionId: permission.permissionId, name: oldName },
+      raw,
     });
     expect(retrievedPermission).not.toBeNull();
   });
@@ -57,7 +61,10 @@ describe('Permission Model', () => {
 
     await permission.destroy();
 
-    let retrievedPermission = await Permission.findOne({ where: { name } });
+    let retrievedPermission = await Permission.findOne({
+      where: { name },
+      raw,
+    });
     expect(retrievedPermission).toBeNull();
 
     name = 'DELETE_ORDER';
@@ -65,7 +72,7 @@ describe('Permission Model', () => {
 
     await Permission.destroy({ where: { name } });
 
-    retrievedPermission = await Permission.findOne({ where: { name } });
+    retrievedPermission = await Permission.findOne({ where: { name }, raw });
     expect(retrievedPermission).toBeNull();
   });
 });

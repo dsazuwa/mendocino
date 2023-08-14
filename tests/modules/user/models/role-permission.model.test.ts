@@ -2,6 +2,8 @@ import { Role, Permission, RolePermission } from '@user/models';
 
 import 'tests/db-setup';
 
+const raw = true;
+
 describe('Role Permission Model', () => {
   it('should create role permission', async () => {
     const role = await Role.create({ name: 'customer' });
@@ -45,13 +47,16 @@ describe('Role Permission Model', () => {
 
     const retrievedRolePermission = await RolePermission.findOne({
       where: { roleId, permissionId },
+      raw,
     });
     expect(retrievedRolePermission).toBeNull();
 
-    const retrievedRole = await Role.findByPk(roleId);
+    const retrievedRole = await Role.findByPk(roleId, { raw });
     expect(retrievedRole).not.toBeNull();
 
-    const retrievedPermission = await Permission.findByPk(permissionId);
+    const retrievedPermission = await Permission.findByPk(permissionId, {
+      raw,
+    });
     expect(retrievedPermission).not.toBeNull();
   });
 
@@ -66,16 +71,18 @@ describe('Role Permission Model', () => {
 
     await Role.destroy({ where: { roleId } });
 
-    const retrievedRole = await Role.findOne({ where: { roleId } });
+    const retrievedRole = await Role.findOne({ where: { roleId }, raw });
     expect(retrievedRole).toBeNull();
 
     const retrievedPermission = await Permission.findOne({
       where: { permissionId },
+      raw,
     });
     expect(retrievedPermission).not.toBeNull();
 
     const retrievedRolePermission = await RolePermission.findOne({
       where: { roleId, permissionId },
+      raw,
     });
     expect(retrievedRolePermission).toBeNull();
   });
@@ -91,16 +98,18 @@ describe('Role Permission Model', () => {
 
     await Permission.destroy({ where: { permissionId } });
 
-    const retrievedRole = await Role.findOne({ where: { roleId } });
+    const retrievedRole = await Role.findOne({ where: { roleId }, raw });
     expect(retrievedRole).not.toBeNull();
 
     const retrievedPermission = await Permission.findOne({
       where: { permissionId },
+      raw,
     });
     expect(retrievedPermission).toBeNull();
 
     const retrievedRolePermission = await RolePermission.findOne({
       where: { roleId, permissionId },
+      raw,
     });
     expect(retrievedRolePermission).toBeNull();
   });

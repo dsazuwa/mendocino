@@ -13,6 +13,7 @@ import { getTokenFrom, request } from 'tests/supertest.helper';
 import 'tests/modules/user/user.mock.db';
 
 const BASE_URL = '/api/users';
+const raw = true;
 
 describe('Users Routes', () => {
   describe(`GET ${BASE_URL}/me`, () => {
@@ -64,7 +65,10 @@ describe('Users Routes', () => {
     });
 
     it('should create a new verification token', async () => {
-      let otp = await AuthOTP.findOne({ where: { userId, type: 'verify' } });
+      let otp = await AuthOTP.findOne({
+        where: { userId, type: 'verify' },
+        raw,
+      });
       expect(otp).toBeNull();
 
       await request
@@ -72,12 +76,15 @@ describe('Users Routes', () => {
         .auth(jwt, { type: 'bearer' })
         .expect(200);
 
-      otp = await AuthOTP.findOne({ where: { userId, type: 'verify' } });
+      otp = await AuthOTP.findOne({ where: { userId, type: 'verify' }, raw });
       expect(otp).not.toBeNull();
     });
 
     it('should destroy previous verification token', async () => {
-      const otp = await AuthOTP.findOne({ where: { userId, type: 'verify' } });
+      const otp = await AuthOTP.findOne({
+        where: { userId, type: 'verify' },
+        raw,
+      });
       const { otpId } = otp as AuthOTP;
 
       await request
@@ -85,7 +92,10 @@ describe('Users Routes', () => {
         .auth(jwt, { type: 'bearer' })
         .expect(200);
 
-      const otps = await AuthOTP.findAll({ where: { userId, type: 'verify' } });
+      const otps = await AuthOTP.findAll({
+        where: { userId, type: 'verify' },
+        raw,
+      });
       expect(otps.length).toBe(1);
 
       const [newOTP] = otps;
@@ -194,7 +204,7 @@ describe('Users Routes', () => {
         .auth(jwt, { type: 'bearer' })
         .expect(200);
 
-      const retrievedAcct = await UserAccount.findByPk(userId);
+      const retrievedAcct = await UserAccount.findByPk(userId, { raw });
       expect(retrievedAcct?.status).toEqual('active');
     });
   });
@@ -386,11 +396,13 @@ describe('Users Routes', () => {
 
       let i = await UserIdentity.findOne({
         where: { userId, provider: 'google' },
+        raw,
       });
       expect(i).toBeNull();
 
       i = await UserIdentity.findOne({
         where: { userId, provider: 'facebook' },
+        raw,
       });
       expect(i).not.toBeNull();
     });
@@ -420,7 +432,7 @@ describe('Users Routes', () => {
       const accessToken = getTokenFrom(response.headers['set-cookie']);
       expect(accessToken).toEqual('');
 
-      const u = await User.findByPk(userId);
+      const u = await User.findByPk(userId, { raw });
       expect(u).toBe(null);
     });
   });
@@ -448,14 +460,14 @@ describe('Users Routes', () => {
 
       expect(response.status).toBe(200);
 
-      const u = await User.findByPk(userId);
+      const u = await User.findByPk(userId, { raw });
       expect(u).not.toBeNull();
 
-      const a = await UserAccount.findByPk(userId);
+      const a = await UserAccount.findByPk(userId, { raw });
       expect(a).not.toBeNull();
       expect(a?.status).toBe('inactive');
 
-      const identities = await UserIdentity.findAll({ where: { userId } });
+      const identities = await UserIdentity.findAll({ where: { userId }, raw });
       expect(identities.length).toBe(0);
     });
 
@@ -481,13 +493,13 @@ describe('Users Routes', () => {
 
       expect(response.status).toBe(200);
 
-      const u = await User.findByPk(userId);
+      const u = await User.findByPk(userId, { raw });
       expect(u).toBeNull();
 
-      const a = await UserAccount.findByPk(userId);
+      const a = await UserAccount.findByPk(userId, { raw });
       expect(a).toBeNull();
 
-      const identities = await UserIdentity.findAll({ where: { userId } });
+      const identities = await UserIdentity.findAll({ where: { userId }, raw });
       expect(identities.length).toBe(0);
     });
   });

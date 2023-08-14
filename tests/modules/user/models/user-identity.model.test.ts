@@ -2,6 +2,8 @@ import { ProviderType, User, UserAccount, UserIdentity } from '@user/models';
 
 import 'tests/db-setup';
 
+const raw = true;
+
 describe('User Identity', () => {
   it('should create user udentity', async () => {
     const { userId } = await User.create({
@@ -36,6 +38,7 @@ describe('User Identity', () => {
 
     const retrievedIdentity = await UserIdentity.findOne({
       where: { identityId, userId, provider },
+      raw,
     });
 
     expect(retrievedIdentity).not.toBeNull();
@@ -62,6 +65,7 @@ describe('User Identity', () => {
 
     const retrievedIdentity = await UserIdentity.findOne({
       where: { provider, userId },
+      raw,
     });
 
     expect(retrievedIdentity).not.toBeNull();
@@ -84,6 +88,7 @@ describe('User Identity', () => {
 
     const deletedIdentity = await UserIdentity.findOne({
       where: { userId, identityId, provider },
+      raw,
     });
 
     expect(deletedIdentity).toBeNull();
@@ -110,10 +115,13 @@ describe('User Identity and User Relationship', () => {
 
     await UserIdentity.destroy({ where: { userId } });
 
-    const retrievedIdentity = await UserIdentity.findOne({ where: { userId } });
+    const retrievedIdentity = await UserIdentity.findOne({
+      where: { userId },
+      raw,
+    });
     expect(retrievedIdentity).toBeNull();
 
-    const retrievedUser = await User.findByPk(userId);
+    const retrievedUser = await User.findByPk(userId, { raw });
     expect(retrievedUser).not.toBeNull();
   });
 
@@ -136,7 +144,7 @@ describe('User Identity and User Relationship', () => {
 
     await User.destroy({ where: { userId } });
 
-    const retrievedIdentity = await UserIdentity.findByPk(userId);
+    const retrievedIdentity = await UserIdentity.findByPk(userId, { raw });
     expect(retrievedIdentity).toBeNull();
   });
 });

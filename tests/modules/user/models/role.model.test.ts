@@ -2,6 +2,8 @@ import { Role } from '@user/models';
 
 import 'tests/db-setup';
 
+const raw = true;
+
 describe('Role Model', () => {
   it('should create role', async () => {
     const name = 'customer';
@@ -22,11 +24,11 @@ describe('Role Model', () => {
 
     const { roleId } = await Role.create({ name });
 
-    let retrievedRole = await Role.findByPk(roleId);
+    let retrievedRole = await Role.findByPk(roleId, { raw });
     expect(retrievedRole).not.toBeNull();
     expect(retrievedRole?.name).toBe(name);
 
-    retrievedRole = await Role.findOne({ where: { name } });
+    retrievedRole = await Role.findOne({ where: { name }, raw });
     expect(retrievedRole).not.toBeNull();
   });
 
@@ -40,6 +42,7 @@ describe('Role Model', () => {
 
     let retrievedRole = await Role.findOne({
       where: { roleId: role.roleId, name: newName },
+      raw,
     });
     expect(retrievedRole).not.toBeNull();
 
@@ -47,6 +50,7 @@ describe('Role Model', () => {
 
     retrievedRole = await Role.findOne({
       where: { roleId: role.roleId, name: oldName },
+      raw,
     });
     expect(retrievedRole).not.toBeNull();
   });
@@ -57,7 +61,7 @@ describe('Role Model', () => {
 
     await role.destroy();
 
-    let retrievedRole = await Role.findOne({ where: { name } });
+    let retrievedRole = await Role.findOne({ where: { name }, raw });
     expect(retrievedRole).toBeNull();
 
     name = 'delivery driver';
@@ -65,7 +69,7 @@ describe('Role Model', () => {
 
     await Role.destroy({ where: { name } });
 
-    retrievedRole = await Role.findOne({ where: { name } });
+    retrievedRole = await Role.findOne({ where: { name }, raw });
     expect(retrievedRole).toBeNull();
   });
 });

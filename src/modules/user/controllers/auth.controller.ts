@@ -72,7 +72,7 @@ export const register = async (
   try {
     const { firstName, lastName, email, password } = req.body;
 
-    const acct = await authService.getAccount(email);
+    const acct = await authService.getAccount(email, true);
 
     if (acct)
       return res
@@ -157,7 +157,7 @@ export const requestPasswordRecovery = async (
   try {
     const { email } = req.body;
 
-    const account = await authService.getAccount(email);
+    const account = await authService.getAccount(email, true);
 
     if (!account)
       return res.status(200).json({ message: messages.REQUEST_RECOVERY });
@@ -184,7 +184,7 @@ export const verifyRecoveryOTP = async (
     const { otp } = req.params;
     const { email } = req.body;
 
-    const account = await authService.getAccount(email);
+    const account = await authService.getAccount(email, true);
 
     if (!account)
       return res.status(401).json({ message: messages.INVALID_AUTH_OTP });
@@ -213,7 +213,7 @@ export const recoverPassword = async (
     const { otp } = req.params;
     const { email, password } = req.body;
 
-    const account = await authService.getAccount(email);
+    const account = await authService.getAccount(email, true);
 
     if (!account)
       return res.status(401).json({ message: messages.INVALID_AUTH_OTP });

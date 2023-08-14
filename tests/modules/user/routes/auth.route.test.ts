@@ -15,6 +15,7 @@ import {
 import 'tests/modules/user/user.mock.db';
 
 const BASE_URL = '/api/auth';
+const raw = true;
 
 describe('Google Login', () => {
   it(`GET ${BASE_URL}/google`, async () => {
@@ -111,9 +112,13 @@ describe('Email Authentication', () => {
 
       const user = await User.findOne({
         where: { firstName: data.firstName, lastName: data.lastName },
+        raw,
       });
 
-      const acct = await UserAccount.findOne({ where: { email: data.email } });
+      const acct = await UserAccount.findOne({
+        where: { email: data.email },
+        raw,
+      });
 
       expect(user).not.toBeNull();
       expect(acct).not.toBeNull();
@@ -221,13 +226,17 @@ describe('Recover Account', () => {
 
       await request.post(`${BASE_URL}/recover`).send({ email }).expect(200);
 
-      const otp = await AuthOTP.findOne({ where: { userId, type: 'recover' } });
+      const otp = await AuthOTP.findOne({
+        where: { userId, type: 'recover' },
+        raw,
+      });
       expect(otp).not.toBeNull();
 
       await request.post(`${BASE_URL}/recover`).send({ email }).expect(200);
 
       const newOTP = await AuthOTP.findOne({
         where: { userId, type: 'recover' },
+        raw,
       });
       expect(newOTP).not.toBeNull();
       expect(newOTP?.otpId).not.toEqual(otp?.otpId);
@@ -374,6 +383,7 @@ describe('Recover Account', () => {
 
       const usedOTP = await AuthOTP.findOne({
         where: { userId, type: 'recover' },
+        raw,
       });
 
       expect(usedOTP).toBeNull();
@@ -395,7 +405,7 @@ describe('Recover Account', () => {
 
       const token = authService.generateJWT(userId, 'email');
 
-      let a = await UserAccount.findOne({ where: { userId, status } });
+      let a = await UserAccount.findOne({ where: { userId, status }, raw });
       expect(a).not.toBeNull();
 
       await request
@@ -403,7 +413,10 @@ describe('Recover Account', () => {
         .auth(token, { type: 'bearer' })
         .expect(200);
 
-      a = await UserAccount.findOne({ where: { userId, status: 'active' } });
+      a = await UserAccount.findOne({
+        where: { userId, status: 'active' },
+        raw,
+      });
       expect(a).not.toBeNull();
     });
 
@@ -421,7 +434,7 @@ describe('Recover Account', () => {
 
       const token = authService.generateJWT(userId, 'email');
 
-      let a = UserAccount.findOne({ where: { userId, status } });
+      let a = UserAccount.findOne({ where: { userId, status }, raw });
       expect(a).resolves.not.toBeNull();
 
       await request
@@ -429,7 +442,7 @@ describe('Recover Account', () => {
         .auth(token, { type: 'bearer' })
         .expect(401);
 
-      a = UserAccount.findOne({ where: { userId, status } });
+      a = UserAccount.findOne({ where: { userId, status }, raw });
       expect(a).not.toBeNull();
     });
 
@@ -447,7 +460,7 @@ describe('Recover Account', () => {
 
       const token = authService.generateJWT(userId, 'email');
 
-      let a = UserAccount.findOne({ where: { userId, status } });
+      let a = UserAccount.findOne({ where: { userId, status }, raw });
       expect(a).resolves.not.toBeNull();
 
       await request
@@ -455,7 +468,7 @@ describe('Recover Account', () => {
         .auth(token, { type: 'bearer' })
         .expect(401);
 
-      a = UserAccount.findOne({ where: { userId, status } });
+      a = UserAccount.findOne({ where: { userId, status }, raw });
       expect(a).not.toBeNull();
     });
   });

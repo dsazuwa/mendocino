@@ -15,6 +15,8 @@ import {
 
 import 'tests/modules/user/user.mock.db';
 
+const raw = true;
+
 describe('Verify Function', () => {
   const done = jest.fn();
 
@@ -36,30 +38,32 @@ describe('Verify Function', () => {
 
   it('should create user if user does not exists', async () => {
     const identityId = '213254657845231';
+    const provider = 'google';
     const firstName = 'Joseph';
     const lastName = 'Doe';
     const email = 'josephdoe@gmail.com';
 
-    expect(
-      User.findOne({ where: { firstName, lastName } }),
-    ).resolves.toBeNull();
-    expect(UserAccount.findOne({ where: { email } })).resolves.toBeNull();
-    expect(UserIdentity.findOne({ where: { identityId } })).resolves.toBeNull();
+    let u = await User.findOne({ where: { firstName, lastName }, raw });
+    let a = await UserAccount.findOne({ where: { email }, raw });
+    let i = await UserIdentity.findOne({ where: { identityId }, raw });
+
+    expect(u).toBeNull();
+    expect(a).toBeNull();
+    expect(i).toBeNull();
 
     await callVerify(identityId, firstName, lastName, email, 'google');
 
-    const u = await User.findOne({ where: { firstName, lastName } });
-    expect(u).not.toBeNull();
+    u = await User.findOne({ where: { firstName, lastName }, raw });
+    a = await UserAccount.findOne({ where: { email }, raw });
+    i = await UserIdentity.findOne({
+      where: { identityId, userId: u?.userId, provider },
+      raw,
+    });
 
-    const a = await UserAccount.findOne({ where: { email } });
+    expect(u).not.toBeNull();
     expect(a).not.toBeNull();
     expect(a?.password).toBe(null);
-
-    expect(
-      UserIdentity.findOne({
-        where: { identityId, userId: u?.userId, provider: 'google' },
-      }),
-    ).resolves.not.toBeNull();
+    expect(i).not.toBeNull();
   });
 
   it('should create new identity if User Account exists (active) but User Identity does not', async () => {
@@ -79,19 +83,24 @@ describe('Verify Function', () => {
       [roleConstants.CUSTOMER.roleId],
     );
 
-    let i = await UserIdentity.findOne({ where: { identityId, userId } });
+    let i = await UserIdentity.findOne({
+      where: { identityId, userId },
+      raw,
+    });
     expect(i).toBeNull();
 
     await callVerify(identityId, firstName, lastName, email, provider);
 
     i = await UserIdentity.findOne({
       where: { identityId, userId, provider },
+      raw,
     });
     expect(i).not.toBeNull();
   });
 
   it('should create new identity if User Account exists (pending) but User Identity does not', async () => {
     const identityId = '53849274264293027498';
+    const provider = 'facebook';
     const firstName = 'Jean';
     const lastName = 'Doe';
     const email = 'jeandoe@gmail.com';
@@ -106,19 +115,31 @@ describe('Verify Function', () => {
       [roleConstants.CUSTOMER.roleId],
     );
 
-    expect(
-      UserIdentity.findOne({ where: { identityId, userId } }),
-    ).resolves.toBeNull();
-
-    await callVerify(identityId, firstName, lastName, email, 'facebook');
-
-    const i = await UserIdentity.findOne({
-      where: { identityId, userId, provider: 'facebook' },
+    let a = await UserAccount.findOne({
+      where: { userId, status: 'pending' },
+      raw,
     });
-    expect(i).not.toBeNull();
+    let i = await UserIdentity.findOne({
+      where: { identityId, userId },
+      raw,
+    });
 
-    const a = await UserAccount.findByPk(userId);
-    expect(a?.status).toBe('active');
+    expect(a).not.toBeNull();
+    expect(i).toBeNull();
+
+    await callVerify(identityId, firstName, lastName, email, provider);
+
+    a = await UserAccount.findOne({
+      where: { userId, status: 'active' },
+      raw,
+    });
+    i = await UserIdentity.findOne({
+      where: { identityId, userId, provider },
+      raw,
+    });
+
+    expect(a).not.toBeNull();
+    expect(i).not.toBeNull();
   });
 
   it('should "login" user if both User Account and User Identity exists', async () => {
@@ -165,7 +186,10 @@ describe('Verify Function', () => {
       [roleConstants.CUSTOMER.roleId],
     );
 
-    const i = await UserIdentity.findOne({ where: { identityId, userId } });
+    const i = await UserIdentity.findOne({
+      where: { identityId, userId },
+      raw,
+    });
     expect(i).toBeNull();
 
     await callVerify(identityId, firstName, lastName, email, 'google');

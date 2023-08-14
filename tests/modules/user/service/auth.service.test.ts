@@ -20,6 +20,8 @@ import {
 
 import 'tests/modules/user/user.mock.db';
 
+const raw = true;
+
 describe('Auth service', () => {
   describe('generate JWT token', () => {
     let userId: number;
@@ -183,9 +185,13 @@ describe('Auth service', () => {
         roleConstants.CUSTOMER.roleId,
       ]);
 
-      const account = await authService.getAccount(email);
+      let account = await authService.getAccount(email);
       expect(account).not.toBeNull();
       expect(account?.comparePasswords(password)).toBe(true);
+
+      account = await authService.getAccount(email, true);
+      expect(account).not.toBeNull();
+      expect(account?.comparePasswords).not.toBeDefined();
     });
 
     it('should return null for non-existent account', async () => {
@@ -209,12 +215,21 @@ describe('Auth service', () => {
         [roleConstants.CUSTOMER.roleId],
       );
 
-      const identity = await authService.getIdentity(identityId, provider);
+      let identity = await authService.getIdentity(identityId, provider);
 
       expect(identity).not.toBeNull();
       expect(identity?.identityId).toBe(identityId);
       expect(identity?.provider).toBe(provider);
       expect(identity?.userId).toBe(userId);
+      expect(identity?.hasHooks).toBeDefined();
+
+      identity = await authService.getIdentity(identityId, provider, true);
+
+      expect(identity).not.toBeNull();
+      expect(identity?.identityId).toBe(identityId);
+      expect(identity?.provider).toBe(provider);
+      expect(identity?.userId).toBe(userId);
+      expect(identity?.hasHooks).not.toBeDefined();
     });
 
     it('should return null for non-existent identity', async () => {
@@ -252,6 +267,7 @@ describe('Auth service', () => {
 
       const i = await UserIdentity.findOne({
         where: { identityId, provider, userId },
+        raw,
       });
       expect(i).not.toBeNull();
     });
@@ -263,7 +279,7 @@ describe('Auth service', () => {
       const lastName = 'Doe';
       const provider = 'google' as ProviderType;
 
-      let u = await User.findOne({ where: { firstName, lastName } });
+      let u = await User.findOne({ where: { firstName, lastName }, raw });
       expect(u).toBeNull();
 
       const identity = await authService.createNewIdentity(
@@ -278,11 +294,12 @@ describe('Auth service', () => {
       expect(identity.identityId).toBe(identityId);
       expect(identity.provider).toBe(provider);
 
-      u = await User.findOne({ where: { firstName, lastName } });
+      u = await User.findOne({ where: { firstName, lastName }, raw });
       expect(u).not.toBeNull();
 
       const i = await UserIdentity.findOne({
         where: { identityId, provider, userId: u?.userId },
+        raw,
       });
       expect(i).not.toBeNull();
     });
@@ -312,11 +329,12 @@ describe('Auth service', () => {
       );
       expect(result.identityId).toBe(identityId);
 
-      const i = UserIdentity.findOne({ where: { userId, provider } });
+      const i = UserIdentity.findOne({ where: { userId, provider }, raw });
       expect(i).not.toBeNull();
 
       const a = await UserAccount.findOne({
         where: { userId, status: 'active' },
+        raw,
       });
       expect(a).not.toBeNull();
     });
@@ -343,7 +361,7 @@ describe('Auth service', () => {
 
         expect(false).toBe(true);
       } catch (e) {
-        const a = await UserAccount.findOne({ where: { userId, status } });
+        const a = await UserAccount.findOne({ where: { userId, status }, raw });
         expect(a).not.toBeNull();
       }
 
@@ -358,10 +376,10 @@ describe('Auth service', () => {
       const lastName = 'Doe';
       const email = 'jamaldoe@gmail.com';
 
-      let u = await User.findOne({ where: { firstName, lastName } });
+      let u = await User.findOne({ where: { firstName, lastName }, raw });
       expect(u).toBeNull();
 
-      let a = await UserAccount.findOne({ where: { email } });
+      let a = await UserAccount.findOne({ where: { email }, raw });
       expect(a).toBeNull();
 
       const result = await createUserAndUserIdentity(
@@ -374,15 +392,16 @@ describe('Auth service', () => {
 
       expect(result.identityId).toBe(identityId);
 
-      u = await User.findOne({ where: { firstName, lastName } });
+      u = await User.findOne({ where: { firstName, lastName }, raw });
       expect(u).not.toBeNull();
 
       a = await UserAccount.findOne({
         where: { userId: u?.userId, email, status: 'active' },
+        raw,
       });
       expect(a).not.toBeNull();
 
-      const i = await UserIdentity.findOne({ where: { identityId } });
+      const i = await UserIdentity.findOne({ where: { identityId }, raw });
       expect(i).not.toBeNull();
     });
 
@@ -406,7 +425,7 @@ describe('Auth service', () => {
 
         expect(false).toBe(true);
       } catch (e) {
-        const u = await User.findOne({ where: { firstName, lastName } });
+        const u = await User.findOne({ where: { firstName, lastName }, raw });
         expect(u).toBeNull();
       }
 
@@ -426,8 +445,10 @@ describe('Auth service', () => {
       expect(result.user).toBeDefined();
       expect(result.account).toBeDefined();
 
-      const user = await User.findByPk(result.user.userId);
-      const account = await UserAccount.findByPk(result.account.userId);
+      const user = await User.findByPk(result.user.userId, { raw });
+      const account = await UserAccount.findByPk(result.account.userId, {
+        raw,
+      });
 
       expect(user).not.toBeNull();
       expect(account).not.toBeNull();
@@ -435,6 +456,7 @@ describe('Auth service', () => {
 
       const otp = await AuthOTP.findOne({
         where: { userId: user?.userId, type: 'verify' },
+        raw,
       });
 
       expect(otp).not.toBeNull();
@@ -454,8 +476,11 @@ describe('Auth service', () => {
 
         expect(true).toBe(false);
       } catch (e) {
-        const user = await User.findOne({ where: { firstName, lastName } });
-        const account = await UserAccount.findOne({ where: { email } });
+        const user = await User.findOne({
+          where: { firstName, lastName },
+          raw,
+        });
+        const account = await UserAccount.findOne({ where: { email }, raw });
 
         expect(user).toBeNull();
         expect(account).toBeNull();
@@ -562,6 +587,7 @@ describe('Auth service', () => {
       } catch (e) {
         const otp = await AuthOTP.findOne({
           where: { userId, type: 'recover' },
+          raw,
         });
 
         expect(otp).not.toBeNull();
@@ -588,13 +614,13 @@ describe('Auth service', () => {
     });
 
     it('should update status', async () => {
-      let account = await UserAccount.findByPk(userId);
+      let account = await UserAccount.findByPk(userId, { raw });
       expect(account?.status).toBe('inactive');
 
       const result = await authService.reactivate(userId);
       expect(result[0]).toBe(1);
 
-      account = await UserAccount.findByPk(userId);
+      account = await UserAccount.findByPk(userId, { raw });
       expect(account?.status).toBe('active');
     });
   });
