@@ -2,7 +2,6 @@ import { NextFunction, Request, Response } from 'express';
 
 import { ProviderType } from '@user/models';
 import authService from '@user/services/auth.service';
-import usersService from '@user/services/users.service';
 import messages from '@user/utils/messages';
 
 export const socialLogin = async (
@@ -18,7 +17,7 @@ export const socialLogin = async (
     else {
       const token = authService.generateJWT(userId, providerType);
 
-      const userData = await usersService.getUserData(userId);
+      const userData = await authService.getUserData(userId, providerType);
 
       res.redirect(
         `${
@@ -89,7 +88,7 @@ export const register = async (
 
     const { userId } = account;
 
-    const userData = await usersService.getUserData(userId);
+    const userData = await authService.getUserData(userId, 'email');
 
     setAccessTokenCookie(res, authService.generateJWT(userId, 'email'));
 
@@ -117,7 +116,7 @@ export const login = async (
 
     const { userId, status } = account;
 
-    const userData = await usersService.getUserData(userId);
+    const userData = await authService.getUserData(userId, 'email');
 
     if (status === 'inactive')
       return res.status(403).json({
@@ -228,7 +227,7 @@ export const recoverPassword = async (
 
     await authService.recoverPassword(userId, password);
 
-    const userData = await usersService.getUserData(userId);
+    const userData = await authService.getUserData(userId, 'email');
 
     setAccessTokenCookie(res, authService.generateJWT(userId, 'email'));
 
@@ -251,7 +250,7 @@ export const reactivate = async (
 
     await authService.reactivate(userId);
 
-    const userData = await usersService.getUserData(userId);
+    const userData = await authService.getUserData(userId, 'email');
 
     setAccessTokenCookie(res, authService.generateJWT(userId, 'email'));
 

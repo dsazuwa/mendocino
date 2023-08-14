@@ -26,10 +26,9 @@ const verifyFunction = async (
         undefined,
       );
 
-    const identity = await authService.getIdentity(id, providerType);
+    let user = await authService.getUserDataFromIdentity(id, providerType);
 
-    if (identity)
-      return done(null, { status: 'active', ...identity.dataValues });
+    if (user) return done(null, user);
 
     const account = await authService.getAccount(email);
 
@@ -48,7 +47,9 @@ const verifyFunction = async (
       providerType,
     );
 
-    return done(null, { status: 'active', ...newIdentity.dataValues });
+    user = await authService.getUserData(newIdentity.userId, providerType);
+
+    return done(null, user);
   } catch (err) {
     return done(err, undefined);
   }
