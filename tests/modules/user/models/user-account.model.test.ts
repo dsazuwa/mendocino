@@ -211,6 +211,9 @@ describe('User Account Model', () => {
 
       expect(account.comparePasswords(data.password)).toBeFalsy();
       expect(account.comparePasswords(newPassword)).toBeTruthy();
+
+      const a = await UserAccount.findByPk(userId, { raw });
+      expect(a?.password).not.toBe(newPassword);
     });
   });
 

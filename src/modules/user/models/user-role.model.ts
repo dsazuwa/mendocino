@@ -4,9 +4,11 @@ import {
   InferAttributes,
   InferCreationAttributes,
   Model,
+  Op,
 } from 'sequelize';
 
 import sequelize from '@App/db';
+import { roleConstants } from '../utils/constants';
 
 class UserRole extends Model<
   InferAttributes<UserRole>,
@@ -19,6 +21,34 @@ class UserRole extends Model<
   declare createdAt: CreationOptional<Date>;
 
   declare updatedAt: CreationOptional<Date>;
+
+  public static async preventCustomerMultipleRoles(userRole: UserRole) {
+    const { roleId: customerRoleId } = roleConstants.CUSTOMER;
+
+    if (userRole.roleId === customerRoleId) {
+      const otherRoles = await UserRole.findOne({
+        where: {
+          userId: userRole.userId,
+          roleId: { [Op.ne]: customerRoleId },
+        },
+        raw: true,
+      });
+
+      if (otherRoles) throw new Error('A customer cannot have other roles');
+    }
+
+    if (userRole.roleId !== customerRoleId) {
+      const customerRole = await UserRole.findOne({
+        where: {
+          userId: userRole.userId,
+          roleId: customerRoleId,
+        },
+        raw: true,
+      });
+
+      if (customerRole) throw new Error('A customer cannot have other roles');
+    }
+  }
 }
 
 UserRole.init(
@@ -44,6 +74,9 @@ UserRole.init(
     sequelize,
     underscored: true,
     tableName: 'users_roles',
+    hooks: {
+      beforeSave: UserRole.preventCustomerMultipleRoles,
+    },
   },
 );
 
