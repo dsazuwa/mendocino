@@ -2,6 +2,8 @@ import { User, UserAccount, UserAccountStatusType } from '@user/models';
 
 import 'tests/db-setup';
 
+const raw = true;
+
 describe('User Account Model', () => {
   describe('create', () => {
     it('should create user account with provided values', async () => {
@@ -128,10 +130,10 @@ describe('User Account Model', () => {
       password: 'janeD0ePa$$',
     });
 
-    let retrievedAccount = await UserAccount.findByPk(userId);
+    let retrievedAccount = await UserAccount.findByPk(userId, { raw });
     expect(retrievedAccount).not.toBeNull();
 
-    retrievedAccount = await UserAccount.findOne({ where: { email } });
+    retrievedAccount = await UserAccount.findOne({ where: { email }, raw });
     expect(retrievedAccount).not.toBeNull();
   });
 
@@ -151,7 +153,7 @@ describe('User Account Model', () => {
 
     await UserAccount.update({ email }, { where: { userId } });
 
-    const updatedAccount = await UserAccount.findByPk(userId);
+    const updatedAccount = await UserAccount.findByPk(userId, { raw });
     expect(updatedAccount?.email).toEqual(email);
   });
 
@@ -169,7 +171,7 @@ describe('User Account Model', () => {
 
     await UserAccount.destroy({ where: { userId } });
 
-    const deletedAccount = await UserAccount.findByPk(userId);
+    const deletedAccount = await UserAccount.findByPk(userId, { raw });
     expect(deletedAccount).toBeNull();
   });
 
@@ -209,6 +211,9 @@ describe('User Account Model', () => {
 
       expect(account.comparePasswords(data.password)).toBeFalsy();
       expect(account.comparePasswords(newPassword)).toBeTruthy();
+
+      const a = await UserAccount.findByPk(userId, { raw });
+      expect(a?.password).not.toBe(newPassword);
     });
   });
 
@@ -269,10 +274,10 @@ describe('User Account and User Relationship', () => {
 
     await UserAccount.destroy({ where: { userId } });
 
-    const retrievedUser = await User.findByPk(userId);
+    const retrievedUser = await User.findByPk(userId, { raw });
     expect(retrievedUser).not.toBeNull();
 
-    const retrievedAccount = await UserAccount.findByPk(userId);
+    const retrievedAccount = await UserAccount.findByPk(userId, { raw });
     expect(retrievedAccount).toBeNull();
   });
 
@@ -290,10 +295,10 @@ describe('User Account and User Relationship', () => {
 
     await User.destroy({ where: { userId } });
 
-    const retrievedUser = await User.findByPk(userId);
+    const retrievedUser = await User.findByPk(userId, { raw });
     expect(retrievedUser).toBeNull();
 
-    const retrievedAccount = await UserAccount.findByPk(userId);
+    const retrievedAccount = await UserAccount.findByPk(userId, { raw });
     expect(retrievedAccount).toBeNull();
   });
 });

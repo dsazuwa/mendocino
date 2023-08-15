@@ -1,7 +1,6 @@
 import { PassportStatic } from 'passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 
-import { UserIdentity } from '@user/models';
 import authService from '@user/services/auth.service';
 
 const { JWT_SECRET } = process.env;
@@ -15,17 +14,9 @@ export const configureJWTStrategy = (passportStatic: PassportStatic) => {
       },
       async (jwt_payload, done) => {
         try {
-          const { userId, providerType } = jwt_payload;
+          const { userId, provider } = jwt_payload;
 
-          const u = await authService.getUserFromJWTPayload(
-            providerType,
-            userId,
-          );
-
-          const user =
-            u instanceof UserIdentity
-              ? { status: 'active', ...u.dataValues }
-              : u;
+          const user = await authService.getUserData(userId, provider);
 
           done(null, user);
         } catch (err) {

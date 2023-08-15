@@ -1,26 +1,23 @@
-import { User, UserAccount } from '@user/models';
 import authService from '@user/services/auth.service';
+import { ROLES } from '@user/utils/constants';
 
+import { createUserAccount } from 'tests/modules/user/helper-functions';
 import { request } from 'tests/supertest.helper';
 
-import 'tests/db-setup';
+import 'tests/modules/user/user.mock.db';
 
 describe('Inative Authentication Middleware', () => {
   const URL = '/api/users/me/inactive/greeting';
 
   it('should authenticate the request with a valid access token', async () => {
-    const { userId } = await User.create({
-      firstName: 'Jess',
-      lastName: 'Doe',
-    });
-
-    await UserAccount.create({
-      userId,
-      email: 'jessdoe@gmail.com',
-      password: 'jessD0ePas$$',
-      status: 'inactive',
-    });
-
+    const { userId } = await createUserAccount(
+      'Jess',
+      'Doe',
+      'jessdoe@gmail.com',
+      'jessD0ePa$$',
+      'inactive',
+      [ROLES.CUSTOMER.roleId],
+    );
     const token = authService.generateJWT(userId, 'email');
 
     await request.get(URL).auth(token, { type: 'bearer' }).expect(200);
@@ -33,36 +30,28 @@ describe('Inative Authentication Middleware', () => {
   });
 
   it('should return 401 Unauthorized for an active account', async () => {
-    const { userId } = await User.create({
-      firstName: 'Jessica',
-      lastName: 'Doe',
-    });
-
-    await UserAccount.create({
-      userId,
-      email: 'jessicadoe@gmail.com',
-      password: 'jessD0ePs$$',
-      status: 'active',
-    });
-
+    const { userId } = await createUserAccount(
+      'Jessica',
+      'Doe',
+      'jessicadoe@gmail.com',
+      'jessD0ePa$$',
+      'active',
+      [ROLES.CUSTOMER.roleId],
+    );
     const token = authService.generateJWT(userId, 'email');
 
     await request.get(URL).auth(token, { type: 'bearer' }).expect(401);
   });
 
   it('should return 401 Unauthorized for a pending account', async () => {
-    const { userId } = await User.create({
-      firstName: 'Jazz',
-      lastName: 'Doe',
-    });
-
-    await UserAccount.create({
-      userId,
-      email: 'jazzdoe@gmail.com',
-      password: 'jazzD0ePs$$',
-      status: 'pending',
-    });
-
+    const { userId } = await createUserAccount(
+      'Jazz',
+      'Doe',
+      'jazzdoe@gmail.com',
+      'jazzD0ePs$$',
+      'pending',
+      [ROLES.CUSTOMER.roleId],
+    );
     const token = authService.generateJWT(userId, 'email');
 
     await request.get(URL).auth(token, { type: 'bearer' }).expect(401);

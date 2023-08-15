@@ -2,6 +2,8 @@ import { User } from '@user/models';
 
 import 'tests/db-setup';
 
+const raw = true;
+
 describe('User Model', () => {
   it('should create user', async () => {
     const data = {
@@ -20,7 +22,7 @@ describe('User Model', () => {
       lastName: 'Doe',
     });
 
-    const retrievedUser = await User.findByPk(userId);
+    const retrievedUser = await User.findByPk(userId, { raw });
     expect(retrievedUser).not.toBeNull();
     expect(retrievedUser?.firstName).toBe(firstName);
     expect(retrievedUser?.lastName).toBe(lastName);
@@ -35,7 +37,7 @@ describe('User Model', () => {
 
     await user.update(newData);
 
-    const updatedUser = await User.findByPk(user.userId);
+    const updatedUser = await User.findByPk(user.userId, { raw });
     expect(updatedUser?.firstName).toEqual(newData.firstName);
   });
 
@@ -47,7 +49,7 @@ describe('User Model', () => {
 
     await User.destroy({ where: { userId } });
 
-    const deletedUser = await User.findByPk(userId);
+    const deletedUser = await User.findByPk(userId, { raw });
     expect(deletedUser).toBeNull();
   });
 });

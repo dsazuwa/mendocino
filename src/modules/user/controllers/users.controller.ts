@@ -16,9 +16,7 @@ export const getUserData = async (
   next: NextFunction,
 ) => {
   try {
-    const userId = req.user?.userId ?? -1;
-
-    const user = await usersService.getUserData(userId);
+    const user = await usersService.getUserData(req);
 
     res.status(200).json({ user });
   } catch (e) {
@@ -117,7 +115,7 @@ export const revokeSocialAuthentication = async (
     const userId = req.user?.userId ?? -1;
     const { provider } = req.body;
 
-    const { REVOKE_SOCIAL_SUCCEES } = messages;
+    const { REVOKE_SOCIAL_SUCCESS } = messages;
 
     const { account, user, identity, otherIdentity } =
       await usersService.revokeSocialAuthentication(userId, provider);
@@ -126,7 +124,7 @@ export const revokeSocialAuthentication = async (
       setAccessTokenCookie(res, authService.generateJWT(userId, 'email'));
 
       return res.status(200).json({
-        message: REVOKE_SOCIAL_SUCCEES(provider),
+        message: REVOKE_SOCIAL_SUCCESS(provider),
         effect: 'Switched to email login',
       });
     }
@@ -135,7 +133,7 @@ export const revokeSocialAuthentication = async (
       res.clearCookie('access-token');
 
       return res.status(200).json({
-        message: REVOKE_SOCIAL_SUCCEES(provider),
+        message: REVOKE_SOCIAL_SUCCESS(provider),
         effect: 'Deleted user',
       });
     }
@@ -145,7 +143,7 @@ export const revokeSocialAuthentication = async (
     setAccessTokenCookie(res, authService.generateJWT(userId, otherIdentity));
 
     res.status(200).json({
-      message: REVOKE_SOCIAL_SUCCEES(provider),
+      message: REVOKE_SOCIAL_SUCCESS(provider),
       effect: `Switched to ${otherIdentity} login`,
     });
   } catch (e) {

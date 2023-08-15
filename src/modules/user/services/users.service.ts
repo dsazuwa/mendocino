@@ -1,4 +1,5 @@
-import { Op, QueryTypes } from 'sequelize';
+import { Request } from 'express';
+import { Op } from 'sequelize';
 
 import sequelize from '@App/db';
 
@@ -13,8 +14,8 @@ import {
 
 const deleteUser = (userId: number) => User.destroy({ where: { userId } });
 
-const deleteIdentity = (userId: number, providerType: ProviderType) =>
-  UserIdentity.destroy({ where: { userId, providerType } });
+const deleteIdentity = (userId: number, provider: ProviderType) =>
+  UserIdentity.destroy({ where: { userId, provider } });
 
 const deactivate = (userId: number) =>
   sequelize.transaction(async (transaction) => {
@@ -30,22 +31,18 @@ const deactivate = (userId: number) =>
   });
 
 const usersService = {
-  getUserData: async (userId: number) => {
-    const query = `
-        SELECT
-          u.first_name as "firstName",
-          u.last_name as "lastName",
-          a.email as email,
-          a.status as status
-        FROM
-          ${User.tableName} u
-        JOIN
-          ${UserAccount.tableName} a ON u.user_id = a.user_id
-        WHERE u.user_id = ${userId};`;
+  getUserData: async (req: Request) => {
+    const u = req.user;
 
-    const user = await sequelize.query(query, { type: QueryTypes.SELECT });
-
-    return user.length === 0 ? null : user[0];
+    return u
+      ? {
+          firstName: u.firstName,
+          lastName: u.lastName,
+          email: u.email,
+          status: u.status,
+          roles: u.roles,
+        }
+      : null;
   },
 
   verifyEmail: async (userId: number) =>
@@ -91,19 +88,21 @@ const usersService = {
 
   revokeSocialAuthentication: async (
     userId: number,
-    providerType: ProviderType,
+    provider: ProviderType,
   ) => {
     const account = await UserAccount.findOne({
       where: { userId, password: { [Op.ne]: null } },
+      raw: true,
     });
 
     if (account) {
-      await deleteIdentity(userId, providerType);
+      await deleteIdentity(userId, provider);
       return { account: true };
     }
 
     const otherIdentities = await UserIdentity.findAll({
-      where: { userId, providerType: { [Op.ne]: providerType } },
+      where: { userId, provider: { [Op.ne]: provider } },
+      raw: true,
     });
 
     if (otherIdentities.length === 0) {
@@ -111,17 +110,18 @@ const usersService = {
       return { user: true };
     }
 
-    await deleteIdentity(userId, providerType);
+    await deleteIdentity(userId, provider);
 
     return {
       identity: true,
-      otherIdentity: otherIdentities[0].providerType,
+      otherIdentity: otherIdentities[0].provider,
     };
   },
 
   closeAccount: async (userId: number) => {
     const account = await UserAccount.findOne({
       where: { userId, password: { [Op.ne]: null } },
+      raw: true,
     });
 
     return account ? deactivate(userId) : deleteUser(userId);

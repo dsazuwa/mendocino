@@ -2,21 +2,20 @@ Table users {
   user_id integer [primary key]
   first_name varchar
   last_name varchar
-  phone varchar
   created_at datetime
   updated_at datetime
 }
 
 Table user_identities {
-  id string
+  identity_id string
   user_id integer [ref: > users.user_id]
-  provider_type enum_provider_type
+  provider enum_provider_type
   status enum_user_identities_status
   created_at datetime
   updated_at datetime
 
   Indexes {
-    (user_id, provider_type) [unique]
+    (user_id, provider) [unique]
   }
 }
 
@@ -48,7 +47,7 @@ Enum enum_user_account_status {
 Ref: user_accounts.user_id - users.user_id
 
 Table otp {
-  id integer [primary key]
+  otp_id integer [primary key]
   user_id integer [ref: > user_accounts.user_id]
   type  enum_otp_type
   password varchar
@@ -62,4 +61,20 @@ Table otp {
 Enum enum_otp_type {
   password
   verify
+}
+
+Table roles {
+  role_id integer [primary key]
+  name varchar [unique]
+}
+
+Table user_roles {
+  user_id integer [ref: > users.user_id]
+  role_id integer [ref: > roles.role_id]
+  created_at datetime
+  updated_at datetime
+
+  Indexes {
+    (user_id, role_id) [unique]
+  }
 }

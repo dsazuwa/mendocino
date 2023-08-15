@@ -16,7 +16,7 @@ class AuthOTP extends Model<
   InferAttributes<AuthOTP>,
   InferCreationAttributes<AuthOTP>
 > {
-  declare id: CreationOptional<number>;
+  declare otpId: CreationOptional<number>;
 
   declare userId: CreationOptional<number>;
 
@@ -54,7 +54,7 @@ class AuthOTP extends Model<
 
 AuthOTP.init(
   {
-    id: {
+    otpId: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,

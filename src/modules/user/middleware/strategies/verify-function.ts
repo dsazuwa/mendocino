@@ -11,10 +11,10 @@ import messages from '@user/utils/messages';
 const verifyFunction = async (
   profile: Profile,
   done: (error: any, user?: Express.User, info?: any) => void,
-  providerType: ProviderType,
+  provider: ProviderType,
 ) => {
   try {
-    const { id, emails, name } = profile;
+    const { id: identityId, emails, name } = profile;
 
     const email = emails?.at(0)?.value;
     const firstName = name?.givenName;
@@ -26,29 +26,44 @@ const verifyFunction = async (
         undefined,
       );
 
-    const identity = await authService.getIdentity(id, providerType);
+    const { user, userExists, identityExists, isCustomer } =
+      await authService.getUserForSocialAuthentication(
+        identityId,
+        provider,
+        email,
+      );
 
-    if (identity)
-      return done(null, { status: 'active', ...identity.dataValues });
+    if (userExists && !isCustomer)
+      return done(
+        ApiError.unauthorized(messages.ERR_NON_CUSTOMER_THIRD_PARTY_AUTH),
+        undefined,
+      );
 
-    const account = await authService.getAccount(email);
+    if (identityExists) return done(null, user);
 
-    if (account?.status === 'inactive')
+    if (userExists && user?.status === 'inactive')
       return done(
         ApiError.unauthorized(messages.ERR_DEACTIVATED_ACCOUNT),
         undefined,
       );
 
-    const newIdentity = await authService.createNewIdentity(
-      id,
-      account,
-      firstName,
-      lastName,
-      email,
-      providerType,
-    );
+    const newIdentity = await (userExists
+      ? authService.createUserIdentityForUser(
+          identityId,
+          user?.userId as number,
+          user?.status as string,
+          provider,
+        )
+      : authService.createUserAndUserIdentity(
+          identityId,
+          firstName,
+          lastName,
+          email,
+          provider,
+        ));
 
-    return done(null, { status: 'active', ...newIdentity.dataValues });
+    const u = await authService.getUserData(newIdentity.userId, provider);
+    return done(null, u);
   } catch (err) {
     return done(err, undefined);
   }

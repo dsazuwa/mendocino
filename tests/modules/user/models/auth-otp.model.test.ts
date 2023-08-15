@@ -2,6 +2,8 @@ import { AuthOTP, User, UserAccount } from '@user/models';
 
 import 'tests/db-setup';
 
+const raw = true;
+
 describe('AuthOTP Model', () => {
   let userId: number;
 
@@ -31,6 +33,7 @@ describe('AuthOTP Model', () => {
 
       let retrievedOTP = await AuthOTP.findOne({
         where: { userId, type: 'verify' },
+        raw,
       });
 
       expect(retrievedOTP).not.toBeNull();
@@ -44,6 +47,7 @@ describe('AuthOTP Model', () => {
 
       retrievedOTP = await AuthOTP.findOne({
         where: { userId, type: 'recover' },
+        raw,
       });
 
       expect(retrievedOTP).not.toBeNull();
@@ -82,15 +86,15 @@ describe('AuthOTP Model', () => {
   });
 
   it('should retrieve OTP', async () => {
-    let otp = await AuthOTP.findOne({ where: { userId, type: 'verify' } });
+    let otp = await AuthOTP.findOne({ where: { userId, type: 'verify' }, raw });
     expect(otp).not.toBeNull();
 
-    otp = await AuthOTP.findOne({ where: { userId, type: 'recover' } });
+    otp = await AuthOTP.findOne({ where: { userId, type: 'recover' }, raw });
     expect(otp).not.toBeNull();
   });
 
   it('should delete OTP', async () => {
-    const numOTPs = (await AuthOTP.findAll({ where: { userId } })).length;
+    const numOTPs = (await AuthOTP.findAll({ where: { userId }, raw })).length;
     const numDeleted = await AuthOTP.destroy({ where: { userId } });
 
     expect(numOTPs).toBe(numDeleted);
@@ -104,7 +108,10 @@ describe('AuthOTP Model', () => {
 
     await recoverOTP.destroy();
 
-    const otp = await AuthOTP.findOne({ where: { userId, type: 'recover' } });
+    const otp = await AuthOTP.findOne({
+      where: { userId, type: 'recover' },
+      raw,
+    });
     expect(otp).toBeNull();
   });
 
@@ -185,10 +192,13 @@ describe('OTP and User Account Relationship', () => {
 
     await AuthOTP.destroy({ where: { userId, type: 'recover' } });
 
-    const otp = await AuthOTP.findOne({ where: { userId, type: 'recover' } });
+    const otp = await AuthOTP.findOne({
+      where: { userId, type: 'recover' },
+      raw,
+    });
     expect(otp).toBeNull();
 
-    const retrievedAccount = await UserAccount.findByPk(userId);
+    const retrievedAccount = await UserAccount.findByPk(userId, { raw });
     expect(retrievedAccount).not.toBeNull();
   });
 
@@ -213,10 +223,13 @@ describe('OTP and User Account Relationship', () => {
 
     await UserAccount.destroy({ where: { userId } });
 
-    const retrievedAccount = await UserAccount.findByPk(userId);
+    const retrievedAccount = await UserAccount.findByPk(userId, { raw });
     expect(retrievedAccount).toBeNull();
 
-    const otp = await AuthOTP.findOne({ where: { userId, type: 'recover' } });
+    const otp = await AuthOTP.findOne({
+      where: { userId, type: 'recover' },
+      raw,
+    });
     expect(otp).toBeNull();
   });
 });

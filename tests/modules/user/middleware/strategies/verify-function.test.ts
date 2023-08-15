@@ -5,132 +5,232 @@ import ApiError from '@utils/api-error';
 import verifyFunction from '@user/middleware/strategies/verify-function';
 import { ProviderType, User, UserAccount, UserIdentity } from '@user/models';
 import authService from '@user/services/auth.service';
+import { ROLES } from '@user/utils/constants';
 import messages from '@user/utils/messages';
 
-import 'tests/db-setup';
+import {
+  createUserAccount,
+  createUserAccountAndIdentity,
+} from 'tests/modules/user/helper-functions';
+
+import 'tests/modules/user/user.mock.db';
+
+const raw = true;
 
 describe('Verify Function', () => {
   const done = jest.fn();
 
   const callVerify = async (
-    id: string,
-    firsName: string,
+    identityId: string,
+    firstName: string,
     lastName: string,
     email: string,
-    providerType: ProviderType,
+    provider: ProviderType,
   ) => {
     const profile = {
-      id,
+      id: identityId,
       emails: [{ value: email }],
-      name: { givenName: firsName, familyName: lastName },
+      name: { givenName: firstName, familyName: lastName },
     } as unknown as Profile;
 
-    await verifyFunction(profile, done, providerType);
+    await verifyFunction(profile, done, provider);
   };
 
   it('should create user if user does not exists', async () => {
-    const id = '213254657845231';
+    const identityId = '213254657845231';
+    const provider = 'google';
     const firstName = 'Joseph';
     const lastName = 'Doe';
     const email = 'josephdoe@gmail.com';
 
-    expect(
-      User.findOne({ where: { firstName, lastName } }),
-    ).resolves.toBeNull();
-    expect(UserAccount.findOne({ where: { email } })).resolves.toBeNull();
-    expect(UserIdentity.findOne({ where: { id } })).resolves.toBeNull();
+    let u = await User.findOne({ where: { firstName, lastName }, raw });
+    let a = await UserAccount.findOne({ where: { email }, raw });
+    let i = await UserIdentity.findOne({ where: { identityId }, raw });
 
-    await callVerify(id, firstName, lastName, email, 'google');
+    expect(u).toBeNull();
+    expect(a).toBeNull();
+    expect(i).toBeNull();
 
-    const u = await User.findOne({ where: { firstName, lastName } });
+    await callVerify(identityId, firstName, lastName, email, 'google');
+
+    u = await User.findOne({ where: { firstName, lastName }, raw });
+    a = await UserAccount.findOne({ where: { email }, raw });
+    i = await UserIdentity.findOne({
+      where: { identityId, userId: u?.userId, provider },
+      raw,
+    });
+
     expect(u).not.toBeNull();
-
-    const a = await UserAccount.findOne({ where: { email } });
     expect(a).not.toBeNull();
     expect(a?.password).toBe(null);
-
-    expect(
-      UserIdentity.findOne({
-        where: { id, userId: u?.userId, providerType: 'google' },
-      }),
-    ).resolves.not.toBeNull();
+    expect(i).not.toBeNull();
   });
 
   it('should create new identity if User Account exists (active) but User Identity does not', async () => {
-    const id = '242739758613728489';
+    const identityId = '242739758613728489';
     const firstName = 'Jacquelin';
     const lastName = 'Doe';
     const email = 'jacquelindoe@gmail.com';
     const password = 'jacqD0ePa$$';
+    const provider = 'facebook';
 
-    const { userId } = await User.create({ firstName, lastName });
-    await UserAccount.create({ userId, email, password, status: 'active' });
+    const { userId } = await createUserAccount(
+      firstName,
+      lastName,
+      email,
+      password,
+      'active',
+      [ROLES.CUSTOMER.roleId],
+    );
 
-    expect(UserIdentity.findOne({ where: { id, userId } })).resolves.toBeNull();
+    let i = await UserIdentity.findOne({
+      where: { identityId, userId },
+      raw,
+    });
+    expect(i).toBeNull();
 
-    await callVerify(id, firstName, lastName, email, 'facebook');
+    await callVerify(identityId, firstName, lastName, email, provider);
 
-    expect(
-      UserIdentity.findOne({ where: { id, userId, providerType: 'facebook' } }),
-    ).resolves.not.toBeNull();
+    i = await UserIdentity.findOne({
+      where: { identityId, userId, provider },
+      raw,
+    });
+    expect(i).not.toBeNull();
   });
 
   it('should create new identity if User Account exists (pending) but User Identity does not', async () => {
-    const id = '53849274264293027498';
+    const identityId = '53849274264293027498';
+    const provider = 'facebook';
     const firstName = 'Jean';
     const lastName = 'Doe';
     const email = 'jeandoe@gmail.com';
     const password = 'jeanD0ePa$$';
 
-    const { userId } = await User.create({ firstName, lastName });
-    await UserAccount.create({ userId, email, password, status: 'pending' });
+    const { userId } = await createUserAccount(
+      firstName,
+      lastName,
+      email,
+      password,
+      'pending',
+      [ROLES.CUSTOMER.roleId],
+    );
 
-    expect(UserIdentity.findOne({ where: { id, userId } })).resolves.toBeNull();
+    let a = await UserAccount.findOne({
+      where: { userId, status: 'pending' },
+      raw,
+    });
+    let i = await UserIdentity.findOne({
+      where: { identityId, userId },
+      raw,
+    });
 
-    await callVerify(id, firstName, lastName, email, 'facebook');
+    expect(a).not.toBeNull();
+    expect(i).toBeNull();
 
-    expect(
-      UserIdentity.findOne({ where: { id, userId, providerType: 'facebook' } }),
-    ).resolves.not.toBeNull();
+    await callVerify(identityId, firstName, lastName, email, provider);
 
-    const a = await UserAccount.findByPk(userId);
-    expect(a?.status).toBe('active');
+    a = await UserAccount.findOne({
+      where: { userId, status: 'active' },
+      raw,
+    });
+    i = await UserIdentity.findOne({
+      where: { identityId, userId, provider },
+      raw,
+    });
+
+    expect(a).not.toBeNull();
+    expect(i).not.toBeNull();
   });
 
   it('should "login" user if both User Account and User Identity exists', async () => {
-    const id = '583683462429535730';
+    const identityId = '583683462429535730';
     const firstName = 'Jules';
     const lastName = 'Doe';
     const email = 'julesdoe@gmail.com';
     const password = 'julesD0ePa$$';
+    const provider = 'google';
 
-    const { userId } = await User.create({ firstName, lastName });
-    await UserAccount.create({ userId, email, password });
-    await UserIdentity.create({ userId, id, providerType: 'google' });
+    await createUserAccountAndIdentity(
+      firstName,
+      lastName,
+      email,
+      password,
+      'active',
+      [{ identityId, provider }],
+      [ROLES.CUSTOMER.roleId],
+    );
 
-    const { createNewIdentity } = authService;
-    const c = jest.fn();
-    authService.createNewIdentity = c;
+    const { createUserAndUserIdentity, createUserIdentityForUser } =
+      authService;
 
-    await callVerify(id, firstName, lastName, email, 'google');
+    const a = jest.fn();
+    const b = jest.fn();
 
-    expect(c).not.toHaveBeenCalled();
-    authService.createNewIdentity = createNewIdentity;
+    authService.createUserAndUserIdentity = a;
+    authService.createUserIdentityForUser = b;
+
+    await callVerify(identityId, firstName, lastName, email, provider);
+
+    expect(a).not.toHaveBeenCalled();
+    expect(b).not.toHaveBeenCalled();
+
+    authService.createUserAndUserIdentity = createUserAndUserIdentity;
+    authService.createUserIdentityForUser = createUserIdentityForUser;
+  });
+
+  it('should return an error if user exists, but is not a customer', async () => {
+    const identityId = '6988232978752892';
+    const firstName = 'Jerome';
+    const lastName = 'Doe';
+    const email = 'jeromedoe@gmail.com';
+    const password = 'jeromeD0ePa$$';
+
+    const { userId } = await createUserAccount(
+      firstName,
+      lastName,
+      email,
+      password,
+      'active',
+      [ROLES.ADMIN.roleId],
+    );
+
+    const i = await UserIdentity.findOne({
+      where: { identityId, userId },
+      raw,
+    });
+    expect(i).toBeNull();
+
+    await callVerify(identityId, firstName, lastName, email, 'google');
+
+    expect(done).toHaveBeenLastCalledWith(
+      ApiError.unauthorized(messages.ERR_NON_CUSTOMER_THIRD_PARTY_AUTH),
+      undefined,
+    );
   });
 
   it('should return an error if User Account exists (inactive)', async () => {
-    const id = '6988232978752892';
+    const identityId = '6988232978752892';
     const firstName = 'Jacquet';
     const lastName = 'Doe';
     const email = 'jacquetdoe@gmail.com';
     const password = 'jacquetD0ePa$$';
 
-    const { userId } = await User.create({ firstName, lastName });
-    await UserAccount.create({ userId, email, password, status: 'inactive' });
+    const { userId } = await createUserAccount(
+      firstName,
+      lastName,
+      email,
+      password,
+      'inactive',
+      [ROLES.CUSTOMER.roleId],
+    );
 
-    expect(UserIdentity.findOne({ where: { id, userId } })).resolves.toBeNull();
+    const i = await UserIdentity.findOne({
+      where: { identityId, userId },
+      raw,
+    });
+    expect(i).toBeNull();
 
-    await callVerify(id, firstName, lastName, email, 'google');
+    await callVerify(identityId, firstName, lastName, email, 'google');
 
     expect(done).toHaveBeenLastCalledWith(
       ApiError.unauthorized(messages.ERR_DEACTIVATED_ACCOUNT),

@@ -1,16 +1,19 @@
-const captitalizaFirst = (str: string) => {
+const capitalizeFirst = (str: string) => {
   if (str.length === 0) return str;
 
   return str.charAt(0).toUpperCase() + str.slice(1);
 };
 
-const messages = Object.freeze({
+const messages = {
   // ERROR MESSAGES
 
+  ERR_UNAUTHORIZED_ACCESS: 'Unauthorized',
   ERR_INVALID_ACCESS_TOKEN: 'Invalid access token',
   ERR_DEACTIVATED_ACCOUNT: 'Deactivated account',
   ERR_ACTIVE_ACCOUNT: 'Active account',
   ERR_VERIFIED_ACCOUNT: 'Account already verified',
+  ERR_NON_CUSTOMER_THIRD_PARTY_AUTH:
+    'Only customers can use third party authenticators',
 
   // COMMON MESSAGES
 
@@ -45,10 +48,10 @@ const messages = Object.freeze({
   PASSWORD_CHANGE_FAILED: 'User account does not exist',
   PASSWORD_CHANGE_SUCCESS: 'Password Successfully changed!',
 
-  REVOKE_SOCIAL_SUCCEES: (provider: string) =>
-    `Successfully revoked ${captitalizaFirst(provider)} authentication`,
+  REVOKE_SOCIAL_SUCCESS: (provider: string) =>
+    `Successfully revoked ${capitalizeFirst(provider)} authentication`,
 
   CLOSE_CLIENT_ACCOUNT: 'Account successfully closed!',
-});
+} as const;
 
 export default messages;

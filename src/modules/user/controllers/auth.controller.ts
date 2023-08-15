@@ -2,23 +2,22 @@ import { NextFunction, Request, Response } from 'express';
 
 import { ProviderType } from '@user/models';
 import authService from '@user/services/auth.service';
-import usersService from '@user/services/users.service';
 import messages from '@user/utils/messages';
 
 export const socialLogin = async (
   req: Request,
   res: Response,
   next: NextFunction,
-  providerType: ProviderType,
+  provider: ProviderType,
 ) => {
   try {
     const userId = req.user?.userId;
 
     if (!userId) res.status(401);
     else {
-      const token = authService.generateJWT(userId, providerType);
+      const token = authService.generateJWT(userId, provider);
 
-      const userData = await usersService.getUserData(userId);
+      const userData = await authService.getUserData(userId, provider);
 
       res.redirect(
         `${
@@ -73,7 +72,7 @@ export const register = async (
   try {
     const { firstName, lastName, email, password } = req.body;
 
-    const acct = await authService.getAccount(email);
+    const acct = await authService.getAccount(email, true);
 
     if (acct)
       return res
@@ -89,7 +88,7 @@ export const register = async (
 
     const { userId } = account;
 
-    const userData = await usersService.getUserData(userId);
+    const userData = await authService.getUserData(userId, 'email');
 
     setAccessTokenCookie(res, authService.generateJWT(userId, 'email'));
 
@@ -117,7 +116,7 @@ export const login = async (
 
     const { userId, status } = account;
 
-    const userData = await usersService.getUserData(userId);
+    const userData = await authService.getUserData(userId, 'email');
 
     if (status === 'inactive')
       return res.status(403).json({
@@ -158,7 +157,7 @@ export const requestPasswordRecovery = async (
   try {
     const { email } = req.body;
 
-    const account = await authService.getAccount(email);
+    const account = await authService.getAccount(email, true);
 
     if (!account)
       return res.status(200).json({ message: messages.REQUEST_RECOVERY });
@@ -185,7 +184,7 @@ export const verifyRecoveryOTP = async (
     const { otp } = req.params;
     const { email } = req.body;
 
-    const account = await authService.getAccount(email);
+    const account = await authService.getAccount(email, true);
 
     if (!account)
       return res.status(401).json({ message: messages.INVALID_AUTH_OTP });
@@ -214,7 +213,7 @@ export const recoverPassword = async (
     const { otp } = req.params;
     const { email, password } = req.body;
 
-    const account = await authService.getAccount(email);
+    const account = await authService.getAccount(email, true);
 
     if (!account)
       return res.status(401).json({ message: messages.INVALID_AUTH_OTP });
@@ -228,7 +227,7 @@ export const recoverPassword = async (
 
     await authService.recoverPassword(userId, password);
 
-    const userData = await usersService.getUserData(userId);
+    const userData = await authService.getUserData(userId, 'email');
 
     setAccessTokenCookie(res, authService.generateJWT(userId, 'email'));
 
@@ -251,7 +250,7 @@ export const reactivate = async (
 
     await authService.reactivate(userId);
 
-    const userData = await usersService.getUserData(userId);
+    const userData = await authService.getUserData(userId, 'email');
 
     setAccessTokenCookie(res, authService.generateJWT(userId, 'email'));
 

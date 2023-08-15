@@ -1,5 +1,5 @@
 import { sign } from 'jsonwebtoken';
-import { Op } from 'sequelize';
+import { Op, QueryTypes } from 'sequelize';
 
 import sequelize from '@App/db';
 
@@ -7,98 +7,130 @@ import {
   AuthOTP,
   AuthOTPType,
   ProviderType,
+  Role,
   User,
   UserAccount,
   UserIdentity,
+  UserRole,
 } from '@user/models';
+import { ROLES } from '@user/utils/constants';
 
 type JWTProviderType = ProviderType | 'email';
 
-export const createUserIdentityForUser = (
-  id: string,
-  userId: number,
-  status: string,
-  providerType: ProviderType,
-) =>
-  sequelize.transaction(async (transaction) => {
-    if (status === 'pending') {
-      await UserAccount.update(
-        { status: 'active' },
-        { where: { userId }, transaction },
-      );
-    }
-
-    const identity = await UserIdentity.create(
-      { id, userId, providerType },
-      { transaction },
-    );
-
-    return identity;
-  });
-
-export const createUserAndUserIdentity = (
-  id: string,
-  firstName: string,
-  lastName: string,
-  email: string,
-  providerType: ProviderType,
-) =>
-  sequelize.transaction(async (transaction) => {
-    const { userId } = await User.create(
-      { firstName, lastName },
-      { transaction },
-    );
-
-    await UserAccount.create(
-      { userId, email, status: 'active' },
-      { transaction },
-    );
-
-    const identity = await UserIdentity.create(
-      { id, userId, providerType },
-      { transaction },
-    );
-
-    return identity;
-  });
-
 const authService = {
-  generateJWT: (userId: number, providerType: JWTProviderType) =>
-    sign({ userId, providerType }, process.env.JWT_SECRET, {
+  generateJWT: (userId: number, provider: JWTProviderType) =>
+    sign({ userId, provider }, process.env.JWT_SECRET, {
       expiresIn: '1 day',
     }),
 
-  getUserFromJWTPayload: async (
-    providerType: JWTProviderType,
-    userId: number,
-  ) => {
-    switch (providerType) {
-      case 'email': {
-        const account = await UserAccount.findOne({ where: { userId } });
-        return account || undefined;
-      }
+  getUserData: async (userId: number, provider: JWTProviderType) => {
+    const isEmailAuth = provider === 'email';
 
-      default: {
-        const identity = await UserIdentity.findOne({
-          where: { userId, providerType },
-        });
+    const statusField = isEmailAuth ? 'a.status' : "'active'";
 
-        return identity || undefined;
-      }
-    }
+    const identityJoin = isEmailAuth
+      ? ''
+      : `JOIN ${UserIdentity.tableName} i 
+            ON u.user_id = i.user_id AND i.provider = '${provider}'`;
+
+    const statusGroupBy = isEmailAuth ? 'a.status,' : '';
+
+    const query = `
+      SELECT
+        u.user_id AS "userId",
+        u.first_name AS "firstName",
+        u.last_name AS "lastName",
+        a.email AS email,
+        ${statusField} AS status,
+        array_agg(DISTINCT r.name) AS roles
+      FROM
+        ${User.tableName} u
+      JOIN
+        ${UserAccount.tableName} a ON u.user_id = a.user_id
+      ${identityJoin}
+      JOIN
+        ${UserRole.tableName} ur ON u.user_id = ur.user_id
+      JOIN
+        ${Role.tableName} r ON r.role_id = ur.role_id
+      WHERE
+        u.user_id = ${userId}
+      GROUP BY
+        u.user_id, u.first_name, u.last_name,${statusGroupBy} a.email;`;
+
+    const result = await sequelize.query(query, { type: QueryTypes.SELECT });
+
+    return result.length === 0 ? undefined : (result[0] as Express.User);
   },
 
-  getAccount: (email: string) => UserAccount.findOne({ where: { email } }),
+  getUserForSocialAuthentication: async (
+    identityId: string,
+    provider: ProviderType,
+    email: string,
+  ) => {
+    const query = `
+      SELECT
+        u.user_id AS "userId",
+        u.first_name AS "firstName",
+        u.last_name AS "lastName",
+        a.email AS email,
+        a.status AS status,
+        array_agg(DISTINCT r.name) AS roles,
+        i.identity_id AS "identityId"
+      FROM
+        ${User.tableName} u
+      JOIN
+        ${UserAccount.tableName} a ON u.user_id = a.user_id
+      LEFT JOIN 
+        ${UserIdentity.tableName} i ON u.user_id = i.user_id AND (i.provider = '${provider}' AND i.identity_id = '${identityId}')
+      LEFT JOIN
+        ${UserRole.tableName} ur ON u.user_id = ur.user_id
+      LEFT JOIN
+        ${Role.tableName} r ON r.role_id = ur.role_id
+      WHERE
+        a.email = '${email}' OR (i.identity_id = '${identityId}' AND u.user_id = i.user_id)
+      GROUP BY
+        u.user_id, u.first_name, u.last_name, a.email, a.status, i.identity_id;`;
 
-  getIdentity: (id: string, providerType: ProviderType) =>
+    const result = await sequelize.query(query, { type: QueryTypes.SELECT });
+    const user =
+      result.length === 0
+        ? undefined
+        : (result[0] as Express.User & { identityId: string });
+
+    if (user === undefined)
+      return {
+        user: undefined,
+        userExists: false,
+        identityExists: false,
+        isCustomer: false,
+      };
+
+    const isCustomer = user.roles.includes(ROLES.CUSTOMER.name);
+    const identityExists = user.identityId !== null;
+
+    return {
+      user: user as Express.User,
+      userExists: true,
+      identityExists,
+      isCustomer,
+    };
+  },
+
+  getAccount: (email: string, raw: boolean = false) =>
+    UserAccount.findOne({ where: { email }, raw }),
+
+  getIdentity: (
+    identityId: string,
+    provider: ProviderType,
+    raw: boolean = false,
+  ) =>
     UserIdentity.findOne({
-      where: { id, providerType },
+      where: { identityId, provider },
+      raw,
     }),
 
   getAuthOTP: async (userId: number, password: string, type: AuthOTPType) => {
-    const authOTP = await AuthOTP.findOne({
-      where: { userId, type },
-    });
+    const authOTP = await AuthOTP.findOne({ where: { userId, type } });
 
     const isValid =
       authOTP !== null &&
@@ -130,22 +162,58 @@ const authService = {
       return password;
     }),
 
-  createNewIdentity: (
-    id: string,
-    account: UserAccount | null,
+  createUserIdentityForUser: (
+    identityId: string,
+    userId: number,
+    status: string,
+    provider: ProviderType,
+  ) =>
+    sequelize.transaction(async (transaction) => {
+      if (status === 'pending') {
+        await UserAccount.update(
+          { status: 'active' },
+          { where: { userId }, transaction },
+        );
+      }
+
+      const identity = await UserIdentity.create(
+        { identityId, userId, provider },
+        { transaction },
+      );
+
+      return identity;
+    }),
+
+  createUserAndUserIdentity: (
+    identityId: string,
     firstName: string,
     lastName: string,
     email: string,
-    providerType: ProviderType,
+    provider: ProviderType,
   ) =>
-    account
-      ? createUserIdentityForUser(
-          id,
-          account.userId,
-          account.status,
-          providerType,
-        )
-      : createUserAndUserIdentity(id, firstName, lastName, email, providerType),
+    sequelize.transaction(async (transaction) => {
+      const { userId } = await User.create(
+        { firstName, lastName },
+        { transaction },
+      );
+
+      await UserAccount.create(
+        { userId, email, status: 'active' },
+        { transaction },
+      );
+
+      const identity = await UserIdentity.create(
+        { identityId, userId, provider },
+        { transaction },
+      );
+
+      await UserRole.create(
+        { userId, roleId: ROLES.CUSTOMER.roleId },
+        { transaction },
+      );
+
+      return identity;
+    }),
 
   createUser: async (
     firstName: string,
@@ -175,6 +243,11 @@ const authService = {
           password: otp,
           expiresAt: AuthOTP.getExpiration(),
         },
+        { transaction },
+      );
+
+      await UserRole.create(
+        { userId: user.userId, roleId: ROLES.CUSTOMER.roleId },
         { transaction },
       );
 

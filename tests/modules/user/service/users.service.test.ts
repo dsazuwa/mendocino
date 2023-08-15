@@ -1,22 +1,32 @@
+import { Request } from 'express';
+
+import { ROLES } from '@user/utils/constants';
 import { AuthOTP, User, UserAccount, UserIdentity } from '@user/models';
 import usersService from '@user/services/users.service';
 
-import 'tests/db-setup';
+import {
+  createUserAccount,
+  createUserAccountAndIdentity,
+} from 'tests/modules/user/helper-functions';
 
-describe('User Service', () => {
-  describe('get user data', () => {
+import 'tests/modules/user/user.mock.db';
+
+describe('Users Service', () => {
+  describe('get user', () => {
     it('pending user account', async () => {
       const firstName = 'Joan';
       const lastName = 'Doe';
       const email = 'joandoe@gmail.com';
       const password = 'joanD0epa$$';
       const status = 'pending';
+      const roles = ['customer'];
 
-      const { userId } = await User.create({ firstName, lastName });
-      await UserAccount.create({ userId, email, password, status });
+      const req = {
+        user: { firstName, lastName, email, password, status, roles },
+      } as unknown as Request;
 
-      const data = await usersService.getUserData(userId);
-      expect(data).toMatchObject({ firstName, lastName, email, status });
+      const data = await usersService.getUserData(req);
+      expect(data).toMatchObject({ firstName, lastName, email, status, roles });
     });
 
     it('active user account', async () => {
@@ -25,29 +35,14 @@ describe('User Service', () => {
       const email = 'jeronimodoe@gmail.com';
       const password = 'jeroD0ePa$$';
       const status = 'active';
+      const roles = ['ceo', 'manager'];
 
-      const { userId } = await User.create({ firstName, lastName });
-      await UserAccount.create({ userId, email, password, status });
+      const req = {
+        user: { firstName, lastName, email, password, status, roles },
+      } as unknown as Request;
 
-      const data = await usersService.getUserData(userId);
-      expect(data).toMatchObject({ firstName, lastName, email, status });
-    });
-
-    it('active user account and user identity', async () => {
-      const firstName = 'Jonah';
-      const lastName = 'Doe';
-      const email = 'jonahdoe@gmail.com';
-      const password = 'jonahD0ePa$$';
-      const status = 'active';
-      const id = '49248923240536542';
-      const providerType = 'google';
-
-      const { userId } = await User.create({ firstName, lastName });
-      await UserAccount.create({ userId, email, password, status });
-      await UserIdentity.create({ id, userId, providerType });
-
-      const data = await usersService.getUserData(userId);
-      expect(data).toMatchObject({ firstName, lastName, email, status });
+      const data = await usersService.getUserData(req);
+      expect(data).toMatchObject({ firstName, lastName, email, status, roles });
     });
   });
 
@@ -55,14 +50,15 @@ describe('User Service', () => {
     let userId: number;
 
     beforeAll(async () => {
-      const u = await User.create({ firstName: 'Jo', lastName: 'Doe' });
-      userId = u.userId;
-
-      await UserAccount.create({
-        userId,
-        email: 'jodoe@gmail.com',
-        password: 'joD0epa$$',
-      });
+      const { user } = await createUserAccount(
+        'Jo',
+        'Doe',
+        'jodoe@gmail.com',
+        'joD0ePa$$',
+        'pending',
+        [ROLES.CUSTOMER.roleId],
+      );
+      userId = user.userId;
     });
 
     it('should verify the email', async () => {
@@ -78,7 +74,7 @@ describe('User Service', () => {
     });
 
     it('should roll back transaction when an error occurs', async () => {
-      const { id } = await AuthOTP.create({
+      const { otpId } = await AuthOTP.create({
         userId,
         type: 'verify',
         password: '123456',
@@ -93,7 +89,7 @@ describe('User Service', () => {
 
         expect(false).toBe(true);
       } catch (e) {
-        const otp = await AuthOTP.findByPk(id);
+        const otp = await AuthOTP.findByPk(otpId);
         expect(otp).not.toBeNull();
       }
 
@@ -103,52 +99,42 @@ describe('User Service', () => {
 
   describe('create password', () => {
     it('should create password if user password is null', async () => {
-      const { userId } = await User.create({
-        firstName: 'Josephine',
-        lastName: 'Doe',
-      });
-
-      let a: UserAccount | null = await UserAccount.create({
-        userId,
-        email: 'josephinedoe@gmail.com',
-      });
-
-      await UserIdentity.create({
-        id: '923042892739426871638',
-        userId,
-        providerType: 'google',
-      });
-
+      const { userId, account } = await createUserAccountAndIdentity(
+        'Josephine',
+        'Doe',
+        'josephinedoe@gmail.com',
+        null,
+        'active',
+        [{ identityId: '923042892739426871638', provider: 'google' }],
+        [ROLES.CUSTOMER.roleId],
+      );
       const password = 'josephineD0ePa$$';
-      expect(a.comparePasswords(password)).toBe(false);
+      expect(account.comparePasswords(password)).toBe(false);
 
       const result = await usersService.createPassword(userId, password);
       expect(result[0]).toBe(1);
 
-      a = await UserAccount.findByPk(userId);
-      expect(a?.comparePasswords(password)).toBe(true);
+      const retrievedAcct = await UserAccount.findByPk(userId);
+      expect(retrievedAcct?.comparePasswords(password)).toBe(true);
     });
 
     it('should not create password if user password is null', async () => {
-      const { userId } = await User.create({
-        firstName: 'Julie',
-        lastName: 'Doe',
-      });
-
-      let a: UserAccount | null = await UserAccount.create({
-        userId,
-        email: 'juliedoe@gmail.com',
-        password: 'julieD0ePa$$',
-      });
-
+      const { userId, account } = await createUserAccount(
+        'Julie',
+        'Doe',
+        'juliedoe@gmail.com',
+        'julieD0ePa$$',
+        'active',
+        [ROLES.CUSTOMER.roleId],
+      );
       const newPassword = 'newjulieD0ePa$$';
-      expect(a.comparePasswords(newPassword)).toBe(false);
+      expect(account.comparePasswords(newPassword)).toBe(false);
 
       const result = await usersService.createPassword(userId, newPassword);
       expect(result[0]).toBe(0);
 
-      a = await UserAccount.findByPk(userId);
-      expect(a?.comparePasswords(newPassword)).toBe(false);
+      const retrievedAcct = await UserAccount.findByPk(userId);
+      expect(retrievedAcct?.comparePasswords(newPassword)).toBe(false);
     });
   });
 
@@ -157,16 +143,14 @@ describe('User Service', () => {
       const password = 'jeanD0epa$$';
       const newPassword = 'newjeanD0epa$$';
 
-      const { userId } = await User.create({
-        firstName: 'Jean Paul',
-        lastName: 'Doe',
-      });
-
-      await UserAccount.create({
-        userId,
-        email: 'jeanpauldoe@gmail.com',
+      const { userId } = await createUserAccount(
+        'Jean Paul',
+        'Doe',
+        'jeanpauldoe@gmail.com',
         password,
-      });
+        'active',
+        [ROLES.CUSTOMER.roleId],
+      );
 
       const result = await usersService.changePassword(
         userId,
@@ -183,16 +167,14 @@ describe('User Service', () => {
       const password = 'julietteD0epa$$';
       const newPassword = 'newjeanD0epa$$';
 
-      const { userId } = await User.create({
-        firstName: 'Juliette',
-        lastName: 'Doe',
-      });
-
-      await UserAccount.create({
-        userId,
-        email: 'juliettepauldoe@gmail.com',
+      const { userId } = await createUserAccount(
+        'Juliette',
+        'Doe',
+        'juliettepauldoe@gmail.com',
         password,
-      });
+        'active',
+        [ROLES.CUSTOMER.roleId],
+      );
 
       const result = await usersService.changePassword(
         userId,
@@ -210,17 +192,16 @@ describe('User Service', () => {
     it('should return false if user_account password is null', async () => {
       const newPassword = 'newjolieD0epa$$';
 
-      const { userId } = await User.create({
-        firstName: 'Jolie',
-        lastName: 'Doe',
-      });
+      const { userId, account } = await createUserAccount(
+        'Jolie',
+        'Doe',
+        'joliepauldoe@gmail.com',
+        null,
+        'active',
+        [ROLES.CUSTOMER.roleId],
+      );
 
-      const { password } = await UserAccount.create({
-        userId,
-        email: 'joliepauldoe@gmail.com',
-      });
-
-      expect(password).toBeNull();
+      expect(account.password).toBeNull();
 
       const result = await usersService.changePassword(
         userId,
@@ -247,30 +228,23 @@ describe('User Service', () => {
 
   describe('revoke social authentication', () => {
     it('should delete identity if user has an account with a password', async () => {
-      const { userId } = await User.create({
-        firstName: 'Jessica',
-        lastName: 'Doe',
-      });
+      const provider = 'google';
 
-      const acct = await UserAccount.create({
-        userId,
-        email: 'jessicadoe@gmail.com',
-        password: 'jessicaD0ePa$$',
-      });
+      const { userId, account } = await createUserAccountAndIdentity(
+        'Jessica',
+        'Doe',
+        'jessicadoe@gmail.com',
+        'jessicaD0ePa$$',
+        'active',
+        [{ identityId: '3654755345356474363', provider }],
+        [ROLES.CUSTOMER.roleId],
+      );
 
-      const providerType = 'google';
-
-      expect(acct.password).not.toBeNull();
-
-      await UserIdentity.create({
-        id: '3654755345356474363',
-        userId,
-        providerType,
-      });
+      expect(account.password).not.toBeNull();
 
       const result = await usersService.revokeSocialAuthentication(
         userId,
-        providerType,
+        provider,
       );
 
       expect(result.account).toBe(true);
@@ -278,7 +252,7 @@ describe('User Service', () => {
       expect(result.identity).toBeUndefined();
       expect(result.otherIdentity).toBeUndefined();
 
-      const i = await UserIdentity.findOne({ where: { userId, providerType } });
+      const i = await UserIdentity.findOne({ where: { userId, provider } });
       expect(i).toBeNull();
 
       const a = await UserAccount.findByPk(userId);
@@ -289,29 +263,20 @@ describe('User Service', () => {
     });
 
     it('should delete identity if user has no account with password but other identities', async () => {
-      const { userId } = await User.create({
-        firstName: 'Jack',
-        lastName: 'Doe',
-      });
+      const { userId, account } = await createUserAccountAndIdentity(
+        'Jack',
+        'Doe',
+        'jackdoe@gmail.com',
+        null,
+        'active',
+        [
+          { identityId: '52429584297428924', provider: 'google' },
+          { identityId: '58991388923428739', provider: 'facebook' },
+        ],
+        [ROLES.CUSTOMER.roleId],
+      );
 
-      const acct = await UserAccount.create({
-        userId,
-        email: 'jackdoe@gmail.com',
-      });
-
-      expect(acct.password).toBeNull();
-
-      await UserIdentity.create({
-        id: '52429584297428924',
-        userId,
-        providerType: 'google',
-      });
-
-      await UserIdentity.create({
-        id: '5899138892342873973',
-        userId,
-        providerType: 'facebook',
-      });
+      expect(account.password).toBeNull();
 
       const result = await usersService.revokeSocialAuthentication(
         userId,
@@ -324,12 +289,12 @@ describe('User Service', () => {
       expect(result.otherIdentity).toBe('google');
 
       let i = await UserIdentity.findOne({
-        where: { userId, providerType: 'facebook' },
+        where: { userId, provider: 'facebook' },
       });
       expect(i).toBeNull();
 
       i = await UserIdentity.findOne({
-        where: { userId, providerType: 'google' },
+        where: { userId, provider: 'google' },
       });
       expect(i).not.toBeNull();
 
@@ -342,29 +307,23 @@ describe('User Service', () => {
     });
 
     it('should delete user if user has neither an account with a password nor anothor identitiy', async () => {
-      const { userId } = await User.create({
-        firstName: 'Jess',
-        lastName: 'Doe',
-      });
+      const provider = 'google';
 
-      const acct = await UserAccount.create({
-        userId,
-        email: 'jessdoe@gmail.com',
-      });
+      const { userId, account } = await createUserAccountAndIdentity(
+        'Jess',
+        'Doe',
+        'jessdoe@gmail.com',
+        null,
+        'active',
+        [{ identityId: '94044248328749827', provider }],
+        [ROLES.CUSTOMER.roleId],
+      );
 
-      const providerType = 'google';
-
-      expect(acct.password).toBeNull();
-
-      await UserIdentity.create({
-        id: '940442483287498272393',
-        userId,
-        providerType,
-      });
+      expect(account.password).toBeNull();
 
       const result = await usersService.revokeSocialAuthentication(
         userId,
-        providerType,
+        provider,
       );
 
       expect(result.account).toBeUndefined();
@@ -372,7 +331,7 @@ describe('User Service', () => {
       expect(result.identity).toBeUndefined();
       expect(result.otherIdentity).toBeUndefined();
 
-      const i = await UserIdentity.findOne({ where: { userId, providerType } });
+      const i = await UserIdentity.findOne({ where: { userId, provider } });
       expect(i).toBeNull();
 
       const a = await UserAccount.findByPk(userId);
@@ -385,24 +344,17 @@ describe('User Service', () => {
 
   describe('close account', () => {
     it('should deactivate account if user has an account password', async () => {
-      const { userId } = await User.create({
-        firstName: 'Jeff',
-        lastName: 'Doe',
-      });
+      const { userId, account } = await createUserAccountAndIdentity(
+        'Jeff',
+        'Doe',
+        'jeffdoe@gmail.com',
+        'jeffD0ePa$$',
+        'active',
+        [{ identityId: '2435674867433235', provider: 'google' }],
+        [ROLES.CUSTOMER.roleId],
+      );
 
-      const acct = await UserAccount.create({
-        userId,
-        email: 'jeffdoe@gmail.com',
-        password: 'jeffD0ePa$$',
-      });
-
-      expect(acct.password).not.toBeNull();
-
-      await UserIdentity.create({
-        id: '2435674867433235',
-        userId,
-        providerType: 'google',
-      });
+      expect(account.password).not.toBeNull();
 
       await usersService.closeAccount(userId);
 
@@ -417,23 +369,17 @@ describe('User Service', () => {
     });
 
     it('should delete user if user does not have an account password', async () => {
-      const { userId } = await User.create({
-        firstName: 'James',
-        lastName: 'Doe',
-      });
+      const { userId, account } = await createUserAccountAndIdentity(
+        'James',
+        'Doe',
+        'jamesdoe@gmail.com',
+        null,
+        'active',
+        [{ identityId: '23274274781623876298', provider: 'google' }],
+        [ROLES.CUSTOMER.roleId],
+      );
 
-      const acct = await UserAccount.create({
-        userId,
-        email: 'jamesdoe@gmail.com',
-      });
-
-      expect(acct.password).toBeNull();
-
-      await UserIdentity.create({
-        id: '2327427478162387629874',
-        userId,
-        providerType: 'google',
-      });
+      expect(account.password).toBeNull();
 
       await usersService.closeAccount(userId);
 

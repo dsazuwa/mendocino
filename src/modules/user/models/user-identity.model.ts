@@ -14,11 +14,11 @@ class UserIdentity extends Model<
   InferAttributes<UserIdentity>,
   InferCreationAttributes<UserIdentity>
 > {
-  declare id: string;
+  declare identityId: string;
 
   declare userId: CreationOptional<number>;
 
-  declare providerType: ProviderType;
+  declare provider: ProviderType;
 
   declare createdAt: CreationOptional<Date>;
 
@@ -27,7 +27,7 @@ class UserIdentity extends Model<
 
 UserIdentity.init(
   {
-    id: {
+    identityId: {
       type: DataTypes.STRING,
       allowNull: false,
     },
@@ -36,7 +36,7 @@ UserIdentity.init(
       primaryKey: true,
       allowNull: false,
     },
-    providerType: {
+    provider: {
       type: DataTypes.ENUM('google', 'facebook'),
       primaryKey: true,
       allowNull: false,
