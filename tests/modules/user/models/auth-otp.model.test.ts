@@ -1,6 +1,9 @@
-import { AuthOTP, User, UserAccount } from '@user/models';
+import { AuthOTP, UserAccount } from '@user/models';
+import { ROLES } from '@user/utils/constants';
 
-import 'tests/db-setup';
+import { createUserAccount } from '../helper-functions';
+
+import 'tests/user.db-setup';
 
 const raw = true;
 
@@ -8,18 +11,15 @@ describe('AuthOTP Model', () => {
   let userId: number;
 
   beforeAll(async () => {
-    userId = (
-      await User.create({
-        firstName: 'Jacque',
-        lastName: 'Doe',
-      })
-    ).userId;
-
-    await UserAccount.create({
-      userId,
-      email: 'jaquedoe@gmail.com',
-      password: 'jacqueD0epa$$',
-    });
+    const { user } = await createUserAccount(
+      'Jacque',
+      'Doe',
+      'jaquedoe@gmail.com',
+      'jacqueD0epa$$',
+      'pending',
+      [ROLES.CUSTOMER.roleId],
+    );
+    userId = user.userId;
   });
 
   describe('create OTP', () => {
@@ -172,16 +172,14 @@ describe('AuthOTP Model', () => {
 
 describe('OTP and User Account Relationship', () => {
   it('deleting OTP should not delete User Account', async () => {
-    const { userId } = await User.create({
-      firstName: 'Jasmine',
-      lastName: 'Doe',
-    });
-
-    await UserAccount.create({
-      userId,
-      email: 'jasminedoe@gmail.com',
-      password: 'jasmineD0epa$$',
-    });
+    const { userId } = await createUserAccount(
+      'Jasmine',
+      'Doe',
+      'jasminedoe@gmail.com',
+      'jasmineD0epa$$',
+      'active',
+      [ROLES.CUSTOMER.roleId],
+    );
 
     await AuthOTP.create({
       userId,
@@ -203,16 +201,14 @@ describe('OTP and User Account Relationship', () => {
   });
 
   it('deleting User Account should delete OTP', async () => {
-    const { userId } = await User.create({
-      firstName: 'Jessica',
-      lastName: 'Doe',
-    });
-
-    await UserAccount.create({
-      userId,
-      email: 'jessicadoe@gmail.com',
-      password: 'JessicaD0ePa$$',
-    });
+    const { userId } = await createUserAccount(
+      'Jessica',
+      'Doe',
+      'jessicadoe@gmail.com',
+      'JessicaD0ePa$$',
+      'active',
+      [ROLES.CUSTOMER.roleId],
+    );
 
     await AuthOTP.create({
       userId,

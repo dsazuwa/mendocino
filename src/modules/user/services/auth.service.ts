@@ -225,7 +225,7 @@ const authService = {
       const user = await User.create({ firstName, lastName }, { transaction });
 
       const account = await UserAccount.create(
-        { userId: user.userId, email, password },
+        { userId: user.userId, email, password, status: 'pending' },
         { transaction },
       );
 

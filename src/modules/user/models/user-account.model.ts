@@ -21,7 +21,7 @@ class UserAccount extends Model<
 
   declare password: CreationOptional<string | null>;
 
-  declare status: CreationOptional<UserAccountStatusType>;
+  declare status: UserAccountStatusType;
 
   declare createdAt: CreationOptional<Date>;
 
@@ -66,7 +66,6 @@ UserAccount.init(
     status: {
       type: DataTypes.ENUM('active', 'inactive', 'pending'),
       allowNull: false,
-      defaultValue: 'pending',
     },
     createdAt: {
       type: DataTypes.DATE,

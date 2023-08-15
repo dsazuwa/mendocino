@@ -105,6 +105,7 @@ describe('User Identity and User Relationship', () => {
     await UserAccount.create({
       userId,
       email: 'jacobodoe@gmail.com',
+      status: 'active',
     });
 
     await UserIdentity.create({
@@ -134,6 +135,7 @@ describe('User Identity and User Relationship', () => {
     await UserAccount.create({
       userId,
       email: 'jairodoe@gmail.com',
+      status: 'active',
     });
 
     await UserIdentity.create({

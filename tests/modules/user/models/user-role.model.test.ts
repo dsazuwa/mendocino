@@ -18,6 +18,7 @@ describe('User Role Model', () => {
         userId,
         email: 'jdoe@gmail.com',
         password: 'JD0ePa$$',
+        status: 'active',
       });
 
       const role = await Role.create({ name: 'client' });
@@ -95,6 +96,7 @@ describe('User Role Model', () => {
         userId,
         email: 'jd@gmail.com',
         password: 'jD0ePa$$',
+        status: 'active',
       });
     });
 

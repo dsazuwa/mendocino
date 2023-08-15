@@ -25,24 +25,6 @@ describe('User Account Model', () => {
       expect(account.status).toBe(data.status);
     });
 
-    it('should create user account with default values', async () => {
-      const { userId } = await User.create({
-        firstName: 'Jinny',
-        lastName: 'Doe',
-      });
-
-      const data = {
-        userId,
-        email: 'jinnydoe@gmail.com',
-        password: 'jinnyD0ePa$$',
-      };
-
-      const account = await UserAccount.create(data);
-      expect(account.userId).toBe(userId);
-      expect(account.email).toBe(data.email);
-      expect(account.status).toBe('pending');
-    });
-
     it('should fail on duplicate userId', async () => {
       const { userId } = await User.create({
         firstName: 'Jae',
@@ -58,6 +40,7 @@ describe('User Account Model', () => {
         userId,
         email: 'jaedoe@gmail.com',
         password: 'jaeD0ePa$$',
+        status: 'active',
       });
 
       expect(
@@ -65,6 +48,7 @@ describe('User Account Model', () => {
           userId,
           email: 'juliusdoe@gmail.com',
           password: 'juliusD0ePa$$',
+          status: 'active',
         }),
       ).rejects.toThrow();
     });
@@ -83,6 +67,7 @@ describe('User Account Model', () => {
       const data = {
         email: 'jakedoe@gmail.com',
         password: 'jakeD0ePa$$',
+        status: 'active' as UserAccountStatusType,
       };
 
       await UserAccount.create({ userId: user1.userId, ...data });
@@ -97,6 +82,7 @@ describe('User Account Model', () => {
         userId: 1000,
         email: 'janicedoeemail',
         password: 'jayD0ePa$$',
+        status: 'active' as UserAccountStatusType,
       };
 
       expect(UserAccount.create(data)).rejects.toThrow();
@@ -112,6 +98,7 @@ describe('User Account Model', () => {
         userId,
         email: 'jaydoeemail',
         password: 'jayD0ePa$$',
+        status: 'active' as UserAccountStatusType,
       };
 
       expect(UserAccount.create(data)).rejects.toThrow();
@@ -128,6 +115,7 @@ describe('User Account Model', () => {
       userId,
       email: 'janedoe@gmail.com',
       password: 'janeD0ePa$$',
+      status: 'active' as UserAccountStatusType,
     });
 
     let retrievedAccount = await UserAccount.findByPk(userId, { raw });
@@ -147,6 +135,7 @@ describe('User Account Model', () => {
       userId,
       email: 'joydoe@gmail.com',
       password: 'joyD0ePa$$',
+      status: 'active' as UserAccountStatusType,
     });
 
     const email = 'joyousDoe@gmail.com';
@@ -167,6 +156,7 @@ describe('User Account Model', () => {
       userId,
       email: 'joeldoe@gmail.com',
       password: 'joelD0ePa$$',
+      status: 'active' as UserAccountStatusType,
     });
 
     await UserAccount.destroy({ where: { userId } });
@@ -186,6 +176,7 @@ describe('User Account Model', () => {
         userId,
         email: 'jendoe@gmail.com',
         password: 'janeD0ePa$$',
+        status: 'active' as UserAccountStatusType,
       };
 
       const account = await UserAccount.create(data);
@@ -203,6 +194,7 @@ describe('User Account Model', () => {
         userId,
         email: 'juliusdoe@gmail.com',
         password: 'juliusD0ePa$$',
+        status: 'active' as UserAccountStatusType,
       };
       const newPassword = 'newJul1usPa$$';
 
@@ -232,6 +224,7 @@ describe('User Account Model', () => {
         userId,
         email: 'jeromedoe@gmail.com',
         password,
+        status: 'active' as UserAccountStatusType,
       });
     });
 
@@ -252,6 +245,7 @@ describe('User Account Model', () => {
       const account = await UserAccount.create({
         userId,
         email: 'joelledoe@gmail.com',
+        status: 'active' as UserAccountStatusType,
       });
 
       expect(account.comparePasswords('joelleD0ePa$$')).toBe(false);
@@ -270,6 +264,7 @@ describe('User Account and User Relationship', () => {
       userId,
       email: 'jundoe@gmail.com',
       password: 'JuneD0ePa$$',
+      status: 'active' as UserAccountStatusType,
     });
 
     await UserAccount.destroy({ where: { userId } });
@@ -291,6 +286,7 @@ describe('User Account and User Relationship', () => {
       userId,
       email: 'jennidoe@gmail.com',
       password: 'JenD0ePa$$',
+      status: 'active' as UserAccountStatusType,
     });
 
     await User.destroy({ where: { userId } });
