@@ -7,6 +7,7 @@ const capitalizeFirst = (str: string) => {
 const messages = {
   // ERROR MESSAGES
 
+  ERR_UNAUTHORIZED_ACCESS: 'Unauthorized',
   ERR_INVALID_ACCESS_TOKEN: 'Invalid access token',
   ERR_DEACTIVATED_ACCOUNT: 'Deactivated account',
   ERR_ACTIVE_ACCOUNT: 'Active account',

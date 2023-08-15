@@ -1,4 +1,5 @@
-import authenticate from './auth';
-import authenticateInactive from './inactive.auth';
+import authenticate from './authenticate';
+import authorize from './authorize';
+import authenticateInactive from './inactive.authenticate';
 
-export { authenticate, authenticateInactive };
+export { authenticate, authenticateInactive, authorize };
