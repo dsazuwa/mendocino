@@ -6,6 +6,5 @@ declare namespace Express {
     email: string;
     status: string;
     roles: string[];
-    permissions: string[];
   }
 }

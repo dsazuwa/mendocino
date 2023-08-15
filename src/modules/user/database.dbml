@@ -78,19 +78,3 @@ Table user_roles {
     (user_id, role_id) [unique]
   }
 }
-
-Table permissions {
-  permission_id integer [primary key]
-  name varchar [unique]
-}
-
-Table role_permissions {
-  role_id integer [ref: > roles.role_id]
-  permission_id integer [ref: > permissions.permission_id]
-  created_at datetime
-  updated_at datetime
-
-  Indexes {
-    (role_id, permission_id) [unique]
-  }
-}

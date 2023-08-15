@@ -1,6 +1,4 @@
 import AuthOTP, { AuthOTPType } from './auth-otp.model';
-import Permission from './permission.model';
-import RolePermission from './role-permission.model';
 import Role from './role.model';
 import UserAccount, { UserAccountStatusType } from './user-account.model';
 import UserIdentity, { ProviderType } from './user-identity.model';
@@ -27,24 +25,11 @@ User.belongsToMany(Role, {
   onDelete: 'CASCADE',
 });
 
-Permission.belongsToMany(Role, {
-  through: 'RolePermission',
-  foreignKey: 'permissionId',
-  onDelete: 'CASCADE',
-});
-Role.belongsToMany(Permission, {
-  through: 'RolePermission',
-  foreignKey: 'roleId',
-  onDelete: 'CASCADE',
-});
-
 export {
   AuthOTP,
   AuthOTPType,
-  Permission,
   ProviderType,
   Role,
-  RolePermission,
   User,
   UserAccount,
   UserAccountStatusType,
