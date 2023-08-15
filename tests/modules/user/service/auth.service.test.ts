@@ -91,6 +91,7 @@ describe('Auth service', () => {
         status: account.status,
         roles: [CUSTOMER.name],
       });
+      expect(result?.permissions).toBeDefined();
     });
 
     it('should return user data when provider is google', async () => {
@@ -115,6 +116,7 @@ describe('Auth service', () => {
         status: account.status,
         roles: [DELIVERY_DRIVER.name, MANAGER.name],
       });
+      expect(result?.permissions).toBeDefined();
     });
 
     it('should return undefined if user does not exist', async () => {
@@ -159,6 +161,7 @@ describe('Auth service', () => {
         status: account.status,
         roles: [roleConstants.CUSTOMER.name],
       });
+      expect(user?.permissions).toBeDefined();
     });
 
     it('should return user data if user with email exists but identity does not', async () => {
@@ -192,6 +195,7 @@ describe('Auth service', () => {
         status: account.status,
         roles: [roleConstants.CUSTOMER.name],
       });
+      expect(user?.permissions).toBeDefined();
     });
 
     it('should return false if user exists but does not have customer role', async () => {
@@ -225,6 +229,7 @@ describe('Auth service', () => {
         status: account.status,
         roles: [roleConstants.ADMIN.name],
       });
+      expect(user?.permissions).toBeDefined();
     });
 
     it('should return undefined if user does not exists', async () => {

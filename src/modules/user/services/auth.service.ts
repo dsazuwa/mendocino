@@ -6,8 +6,10 @@ import sequelize from '@App/db';
 import {
   AuthOTP,
   AuthOTPType,
+  Permission,
   ProviderType,
   Role,
+  RolePermission,
   User,
   UserAccount,
   UserIdentity,
@@ -42,7 +44,8 @@ const authService = {
         u.last_name AS "lastName",
         a.email AS email,
         ${statusField} AS status,
-        array_agg(r.name) AS roles
+        array_agg(DISTINCT r.name) AS roles,
+        array_agg(DISTINCT p.name) AS permissions
       FROM
         ${User.tableName} u
       JOIN
@@ -52,6 +55,10 @@ const authService = {
         ${UserRole.tableName} ur ON u.user_id = ur.user_id
       JOIN
         ${Role.tableName} r ON r.role_id = ur.role_id
+      LEFT JOIN
+        ${RolePermission.tableName} rp ON r.role_id = rp.role_id
+      LEFT JOIN
+        ${Permission.tableName} p ON p.permission_id = rp.permission_id
       WHERE
         u.user_id = ${userId}
       GROUP BY
@@ -74,7 +81,8 @@ const authService = {
         u.last_name AS "lastName",
         a.email AS email,
         a.status AS status,
-        array_agg(r.name) AS roles,
+        array_agg(DISTINCT r.name) AS roles,
+        array_agg(DISTINCT p.name) AS permissions,
         i.identity_id AS "identityId"
       FROM
         ${User.tableName} u
@@ -86,6 +94,10 @@ const authService = {
         ${UserRole.tableName} ur ON u.user_id = ur.user_id
       LEFT JOIN
         ${Role.tableName} r ON r.role_id = ur.role_id
+      LEFT JOIN
+        ${RolePermission.tableName} rp ON r.role_id = rp.role_id
+      LEFT JOIN
+        ${Permission.tableName} p ON p.permission_id = rp.permission_id
       WHERE
         a.email = '${email}' OR (i.identity_id = '${identityId}' AND u.user_id = i.user_id)
       GROUP BY
