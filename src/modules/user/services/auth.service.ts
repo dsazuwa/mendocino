@@ -230,7 +230,7 @@ const authService = {
       );
 
       await AuthOTP.destroy({
-        where: { userId: user.userId, type: 'verify' },
+        where: { userId: user.userId, type: 'email' },
         transaction,
       });
 
@@ -239,7 +239,7 @@ const authService = {
       await AuthOTP.create(
         {
           userId: user.userId,
-          type: 'verify',
+          type: 'email',
           password: otp,
           expiresAt: AuthOTP.getExpiration(),
         },
@@ -270,7 +270,7 @@ const authService = {
   recoverPassword: (userId: number, password: string) =>
     sequelize.transaction(async (transaction) => {
       await AuthOTP.destroy({
-        where: { userId, type: 'recover' },
+        where: { userId, type: 'password' },
         transaction,
       });
 

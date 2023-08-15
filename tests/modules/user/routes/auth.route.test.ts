@@ -12,7 +12,7 @@ import {
   createUserAccountAndIdentity,
 } from 'tests/modules/user/helper-functions';
 
-import 'tests/modules/user/user.mock.db';
+import 'tests/user.db-setup';
 
 const BASE_URL = '/api/auth';
 const raw = true;
@@ -212,7 +212,7 @@ describe('Recover Account', () => {
   const mockOTP = '123456';
 
   describe(`POST ${BASE_URL}/recover`, () => {
-    it('should create a new recover otp', async () => {
+    it('should create a new recover password otp', async () => {
       const email = 'janetdoe@gmail.com';
 
       const { userId } = await createUserAccount(
@@ -227,7 +227,7 @@ describe('Recover Account', () => {
       await request.post(`${BASE_URL}/recover`).send({ email }).expect(200);
 
       const otp = await AuthOTP.findOne({
-        where: { userId, type: 'recover' },
+        where: { userId, type: 'password' },
         raw,
       });
       expect(otp).not.toBeNull();
@@ -235,7 +235,7 @@ describe('Recover Account', () => {
       await request.post(`${BASE_URL}/recover`).send({ email }).expect(200);
 
       const newOTP = await AuthOTP.findOne({
-        where: { userId, type: 'recover' },
+        where: { userId, type: 'password' },
         raw,
       });
       expect(newOTP).not.toBeNull();
@@ -271,12 +271,12 @@ describe('Recover Account', () => {
 
     it('should verify user account for recovery', async () => {
       await AuthOTP.destroy({
-        where: { userId, type: 'recover' },
+        where: { userId, type: 'password' },
       });
 
       await AuthOTP.create({
         userId,
-        type: 'recover',
+        type: 'password',
         password: mockOTP,
         expiresAt: AuthOTP.getExpiration(),
       });
@@ -343,12 +343,12 @@ describe('Recover Account', () => {
 
     it('should fail on expired otp', async () => {
       await AuthOTP.destroy({
-        where: { userId, type: 'recover' },
+        where: { userId, type: 'password' },
       });
 
       await AuthOTP.create({
         userId,
-        type: 'recover',
+        type: 'password',
         password: mockOTP,
         expiresAt: new Date(),
       });
@@ -361,12 +361,12 @@ describe('Recover Account', () => {
 
     it('should reset password', async () => {
       await AuthOTP.destroy({
-        where: { userId, type: 'recover' },
+        where: { userId, type: 'password' },
       });
 
       await AuthOTP.create({
         userId,
-        type: 'recover',
+        type: 'password',
         password: mockOTP,
         expiresAt: AuthOTP.getExpiration(),
       });
@@ -382,7 +382,7 @@ describe('Recover Account', () => {
         .expect(200);
 
       const usedOTP = await AuthOTP.findOne({
-        where: { userId, type: 'recover' },
+        where: { userId, type: 'password' },
         raw,
       });
 

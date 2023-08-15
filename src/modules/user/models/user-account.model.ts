@@ -15,7 +15,7 @@ class UserAccount extends Model<
   InferAttributes<UserAccount>,
   InferCreationAttributes<UserAccount>
 > {
-  declare userId: CreationOptional<number>;
+  declare userId: number;
 
   declare email: string;
 

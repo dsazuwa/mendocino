@@ -26,13 +26,13 @@ describe('AuthOTP Model', () => {
     it('should create OTP', async () => {
       await AuthOTP.create({
         userId,
-        type: 'verify',
+        type: 'email',
         password: '12345',
         expiresAt: new Date(),
       });
 
       let retrievedOTP = await AuthOTP.findOne({
-        where: { userId, type: 'verify' },
+        where: { userId, type: 'email' },
         raw,
       });
 
@@ -40,13 +40,13 @@ describe('AuthOTP Model', () => {
 
       await AuthOTP.create({
         userId,
-        type: 'recover',
+        type: 'password',
         password: '12345',
         expiresAt: new Date(),
       });
 
       retrievedOTP = await AuthOTP.findOne({
-        where: { userId, type: 'recover' },
+        where: { userId, type: 'password' },
         raw,
       });
 
@@ -57,7 +57,7 @@ describe('AuthOTP Model', () => {
       expect(
         AuthOTP.create({
           userId: 1000,
-          type: 'recover',
+          type: 'password',
           password: '12345',
           expiresAt: new Date(),
         }),
@@ -68,7 +68,7 @@ describe('AuthOTP Model', () => {
       expect(
         AuthOTP.create({
           userId,
-          type: 'verify',
+          type: 'email',
           password: '12345',
           expiresAt: new Date(),
         }),
@@ -77,7 +77,7 @@ describe('AuthOTP Model', () => {
       expect(
         AuthOTP.create({
           userId,
-          type: 'recover',
+          type: 'email',
           password: '12345',
           expiresAt: new Date(),
         }),
@@ -86,10 +86,10 @@ describe('AuthOTP Model', () => {
   });
 
   it('should retrieve OTP', async () => {
-    let otp = await AuthOTP.findOne({ where: { userId, type: 'verify' }, raw });
+    let otp = await AuthOTP.findOne({ where: { userId, type: 'email' }, raw });
     expect(otp).not.toBeNull();
 
-    otp = await AuthOTP.findOne({ where: { userId, type: 'recover' }, raw });
+    otp = await AuthOTP.findOne({ where: { userId, type: 'password' }, raw });
     expect(otp).not.toBeNull();
   });
 
@@ -99,17 +99,17 @@ describe('AuthOTP Model', () => {
 
     expect(numOTPs).toBe(numDeleted);
 
-    const recoverOTP = await AuthOTP.create({
+    const passwordOTP = await AuthOTP.create({
       userId,
-      type: 'recover',
+      type: 'password',
       password: '12345',
       expiresAt: new Date(),
     });
 
-    await recoverOTP.destroy();
+    await passwordOTP.destroy();
 
     const otp = await AuthOTP.findOne({
-      where: { userId, type: 'recover' },
+      where: { userId, type: 'password' },
       raw,
     });
     expect(otp).toBeNull();
@@ -121,7 +121,7 @@ describe('AuthOTP Model', () => {
 
       const otp = await AuthOTP.create({
         userId,
-        type: 'verify',
+        type: 'email',
         password,
         expiresAt: new Date(),
       });
@@ -137,7 +137,7 @@ describe('AuthOTP Model', () => {
 
       const otp = await AuthOTP.create({
         userId,
-        type: 'verify',
+        type: 'email',
         password,
         expiresAt: new Date(),
       });
@@ -185,15 +185,15 @@ describe('OTP and User Account Relationship', () => {
 
     await AuthOTP.create({
       userId,
-      type: 'recover',
+      type: 'password',
       password: '12345',
       expiresAt: new Date(),
     });
 
-    await AuthOTP.destroy({ where: { userId, type: 'recover' } });
+    await AuthOTP.destroy({ where: { userId, type: 'password' } });
 
     const otp = await AuthOTP.findOne({
-      where: { userId, type: 'recover' },
+      where: { userId, type: 'password' },
       raw,
     });
     expect(otp).toBeNull();
@@ -216,7 +216,7 @@ describe('OTP and User Account Relationship', () => {
 
     await AuthOTP.create({
       userId,
-      type: 'recover',
+      type: 'password',
       password: '12345',
       expiresAt: AuthOTP.getExpiration(),
     });
@@ -227,7 +227,7 @@ describe('OTP and User Account Relationship', () => {
     expect(retrievedAccount).toBeNull();
 
     const otp = await AuthOTP.findOne({
-      where: { userId, type: 'recover' },
+      where: { userId, type: 'password' },
       raw,
     });
     expect(otp).toBeNull();

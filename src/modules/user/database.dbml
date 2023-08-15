@@ -46,10 +46,10 @@ Enum enum_user_account_status {
 
 Ref: user_accounts.user_id - users.user_id
 
-Table otp {
+Table auth_otp {
   otp_id integer [primary key]
   user_id integer [ref: > user_accounts.user_id]
-  type  enum_otp_type
+  type  enum_auth_otp_type
   password varchar
   expires_at datetime
 
@@ -58,9 +58,10 @@ Table otp {
   }
 }
 
-Enum enum_otp_type {
+Enum enum_auth_otp_type {
+  email
   password
-  verify
+  phone
 }
 
 Table roles {
@@ -77,4 +78,30 @@ Table user_roles {
   Indexes {
     (user_id, role_id) [unique]
   }
+}
+
+Table phone_numbers {
+  phone_number_id integer
+  user_id integer [ref: - users.user_id]
+  phone_number string
+  status enum_phone_number_type
+  created_at datetime
+  updated_at datetime
+}
+
+Enum enum_phone_number_type {
+  active
+  pending
+}
+
+Table addresses {
+  address_id integer
+  user_id integer [ref: - users.user_id]
+  address_line_1 string
+  address_line_2 string
+  city string
+  state string
+  postal_code string
+  created_at datetime
+  updated_at datetime
 }

@@ -10,7 +10,7 @@ import {
 } from 'tests/modules/user/helper-functions';
 import { getTokenFrom, request } from 'tests/supertest.helper';
 
-import 'tests/modules/user/user.mock.db';
+import 'tests/user.db-setup';
 
 const BASE_URL = '/api/users';
 const raw = true;
@@ -64,9 +64,9 @@ describe('Users Routes', () => {
       jwt = authService.generateJWT(userId, 'email');
     });
 
-    it('should create a new verification token', async () => {
+    it('should create a new email verification token', async () => {
       let otp = await AuthOTP.findOne({
-        where: { userId, type: 'verify' },
+        where: { userId, type: 'email' },
         raw,
       });
       expect(otp).toBeNull();
@@ -76,13 +76,13 @@ describe('Users Routes', () => {
         .auth(jwt, { type: 'bearer' })
         .expect(200);
 
-      otp = await AuthOTP.findOne({ where: { userId, type: 'verify' }, raw });
+      otp = await AuthOTP.findOne({ where: { userId, type: 'email' }, raw });
       expect(otp).not.toBeNull();
     });
 
-    it('should destroy previous verification token', async () => {
+    it('should destroy previous email verification token', async () => {
       const otp = await AuthOTP.findOne({
-        where: { userId, type: 'verify' },
+        where: { userId, type: 'email' },
         raw,
       });
       const { otpId } = otp as AuthOTP;
@@ -93,7 +93,7 @@ describe('Users Routes', () => {
         .expect(200);
 
       const otps = await AuthOTP.findAll({
-        where: { userId, type: 'verify' },
+        where: { userId, type: 'email' },
         raw,
       });
       expect(otps.length).toBe(1);
@@ -174,11 +174,11 @@ describe('Users Routes', () => {
     });
 
     it('should fail on expired otp', async () => {
-      await AuthOTP.destroy({ where: { userId, type: 'verify' } });
+      await AuthOTP.destroy({ where: { userId, type: 'email' } });
 
       await AuthOTP.create({
         userId,
-        type: 'verify',
+        type: 'email',
         password: mockOTP,
         expiresAt: new Date(),
       });
@@ -189,12 +189,12 @@ describe('Users Routes', () => {
         .expect(401);
     });
 
-    it('should verify user', async () => {
-      await AuthOTP.destroy({ where: { userId, type: 'verify' } });
+    it('should verify email', async () => {
+      await AuthOTP.destroy({ where: { userId, type: 'email' } });
 
       await AuthOTP.create({
         userId,
-        type: 'verify',
+        type: 'email',
         password: mockOTP,
         expiresAt: AuthOTP.getExpiration(),
       });

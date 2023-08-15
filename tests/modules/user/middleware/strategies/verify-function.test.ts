@@ -13,7 +13,7 @@ import {
   createUserAccountAndIdentity,
 } from 'tests/modules/user/helper-functions';
 
-import 'tests/modules/user/user.mock.db';
+import 'tests/user.db-setup';
 
 const raw = true;
 

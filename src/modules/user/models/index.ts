@@ -1,4 +1,6 @@
+import Address from './address.model';
 import AuthOTP, { AuthOTPType } from './auth-otp.model';
+import PhoneNumber, { PhoneNumberStatusype } from './phone-number.model';
 import Role from './role.model';
 import UserAccount, { UserAccountStatusType } from './user-account.model';
 import UserIdentity, { ProviderType } from './user-identity.model';
@@ -25,9 +27,18 @@ User.belongsToMany(Role, {
   onDelete: 'CASCADE',
 });
 
+User.hasMany(Address, { foreignKey: 'userId', onDelete: 'CASCADE' });
+Address.belongsTo(User, { foreignKey: 'userId', onDelete: 'CASCADE' });
+
+User.hasOne(PhoneNumber, { foreignKey: 'userId', onDelete: 'CASCADE' });
+PhoneNumber.belongsTo(User, { foreignKey: 'userId', onDelete: 'CASCADE' });
+
 export {
+  Address,
   AuthOTP,
   AuthOTPType,
+  PhoneNumber,
+  PhoneNumberStatusype,
   ProviderType,
   Role,
   User,

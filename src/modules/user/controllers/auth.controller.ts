@@ -167,7 +167,7 @@ export const requestPasswordRecovery = async (
         .status(403)
         .json({ message: messages.REQUEST_RECOVERY_FAILED_THIRD_PARTY_AUTH });
 
-    await authService.createAuthOTP(account.userId, 'recover');
+    await authService.createAuthOTP(account.userId, 'password');
 
     res.status(200).json({ message: messages.REQUEST_RECOVERY });
   } catch (e) {
@@ -192,7 +192,7 @@ export const verifyRecoveryOTP = async (
     const { isValid } = await authService.getAuthOTP(
       account.userId,
       otp,
-      'recover',
+      'password',
     );
 
     if (!isValid)
@@ -220,7 +220,7 @@ export const recoverPassword = async (
 
     const { userId } = account;
 
-    const { isValid } = await authService.getAuthOTP(userId, otp, 'recover');
+    const { isValid } = await authService.getAuthOTP(userId, otp, 'password');
 
     if (!isValid)
       return res.status(401).json({ message: messages.INVALID_AUTH_OTP });

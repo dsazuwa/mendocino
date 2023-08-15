@@ -4,7 +4,7 @@ import { ROLES } from '@user/utils/constants';
 import { createUserAccount } from 'tests/modules/user/helper-functions';
 import { request } from 'tests/supertest.helper';
 
-import 'tests/modules/user/user.mock.db';
+import 'tests/user.db-setup';
 
 describe('Inative Authentication Middleware', () => {
   const URL = '/api/users/me/inactive/greeting';

@@ -16,7 +16,7 @@ class UserIdentity extends Model<
 > {
   declare identityId: string;
 
-  declare userId: CreationOptional<number>;
+  declare userId: number;
 
   declare provider: ProviderType;
 

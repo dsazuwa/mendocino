@@ -48,7 +48,7 @@ const usersService = {
   verifyEmail: async (userId: number) =>
     sequelize.transaction(async (transaction) => {
       await AuthOTP.destroy({
-        where: { userId, type: 'verify' },
+        where: { userId, type: 'email' },
         transaction,
       });
 

@@ -9,7 +9,7 @@ import {
   createUserAccountAndIdentity,
 } from 'tests/modules/user/helper-functions';
 
-import 'tests/modules/user/user.mock.db';
+import 'tests/user.db-setup';
 
 describe('Users Service', () => {
   describe('get user', () => {
@@ -64,7 +64,7 @@ describe('Users Service', () => {
     it('should verify the email', async () => {
       await usersService.verifyEmail(userId);
 
-      const otp = await AuthOTP.findOne({ where: { userId, type: 'verify' } });
+      const otp = await AuthOTP.findOne({ where: { userId, type: 'email' } });
       expect(otp).toBeNull();
 
       const account = await UserAccount.findOne({
@@ -76,7 +76,7 @@ describe('Users Service', () => {
     it('should roll back transaction when an error occurs', async () => {
       const { otpId } = await AuthOTP.create({
         userId,
-        type: 'verify',
+        type: 'email',
         password: '123456',
         expiresAt: AuthOTP.getExpiration(),
       });

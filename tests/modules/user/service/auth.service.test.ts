@@ -9,7 +9,7 @@ import {
   createUserAccountAndIdentity,
 } from 'tests/modules/user/helper-functions';
 
-import 'tests/modules/user/user.mock.db';
+import 'tests/user.db-setup';
 
 const raw = true;
 
@@ -438,7 +438,7 @@ describe('Auth service', () => {
   });
 
   describe('create user', () => {
-    it('should successfully create a user, user account, and verify otp', async () => {
+    it('should successfully create a user, user account, and email otp', async () => {
       const result = await authService.createUser(
         'Jacqueline',
         'Doe',
@@ -459,7 +459,7 @@ describe('Auth service', () => {
       expect(user?.userId).toBe(account?.userId);
 
       const otp = await AuthOTP.findOne({
-        where: { userId: user?.userId, type: 'verify' },
+        where: { userId: user?.userId, type: 'email' },
         raw,
       });
 
@@ -576,7 +576,7 @@ describe('Auth service', () => {
     it('should rollback the transaction on error', async () => {
       await AuthOTP.create({
         userId,
-        type: 'recover',
+        type: 'password',
         password: AuthOTP.generatePassword(),
         expiresAt: AuthOTP.getExpiration(),
       });
@@ -590,7 +590,7 @@ describe('Auth service', () => {
         expect(false).toBe(true);
       } catch (e) {
         const otp = await AuthOTP.findOne({
-          where: { userId, type: 'recover' },
+          where: { userId, type: 'password' },
           raw,
         });
 

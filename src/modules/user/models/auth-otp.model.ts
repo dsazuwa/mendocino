@@ -10,7 +10,7 @@ import {
 
 import sequelize from '@App/db';
 
-export type AuthOTPType = 'verify' | 'recover';
+export type AuthOTPType = 'email' | 'password' | 'phone';
 
 class AuthOTP extends Model<
   InferAttributes<AuthOTP>,
@@ -18,7 +18,7 @@ class AuthOTP extends Model<
 > {
   declare otpId: CreationOptional<number>;
 
-  declare userId: CreationOptional<number>;
+  declare userId: number;
 
   declare type: AuthOTPType;
 
@@ -65,7 +65,7 @@ AuthOTP.init(
       allowNull: false,
     },
     type: {
-      type: DataTypes.ENUM('verify', 'recover'),
+      type: DataTypes.ENUM('email', 'password', 'phone'),
       unique: 'compositeIndex',
       allowNull: false,
     },
