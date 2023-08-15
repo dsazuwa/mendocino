@@ -1,5 +1,5 @@
 import authService from '@user/services/auth.service';
-import { roleConstants } from '@user/utils/constants';
+import { ROLES } from '@user/utils/constants';
 
 import { createUserAccount } from 'tests/modules/user/helper-functions';
 import { request } from 'tests/supertest.helper';
@@ -16,7 +16,7 @@ describe('Inative Authentication Middleware', () => {
       'jessdoe@gmail.com',
       'jessD0ePa$$',
       'inactive',
-      [roleConstants.CUSTOMER.roleId],
+      [ROLES.CUSTOMER.roleId],
     );
     const token = authService.generateJWT(userId, 'email');
 
@@ -36,7 +36,7 @@ describe('Inative Authentication Middleware', () => {
       'jessicadoe@gmail.com',
       'jessD0ePa$$',
       'active',
-      [roleConstants.CUSTOMER.roleId],
+      [ROLES.CUSTOMER.roleId],
     );
     const token = authService.generateJWT(userId, 'email');
 
@@ -50,7 +50,7 @@ describe('Inative Authentication Middleware', () => {
       'jazzdoe@gmail.com',
       'jazzD0ePs$$',
       'pending',
-      [roleConstants.CUSTOMER.roleId],
+      [ROLES.CUSTOMER.roleId],
     );
     const token = authService.generateJWT(userId, 'email');
 

@@ -1,4 +1,4 @@
-export const roleConstants = {
+export const ROLES = {
   GUEST: { roleId: 0, name: 'guest' },
   CUSTOMER: { roleId: 1, name: 'customer' },
   DELIVERY_DRIVER: { roleId: 2, name: 'delivery driver' },

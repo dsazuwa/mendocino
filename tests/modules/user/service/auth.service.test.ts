@@ -2,7 +2,7 @@ import { sign } from 'jsonwebtoken';
 
 import { AuthOTP, User, UserAccount, UserIdentity } from '@user/models';
 import authService from '@user/services/auth.service';
-import { roleConstants } from '@user/utils/constants';
+import { ROLES } from '@user/utils/constants';
 
 import {
   createUserAccount,
@@ -24,7 +24,7 @@ describe('Auth service', () => {
         'janicedoe@gmail.com',
         'janiceD0epas$$',
         'active',
-        [roleConstants.CUSTOMER.roleId],
+        [ROLES.CUSTOMER.roleId],
       );
       userId = user.userId;
     });
@@ -71,7 +71,7 @@ describe('Auth service', () => {
 
   describe('get user data', () => {
     it('should return user data when provider is email', async () => {
-      const { CUSTOMER } = roleConstants;
+      const { CUSTOMER } = ROLES;
 
       const { userId, user, account } = await createUserAccount(
         'Jacinto',
@@ -94,7 +94,7 @@ describe('Auth service', () => {
     });
 
     it('should return user data when provider is google', async () => {
-      const { MANAGER, DELIVERY_DRIVER } = roleConstants;
+      const { MANAGER, DELIVERY_DRIVER } = ROLES;
 
       const { userId, user, account } = await createUserAccountAndIdentity(
         'Juana',
@@ -138,7 +138,7 @@ describe('Auth service', () => {
         null,
         'active',
         [{ identityId, provider }],
-        [roleConstants.CUSTOMER.roleId],
+        [ROLES.CUSTOMER.roleId],
       );
 
       const { user, userExists, identityExists, isCustomer } =
@@ -157,7 +157,7 @@ describe('Auth service', () => {
         lastName: u.lastName,
         email: account.email,
         status: account.status,
-        roles: [roleConstants.CUSTOMER.name],
+        roles: [ROLES.CUSTOMER.name],
       });
     });
 
@@ -171,7 +171,7 @@ describe('Auth service', () => {
         'junedoe@gmail.com',
         null,
         'active',
-        [roleConstants.CUSTOMER.roleId],
+        [ROLES.CUSTOMER.roleId],
       );
 
       const { user, userExists, identityExists, isCustomer } =
@@ -190,7 +190,7 @@ describe('Auth service', () => {
         lastName: u.lastName,
         email: account.email,
         status: account.status,
-        roles: [roleConstants.CUSTOMER.name],
+        roles: [ROLES.CUSTOMER.name],
       });
     });
 
@@ -204,7 +204,7 @@ describe('Auth service', () => {
         'juniperdoe@gmail.com',
         null,
         'active',
-        [roleConstants.ADMIN.roleId],
+        [ROLES.ADMIN.roleId],
       );
 
       const { user, userExists, identityExists, isCustomer } =
@@ -223,7 +223,7 @@ describe('Auth service', () => {
         lastName: u.lastName,
         email: account.email,
         status: account.status,
-        roles: [roleConstants.ADMIN.name],
+        roles: [ROLES.ADMIN.name],
       });
     });
 
@@ -248,7 +248,7 @@ describe('Auth service', () => {
       const password = 'jazzD0ePa$$';
 
       await createUserAccount('Jazz', 'Doe', email, password, 'active', [
-        roleConstants.CUSTOMER.roleId,
+        ROLES.CUSTOMER.roleId,
       ]);
 
       let account = await authService.getAccount(email);
@@ -278,7 +278,7 @@ describe('Auth service', () => {
         null,
         'active',
         [{ identityId, provider }],
-        [roleConstants.CUSTOMER.roleId],
+        [ROLES.CUSTOMER.roleId],
       );
 
       let identity = await authService.getIdentity(identityId, provider);
@@ -314,7 +314,7 @@ describe('Auth service', () => {
         'jamesdoe@gmail.com',
         'jamesD0epa$$',
         status,
-        [roleConstants.CUSTOMER.roleId],
+        [ROLES.CUSTOMER.roleId],
       );
 
       const identityId = '923849719836872649';
@@ -347,7 +347,7 @@ describe('Auth service', () => {
         'jamesondoe@gmail.com',
         'JamesonD0epa$$',
         status,
-        [roleConstants.CUSTOMER.roleId],
+        [ROLES.CUSTOMER.roleId],
       );
 
       const identityId = '98979675654556756687';
@@ -505,7 +505,7 @@ describe('Auth service', () => {
         email,
         password,
         'active',
-        [roleConstants.CUSTOMER.roleId],
+        [ROLES.CUSTOMER.roleId],
       );
 
       const { account, isUser } = await authService.loginUser(email, password);
@@ -532,7 +532,7 @@ describe('Auth service', () => {
         email,
         null,
         'active',
-        [roleConstants.CUSTOMER.roleId],
+        [ROLES.CUSTOMER.roleId],
       );
 
       expect(a.password).toBeNull();
@@ -557,7 +557,7 @@ describe('Auth service', () => {
         'jackdoe@gmail.com',
         'jackD0epas$$',
         'active',
-        [roleConstants.CUSTOMER.roleId],
+        [ROLES.CUSTOMER.roleId],
       );
 
       userId = user.userId;
@@ -611,7 +611,7 @@ describe('Auth service', () => {
         'jerydoe@gmail.com',
         'jerryD0ePa$$',
         'inactive',
-        [roleConstants.CUSTOMER.roleId],
+        [ROLES.CUSTOMER.roleId],
       );
 
       userId = user.userId;

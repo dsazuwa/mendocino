@@ -1,5 +1,5 @@
 import { Role, User, UserAccount, UserRole } from '@user/models';
-import { roleConstants } from '@user/utils/constants';
+import { ROLES } from '@user/utils/constants';
 
 import 'tests/db-setup';
 
@@ -103,55 +103,55 @@ describe('User Role Model', () => {
       await Role.destroy({ where: {} });
 
       await Role.bulkCreate([
-        roleConstants.CUSTOMER,
-        roleConstants.DELIVERY_DRIVER,
-        roleConstants.CUSTOMER_SUPPORT,
-        roleConstants.MANAGER,
-        roleConstants.ADMIN,
-        roleConstants.ROOT,
+        ROLES.CUSTOMER,
+        ROLES.DELIVERY_DRIVER,
+        ROLES.CUSTOMER_SUPPORT,
+        ROLES.MANAGER,
+        ROLES.ADMIN,
+        ROLES.ROOT,
       ]);
     });
 
     it('should throw error on adding new role to user with customer role', async () => {
       await UserRole.create({
         userId,
-        roleId: roleConstants.CUSTOMER.roleId,
+        roleId: ROLES.CUSTOMER.roleId,
       });
 
       expect(
-        UserRole.create({ userId, roleId: roleConstants.ADMIN.roleId }),
+        UserRole.create({ userId, roleId: ROLES.ADMIN.roleId }),
       ).rejects.toThrow();
     });
 
     it('should throw error on adding customer role to user with some other role ', async () => {
-      await UserRole.create({ userId, roleId: roleConstants.ADMIN.roleId });
+      await UserRole.create({ userId, roleId: ROLES.ADMIN.roleId });
 
       expect(
-        UserRole.create({ userId, roleId: roleConstants.CUSTOMER.roleId }),
+        UserRole.create({ userId, roleId: ROLES.CUSTOMER.roleId }),
       ).rejects.toThrow();
     });
 
     it('should throw error on update that could cause customer to have multiple roles', async () => {
       const userRole = await UserRole.create({
         userId,
-        roleId: roleConstants.ADMIN.roleId,
+        roleId: ROLES.ADMIN.roleId,
       });
-      await UserRole.create({ userId, roleId: roleConstants.MANAGER.roleId });
+      await UserRole.create({ userId, roleId: ROLES.MANAGER.roleId });
 
       expect(
         UserRole.update(
-          { roleId: roleConstants.CUSTOMER.roleId },
+          { roleId: ROLES.CUSTOMER.roleId },
           {
-            where: { roleId: roleConstants.MANAGER.roleId },
+            where: { roleId: ROLES.MANAGER.roleId },
             individualHooks: true,
           },
         ),
       ).rejects.toThrow();
 
-      await userRole.update({ roleId: roleConstants.CUSTOMER.roleId });
+      await userRole.update({ roleId: ROLES.CUSTOMER.roleId });
 
       const i = await UserRole.findOne({
-        where: { userId, roleId: roleConstants.CUSTOMER.roleId },
+        where: { userId, roleId: ROLES.CUSTOMER.roleId },
       });
       expect(i).toBeNull();
     });

@@ -8,7 +8,7 @@ import {
 } from 'sequelize';
 
 import sequelize from '@App/db';
-import { roleConstants } from '../utils/constants';
+import { ROLES } from '../utils/constants';
 
 class UserRole extends Model<
   InferAttributes<UserRole>,
@@ -23,7 +23,7 @@ class UserRole extends Model<
   declare updatedAt: CreationOptional<Date>;
 
   public static async preventCustomerMultipleRoles(userRole: UserRole) {
-    const { roleId: customerRoleId } = roleConstants.CUSTOMER;
+    const { roleId: customerRoleId } = ROLES.CUSTOMER;
 
     if (userRole.roleId === customerRoleId) {
       const otherRoles = await UserRole.findOne({

@@ -5,7 +5,7 @@ import ApiError from '@utils/api-error';
 import verifyFunction from '@user/middleware/strategies/verify-function';
 import { ProviderType, User, UserAccount, UserIdentity } from '@user/models';
 import authService from '@user/services/auth.service';
-import { roleConstants } from '@user/utils/constants';
+import { ROLES } from '@user/utils/constants';
 import messages from '@user/utils/messages';
 
 import {
@@ -80,7 +80,7 @@ describe('Verify Function', () => {
       email,
       password,
       'active',
-      [roleConstants.CUSTOMER.roleId],
+      [ROLES.CUSTOMER.roleId],
     );
 
     let i = await UserIdentity.findOne({
@@ -112,7 +112,7 @@ describe('Verify Function', () => {
       email,
       password,
       'pending',
-      [roleConstants.CUSTOMER.roleId],
+      [ROLES.CUSTOMER.roleId],
     );
 
     let a = await UserAccount.findOne({
@@ -157,7 +157,7 @@ describe('Verify Function', () => {
       password,
       'active',
       [{ identityId, provider }],
-      [roleConstants.CUSTOMER.roleId],
+      [ROLES.CUSTOMER.roleId],
     );
 
     const { createUserAndUserIdentity, createUserIdentityForUser } =
@@ -191,7 +191,7 @@ describe('Verify Function', () => {
       email,
       password,
       'active',
-      [roleConstants.ADMIN.roleId],
+      [ROLES.ADMIN.roleId],
     );
 
     const i = await UserIdentity.findOne({
@@ -221,7 +221,7 @@ describe('Verify Function', () => {
       email,
       password,
       'inactive',
-      [roleConstants.CUSTOMER.roleId],
+      [ROLES.CUSTOMER.roleId],
     );
 
     const i = await UserIdentity.findOne({

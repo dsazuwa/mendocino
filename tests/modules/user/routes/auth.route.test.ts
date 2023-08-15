@@ -3,7 +3,7 @@ import { Request, Response } from 'express';
 import { facebookLogin, googleLogin } from '@user/controllers/auth.controller';
 import { AuthOTP, User, UserAccount } from '@user/models';
 import authService from '@user/services/auth.service';
-import { roleConstants } from '@user/utils/constants';
+import { ROLES } from '@user/utils/constants';
 
 import { getTokenFrom, request } from 'tests/supertest.helper';
 
@@ -33,7 +33,7 @@ describe('Google Login', () => {
       'jayD0ePa$$',
       'active',
       [{ identityId: '428402371863284', provider }],
-      [roleConstants.CUSTOMER.roleId],
+      [ROLES.CUSTOMER.roleId],
     );
 
     const req = { user: { userId, status: 'active' } } as Request;
@@ -73,7 +73,7 @@ describe('Facebook Login', () => {
       'jazD0ePa$$',
       'active',
       [{ identityId: '42942742739273298', provider }],
-      [roleConstants.CUSTOMER.roleId],
+      [ROLES.CUSTOMER.roleId],
     );
 
     const req = { user: { userId, status: 'active' } } as Request;
@@ -163,7 +163,7 @@ describe('Email Authentication', () => {
       const password = 'jeanD0ePa$$';
 
       await createUserAccount('Jean', 'Doe', email, password, 'inactive', [
-        roleConstants.CUSTOMER.roleId,
+        ROLES.CUSTOMER.roleId,
       ]);
 
       const response = await request
@@ -185,7 +185,7 @@ describe('Email Authentication', () => {
       const email = 'jolenedoe@gmail.com';
 
       await createUserAccount('Jolene', 'Doe', email, null, 'active', [
-        roleConstants.CUSTOMER.roleId,
+        ROLES.CUSTOMER.roleId,
       ]);
 
       const response = await request
@@ -221,7 +221,7 @@ describe('Recover Account', () => {
         email,
         'janetD0epa$$',
         'active',
-        [roleConstants.CUSTOMER.roleId],
+        [ROLES.CUSTOMER.roleId],
       );
 
       await request.post(`${BASE_URL}/recover`).send({ email }).expect(200);
@@ -246,7 +246,7 @@ describe('Recover Account', () => {
       const email = 'jadoe@gmail.com';
 
       await createUserAccount('Ja', 'Doe', email, null, 'active', [
-        roleConstants.CUSTOMER.roleId,
+        ROLES.CUSTOMER.roleId,
       ]);
 
       await request.post(`${BASE_URL}/recover`).send({ email }).expect(403);
@@ -264,7 +264,7 @@ describe('Recover Account', () => {
         email,
         'jD0ePa$$',
         'active',
-        [roleConstants.CUSTOMER.roleId],
+        [ROLES.CUSTOMER.roleId],
       );
       userId = user.userId;
     });
@@ -315,7 +315,7 @@ describe('Recover Account', () => {
         email,
         'jinD0ePa$$',
         'active',
-        [roleConstants.CUSTOMER.roleId],
+        [ROLES.CUSTOMER.roleId],
       );
       userId = user.userId;
     });
@@ -400,7 +400,7 @@ describe('Recover Account', () => {
         'janelledoe@gmail.com',
         'janelleD0ePa$$',
         status,
-        [roleConstants.CUSTOMER.roleId],
+        [ROLES.CUSTOMER.roleId],
       );
 
       const token = authService.generateJWT(userId, 'email');
@@ -429,7 +429,7 @@ describe('Recover Account', () => {
         'joseedoe@gmail.com',
         'joseeD0ePa$$',
         status,
-        [roleConstants.CUSTOMER.roleId],
+        [ROLES.CUSTOMER.roleId],
       );
 
       const token = authService.generateJWT(userId, 'email');
@@ -455,7 +455,7 @@ describe('Recover Account', () => {
         'jaclyndoe@gmail.com',
         'jaclynD0ePa$$',
         status,
-        [roleConstants.CUSTOMER.roleId],
+        [ROLES.CUSTOMER.roleId],
       );
 
       const token = authService.generateJWT(userId, 'email');

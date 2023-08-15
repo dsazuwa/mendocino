@@ -13,7 +13,7 @@ import {
   UserIdentity,
   UserRole,
 } from '@user/models';
-import { roleConstants } from '@user/utils/constants';
+import { ROLES } from '@user/utils/constants';
 
 type JWTProviderType = ProviderType | 'email';
 
@@ -105,7 +105,7 @@ const authService = {
         isCustomer: false,
       };
 
-    const isCustomer = user.roles.includes(roleConstants.CUSTOMER.name);
+    const isCustomer = user.roles.includes(ROLES.CUSTOMER.name);
     const identityExists = user.identityId !== null;
 
     return {
@@ -208,7 +208,7 @@ const authService = {
       );
 
       await UserRole.create(
-        { userId, roleId: roleConstants.CUSTOMER.roleId },
+        { userId, roleId: ROLES.CUSTOMER.roleId },
         { transaction },
       );
 
@@ -247,7 +247,7 @@ const authService = {
       );
 
       await UserRole.create(
-        { userId: user.userId, roleId: roleConstants.CUSTOMER.roleId },
+        { userId: user.userId, roleId: ROLES.CUSTOMER.roleId },
         { transaction },
       );
 

@@ -2,7 +2,7 @@ import { JwtPayload, verify } from 'jsonwebtoken';
 
 import { AuthOTP, User, UserAccount, UserIdentity } from '@user/models';
 import authService from '@user/services/auth.service';
-import { roleConstants } from '@user/utils/constants';
+import { ROLES } from '@user/utils/constants';
 
 import {
   createUserAccount,
@@ -30,7 +30,7 @@ describe('Users Routes', () => {
         email,
         password,
         status,
-        [roleConstants.CUSTOMER.roleId],
+        [ROLES.CUSTOMER.roleId],
       );
 
       const jwt = authService.generateJWT(userId, 'email');
@@ -57,7 +57,7 @@ describe('Users Routes', () => {
         'jazdoe@gmail.com',
         'jazD0ePa$$',
         'pending',
-        [roleConstants.CUSTOMER.roleId],
+        [ROLES.CUSTOMER.roleId],
       );
 
       userId = user.userId;
@@ -110,7 +110,7 @@ describe('Users Routes', () => {
         'jeffdoe@gmail.com',
         null,
         'active',
-        [roleConstants.CUSTOMER.roleId],
+        [ROLES.CUSTOMER.roleId],
       );
 
       const token = authService.generateJWT(user.userId, 'email');
@@ -135,7 +135,7 @@ describe('Users Routes', () => {
         'jaxdoe@gmail.com',
         'jaxD0ePa$$',
         'pending',
-        [roleConstants.CUSTOMER.roleId],
+        [ROLES.CUSTOMER.roleId],
       );
       userId = user.userId;
       jwt = authService.generateJWT(userId, 'email');
@@ -148,7 +148,7 @@ describe('Users Routes', () => {
         'jessdoe@gmail.com',
         'jessD0ePa$$',
         'active',
-        [roleConstants.CUSTOMER.roleId],
+        [ROLES.CUSTOMER.roleId],
       );
 
       const token = authService.generateJWT(user.userId, 'email');
@@ -217,7 +217,7 @@ describe('Users Routes', () => {
         'jamiedoe@gmail.com',
         null,
         'active',
-        [roleConstants.CUSTOMER.roleId],
+        [ROLES.CUSTOMER.roleId],
       );
 
       const jwt = authService.generateJWT(userId, 'email');
@@ -242,7 +242,7 @@ describe('Users Routes', () => {
         'juliendoe@gmail.com',
         'julienD0ePa$$',
         'active',
-        [roleConstants.CUSTOMER.roleId],
+        [ROLES.CUSTOMER.roleId],
       );
 
       const jwt = authService.generateJWT(userId, 'email');
@@ -274,7 +274,7 @@ describe('Users Routes', () => {
         'jeanettedoe@gmail.com',
         password,
         'active',
-        [roleConstants.CUSTOMER.roleId],
+        [ROLES.CUSTOMER.roleId],
       );
 
       userId = user.userId;
@@ -340,7 +340,7 @@ describe('Users Routes', () => {
         'jenniferD0ePa$$',
         'active',
         [{ identityId: '3654755345356474363', provider }],
-        [roleConstants.CUSTOMER.roleId],
+        [ROLES.CUSTOMER.roleId],
       );
 
       expect(account.password).not.toBeNull();
@@ -373,7 +373,7 @@ describe('Users Routes', () => {
           { identityId: '687453534367486564', provider: 'google' },
           { identityId: '234267589676438787', provider: 'facebook' },
         ],
-        [roleConstants.CUSTOMER.roleId],
+        [ROLES.CUSTOMER.roleId],
       );
 
       expect(account.password).toBeNull();
@@ -415,7 +415,7 @@ describe('Users Routes', () => {
         null,
         'active',
         [{ identityId: '7934872657237824972478', provider: 'google' }],
-        [roleConstants.CUSTOMER.roleId],
+        [ROLES.CUSTOMER.roleId],
       );
 
       expect(account.password).toBeNull();
@@ -446,7 +446,7 @@ describe('Users Routes', () => {
         'JamesD0ePa$$',
         'active',
         [{ identityId: '493285792423287429704372084', provider: 'google' }],
-        [roleConstants.CUSTOMER.roleId],
+        [ROLES.CUSTOMER.roleId],
       );
 
       expect(account.password).not.toBeNull();
@@ -479,7 +479,7 @@ describe('Users Routes', () => {
         null,
         'active',
         [{ identityId: '84537482657274892684232', provider: 'google' }],
-        [roleConstants.CUSTOMER.roleId],
+        [ROLES.CUSTOMER.roleId],
       );
 
       expect(account.password).toBeNull();
