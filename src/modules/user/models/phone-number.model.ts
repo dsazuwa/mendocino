@@ -8,6 +8,8 @@ import {
 
 import sequelize from '@App/db';
 
+import { TABLENAMES } from '@user/utils/constants';
+
 export type PhoneNumberStatusype = 'active' | 'pending';
 
 class PhoneNumber extends Model<
@@ -62,6 +64,7 @@ PhoneNumber.init(
   {
     sequelize,
     underscored: true,
+    tableName: TABLENAMES.PHONE_NUMBER,
   },
 );
 

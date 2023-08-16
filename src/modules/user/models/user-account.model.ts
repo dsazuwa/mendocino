@@ -9,6 +9,8 @@ import {
 
 import sequelize from '@App/db';
 
+import { TABLENAMES } from '@user/utils/constants';
+
 export type UserAccountStatusType = 'active' | 'pending' | 'inactive';
 
 class UserAccount extends Model<
@@ -79,6 +81,7 @@ UserAccount.init(
   {
     sequelize,
     underscored: true,
+    tableName: TABLENAMES.USER_ACCOUNT,
     hooks: {
       beforeSave: UserAccount.hashPassword,
     },

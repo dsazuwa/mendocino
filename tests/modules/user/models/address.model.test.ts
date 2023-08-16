@@ -135,3 +135,71 @@ describe('Address Model', () => {
     expect(retrievedAddress).toBeNull();
   });
 });
+
+describe('Address Before Create Hook', () => {
+  it('should throw error on create if user has reached address limit', async () => {
+    const { userId } = await createUserAccount(
+      'Jones',
+      'Doe',
+      'jones@gmail.com',
+      'JeffD0ePa$$',
+      'active',
+      [ROLES.CUSTOMER.roleId],
+    );
+
+    const data = {
+      userId,
+      addressLine1: '962 University Drive',
+      city: 'Chicago',
+      state: 'IL',
+      postalCode: '60605',
+    };
+
+    const promises = [];
+    for (let i = 1; i <= 5; i += 1) promises.push(Address.create(data));
+    await Promise.all(promises);
+
+    let count = await Address.count({ where: { userId } });
+    expect(count).toBe(5);
+
+    try {
+      await Address.create(data);
+
+      expect(true).toBe(false);
+    } catch (e) {
+      count = await Address.count({ where: { userId } });
+      expect(count).toBe(5);
+    }
+  });
+
+  it('should throw error on create if user is not a customer', async () => {
+    const { userId } = await createUserAccount(
+      'Jefferson',
+      'Doe',
+      'jefferson@gmail.com',
+      'JeffD0ePa$$',
+      'active',
+      [ROLES.ADMIN.roleId],
+    );
+
+    const data = {
+      userId,
+      addressLine1: '962 University Drive',
+      city: 'Chicago',
+      state: 'IL',
+      postalCode: '60605',
+    };
+
+    let count = await Address.count({ where: { userId } });
+    expect(count).toBe(0);
+
+    try {
+      await Address.create(data);
+
+      expect(true).toBe(false);
+    } catch (e) {
+      count = await Address.count({ where: { userId } });
+      expect(count).toBe(0);
+    }
+  });
+});

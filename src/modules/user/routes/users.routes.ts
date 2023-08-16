@@ -14,7 +14,11 @@ import {
   updateUserName,
   verifyEmail,
 } from '@user/controllers/users.controller';
-import { authenticate, authenticateInactive } from '@user/middleware/auth';
+import {
+  authenticate,
+  authenticateInactive,
+  authorize,
+} from '@user/middleware/auth';
 import { permitPending } from '@user/middleware/route-guards';
 import {
   changePasswordSchema,
@@ -23,52 +27,57 @@ import {
   updateUserNameSchema,
   verifyEmailSchema,
 } from '@user/middleware/validators/users.validator';
+import { ROLES } from '@user/utils/constants';
 
 const usersRouter = Router();
 
-usersRouter.get('/me/inactive/greeting', authenticateInactive, greet);
+usersRouter.get('/inactive/greeting', authenticateInactive, greet);
 
 usersRouter.use(authenticate);
 
-usersRouter.get('/me/greeting', greet);
+usersRouter.get('/greeting', greet);
 
-usersRouter.get('/me', getUserData);
+usersRouter.get('', getUserData);
 
-usersRouter.get('/me/profile', getProfile);
+usersRouter.get('/profile', getProfile);
 
-usersRouter.post('/me/verify', permitPending, resendVerifyEmail);
+usersRouter.post(
+  '/verify',
+  authorize([ROLES.CUSTOMER.name]),
+  permitPending,
+  resendVerifyEmail,
+);
 usersRouter.patch(
-  '/me/verify/:otp',
+  '/verify/:otp',
+  authorize([ROLES.CUSTOMER.name]),
   validate(verifyEmailSchema),
   permitPending,
   verifyEmail,
 );
 
 usersRouter.patch(
-  '/me/name',
+  '/name',
   trimRequestBody,
   validate(updateUserNameSchema),
   updateUserName,
 );
 
 usersRouter.post(
-  '/me/password',
+  '/password',
+  authorize([ROLES.CUSTOMER.name]),
   validate(createPasswordSchema),
   createPassword,
 );
 
-usersRouter.patch(
-  '/me/password',
-  validate(changePasswordSchema),
-  changePassword,
-);
+usersRouter.patch('/password', validate(changePasswordSchema), changePassword);
 
 usersRouter.patch(
-  '/me/revoke-social-auth',
+  '/revoke-social-auth',
+  authorize([ROLES.CUSTOMER.name]),
   validate(revokeSocialAuthenticationSchema),
   revokeSocialAuthentication,
 );
 
-usersRouter.patch('/me/close', closeAccount);
+usersRouter.patch('/close', closeAccount);
 
 export default usersRouter;

@@ -8,6 +8,8 @@ import {
 
 import sequelize from '@App/db';
 
+import { TABLENAMES } from '@user/utils/constants';
+
 class Role extends Model<InferAttributes<Role>, InferCreationAttributes<Role>> {
   declare roleId: CreationOptional<number>;
 
@@ -31,6 +33,7 @@ Role.init(
     sequelize,
     underscored: true,
     timestamps: false,
+    tableName: TABLENAMES.ROLE,
   },
 );
 

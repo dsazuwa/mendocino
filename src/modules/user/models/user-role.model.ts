@@ -8,7 +8,9 @@ import {
 } from 'sequelize';
 
 import sequelize from '@App/db';
-import { ROLES } from '../utils/constants';
+import { ApiError } from '@App/utils';
+
+import { ROLES, TABLENAMES } from '@user/utils/constants';
 
 class UserRole extends Model<
   InferAttributes<UserRole>,
@@ -34,7 +36,8 @@ class UserRole extends Model<
         raw: true,
       });
 
-      if (otherRoles) throw new Error('A customer cannot have other roles');
+      if (otherRoles)
+        throw ApiError.internal('A customer cannot have other roles');
     }
 
     if (userRole.roleId !== customerRoleId) {
@@ -46,7 +49,8 @@ class UserRole extends Model<
         raw: true,
       });
 
-      if (customerRole) throw new Error('A customer cannot have other roles');
+      if (customerRole)
+        throw ApiError.internal('A customer cannot have other roles');
     }
   }
 }
@@ -73,7 +77,7 @@ UserRole.init(
   {
     sequelize,
     underscored: true,
-    tableName: 'users_roles',
+    tableName: TABLENAMES.USER_ROLE,
     hooks: {
       beforeSave: UserRole.preventCustomerMultipleRoles,
     },

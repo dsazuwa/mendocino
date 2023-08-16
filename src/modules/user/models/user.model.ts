@@ -8,6 +8,8 @@ import {
 
 import sequelize from '@App/db';
 
+import { TABLENAMES } from '@user/utils/constants';
+
 class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
   declare userId: CreationOptional<number>;
 
@@ -47,6 +49,7 @@ User.init(
   {
     sequelize,
     underscored: true,
+    tableName: TABLENAMES.USER,
   },
 );
 

@@ -10,6 +10,8 @@ import {
 
 import sequelize from '@App/db';
 
+import { TABLENAMES } from '@user/utils/constants';
+
 export type AuthOTPType = 'email' | 'password' | 'phone';
 
 class AuthOTP extends Model<
@@ -81,8 +83,8 @@ AuthOTP.init(
   {
     sequelize,
     underscored: true,
-    tableName: 'auth_otps',
     timestamps: false,
+    tableName: TABLENAMES.AUTH_OTP,
     hooks: {
       beforeSave: AuthOTP.hashPassword,
     },

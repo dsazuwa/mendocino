@@ -8,6 +8,8 @@ import {
 
 import sequelize from '@App/db';
 
+import { TABLENAMES } from '@user/utils/constants';
+
 export type ProviderType = 'google' | 'facebook';
 
 class UserIdentity extends Model<
@@ -53,6 +55,7 @@ UserIdentity.init(
   {
     sequelize,
     underscored: true,
+    tableName: TABLENAMES.USER_IDENTITY,
   },
 );
 
