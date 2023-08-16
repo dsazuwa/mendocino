@@ -6,6 +6,7 @@ import {
   changePassword,
   closeAccount,
   createPassword,
+  getProfile,
   getUserData,
   greet,
   resendVerifyEmail,
@@ -32,6 +33,8 @@ usersRouter.use(authenticate);
 usersRouter.get('/me/greeting', greet);
 
 usersRouter.get('/me', getUserData);
+
+usersRouter.get('/me/profile', getProfile);
 
 usersRouter.post('/me/verify', permitPending, resendVerifyEmail);
 usersRouter.patch(

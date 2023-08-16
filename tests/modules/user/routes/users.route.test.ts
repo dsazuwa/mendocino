@@ -45,6 +45,45 @@ describe(`GET ${BASE_URL}/me`, () => {
   });
 });
 
+describe(`GET ${BASE_URL}/me/profile`, () => {
+  it('return profile for user', async () => {
+    const firstName = 'Joy';
+    const lastName = 'Doe';
+    const email = 'joydoe@gmail.com';
+    const password = 'joyD0epa$$';
+    const status = 'pending';
+
+    const { userId } = await createUserAccount(
+      firstName,
+      lastName,
+      email,
+      password,
+      status,
+      [ROLES.CUSTOMER.roleId],
+    );
+
+    const jwt = authService.generateJWT(userId, 'email');
+
+    const response = await request
+      .get(`${BASE_URL}/me/profile`)
+      .auth(jwt, { type: 'bearer' });
+
+    expect(response.status).toBe(200);
+
+    const { profile } = response.body;
+    expect(profile).toMatchObject({
+      firstName,
+      lastName,
+      email: { address: email, isVerified: false },
+      hasPassword: true,
+      authProviders: [],
+      roles: [ROLES.CUSTOMER.name],
+      phoneNumber: { phone: null, isVerified: false },
+      addresses: null,
+    });
+  });
+});
+
 describe(`POST ${BASE_URL}/me/verify`, () => {
   let userId: number;
   let jwt: string;

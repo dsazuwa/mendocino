@@ -1,15 +1,19 @@
 import { Request } from 'express';
-import { Op } from 'sequelize';
+import { Op, QueryTypes } from 'sequelize';
 
 import sequelize from '@App/db';
 
 import {
+  Address,
   AuthOTP,
+  PhoneNumber,
   ProviderType,
+  Role,
   User,
   UserAccount,
   UserAccountStatusType,
   UserIdentity,
+  UserRole,
 } from '@user/models';
 
 const deleteUser = (userId: number) => User.destroy({ where: { userId } });
@@ -43,6 +47,61 @@ const usersService = {
           roles: u.roles,
         }
       : null;
+  },
+
+  getProfile: async (userId: number) => {
+    const query = `
+      SELECT
+        u.first_name as "firstName",
+        u.last_name as "lastName",
+        jsonb_build_object(
+          'address', a.email,
+          'isVerified', CASE WHEN a.status = 'active' THEN true ELSE false END
+        ) AS "email",
+        CASE WHEN a.password IS NOT NULL 
+          THEN true 
+          ELSE false 
+        END AS "hasPassword",
+        ARRAY(
+          SELECT provider
+          FROM ${UserIdentity.tableName} i
+          WHERE i.user_id = u.user_id
+        ) AS "authProviders",
+        ARRAY(
+          SELECT r.name
+          FROM ${UserRole.tableName} ur
+          JOIN ${Role.tableName} r ON ur.role_id = r.role_id
+          WHERE ur.user_id = u.user_id
+        ) AS "roles",
+        jsonb_build_object(
+          'phone', pn.phone_number,
+          'isVerified', CASE WHEN pn.status = 'active' THEN true ELSE false END
+        ) AS "phoneNumber",
+        (
+          SELECT jsonb_agg(
+            jsonb_build_object(
+              'addressLine1', a.address_line1,
+              'addressLine2', COALESCE(a.address_line2, ''),
+              'city', a.city,
+              'state', a.state,
+              'postalCode', a.postal_code
+            )
+          )
+          FROM ${Address.tableName} a
+          WHERE a.user_id = u.user_id
+        ) AS "addresses"
+      FROM
+        ${User.tableName} u
+      JOIN 
+        ${UserAccount.tableName} a ON u.user_id = a.user_id
+      LEFT JOIN
+        ${PhoneNumber.tableName} pn ON u.user_id = pn.user_id
+      WHERE
+        u.user_id = ${userId};`;
+
+    const result = await sequelize.query(query, { type: QueryTypes.SELECT });
+
+    return result.length === 0 ? null : result[0];
   },
 
   verifyEmail: async (userId: number) =>

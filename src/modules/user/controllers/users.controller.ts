@@ -24,6 +24,22 @@ export const getUserData = async (
   }
 };
 
+export const getProfile = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const userId = req.user?.userId ?? -1;
+
+    const profile = await usersService.getProfile(userId);
+
+    res.status(200).json({ profile });
+  } catch (e) {
+    next(e);
+  }
+};
+
 export const resendVerifyEmail = async (
   req: Request,
   res: Response,

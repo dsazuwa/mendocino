@@ -1,6 +1,13 @@
 import { Request } from 'express';
 
-import { AuthOTP, User, UserAccount, UserIdentity } from '@user/models';
+import {
+  Address,
+  AuthOTP,
+  PhoneNumber,
+  User,
+  UserAccount,
+  UserIdentity,
+} from '@user/models';
 import usersService from '@user/services/users.service';
 import { ROLES } from '@user/utils/constants';
 
@@ -42,6 +49,172 @@ describe('get user', () => {
 
     const data = await usersService.getUserData(req);
     expect(data).toMatchObject({ firstName, lastName, email, status, roles });
+  });
+});
+
+describe('get profile for', () => {
+  const firstName = 'Jino';
+  const lastName = 'Doe';
+  const email = 'jinodoe@gmail.com';
+  const password = 'JinoD0ePa$$';
+  const phoneNumber = '9161710361';
+
+  beforeEach(async () => {
+    await User.destroy({ where: {} });
+  });
+
+  it('user that does not exist', async () => {
+    const result = await usersService.getProfile(1234);
+    expect(result).toBeNull();
+  });
+
+  it('user with account password, user identities, but no phone or address', async () => {
+    const { userId } = await createUserAccountAndIdentity(
+      firstName,
+      lastName,
+      email,
+      password,
+      'active',
+      [
+        { identityId: '4247902749786824', provider: 'google' },
+        { identityId: '2487713797204', provider: 'facebook' },
+      ],
+    );
+
+    const result = await usersService.getProfile(userId);
+    expect(result).toMatchObject({
+      firstName,
+      lastName,
+      email: { address: email, isVerified: true },
+      hasPassword: true,
+      authProviders: ['google', 'facebook'],
+      roles: [ROLES.CUSTOMER.name],
+      phoneNumber: { phone: null, isVerified: false },
+      addresses: null,
+    });
+  });
+
+  it('user with identities but no account password, phone or address', async () => {
+    const { userId } = await createUserAccountAndIdentity(
+      firstName,
+      lastName,
+      email,
+      null,
+      'active',
+      [
+        { identityId: '4247902749786824', provider: 'google' },
+        { identityId: '2487713797204', provider: 'facebook' },
+      ],
+    );
+
+    const result = await usersService.getProfile(userId);
+    expect(result).toMatchObject({
+      firstName,
+      lastName,
+      email: { address: email, isVerified: true },
+      hasPassword: false,
+      authProviders: ['google', 'facebook'],
+      roles: [ROLES.CUSTOMER.name],
+      phoneNumber: { phone: null, isVerified: false },
+      addresses: null,
+    });
+  });
+
+  it('user with account password, identities, and phone number but no address', async () => {
+    const { userId } = await createUserAccount(
+      firstName,
+      lastName,
+      email,
+      password,
+      'pending',
+      [ROLES.CUSTOMER.roleId],
+    );
+
+    await PhoneNumber.create({ userId, phoneNumber, status: 'pending' });
+
+    let result = await usersService.getProfile(userId);
+    expect(result).toMatchObject({
+      firstName,
+      lastName,
+      email: { address: email, isVerified: false },
+      hasPassword: true,
+      authProviders: [],
+      roles: [ROLES.CUSTOMER.name],
+      phoneNumber: { phone: phoneNumber, isVerified: false },
+      addresses: null,
+    });
+
+    await PhoneNumber.update({ status: 'active' }, { where: { userId } });
+
+    result = await usersService.getProfile(userId);
+    expect(result).toMatchObject({
+      firstName,
+      lastName,
+      email: { address: email, isVerified: false },
+      hasPassword: true,
+      authProviders: [],
+      roles: [ROLES.CUSTOMER.name],
+      phoneNumber: { phone: phoneNumber, isVerified: true },
+      addresses: null,
+    });
+  });
+
+  it('user with account password, identities, phone number, and addresses', async () => {
+    const { userId } = await createUserAccount(
+      firstName,
+      lastName,
+      email,
+      password,
+      'pending',
+      [ROLES.CUSTOMER.roleId],
+    );
+
+    await PhoneNumber.create({ userId, phoneNumber, status: 'pending' });
+
+    const addresses = await Address.bulkCreate([
+      {
+        userId,
+        addressLine1: '1957 Kembery Drive',
+        addressLine2: 'off access road',
+        city: 'Roselle',
+        state: 'IL',
+        postalCode: '60172',
+      },
+      {
+        userId,
+        addressLine1: '1561 Coburn Hollow Road',
+        city: 'Peoria',
+        state: 'IL',
+        postalCode: '61602',
+      },
+    ]);
+
+    const result = await usersService.getProfile(userId);
+    expect(result).toMatchObject({
+      firstName,
+      lastName,
+      email: { address: email, isVerified: false },
+      hasPassword: true,
+      authProviders: [],
+      roles: [ROLES.CUSTOMER.name],
+      phoneNumber: { phone: phoneNumber, isVerified: false },
+      addresses: [
+        {
+          addressLine1: addresses[0].addressLine1,
+          addressLine2: addresses[0].addressLine2,
+          city: addresses[0].city,
+          state: addresses[0].state,
+          postalCode: addresses[0].postalCode,
+        },
+        {
+          addressLine1: addresses[1].addressLine1,
+          addressLine2: '',
+          city: addresses[1].city,
+          state: addresses[1].state,
+          postalCode: addresses[1].postalCode,
+        },
+      ],
+    });
   });
 });
 
