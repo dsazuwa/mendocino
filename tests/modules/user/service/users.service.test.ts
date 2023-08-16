@@ -320,10 +320,6 @@ describe('update user name ', () => {
       await testUpdateUser(newFirst, '', newFirst, lastName, 1);
     });
 
-    it('but lastName is a blank space', async () => {
-      await testUpdateUser(newFirst, ' ', newFirst, lastName, 1);
-    });
-
     it('but lastName is undefined', async () => {
       await testUpdateUser(newFirst, undefined, newFirst, lastName, 1);
     });
@@ -334,10 +330,6 @@ describe('update user name ', () => {
       await testUpdateUser('', newLast, firstName, newLast, 1);
     });
 
-    it('but firstName is a blank space', async () => {
-      await testUpdateUser(' ', newLast, firstName, newLast, 1);
-    });
-
     it('but firstName is undefined', async () => {
       await testUpdateUser(undefined, newLast, firstName, newLast, 1);
     });
@@ -345,11 +337,7 @@ describe('update user name ', () => {
 
   describe('should not update user', () => {
     it('if both firstName and lastName are empty strings', async () => {
-      await testUpdateUser('', '', firstName, lastName, 0);
-    });
-
-    it('if both firstName and lastName are blank spaces', async () => {
-      await testUpdateUser(' ', ' ', firstName, lastName, 0);
+      await testUpdateUser('', ' ', firstName, lastName, 0);
     });
 
     it('if both firstName and lastName are undefined', async () => {

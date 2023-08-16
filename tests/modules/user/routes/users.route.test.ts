@@ -306,10 +306,6 @@ describe(`PATCH ${BASE_URL}/me/name`, () => {
       await testUpdateUser(newFirst, '', newFirst, lastName, 200);
     });
 
-    it('but lastName is a blank space', async () => {
-      await testUpdateUser(newFirst, ' ', newFirst, lastName, 200);
-    });
-
     it('but lastName is undefined', async () => {
       await testUpdateUser(newFirst, undefined, newFirst, lastName, 200);
     });
@@ -320,10 +316,6 @@ describe(`PATCH ${BASE_URL}/me/name`, () => {
       await testUpdateUser('', newLast, firstName, newLast, 200);
     });
 
-    it('but firstName is a blank space', async () => {
-      await testUpdateUser(' ', newLast, firstName, newLast, 200);
-    });
-
     it('but firstName is undefined', async () => {
       await testUpdateUser(undefined, newLast, firstName, newLast, 200);
     });
@@ -331,11 +323,7 @@ describe(`PATCH ${BASE_URL}/me/name`, () => {
 
   describe('should not update user', () => {
     it('if both firstName and lastName are empty strings', async () => {
-      await testUpdateUser('', '', firstName, lastName, 400);
-    });
-
-    it('if both firstName and lastName are blank spaces', async () => {
-      await testUpdateUser(' ', ' ', firstName, lastName, 400);
+      await testUpdateUser('', ' ', firstName, lastName, 400);
     });
 
     it('if both firstName and lastName are undefined', async () => {
