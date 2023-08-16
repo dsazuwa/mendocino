@@ -1,15 +1,41 @@
 import {
   changePasswordSchema,
   createPasswordSchema,
+  registerPhoneSchema,
   revokeSocialAuthenticationSchema,
   updateUserNameSchema,
   verifyEmailSchema,
+  verifyPhoneSchema,
 } from '@user/middleware/validators/users.validator';
 
 import { testOTPRules, testPasswordRules } from './common.validator';
 
 describe('verify email schema', () => {
   testOTPRules(verifyEmailSchema);
+});
+
+describe('register phone schema', () => {
+  it('should pass for valid data', () => {
+    const phoneNumbers = ['1234567890', ' 1234567890', '1234567890 '];
+
+    phoneNumbers.forEach((phoneNumber) => {
+      const data = { body: { phoneNumber } };
+      expect(() => registerPhoneSchema.parse(data)).not.toThrow();
+    });
+  });
+
+  it('should fail for invalid data', () => {
+    const phoneNumbers = ['', ' ', ' 123456789', '123456 7890'];
+
+    phoneNumbers.forEach((phoneNumber) => {
+      const data = { body: { phoneNumber } };
+      expect(() => registerPhoneSchema.parse(data)).toThrow();
+    });
+  });
+});
+
+describe('verify phone schema', () => {
+  testOTPRules(verifyPhoneSchema);
 });
 
 describe('update user name schema', () => {

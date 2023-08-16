@@ -50,7 +50,7 @@ export const resendVerifyEmail = async (
 
     await authService.createAuthOTP(userId, 'email');
 
-    res.status(200).json({ message: messages.REQUEST_VERIFICATION });
+    res.status(200).json({ message: messages.REQUEST_VERIFICATION_EMAIL });
   } catch (e) {
     next(e);
   }
@@ -73,6 +73,61 @@ export const verifyEmail = async (
     await usersService.verifyEmail(userId);
 
     res.status(200).json({ message: messages.VERIFY_EMAIL_SUCCESS });
+  } catch (e) {
+    next(e);
+  }
+};
+
+export const registerPhone = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const userId = req.user?.userId ?? -1;
+    const { phoneNumber } = req.body;
+
+    await usersService.createPhone(userId, phoneNumber);
+
+    res.status(200).json({ message: messages.REGISTER_PHONE_SUCCESS });
+  } catch (e) {
+    next(e);
+  }
+};
+
+export const resendVerifySMS = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const userId = req.user?.userId ?? -1;
+
+    await authService.createAuthOTP(userId, 'phone');
+
+    res.status(200).json({ message: messages.REQUEST_VERIFICATION_SMS });
+  } catch (e) {
+    next(e);
+  }
+};
+
+export const verifyPhone = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const userId = req.user?.userId ?? -1;
+    const { otp } = req.params;
+
+    const { isValid } = await authService.getAuthOTP(userId, otp, 'phone');
+
+    if (!isValid)
+      return res.status(401).json({ message: messages.INVALID_AUTH_OTP });
+
+    await usersService.verifyPhone(userId);
+
+    res.status(200).json({ message: messages.VERIFY_PHONE_SUCCESS });
   } catch (e) {
     next(e);
   }

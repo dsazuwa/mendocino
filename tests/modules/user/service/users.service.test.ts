@@ -273,6 +273,67 @@ describe('verify email', () => {
   });
 });
 
+describe('phone number', () => {
+  let userId: number;
+
+  beforeAll(async () => {
+    const { user } = await createUserAccount(
+      'Jimmy',
+      'Doe',
+      'jimmydoe@gmail.com',
+      'jimmyD0ePa$$',
+      'active',
+      [ROLES.CUSTOMER.roleId],
+    );
+    userId = user.userId;
+  });
+
+  it('should create a new phone number', async () => {
+    const phoneNumber = '1234567890';
+
+    const password = await usersService.createPhone(userId, phoneNumber);
+    expect(password.length).toBe(5);
+
+    const phone = await PhoneNumber.findOne({
+      where: { userId, phoneNumber, status: 'pending' },
+      raw: true,
+    });
+    expect(phone).not.toBeNull();
+
+    const otp = await AuthOTP.findOne({ where: { userId, type: 'phone' } });
+    expect(otp).not.toBeNull();
+    expect(otp?.comparePasswords(password)).toBe(true);
+  });
+
+  it('should update phone number status to active', async () => {
+    let phone = await PhoneNumber.findOne({
+      where: { userId, status: 'pending' },
+      raw: true,
+    });
+    expect(phone).not.toBeNull();
+
+    let otp = await AuthOTP.findOne({
+      where: { userId, type: 'phone' },
+      raw: true,
+    });
+    expect(otp).not.toBeNull();
+
+    await usersService.verifyPhone(userId);
+
+    phone = await PhoneNumber.findOne({
+      where: { userId, status: 'active' },
+      raw: true,
+    });
+    expect(phone).not.toBeNull();
+
+    otp = await AuthOTP.findOne({
+      where: { userId, type: 'phone' },
+      raw: true,
+    });
+    expect(otp).toBeNull();
+  });
+});
+
 describe('update user name ', () => {
   const firstName = 'Jazz';
   const lastName = 'Doe';

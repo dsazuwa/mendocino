@@ -39,8 +39,12 @@ const messages = {
 
   // USERS ROUTER MESSAGES
 
-  REQUEST_VERIFICATION: 'New verification OTP sent',
-  VERIFY_EMAIL_SUCCESS: 'Email Successfully Verified!',
+  REQUEST_VERIFICATION_EMAIL: 'New OTP sent to your email',
+  VERIFY_EMAIL_SUCCESS: 'Email verified!',
+
+  REGISTER_PHONE_SUCCESS: 'Successfully registered!',
+  REQUEST_VERIFICATION_SMS: 'New OTP sent to your phone',
+  VERIFY_PHONE_SUCCESS: 'Phone number verified!',
 
   UPDATE_USER_NAME: 'Successfully updated name!',
 

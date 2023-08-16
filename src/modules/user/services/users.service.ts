@@ -117,6 +117,50 @@ const usersService = {
       );
     }),
 
+  createPhone: async (userId: number, phoneNumber: string) =>
+    sequelize.transaction(async (transaction) => {
+      await AuthOTP.destroy({
+        where: { userId, type: 'phone' },
+        transaction,
+      });
+
+      const otp = '12345';
+
+      await AuthOTP.create(
+        {
+          userId,
+          type: 'phone',
+          password: otp,
+          expiresAt: AuthOTP.getExpiration(),
+        },
+        { transaction },
+      );
+
+      await PhoneNumber.create(
+        {
+          userId,
+          phoneNumber,
+          status: 'pending',
+        },
+        { transaction },
+      );
+
+      return otp;
+    }),
+
+  verifyPhone: async (userId: number) =>
+    sequelize.transaction(async (transaction) => {
+      await AuthOTP.destroy({
+        where: { userId, type: 'phone' },
+        transaction,
+      });
+
+      await PhoneNumber.update(
+        { status: 'active' },
+        { where: { userId }, transaction },
+      );
+    }),
+
   updateUser: (
     userId: number,
     firstName: string | undefined,

@@ -1,6 +1,12 @@
 import { JwtPayload, verify } from 'jsonwebtoken';
 
-import { AuthOTP, User, UserAccount, UserIdentity } from '@user/models';
+import {
+  AuthOTP,
+  PhoneNumber,
+  User,
+  UserAccount,
+  UserIdentity,
+} from '@user/models';
 import authService from '@user/services/auth.service';
 import { ROLES } from '@user/utils/constants';
 
@@ -244,6 +250,124 @@ describe(`PATCH ${BASE_URL}/me/verify/:otp`, () => {
 
     const retrievedAcct = await UserAccount.findByPk(userId, { raw });
     expect(retrievedAcct?.status).toEqual('active');
+  });
+});
+
+describe('add phone number', () => {
+  const mockOTP = '12345';
+  const phoneNumber = '1234567890';
+
+  let userId: number;
+  let jwt: string;
+
+  beforeAll(async () => {
+    const { user } = await createUserAccount(
+      'Jamal',
+      'Doe',
+      'jamaldoe@gmail.com',
+      'jamalD0ePa$$',
+      'active',
+      [ROLES.CUSTOMER.roleId],
+    );
+
+    userId = user.userId;
+    jwt = authService.generateJWT(userId, 'email');
+  });
+
+  it('should register a new phone number', async () => {
+    let phone = await PhoneNumber.findOne({
+      where: { userId, phoneNumber },
+      raw,
+    });
+    expect(phone).toBeNull();
+
+    let otp = await AuthOTP.findOne({ where: { userId, type: 'phone' }, raw });
+    expect(otp).toBeNull();
+
+    await request
+      .post(`${BASE_URL}/me/phone`)
+      .send({ phoneNumber })
+      .auth(jwt, { type: 'bearer' })
+      .expect(200);
+
+    phone = await PhoneNumber.findOne({
+      where: { userId, phoneNumber, status: 'pending' },
+      raw,
+    });
+    expect(phone).not.toBeNull();
+
+    otp = await AuthOTP.findOne({ where: { userId, type: 'phone' }, raw });
+    expect(otp).not.toBeNull();
+  });
+
+  it('should create a new otp', async () => {
+    const otp1 = await AuthOTP.findOne({
+      where: { userId, type: 'phone' },
+      raw,
+    });
+
+    await request
+      .patch(`${BASE_URL}/me/phone`)
+      .auth(jwt, { type: 'bearer' })
+      .expect(200);
+
+    const otp2 = await AuthOTP.findOne({
+      where: { userId, type: 'phone' },
+      raw,
+    });
+
+    expect(otp1?.otpId).not.toBe(otp2?.otpId);
+  });
+
+  it('should fail to verify phone number on invalid otp', async () => {
+    let phone = await PhoneNumber.findOne({
+      where: { userId, phoneNumber, status: 'pending' },
+      raw,
+    });
+    expect(phone).not.toBeNull();
+
+    await request
+      .patch(`${BASE_URL}/me/phone/01010`)
+      .auth(jwt, { type: 'bearer' })
+      .expect(401);
+
+    phone = await PhoneNumber.findOne({
+      where: { userId, phoneNumber, status: 'pending' },
+      raw,
+    });
+    expect(phone).not.toBeNull();
+  });
+
+  it('should verify phone number on valid otp', async () => {
+    let phone = await PhoneNumber.findOne({
+      where: { userId, phoneNumber, status: 'pending' },
+      raw,
+    });
+    expect(phone).not.toBeNull();
+
+    let otp = await AuthOTP.findOne({
+      where: { userId, type: 'phone' },
+      raw,
+    });
+
+    expect(otp).not.toBeNull();
+
+    await request
+      .patch(`${BASE_URL}/me/phone/${mockOTP}`)
+      .auth(jwt, { type: 'bearer' })
+      .expect(200);
+
+    phone = await PhoneNumber.findOne({
+      where: { userId, phoneNumber, status: 'active' },
+      raw,
+    });
+    expect(phone).not.toBeNull();
+
+    otp = await AuthOTP.findOne({
+      where: { userId, type: 'phone' },
+      raw,
+    });
+    expect(otp).toBeNull();
   });
 });
 
