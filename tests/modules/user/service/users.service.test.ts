@@ -194,7 +194,6 @@ describe('create password', () => {
       null,
       'active',
       [{ identityId: '923042892739426871638', provider: 'google' }],
-      [ROLES.CUSTOMER.roleId],
     );
     const password = 'josephineD0ePa$$';
     expect(account.comparePasswords(password)).toBe(false);
@@ -325,7 +324,6 @@ describe('revoke social authentication', () => {
       'jessicaD0ePa$$',
       'active',
       [{ identityId: '3654755345356474363', provider }],
-      [ROLES.CUSTOMER.roleId],
     );
 
     expect(account.password).not.toBeNull();
@@ -364,7 +362,6 @@ describe('revoke social authentication', () => {
         { identityId: '52429584297428924', provider: 'google' },
         { identityId: '58991388923428739', provider: 'facebook' },
       ],
-      [ROLES.CUSTOMER.roleId],
     );
 
     expect(account.password).toBeNull();
@@ -409,7 +406,6 @@ describe('revoke social authentication', () => {
       null,
       'active',
       [{ identityId: '94044248328749827', provider }],
-      [ROLES.CUSTOMER.roleId],
     );
 
     expect(account.password).toBeNull();
@@ -447,7 +443,6 @@ describe('close account', () => {
       'jeffD0ePa$$',
       'active',
       [{ identityId: '2435674867433235', provider: 'google' }],
-      [ROLES.CUSTOMER.roleId],
     );
 
     expect(account.password).not.toBeNull();
@@ -472,7 +467,6 @@ describe('close account', () => {
       null,
       'active',
       [{ identityId: '23274274781623876298', provider: 'google' }],
-      [ROLES.CUSTOMER.roleId],
     );
 
     expect(account.password).toBeNull();

@@ -33,7 +33,6 @@ describe('Google Login', () => {
       'jayD0ePa$$',
       'active',
       [{ identityId: '428402371863284', provider }],
-      [ROLES.CUSTOMER.roleId],
     );
 
     const req = { user: { userId, status: 'active' } } as Request;
@@ -73,7 +72,6 @@ describe('Facebook Login', () => {
       'jazD0ePa$$',
       'active',
       [{ identityId: '42942742739273298', provider }],
-      [ROLES.CUSTOMER.roleId],
     );
 
     const req = { user: { userId, status: 'active' } } as Request;

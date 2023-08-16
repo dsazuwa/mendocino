@@ -1,3 +1,4 @@
+import { ROLES } from '@App/modules/user/utils/constants';
 import {
   ProviderType,
   User,
@@ -39,7 +40,6 @@ export const createUserAccountAndIdentity = async (
   password: string | null,
   status: UserAccountStatusType,
   identities: { identityId: string; provider: ProviderType }[],
-  roles: number[],
 ) => {
   const user = await User.create({ firstName, lastName });
 
@@ -64,8 +64,7 @@ export const createUserAccountAndIdentity = async (
     arr.push(i);
   });
 
-  const promises = roles.map((roleId) => UserRole.create({ userId, roleId }));
-  await Promise.all(promises);
+  await UserRole.create({ userId, roleId: ROLES.CUSTOMER.roleId });
 
   return { userId, user, account, identitities: arr };
 };

@@ -157,7 +157,6 @@ describe('Verify Function', () => {
       password,
       'active',
       [{ identityId, provider }],
-      [ROLES.CUSTOMER.roleId],
     );
 
     const { createUserAndUserIdentity, createUserIdentityForUser } =

@@ -436,7 +436,6 @@ describe(`PATCH ${BASE_URL}/me/revoke-social-auth`, () => {
       'jenniferD0ePa$$',
       'active',
       [{ identityId: '3654755345356474363', provider }],
-      [ROLES.CUSTOMER.roleId],
     );
 
     expect(account.password).not.toBeNull();
@@ -469,7 +468,6 @@ describe(`PATCH ${BASE_URL}/me/revoke-social-auth`, () => {
         { identityId: '687453534367486564', provider: 'google' },
         { identityId: '234267589676438787', provider: 'facebook' },
       ],
-      [ROLES.CUSTOMER.roleId],
     );
 
     expect(account.password).toBeNull();
@@ -511,7 +509,6 @@ describe(`PATCH ${BASE_URL}/me/revoke-social-auth`, () => {
       null,
       'active',
       [{ identityId: '7934872657237824972478', provider: 'google' }],
-      [ROLES.CUSTOMER.roleId],
     );
 
     expect(account.password).toBeNull();
@@ -542,7 +539,6 @@ describe(`PATCH ${BASE_URL}/me/close`, () => {
       'JamesD0ePa$$',
       'active',
       [{ identityId: '493285792423287429704372084', provider: 'google' }],
-      [ROLES.CUSTOMER.roleId],
     );
 
     expect(account.password).not.toBeNull();
@@ -575,7 +571,6 @@ describe(`PATCH ${BASE_URL}/me/close`, () => {
       null,
       'active',
       [{ identityId: '84537482657274892684232', provider: 'google' }],
-      [ROLES.CUSTOMER.roleId],
     );
 
     expect(account.password).toBeNull();

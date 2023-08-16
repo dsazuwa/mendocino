@@ -94,8 +94,6 @@ describe('Auth service', () => {
     });
 
     it('should return user data when provider is google', async () => {
-      const { MANAGER, DELIVERY_DRIVER } = ROLES;
-
       const { userId, user, account } = await createUserAccountAndIdentity(
         'Juana',
         'Doe',
@@ -103,7 +101,6 @@ describe('Auth service', () => {
         null,
         'active',
         [{ identityId: '9043859372838624', provider: 'google' }],
-        [DELIVERY_DRIVER.roleId, MANAGER.roleId],
       );
 
       const result = await authService.getUserData(userId, 'google');
@@ -113,7 +110,7 @@ describe('Auth service', () => {
         lastName: user.lastName,
         email: account.email,
         status: account.status,
-        roles: [DELIVERY_DRIVER.name, MANAGER.name],
+        roles: [ROLES.CUSTOMER.name],
       });
     });
 
@@ -138,7 +135,6 @@ describe('Auth service', () => {
         null,
         'active',
         [{ identityId, provider }],
-        [ROLES.CUSTOMER.roleId],
       );
 
       const { user, userExists, identityExists, isCustomer } =
@@ -278,7 +274,6 @@ describe('Auth service', () => {
         null,
         'active',
         [{ identityId, provider }],
-        [ROLES.CUSTOMER.roleId],
       );
 
       let identity = await authService.getIdentity(identityId, provider);
