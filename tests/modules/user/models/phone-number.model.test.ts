@@ -25,7 +25,7 @@ describe('Phone Number Model', () => {
   it('should create phone number', async () => {
     const data = {
       userId,
-      phoneNumber: '123456789012',
+      phoneNumber: '1234569012',
       status: 'active' as PhoneNumberStatusype,
     };
 
@@ -45,7 +45,7 @@ describe('Phone Number Model', () => {
 
     const phoneNumber = await PhoneNumber.create({
       userId,
-      phoneNumber: '123456989012',
+      phoneNumber: '1234569712',
       status: oldStatus,
     });
 
@@ -70,7 +70,7 @@ describe('Phone Number Model', () => {
   it('should delete phone number', async () => {
     const data = {
       userId,
-      phoneNumber: '128456789012',
+      phoneNumber: '1256789012',
       status: 'active' as PhoneNumberStatusype,
     };
 
@@ -100,7 +100,7 @@ describe('Phone Number Model', () => {
   it('should not delete User on Phone Number delete', async () => {
     const phoneNumber = await PhoneNumber.create({
       userId,
-      phoneNumber: '123346789012',
+      phoneNumber: '1233789012',
       status: 'active',
     });
 
@@ -113,7 +113,7 @@ describe('Phone Number Model', () => {
   it('should delete Phone Number on User delete', async () => {
     const phoneNumber = await PhoneNumber.create({
       userId,
-      phoneNumber: '809161710361',
+      phoneNumber: '8091610361',
       status: 'active',
     });
 

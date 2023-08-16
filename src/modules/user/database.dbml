@@ -10,7 +10,6 @@ Table user_identities {
   identity_id string
   user_id integer [ref: > users.user_id]
   provider enum_provider_type
-  status enum_user_identities_status
   created_at datetime
   updated_at datetime
 
@@ -22,11 +21,6 @@ Table user_identities {
 Enum enum_provider_type {
   google
   facebook
-}
-
-Enum enum_user_identities_status {
-  active
-  inactive
 }
 
 Table user_accounts {

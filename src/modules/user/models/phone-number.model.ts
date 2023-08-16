@@ -43,7 +43,7 @@ PhoneNumber.init(
       allowNull: false,
       unique: true,
       validate: {
-        len: [12, 12],
+        len: [10, 10],
       },
     },
     status: {
