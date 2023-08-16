@@ -58,6 +58,28 @@ const usersService = {
       );
     }),
 
+  updateUser: (
+    userId: number,
+    firstName: string | undefined,
+    lastName: string | undefined,
+  ) => {
+    const values: Partial<User> = {};
+
+    if (firstName && firstName.trim().length > 0) values.firstName = firstName;
+    if (lastName && lastName.trim().length > 0) values.lastName = lastName;
+
+    return User.update(values, { where: { userId } });
+  },
+
+  createPassword: (userId: number, password: string) =>
+    UserAccount.update(
+      { password },
+      {
+        where: { userId, password: null },
+        individualHooks: true,
+      },
+    ),
+
   changePassword: async (
     userId: number,
     currentPassword: string,
@@ -76,15 +98,6 @@ const usersService = {
 
     return true;
   },
-
-  createPassword: (userId: number, password: string) =>
-    UserAccount.update(
-      { password },
-      {
-        where: { userId, password: null },
-        individualHooks: true,
-      },
-    ),
 
   revokeSocialAuthentication: async (
     userId: number,

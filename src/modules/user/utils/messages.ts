@@ -42,6 +42,8 @@ const messages = {
   REQUEST_VERIFICATION: 'New verification OTP sent',
   VERIFY_EMAIL_SUCCESS: 'Email Successfully Verified!',
 
+  UPDATE_USER_NAME: 'Successfully updated name!',
+
   CREATE_PASSWORD_FAILED: 'Failed to create password',
   CREATE_PASSWORD_SUCCESS: 'Password successfully created!',
 

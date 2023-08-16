@@ -1,6 +1,6 @@
 import { Router } from 'express';
 
-import { validate } from '@App/middleware';
+import { trimRequestBody, validate } from '@App/middleware';
 
 import {
   changePassword,
@@ -10,6 +10,7 @@ import {
   greet,
   resendVerifyEmail,
   revokeSocialAuthentication,
+  updateUserName,
   verifyEmail,
 } from '@user/controllers/users.controller';
 import { authenticate, authenticateInactive } from '@user/middleware/auth';
@@ -18,6 +19,7 @@ import {
   changePasswordSchema,
   createPasswordSchema,
   revokeSocialAuthenticationSchema,
+  updateUserNameSchema,
   verifyEmailSchema,
 } from '@user/middleware/validators/users.validator';
 
@@ -37,6 +39,13 @@ usersRouter.patch(
   validate(verifyEmailSchema),
   permitPending,
   verifyEmail,
+);
+
+usersRouter.patch(
+  '/me/name',
+  trimRequestBody,
+  validate(updateUserNameSchema),
+  updateUserName,
 );
 
 usersRouter.post(
