@@ -6,17 +6,13 @@ import {
   changePassword,
   closeAccount,
   createPassword,
-  deletePhone,
   getProfile,
   getUserData,
   greet,
-  registerPhone,
   resendVerifyEmail,
-  resendVerifySMS,
   revokeSocialAuthentication,
   updateUserName,
   verifyEmail,
-  verifyPhone,
 } from '@user/controllers/users.controller';
 import {
   authenticate,
@@ -27,11 +23,9 @@ import { permitPending } from '@user/middleware/route-guards';
 import {
   changePasswordSchema,
   createPasswordSchema,
-  registerPhoneSchema,
   revokeSocialAuthenticationSchema,
   updateUserNameSchema,
   verifyEmailSchema,
-  verifyPhoneSchema,
 } from '@user/middleware/validators/users.validator';
 import { ROLES } from '@user/utils/constants';
 
@@ -60,16 +54,6 @@ usersRouter.patch(
   permitPending,
   verifyEmail,
 );
-
-usersRouter.post(
-  '/phone',
-  trimRequestBody,
-  validate(registerPhoneSchema),
-  registerPhone,
-);
-usersRouter.patch('/phone', resendVerifySMS);
-usersRouter.patch('/phone/:otp', validate(verifyPhoneSchema), verifyPhone);
-usersRouter.delete('/phone', deletePhone);
 
 usersRouter.patch(
   '/name',
