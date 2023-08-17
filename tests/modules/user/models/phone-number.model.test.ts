@@ -79,13 +79,13 @@ describe('Phone Number Model', () => {
     expect(phoneNumbers[0]).toBeDefined();
   });
 
-  it('should update phone number', async () => {
+  it('should update phone number status', async () => {
     const oldStatus = 'active';
     const newStatus = 'pending';
 
     const phone = await PhoneNumber.create({
       userId,
-      phoneNumber: '1234569712',
+      phoneNumber,
       status: oldStatus,
     });
 
@@ -105,6 +105,31 @@ describe('Phone Number Model', () => {
       where: { phoneNumberId: phone.phoneNumberId },
     });
     expect(retrievedPhone).not.toBeNull();
+  });
+
+  it('should fail to update phone number directly', async () => {
+    await PhoneNumber.create({
+      userId,
+      phoneNumber,
+      status: 'active',
+    });
+
+    const newNumber = '0987656789';
+
+    try {
+      await PhoneNumber.update(
+        { phoneNumber: newNumber },
+        { where: { phoneNumber }, individualHooks: true },
+      );
+
+      expect(true).toBe(false);
+    } catch (e) {
+      const phone = await PhoneNumber.findOne({
+        where: { userId, phoneNumber: newNumber },
+        raw,
+      });
+      expect(phone).toBeNull();
+    }
   });
 
   it('should delete phone number', async () => {

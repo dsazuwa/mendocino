@@ -9,6 +9,7 @@ import {
 } from 'sequelize';
 
 import sequelize from '@App/db';
+import { ApiError } from '@App/utils';
 
 import { TABLENAMES } from '@user/utils/constants';
 
@@ -36,7 +37,7 @@ class AuthOTP extends Model<
       const hashed = await hash(otp.password, 10);
       otp.password = hashed;
     } catch (err) {
-      throw new Error('Failed to hash password');
+      throw ApiError.internal('Failed to hash password');
     }
   }
 

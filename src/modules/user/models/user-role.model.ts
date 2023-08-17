@@ -5,10 +5,10 @@ import {
   InferCreationAttributes,
   Model,
   Op,
+  ValidationError,
 } from 'sequelize';
 
 import sequelize from '@App/db';
-import { ApiError } from '@App/utils';
 
 import { ROLES, TABLENAMES } from '@user/utils/constants';
 
@@ -37,7 +37,7 @@ class UserRole extends Model<
       });
 
       if (otherRoles)
-        throw ApiError.internal('A customer cannot have other roles');
+        throw new ValidationError('A customer cannot have other roles', []);
     }
 
     if (userRole.roleId !== customerRoleId) {
@@ -50,7 +50,7 @@ class UserRole extends Model<
       });
 
       if (customerRole)
-        throw ApiError.internal('A customer cannot have other roles');
+        throw new ValidationError('A customer cannot have other roles', []);
     }
   }
 }

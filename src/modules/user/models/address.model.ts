@@ -5,10 +5,10 @@ import {
   InferCreationAttributes,
   Model,
   QueryTypes,
+  ValidationError,
 } from 'sequelize';
 
 import sequelize from '@App/db';
-import { ApiError } from '@App/utils';
 
 import { ROLES, TABLENAMES } from '@user/utils/constants';
 
@@ -53,7 +53,7 @@ class Address extends Model<
     const result = await sequelize.query(query, { type: QueryTypes.SELECT });
     const user = result[0] as { userId: number; roles: string[] } | undefined;
 
-    if (!user) throw ApiError.internal('User not found');
+    if (!user) throw new ValidationError('User not found', []);
 
     if (user.roles.length === 1 && user.roles[0] === ROLES.CUSTOMER.name) {
       const addressCount = await Address.count({
@@ -61,9 +61,12 @@ class Address extends Model<
       });
 
       if (addressCount === 5)
-        throw ApiError.internal('User has reached the maximum address limit');
+        throw new ValidationError(
+          'User has reached the maximum address limit',
+          [],
+        );
     } else {
-      throw ApiError.internal('Non-customers cannot have addresses');
+      throw new ValidationError('Non-customers cannot have addresses', []);
     }
   }
 }

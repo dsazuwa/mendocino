@@ -4,6 +4,7 @@ import {
   InferAttributes,
   InferCreationAttributes,
   Model,
+  ValidationError,
 } from 'sequelize';
 
 import sequelize from '@App/db';
@@ -27,6 +28,14 @@ class PhoneNumber extends Model<
   declare createdAt: CreationOptional<Date>;
 
   declare updatedAt: CreationOptional<Date>;
+
+  public static async preventUpdatingNumber(instance: PhoneNumber) {
+    if (instance.changed('phoneNumber'))
+      throw new ValidationError(
+        'Cannot update phone number directly. Delete and recreate the number.',
+        [],
+      );
+  }
 }
 
 PhoneNumber.init(
@@ -65,6 +74,7 @@ PhoneNumber.init(
     sequelize,
     underscored: true,
     tableName: TABLENAMES.PHONE_NUMBER,
+    hooks: { beforeUpdate: PhoneNumber.preventUpdatingNumber },
   },
 );
 
