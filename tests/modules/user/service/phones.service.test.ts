@@ -1,5 +1,5 @@
 import { AuthOTP, PhoneNumber } from '@user/models';
-import usersService from '@user/services/users.service';
+import phonesService from '@user/services/phones.service';
 import { ROLES } from '@user/utils/constants';
 
 import { createUserAccount } from 'tests/modules/user/helper-functions';
@@ -27,7 +27,7 @@ describe('phone number management', () => {
   it('should create a new phone number', async () => {
     const phoneNumber = oldPhoneNumber;
 
-    const password = await usersService.createPhone(userId, phoneNumber);
+    const password = await phonesService.createPhone(userId, phoneNumber);
 
     const phone = await PhoneNumber.findOne({
       where: { userId, phoneNumber, status: 'pending' },
@@ -46,7 +46,7 @@ describe('phone number management', () => {
     });
     expect(previousPhone).not.toBeNull();
 
-    const password = await usersService.createPhone(userId, newPhoneNumber);
+    const password = await phonesService.createPhone(userId, newPhoneNumber);
 
     previousPhone = await PhoneNumber.findOne({
       where: { userId, phoneNumber: oldPhoneNumber },
@@ -77,7 +77,7 @@ describe('phone number management', () => {
     });
     expect(otp).not.toBeNull();
 
-    await usersService.verifyPhone(userId);
+    await phonesService.verifyPhone(userId);
 
     phone = await PhoneNumber.findOne({
       where: { userId, status: 'active' },
@@ -96,7 +96,7 @@ describe('phone number management', () => {
     let phone = await PhoneNumber.findOne({ where: { userId }, raw: true });
     expect(phone).not.toBeNull();
 
-    await usersService.deletePhone(userId);
+    await phonesService.deletePhone(userId);
 
     phone = await PhoneNumber.findOne({ where: { userId }, raw: true });
     expect(phone).toBeNull();
