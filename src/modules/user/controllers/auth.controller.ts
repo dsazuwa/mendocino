@@ -79,14 +79,12 @@ export const register = async (
         .status(409)
         .json({ message: messages.REGISTER_ALREADY_EXISTS });
 
-    const { account } = await authService.createUser(
+    const { userId } = await authService.createUser(
       firstName,
       lastName,
       email,
       password,
     );
-
-    const { userId } = account;
 
     const userData = await authService.getUserData(userId, 'email');
 

@@ -440,12 +440,13 @@ describe('Auth service', () => {
         'jacquelinedoe@gmail.com',
         'jacqueD0epas$$',
       );
+      expect(result.userId).toBeDefined();
+      expect(result.password).toBeDefined();
 
-      expect(result.user).toBeDefined();
-      expect(result.account).toBeDefined();
+      const { userId } = result;
 
-      const user = await User.findByPk(result.user.userId, { raw });
-      const account = await UserAccount.findByPk(result.account.userId, {
+      const user = await User.findByPk(userId, { raw });
+      const account = await UserAccount.findByPk(userId, {
         raw,
       });
 

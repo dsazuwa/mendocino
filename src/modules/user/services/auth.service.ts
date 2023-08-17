@@ -222,15 +222,18 @@ const authService = {
     password: string,
   ) =>
     sequelize.transaction(async (transaction) => {
-      const user = await User.create({ firstName, lastName }, { transaction });
+      const { userId } = await User.create(
+        { firstName, lastName },
+        { transaction },
+      );
 
-      const account = await UserAccount.create(
-        { userId: user.userId, email, password, status: 'pending' },
+      await UserAccount.create(
+        { userId, email, password, status: 'pending' },
         { transaction },
       );
 
       await AuthOTP.destroy({
-        where: { userId: user.userId, type: 'email' },
+        where: { userId, type: 'email' },
         transaction,
       });
 
@@ -238,7 +241,7 @@ const authService = {
 
       await AuthOTP.create(
         {
-          userId: user.userId,
+          userId,
           type: 'email',
           password: otp,
           expiresAt: AuthOTP.getExpiration(),
@@ -247,11 +250,11 @@ const authService = {
       );
 
       await UserRole.create(
-        { userId: user.userId, roleId: ROLES.CUSTOMER.roleId },
+        { userId, roleId: ROLES.CUSTOMER.roleId },
         { transaction },
       );
 
-      return { user, account, password: otp };
+      return { userId, password: otp };
     }),
 
   loginUser: async (email: string, password: string) => {
