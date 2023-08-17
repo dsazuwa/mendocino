@@ -253,7 +253,7 @@ describe(`PATCH ${BASE_URL}/me/verify/:otp`, () => {
   });
 });
 
-describe('add phone number', () => {
+describe('Phone number management', () => {
   const mockOTP = '12345';
   const phoneNumber = '1234567890';
 
@@ -274,7 +274,7 @@ describe('add phone number', () => {
     jwt = authService.generateJWT(userId, 'email');
   });
 
-  it('should register a new phone number', async () => {
+  it(`POST ${BASE_URL}/me/phone should register a new phone number`, async () => {
     let phone = await PhoneNumber.findOne({
       where: { userId, phoneNumber },
       raw,
@@ -300,7 +300,7 @@ describe('add phone number', () => {
     expect(otp).not.toBeNull();
   });
 
-  it('should create a new otp', async () => {
+  it(`PATCH ${BASE_URL}/me/phone should create a new otp`, async () => {
     const otp1 = await AuthOTP.findOne({
       where: { userId, type: 'phone' },
       raw,
@@ -319,7 +319,7 @@ describe('add phone number', () => {
     expect(otp1?.otpId).not.toBe(otp2?.otpId);
   });
 
-  it('should fail to verify phone number on invalid otp', async () => {
+  it(`PATCH ${BASE_URL}/me/phone/:otp should fail to verify phone number on invalid otp`, async () => {
     let phone = await PhoneNumber.findOne({
       where: { userId, phoneNumber, status: 'pending' },
       raw,
@@ -338,7 +338,7 @@ describe('add phone number', () => {
     expect(phone).not.toBeNull();
   });
 
-  it('should verify phone number on valid otp', async () => {
+  it(`PATCH ${BASE_URL}/me/phone/:otp should verify phone number on valid otp`, async () => {
     let phone = await PhoneNumber.findOne({
       where: { userId, phoneNumber, status: 'pending' },
       raw,
@@ -368,6 +368,19 @@ describe('add phone number', () => {
       raw,
     });
     expect(otp).toBeNull();
+  });
+
+  it(`DELETE ${BASE_URL}/me/phone should delete phone number`, async () => {
+    let phone = await PhoneNumber.findOne({ where: { userId }, raw });
+    expect(phone).not.toBeNull();
+
+    await request
+      .delete(`${BASE_URL}/me/phone`)
+      .auth(jwt, { type: 'bearer' })
+      .expect(200);
+
+    phone = await PhoneNumber.findOne({ where: { userId }, raw });
+    expect(phone).toBeNull();
   });
 });
 

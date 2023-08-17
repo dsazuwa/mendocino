@@ -46,6 +46,9 @@ const messages = {
   REQUEST_VERIFICATION_SMS: 'New OTP sent to your phone',
   VERIFY_PHONE_SUCCESS: 'Phone number verified!',
 
+  DELETE_PHONE_FAIL: 'No phone number on record',
+  DELETE_PHONE_SUCCESS: 'Phone number deleted!',
+
   UPDATE_USER_NAME: 'Successfully updated name!',
 
   CREATE_PASSWORD_FAILED: 'Failed to create password',

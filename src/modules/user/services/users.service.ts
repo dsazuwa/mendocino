@@ -119,12 +119,23 @@ const usersService = {
 
   createPhone: async (userId: number, phoneNumber: string) =>
     sequelize.transaction(async (transaction) => {
+      await PhoneNumber.destroy({ where: { userId }, transaction });
+
+      await PhoneNumber.create(
+        {
+          userId,
+          phoneNumber,
+          status: 'pending',
+        },
+        { transaction },
+      );
+
+      const otp = '12345';
+
       await AuthOTP.destroy({
         where: { userId, type: 'phone' },
         transaction,
       });
-
-      const otp = '12345';
 
       await AuthOTP.create(
         {
@@ -132,15 +143,6 @@ const usersService = {
           type: 'phone',
           password: otp,
           expiresAt: AuthOTP.getExpiration(),
-        },
-        { transaction },
-      );
-
-      await PhoneNumber.create(
-        {
-          userId,
-          phoneNumber,
-          status: 'pending',
         },
         { transaction },
       );
@@ -160,6 +162,9 @@ const usersService = {
         { where: { userId }, transaction },
       );
     }),
+
+  deletePhone: async (userId: number) =>
+    PhoneNumber.destroy({ where: { userId } }),
 
   updateUser: (
     userId: number,

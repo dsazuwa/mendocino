@@ -273,7 +273,10 @@ describe('verify email', () => {
   });
 });
 
-describe('phone number', () => {
+describe('phone number management', () => {
+  const oldPhoneNumber = '1234567890';
+  const newPhoneNumber = '0987654321';
+
   let userId: number;
 
   beforeAll(async () => {
@@ -289,7 +292,7 @@ describe('phone number', () => {
   });
 
   it('should create a new phone number', async () => {
-    const phoneNumber = '1234567890';
+    const phoneNumber = oldPhoneNumber;
 
     const password = await usersService.createPhone(userId, phoneNumber);
     expect(password.length).toBe(5);
@@ -299,6 +302,33 @@ describe('phone number', () => {
       raw: true,
     });
     expect(phone).not.toBeNull();
+
+    const otp = await AuthOTP.findOne({ where: { userId, type: 'phone' } });
+    expect(otp).not.toBeNull();
+    expect(otp?.comparePasswords(password)).toBe(true);
+  });
+
+  it('should destroy previous phone number and create a new one', async () => {
+    let previousPhone = await PhoneNumber.findOne({
+      where: { userId, phoneNumber: oldPhoneNumber },
+    });
+    expect(previousPhone).not.toBeNull();
+
+    const phoneNumber = newPhoneNumber;
+
+    const password = await usersService.createPhone(userId, phoneNumber);
+    expect(password.length).toBe(5);
+
+    previousPhone = await PhoneNumber.findOne({
+      where: { userId, phoneNumber: oldPhoneNumber },
+    });
+    expect(previousPhone).toBeNull();
+
+    const newPhone = await PhoneNumber.findOne({
+      where: { userId, phoneNumber, status: 'pending' },
+      raw: true,
+    });
+    expect(newPhone).not.toBeNull();
 
     const otp = await AuthOTP.findOne({ where: { userId, type: 'phone' } });
     expect(otp).not.toBeNull();
@@ -331,6 +361,16 @@ describe('phone number', () => {
       raw: true,
     });
     expect(otp).toBeNull();
+  });
+
+  it('should delete phone number', async () => {
+    let phone = await PhoneNumber.findOne({ where: { userId }, raw: true });
+    expect(phone).not.toBeNull();
+
+    await usersService.deletePhone(userId);
+
+    phone = await PhoneNumber.findOne({ where: { userId }, raw: true });
+    expect(phone).toBeNull();
   });
 });
 

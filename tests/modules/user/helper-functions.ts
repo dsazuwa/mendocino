@@ -1,4 +1,3 @@
-import { ROLES } from '@App/modules/user/utils/constants';
 import {
   ProviderType,
   User,
@@ -7,6 +6,7 @@ import {
   UserIdentity,
   UserRole,
 } from '@user/models';
+import { ROLES } from '@user/utils/constants';
 
 export const createUserAccount = async (
   firstName: string,
@@ -55,11 +55,7 @@ export const createUserAccountAndIdentity = async (
   const arr: UserIdentity[] = [];
 
   identities.forEach(async ({ identityId, provider }) => {
-    const i = await UserIdentity.create({
-      userId,
-      identityId,
-      provider,
-    });
+    const i = await UserIdentity.create({ userId, identityId, provider });
 
     arr.push(i);
   });

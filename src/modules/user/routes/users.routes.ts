@@ -6,6 +6,7 @@ import {
   changePassword,
   closeAccount,
   createPassword,
+  deletePhone,
   getProfile,
   getUserData,
   greet,
@@ -68,6 +69,7 @@ usersRouter.post(
 );
 usersRouter.patch('/phone', resendVerifySMS);
 usersRouter.patch('/phone/:otp', validate(verifyPhoneSchema), verifyPhone);
+usersRouter.delete('/phone', deletePhone);
 
 usersRouter.patch(
   '/name',
