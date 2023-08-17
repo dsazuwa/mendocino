@@ -8,6 +8,8 @@ import 'tests/user.db-setup';
 const raw = true;
 
 describe('Phone Number Model', () => {
+  const phoneNumber = '1234569012';
+
   let userId: number;
 
   beforeAll(async () => {
@@ -22,19 +24,57 @@ describe('Phone Number Model', () => {
     userId = user.userId;
   });
 
+  beforeEach(async () => {
+    await PhoneNumber.destroy({ where: {} });
+  });
+
   it('should create phone number', async () => {
     const data = {
       userId,
-      phoneNumber: '1234569012',
+      phoneNumber,
       status: 'active' as PhoneNumberStatusype,
     };
 
-    const phoneNumber = await PhoneNumber.create(data);
-    expect(phoneNumber).toMatchObject(data);
+    const phone = await PhoneNumber.create(data);
+    expect(phone).toMatchObject(data);
+  });
+
+  it('should fail on duplicate phone number', async () => {
+    const { user } = await createUserAccount(
+      'Jamal',
+      'Doe',
+      'jamaldoe@gmail.com',
+      'jamalD0ePa$$',
+      'active',
+      [ROLES.CUSTOMER.roleId],
+    );
+
+    await PhoneNumber.create({ userId, phoneNumber, status: 'pending' });
+
+    let count = await PhoneNumber.count({ where: { userId: user.userId } });
+    expect(count).toBe(0);
+
+    try {
+      await PhoneNumber.create({
+        userId: user.userId,
+        phoneNumber,
+        status: 'pending',
+      });
+
+      expect(true).toBe(false);
+    } catch (e) {
+      count = await PhoneNumber.count({ where: { userId: user.userId } });
+      expect(count).toBe(0);
+    }
   });
 
   it('should retrieve phone number', async () => {
-    const phoneNumbers = await PhoneNumber.findAll({ where: { userId }, raw });
+    await PhoneNumber.create({ userId, phoneNumber, status: 'active' });
+
+    const phoneNumbers = await PhoneNumber.findAll({
+      where: { userId },
+      raw,
+    });
     expect(phoneNumbers.length).toEqual(1);
     expect(phoneNumbers[0]).toBeDefined();
   });
@@ -43,28 +83,28 @@ describe('Phone Number Model', () => {
     const oldStatus = 'active';
     const newStatus = 'pending';
 
-    const phoneNumber = await PhoneNumber.create({
+    const phone = await PhoneNumber.create({
       userId,
       phoneNumber: '1234569712',
       status: oldStatus,
     });
 
-    await phoneNumber.update({ status: newStatus });
+    await phone.update({ status: newStatus });
 
-    let retrievedPhoneNumber = await PhoneNumber.findOne({
-      where: { phoneNumberId: phoneNumber.phoneNumberId },
+    let retrievedPhone = await PhoneNumber.findOne({
+      where: { phoneNumberId: phone.phoneNumberId },
     });
-    expect(retrievedPhoneNumber).not.toBeNull();
+    expect(retrievedPhone).not.toBeNull();
 
     await PhoneNumber.update(
       { status: oldStatus },
-      { where: { phoneNumberId: phoneNumber.phoneNumberId } },
+      { where: { phoneNumberId: phone.phoneNumberId } },
     );
 
-    retrievedPhoneNumber = await PhoneNumber.findOne({
-      where: { phoneNumberId: phoneNumber.phoneNumberId },
+    retrievedPhone = await PhoneNumber.findOne({
+      where: { phoneNumberId: phone.phoneNumberId },
     });
-    expect(retrievedPhoneNumber).not.toBeNull();
+    expect(retrievedPhone).not.toBeNull();
   });
 
   it('should delete phone number', async () => {
@@ -74,55 +114,54 @@ describe('Phone Number Model', () => {
       status: 'active' as PhoneNumberStatusype,
     };
 
-    let phoneNumber = await PhoneNumber.create(data);
+    let phone = await PhoneNumber.create(data);
 
-    await phoneNumber.destroy();
+    await phone.destroy();
 
-    let retrievedPhoneNumber = await PhoneNumber.findOne({
-      where: { phoneNumberId: phoneNumber.phoneNumberId },
+    let retrievedPhone = await PhoneNumber.findOne({
+      where: { phoneNumberId: phone.phoneNumberId },
       raw,
     });
-    expect(retrievedPhoneNumber).toBeNull();
+    expect(retrievedPhone).toBeNull();
 
-    phoneNumber = await PhoneNumber.create(data);
+    phone = await PhoneNumber.create(data);
 
     await PhoneNumber.destroy({
-      where: { phoneNumberId: phoneNumber.phoneNumberId },
+      where: { phoneNumberId: phone.phoneNumberId },
     });
 
-    retrievedPhoneNumber = await PhoneNumber.findOne({
-      where: { phoneNumberId: phoneNumber.phoneNumberId },
+    retrievedPhone = await PhoneNumber.findOne({
+      where: { phoneNumberId: phone.phoneNumberId },
       raw,
     });
-    expect(retrievedPhoneNumber).toBeNull();
+    expect(retrievedPhone).toBeNull();
   });
 
   it('should not delete User on Phone Number delete', async () => {
-    const phoneNumber = await PhoneNumber.create({
+    const phone = await PhoneNumber.create({
       userId,
-      phoneNumber: '1233789012',
+      phoneNumber,
       status: 'active',
     });
 
-    await phoneNumber.destroy();
+    await phone.destroy();
 
     const user = await User.findByPk(userId, { raw });
     expect(user).not.toBeNull();
   });
 
   it('should delete Phone Number on User delete', async () => {
-    const phoneNumber = await PhoneNumber.create({
+    const phone = await PhoneNumber.create({
       userId,
-      phoneNumber: '8091610361',
+      phoneNumber,
       status: 'active',
     });
 
     await User.destroy({ where: { userId } });
 
-    const retrievedPhoneNumber = await PhoneNumber.findByPk(
-      phoneNumber.phoneNumberId,
-      { raw: true },
-    );
-    expect(retrievedPhoneNumber).toBeNull();
+    const retrievedPhone = await PhoneNumber.findByPk(phone.phoneNumberId, {
+      raw: true,
+    });
+    expect(retrievedPhone).toBeNull();
   });
 });

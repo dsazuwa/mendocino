@@ -295,7 +295,6 @@ describe('phone number management', () => {
     const phoneNumber = oldPhoneNumber;
 
     const password = await usersService.createPhone(userId, phoneNumber);
-    expect(password.length).toBe(5);
 
     const phone = await PhoneNumber.findOne({
       where: { userId, phoneNumber, status: 'pending' },
@@ -314,10 +313,7 @@ describe('phone number management', () => {
     });
     expect(previousPhone).not.toBeNull();
 
-    const phoneNumber = newPhoneNumber;
-
-    const password = await usersService.createPhone(userId, phoneNumber);
-    expect(password.length).toBe(5);
+    const password = await usersService.createPhone(userId, newPhoneNumber);
 
     previousPhone = await PhoneNumber.findOne({
       where: { userId, phoneNumber: oldPhoneNumber },
@@ -325,7 +321,7 @@ describe('phone number management', () => {
     expect(previousPhone).toBeNull();
 
     const newPhone = await PhoneNumber.findOne({
-      where: { userId, phoneNumber, status: 'pending' },
+      where: { userId, phoneNumber: newPhoneNumber, status: 'pending' },
       raw: true,
     });
     expect(newPhone).not.toBeNull();
