@@ -6,10 +6,6 @@ import usersService from '@user/services/users.service';
 import messages from '@user/utils/messages';
 import { setAccessTokenCookie } from './auth.controller';
 
-export const greet = async (req: Request, res: Response) => {
-  res.status(200).json({ message: `Hi!` });
-};
-
 export const getUserData = async (
   req: Request,
   res: Response,

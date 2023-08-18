@@ -7,7 +7,7 @@ import { request } from 'tests/supertest.helper';
 import 'tests/user.db-setup';
 
 describe('Authentication Middleware', () => {
-  const URL = '/api/users/me/greeting';
+  const URL = '/api/test/greeting';
 
   it('should authenticate the request for an active account', async () => {
     const { userId } = await createUserAccount(

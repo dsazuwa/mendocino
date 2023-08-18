@@ -7,7 +7,7 @@ import { request } from 'tests/supertest.helper';
 import 'tests/user.db-setup';
 
 describe('Inative Authentication Middleware', () => {
-  const URL = '/api/users/me/inactive/greeting';
+  const URL = '/api/test/inactive/greeting';
 
   it('should authenticate the request with a valid access token', async () => {
     const { userId } = await createUserAccount(

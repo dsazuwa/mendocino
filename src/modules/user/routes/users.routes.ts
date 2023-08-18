@@ -8,17 +8,12 @@ import {
   createPassword,
   getProfile,
   getUserData,
-  greet,
   resendVerifyEmail,
   revokeSocialAuthentication,
   updateUserName,
   verifyEmail,
 } from '@user/controllers/users.controller';
-import {
-  authenticate,
-  authenticateInactive,
-  authorize,
-} from '@user/middleware/auth';
+import { authenticate, authorize } from '@user/middleware/auth';
 import { permitPending } from '@user/middleware/route-guards';
 import {
   changePasswordSchema,
@@ -31,25 +26,17 @@ import { ROLES } from '@user/utils/constants';
 
 const usersRouter = Router();
 
-usersRouter.get('/inactive/greeting', authenticateInactive, greet);
-
 usersRouter.use(authenticate);
-
-usersRouter.get('/greeting', greet);
 
 usersRouter.get('', getUserData);
 
+usersRouter.use(authorize([ROLES.CUSTOMER.name]));
+
 usersRouter.get('/profile', getProfile);
 
-usersRouter.post(
-  '/verify',
-  authorize([ROLES.CUSTOMER.name]),
-  permitPending,
-  resendVerifyEmail,
-);
+usersRouter.post('/verify', permitPending, resendVerifyEmail);
 usersRouter.patch(
   '/verify/:otp',
-  authorize([ROLES.CUSTOMER.name]),
   validate(verifyEmailSchema),
   permitPending,
   verifyEmail,
@@ -62,18 +49,11 @@ usersRouter.patch(
   updateUserName,
 );
 
-usersRouter.post(
-  '/password',
-  authorize([ROLES.CUSTOMER.name]),
-  validate(createPasswordSchema),
-  createPassword,
-);
-
+usersRouter.post('/password', validate(createPasswordSchema), createPassword);
 usersRouter.patch('/password', validate(changePasswordSchema), changePassword);
 
 usersRouter.patch(
   '/revoke-social-auth',
-  authorize([ROLES.CUSTOMER.name]),
   validate(revokeSocialAuthenticationSchema),
   revokeSocialAuthentication,
 );
