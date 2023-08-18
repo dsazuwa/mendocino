@@ -11,7 +11,7 @@ beforeAll(async () => {
     ROLES.DELIVERY_DRIVER,
     ROLES.CUSTOMER_SUPPORT,
     ROLES.MANAGER,
-    ROLES.ADMIN,
+    ROLES.SUPER_USER,
     ROLES.ROOT,
   ]);
 });

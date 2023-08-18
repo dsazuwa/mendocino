@@ -33,8 +33,8 @@ describe('Role Model', () => {
   });
 
   it('should update role', async () => {
-    const oldName = 'super admin';
-    const newName = 'super-admin';
+    const oldName = 'super user';
+    const newName = 'super user';
 
     const role = await Role.create({ name: oldName });
 

@@ -109,7 +109,7 @@ describe('User Role Model', () => {
         ROLES.DELIVERY_DRIVER,
         ROLES.CUSTOMER_SUPPORT,
         ROLES.MANAGER,
-        ROLES.ADMIN,
+        ROLES.SUPER_USER,
         ROLES.ROOT,
       ]);
     });
@@ -121,12 +121,12 @@ describe('User Role Model', () => {
       });
 
       expect(
-        UserRole.create({ userId, roleId: ROLES.ADMIN.roleId }),
+        UserRole.create({ userId, roleId: ROLES.SUPER_USER.roleId }),
       ).rejects.toThrow();
     });
 
     it('should throw error on adding customer role to user with some other role ', async () => {
-      await UserRole.create({ userId, roleId: ROLES.ADMIN.roleId });
+      await UserRole.create({ userId, roleId: ROLES.SUPER_USER.roleId });
 
       expect(
         UserRole.create({ userId, roleId: ROLES.CUSTOMER.roleId }),
@@ -136,7 +136,7 @@ describe('User Role Model', () => {
     it('should throw error on update that could cause customer to have multiple roles', async () => {
       const userRole = await UserRole.create({
         userId,
-        roleId: ROLES.ADMIN.roleId,
+        roleId: ROLES.SUPER_USER.roleId,
       });
       await UserRole.create({ userId, roleId: ROLES.MANAGER.roleId });
 

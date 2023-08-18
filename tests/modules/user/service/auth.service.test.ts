@@ -200,7 +200,7 @@ describe('Auth service', () => {
         'juniperdoe@gmail.com',
         null,
         'active',
-        [ROLES.ADMIN.roleId],
+        [ROLES.SUPER_USER.roleId],
       );
 
       const { user, userExists, identityExists, isCustomer } =
@@ -219,7 +219,7 @@ describe('Auth service', () => {
         lastName: u.lastName,
         email: account.email,
         status: account.status,
-        roles: [ROLES.ADMIN.name],
+        roles: [ROLES.SUPER_USER.name],
       });
     });
 

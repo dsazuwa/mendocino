@@ -190,7 +190,7 @@ describe('Verify Function', () => {
       email,
       password,
       'active',
-      [ROLES.ADMIN.roleId],
+      [ROLES.SUPER_USER.roleId],
     );
 
     const i = await UserIdentity.findOne({

@@ -11,12 +11,12 @@ describe('authorize middleware', () => {
   it('should call next() if user is authorized', () => {
     const req = {
       user: {
-        roles: ['admin'],
+        roles: ['super user'],
       },
     } as unknown as Request;
     const next = jest.fn();
 
-    const middleware = authorize(['admin']);
+    const middleware = authorize(['super user']);
     middleware(req, res, next);
 
     expect(next).toHaveBeenCalled();
@@ -26,12 +26,12 @@ describe('authorize middleware', () => {
   it('should call next() if user is authorized', () => {
     const req = {
       user: {
-        roles: ['delivery driver', 'admin'],
+        roles: ['delivery driver', 'super user'],
       },
     } as unknown as Request;
     const next = jest.fn();
 
-    const middleware = authorize(['admin', 'root']);
+    const middleware = authorize(['super user', 'root']);
     middleware(req, res, next);
 
     expect(next).toHaveBeenCalled();
@@ -46,7 +46,7 @@ describe('authorize middleware', () => {
     } as unknown as Request;
     const next = jest.fn();
 
-    const middleware = authorize(['admin', 'manager']);
+    const middleware = authorize(['super user', 'manager']);
     middleware(req, res, next);
 
     expect(next).toHaveBeenLastCalledWith(
@@ -62,7 +62,7 @@ describe('authorize middleware', () => {
     } as unknown as Request;
     const next = jest.fn();
 
-    const middleware = authorize(['admin']);
+    const middleware = authorize(['super user']);
     middleware(req, res, next);
 
     expect(next).toHaveBeenLastCalledWith(

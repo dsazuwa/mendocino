@@ -7,7 +7,10 @@ import { configureJWTStrategy } from './middleware/strategies/jwt.strategy';
 
 import userRouter from './routes';
 
+import { ROLES } from './utils/constants';
+
 export {
+  ROLES,
   authenticate,
   authenticateInactive,
   authorize,

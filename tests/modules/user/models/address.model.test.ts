@@ -179,7 +179,7 @@ describe('Address Before Create Hook', () => {
       'jefferson@gmail.com',
       'JeffD0ePa$$',
       'active',
-      [ROLES.ADMIN.roleId],
+      [ROLES.SUPER_USER.roleId],
     );
 
     const data = {
