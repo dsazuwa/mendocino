@@ -22,7 +22,7 @@ class Address extends Model<
 
   declare addressLine1: string;
 
-  declare addressLine2: CreationOptional<string>;
+  declare addressLine2: CreationOptional<string | null>;
 
   declare city: string;
 
@@ -98,6 +98,9 @@ Address.init(
     postalCode: {
       type: DataTypes.STRING,
       allowNull: false,
+      validate: {
+        len: [5, 5],
+      },
     },
     createdAt: {
       type: DataTypes.DATE,

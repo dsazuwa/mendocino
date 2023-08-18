@@ -42,13 +42,6 @@ const messages = {
   REQUEST_VERIFICATION_EMAIL: 'New OTP sent to your email',
   VERIFY_EMAIL_SUCCESS: 'Email verified!',
 
-  REGISTER_PHONE_SUCCESS: 'Successfully registered!',
-  REQUEST_VERIFICATION_SMS: 'New OTP sent to your phone',
-  VERIFY_PHONE_SUCCESS: 'Phone number verified!',
-
-  DELETE_PHONE_FAIL: 'No phone number on record',
-  DELETE_PHONE_SUCCESS: 'Phone number deleted!',
-
   UPDATE_USER_NAME: 'Successfully updated name!',
 
   CREATE_PASSWORD_FAILED: 'Failed to create password',
@@ -61,6 +54,28 @@ const messages = {
     `Successfully revoked ${capitalizeFirst(provider)} authentication`,
 
   CLOSE_CLIENT_ACCOUNT: 'Account successfully closed!',
+
+  // PHONE ROUTER MESSAGES
+
+  REGISTER_PHONE_SUCCESS: 'Successfully registered!',
+
+  REQUEST_VERIFICATION_SMS: 'New OTP sent to your phone',
+
+  VERIFY_PHONE_SUCCESS: 'Phone number verified!',
+
+  DELETE_PHONE_FAIL: 'No phone number on record',
+  DELETE_PHONE_SUCCESS: 'Phone number deleted!',
+
+  // ADDRESS ROUTER MESSAGES
+
+  CREATE_ADDRESS_SUCCESS: 'Address created!',
+  CREATE_ADDRESS_FAIL: 'Failed to create address',
+
+  UPDATE_ADDRESS_SUCCESS: 'Address updated!',
+  UPDATE_ADDRESS_FAIL: 'Failed to update address',
+
+  DELETE_ADDRESS_SUCCESS: 'Address deleted!',
+  DELETE_ADDRESS_FAIL: 'Failed to delete address',
 } as const;
 
 export default messages;
