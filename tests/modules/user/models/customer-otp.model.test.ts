@@ -1,62 +1,60 @@
-import { AuthOTP, UserAccount } from '@user/models';
-import { ROLES } from '@user/utils/constants';
+import { Customer, CustomerOTP } from '@user/models';
 
-import { createUserAccount } from '../helper-functions';
+import { createCustomer } from '../helper-functions';
 
-import 'tests/user.db-setup';
+import 'tests/db-setup';
 
 const raw = true;
 
-describe('AuthOTP Model', () => {
-  let userId: number;
+describe('CustomerOTP Model', () => {
+  let customerId: number;
 
   beforeAll(async () => {
-    const { user } = await createUserAccount(
+    const { customer } = await createCustomer(
       'Jacque',
       'Doe',
       'jaquedoe@gmail.com',
       'jacqueD0epa$$',
       'pending',
-      [ROLES.CUSTOMER.roleId],
     );
-    userId = user.userId;
+    customerId = customer.customerId;
   });
 
   describe('create OTP', () => {
     it('should create OTP', async () => {
-      await AuthOTP.create({
-        userId,
+      await CustomerOTP.create({
+        customerId,
         type: 'email',
         password: '12345',
         expiresAt: new Date(),
       });
 
-      let retrievedOTP = await AuthOTP.findOne({
-        where: { userId, type: 'email' },
+      let retrievedOTP = await CustomerOTP.findOne({
+        where: { customerId, type: 'email' },
         raw,
       });
 
       expect(retrievedOTP).not.toBeNull();
 
-      await AuthOTP.create({
-        userId,
+      await CustomerOTP.create({
+        customerId,
         type: 'password',
         password: '12345',
         expiresAt: new Date(),
       });
 
-      retrievedOTP = await AuthOTP.findOne({
-        where: { userId, type: 'password' },
+      retrievedOTP = await CustomerOTP.findOne({
+        where: { customerId, type: 'password' },
         raw,
       });
 
       expect(retrievedOTP).not.toBeNull();
     });
 
-    it('should fail on invalid userID', async () => {
+    it('should fail on invalid customerId', async () => {
       expect(
-        AuthOTP.create({
-          userId: 1000,
+        CustomerOTP.create({
+          customerId: 1000,
           type: 'password',
           password: '12345',
           expiresAt: new Date(),
@@ -66,8 +64,8 @@ describe('AuthOTP Model', () => {
 
     it('should fail to create duplicate OTP', async () => {
       expect(
-        AuthOTP.create({
-          userId,
+        CustomerOTP.create({
+          customerId,
           type: 'email',
           password: '12345',
           expiresAt: new Date(),
@@ -75,8 +73,8 @@ describe('AuthOTP Model', () => {
       ).rejects.toThrow();
 
       expect(
-        AuthOTP.create({
-          userId,
+        CustomerOTP.create({
+          customerId,
           type: 'email',
           password: '12345',
           expiresAt: new Date(),
@@ -86,21 +84,28 @@ describe('AuthOTP Model', () => {
   });
 
   it('should retrieve OTP', async () => {
-    let otp = await AuthOTP.findOne({ where: { userId, type: 'email' }, raw });
+    let otp = await CustomerOTP.findOne({
+      where: { customerId, type: 'email' },
+      raw,
+    });
     expect(otp).not.toBeNull();
 
-    otp = await AuthOTP.findOne({ where: { userId, type: 'password' }, raw });
+    otp = await CustomerOTP.findOne({
+      where: { customerId, type: 'password' },
+      raw,
+    });
     expect(otp).not.toBeNull();
   });
 
   it('should delete OTP', async () => {
-    const numOTPs = (await AuthOTP.findAll({ where: { userId }, raw })).length;
-    const numDeleted = await AuthOTP.destroy({ where: { userId } });
+    const numOTPs = (await CustomerOTP.findAll({ where: { customerId }, raw }))
+      .length;
+    const numDeleted = await CustomerOTP.destroy({ where: { customerId } });
 
     expect(numOTPs).toBe(numDeleted);
 
-    const passwordOTP = await AuthOTP.create({
-      userId,
+    const passwordOTP = await CustomerOTP.create({
+      customerId,
       type: 'password',
       password: '12345',
       expiresAt: new Date(),
@@ -108,8 +113,8 @@ describe('AuthOTP Model', () => {
 
     await passwordOTP.destroy();
 
-    const otp = await AuthOTP.findOne({
-      where: { userId, type: 'password' },
+    const otp = await CustomerOTP.findOne({
+      where: { customerId, type: 'password' },
       raw,
     });
     expect(otp).toBeNull();
@@ -119,8 +124,8 @@ describe('AuthOTP Model', () => {
     it('should hash the password on create', async () => {
       const password = '12345';
 
-      const otp = await AuthOTP.create({
-        userId,
+      const otp = await CustomerOTP.create({
+        customerId,
         type: 'email',
         password,
         expiresAt: new Date(),
@@ -135,8 +140,8 @@ describe('AuthOTP Model', () => {
     it('should hash the password on update', async () => {
       const password = '12345';
 
-      const otp = await AuthOTP.create({
-        userId,
+      const otp = await CustomerOTP.create({
+        customerId,
         type: 'email',
         password,
         expiresAt: new Date(),
@@ -152,13 +157,13 @@ describe('AuthOTP Model', () => {
   });
 
   it('should generate a 5-digit password', async () => {
-    const code = AuthOTP.generatePassword();
+    const code = CustomerOTP.generatePassword();
     expect(code.length).toBe(5);
     expect(parseInt(code, 10)).toBeDefined();
   });
 
   it('should generate a date 30 minutes from now', () => {
-    const expiration = AuthOTP.getExpiration();
+    const expiration = CustomerOTP.getExpiration();
     const now = new Date();
     const thirtyMinsFromNow = new Date(now.getTime() + 30 * 60000);
 
@@ -170,60 +175,62 @@ describe('AuthOTP Model', () => {
   });
 });
 
-describe('OTP and User Account Relationship', () => {
-  it('deleting OTP should not delete User Account', async () => {
-    const { userId } = await createUserAccount(
+describe('CustomerOTP and Customer Relationship', () => {
+  it('deleting OTP should not delete Customer', async () => {
+    const { customerId } = await createCustomer(
       'Jasmine',
       'Doe',
       'jasminedoe@gmail.com',
       'jasmineD0epa$$',
       'active',
-      [ROLES.CUSTOMER.roleId],
     );
 
-    await AuthOTP.create({
-      userId,
+    await CustomerOTP.create({
+      customerId,
       type: 'password',
       password: '12345',
       expiresAt: new Date(),
     });
 
-    await AuthOTP.destroy({ where: { userId, type: 'password' } });
+    await CustomerOTP.destroy({ where: { customerId, type: 'password' } });
 
-    const otp = await AuthOTP.findOne({
-      where: { userId, type: 'password' },
+    const otp = await CustomerOTP.findOne({
+      where: { customerId, type: 'password' },
       raw,
     });
     expect(otp).toBeNull();
 
-    const retrievedAccount = await UserAccount.findByPk(userId, { raw });
-    expect(retrievedAccount).not.toBeNull();
+    const retrievedCustomer = await Customer.findByPk(customerId, {
+      raw,
+    });
+    expect(retrievedCustomer).not.toBeNull();
   });
 
-  it('deleting User Account should delete OTP', async () => {
-    const { userId } = await createUserAccount(
+  it('deleting Customer should delete OTP', async () => {
+    const { customerId } = await createCustomer(
       'Jessica',
       'Doe',
       'jessicadoe@gmail.com',
       'JessicaD0ePa$$',
       'active',
-      [ROLES.CUSTOMER.roleId],
     );
 
-    await AuthOTP.create({
-      userId,
+    await CustomerOTP.create({
+      customerId,
       type: 'password',
       password: '12345',
-      expiresAt: AuthOTP.getExpiration(),
+      expiresAt: CustomerOTP.getExpiration(),
     });
 
-    await UserAccount.destroy({ where: { userId } });
+    await Customer.destroy({ where: { customerId } });
 
-    const retrievedAccount = await UserAccount.findByPk(userId, { raw });
-    expect(retrievedAccount).toBeNull();
+    const retrievedCustomer = await Customer.findByPk(customerId, {
+      raw,
+    });
+    expect(retrievedCustomer).toBeNull();
 
-    const otp = await AuthOTP.findOne({
-      where: { userId, type: 'password' },
+    const otp = await CustomerOTP.findOne({
+      where: { customerId, type: 'password' },
       raw,
     });
     expect(otp).toBeNull();

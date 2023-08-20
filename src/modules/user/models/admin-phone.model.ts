@@ -8,33 +8,38 @@ import {
 
 import sequelize from '@App/db';
 
-import { TABLENAMES } from '@user/utils/constants';
+import { TABLENAMES, USER_SCHEMA } from '@user/utils/constants';
 
-class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
-  declare userId: CreationOptional<number>;
+export type AdminPhoneStatusType = 'active' | 'pending';
 
-  declare firstName: string;
+class AdminPhone extends Model<
+  InferAttributes<AdminPhone>,
+  InferCreationAttributes<AdminPhone>
+> {
+  declare adminId: number;
 
-  declare lastName: string;
+  declare phoneId: number;
+
+  declare status: AdminPhoneStatusType;
 
   declare createdAt: CreationOptional<Date>;
 
   declare updatedAt: CreationOptional<Date>;
 }
 
-User.init(
+AdminPhone.init(
   {
-    userId: {
+    adminId: {
       type: DataTypes.INTEGER,
       primaryKey: true,
-      autoIncrement: true,
-    },
-    firstName: {
-      type: DataTypes.STRING,
       allowNull: false,
     },
-    lastName: {
-      type: DataTypes.STRING,
+    phoneId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    status: {
+      type: DataTypes.ENUM('active', 'pending'),
       allowNull: false,
     },
     createdAt: {
@@ -49,8 +54,9 @@ User.init(
   {
     sequelize,
     underscored: true,
-    tableName: TABLENAMES.USER,
+    schema: USER_SCHEMA,
+    tableName: TABLENAMES.ADMIN_PHONE,
   },
 );
 
-export default User;
+export default AdminPhone;

@@ -1,101 +1,189 @@
-Table users {
-  user_id integer [primary key]
-  first_name varchar
-  last_name varchar
-  created_at datetime
-  updated_at datetime
+Table emails {
+  email_id integer pk
+  email varchar [unique, not null]
+  created_at timestamp [not null]
 }
 
-Table user_identities {
-  identity_id string
-  user_id integer [ref: > users.user_id]
-  provider enum_provider_type
-  created_at datetime
-  updated_at datetime
+Table admins {
+  admin_id integer pk
+  first_name varchar [not null]
+  last_name varchar [not null]
+  created_at timestamp [not null]
+  updated_at timestamp [not null]
+}
+
+Table customers {
+  customer_id integer pk
+  first_name varchar [not null]
+  last_name varchar [not null]
+  created_at timestamp [not null]
+  updated_at timestamp [not null]
+}
+
+Table admin_accounts {
+  admin_id integer pk
+  email_id varchar [not null]
+  password varchar [not null]
+  status enum_admin_accounts_status [not null]
+  created_at timestamp [not null]
+  updated_at timestamp [not null]
+}
+
+ref: admin_accounts.admin_id - admins.admin_id
+ref: admin_accounts.email_id - emails.email_id
+
+Table customer_accounts {
+  customer_id integer pk
+  email_id varchar [not null]
+  password varchar
+  status enum_customer_accounts_status [not null]
+  created_at timestamp [not null]
+  updated_at timestamp [not null]
+}
+
+ref: customer_accounts.customer_id - customers.customer_id
+ref: customer_accounts.email_id - emails.email_id
+
+Table admin_otps {
+  otp_id integer pk
+  admin_id integer [not null]
+  type  enum_admin_otps_type [not null]
+  password varchar [not null]
+  expires_at timestamp [not null]
 
   Indexes {
-    (user_id, provider) [unique]
+    (admin_id, type) [unique]
   }
 }
 
-Enum enum_provider_type {
-  google
-  facebook
+ref: admin_otps.admin_id > admins.admin_id
+
+Table customer_otps {
+  otp_id integer pk
+  customer_id integer [not null]
+  type  enum_customer_otps_type [not null]
+  password varchar [not null]
+  expires_at timestamp [not null]
+
+  Indexes {
+    (customer_id, type) [unique]
+  }
 }
 
-Table user_accounts {
-  user_id integer [primary key]
-  email varchar
-  password varchar
-  status enum_user_account_status 
-  created_at datetime
-  updated_at datetime
+ref: customer_otps.customer_id > customers.customer_id
+
+Table customer_identities {
+  identity_id integer pk
+  customer_id integer [not null]
+  provider enum_customer_identities_provider [not null]
+  created_at timestamp [not null]
+  updated_at timestamp [not null]
+
+  Indexes {
+    (customer_id, provider) [unique]
+  }
 }
 
-Enum enum_user_account_status {
+ref: customer_identities.customer_id > customers.customer_id
+
+Table roles {
+  role_id integer pk
+  name varchar [unique, not null]
+}
+
+Table admins_roles {
+  admin_id integer [not null]
+  role_id integer [not null]
+  created_at timestamp [not null]
+  updated_at timestamp [not null]
+
+  Indexes {
+    (admin_id, role_id) [unique]
+  }
+}
+
+ref: admins_roles.admin_id > admins.admin_id
+ref: admins_roles.role_id > roles.role_id
+
+Table phones {
+  phone_id integer pk
+  phone_number varchar [unique, not null]
+  created_at timestamp [not null]
+}
+
+Table admin_phones {
+  admin_id integer pk [not null]
+  phone_id integer [not null]
+  status enum_admin_phones_status [not null]
+  created_at timestamp [not null]
+  updated_at timestamp [not null]
+}
+
+ref: admin_phones.admin_id - admins.admin_id
+ref: admin_phones.phone_id - phones.phone_id
+
+Table customer_phones {
+  customer_id integer pk [not null]
+  phone_id integer [not null]
+  status enum_customer_phones_status [not null]
+  created_at timestamp [not null]
+  updated_at timestamp [not null]
+}
+
+ref: customer_phones.customer_id - customers.customer_id
+ref: customer_phones.phone_id - phones.phone_id
+
+Table addresses {
+  address_id integer pk
+  customer_id integer [not null]
+  address_line_1 varchar [not null]
+  address_line_2 varchar
+  city varchar [not null]
+  state varchar [not null]
+  postal_code varchar [not null]
+  created_at timestamp [not null]
+  updated_at timestamp [not null]
+}
+
+ref: addresses.customer_id > customers.customer_id
+
+Enum enum_admin_accounts_status {
   active
-  inactive
   pending
+  inactive
+  disabled
 }
 
-Ref: user_accounts.user_id - users.user_id
-
-Table auth_otp {
-  otp_id integer [primary key]
-  user_id integer [ref: > user_accounts.user_id]
-  type  enum_auth_otp_type
-  password varchar
-  expires_at datetime
-
-  Indexes {
-    (user_id, type) [unique]
-  }
+Enum enum_customer_accounts_status {
+  active
+  pending
+  suspended
+  disabled
 }
 
-Enum enum_auth_otp_type {
+Enum enum_admin_otps_type {
   email
   password
   phone
 }
 
-Table roles {
-  role_id integer [primary key]
-  name varchar [unique]
+Enum enum_customer_otps_type {
+  email
+  password
+  phone
 }
 
-Table user_roles {
-  user_id integer [ref: > users.user_id]
-  role_id integer [ref: > roles.role_id]
-  created_at datetime
-  updated_at datetime
-
-  Indexes {
-    (user_id, role_id) [unique]
-  }
+Enum enum_customer_identities_provider {
+  google
+  facebook
 }
 
-Table phone_numbers {
-  phone_number_id integer
-  user_id integer [ref: - users.user_id]
-  phone_number string
-  status enum_phone_number_type
-  created_at datetime
-  updated_at datetime
-}
-
-Enum enum_phone_number_type {
+Enum enum_admin_phones_status {
   active
   pending
 }
 
-Table addresses {
-  address_id integer
-  user_id integer [ref: - users.user_id]
-  address_line_1 string
-  address_line_2 string
-  city string
-  state string
-  postal_code string
-  created_at datetime
-  updated_at datetime
+Enum enum_customer_phones_status {
+  active
+  pending
 }

@@ -10,32 +10,45 @@ import sequelize from '@App/db';
 
 import { TABLENAMES, USER_SCHEMA } from '@user/utils/constants';
 
-class Role extends Model<InferAttributes<Role>, InferCreationAttributes<Role>> {
-  declare roleId: CreationOptional<number>;
+class Email extends Model<
+  InferAttributes<Email>,
+  InferCreationAttributes<Email>
+> {
+  declare emailId: CreationOptional<number>;
 
-  declare name: string;
+  declare email: string;
+
+  declare createdAt: CreationOptional<Date>;
 }
 
-Role.init(
+Email.init(
   {
-    roleId: {
+    emailId: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,
     },
-    name: {
+    email: {
       type: DataTypes.STRING,
       allowNull: false,
       unique: true,
+      validate: {
+        isEmail: true,
+      },
+    },
+    createdAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
     },
   },
   {
     sequelize,
     underscored: true,
-    timestamps: false,
+    timestamps: true,
+    updatedAt: false,
     schema: USER_SCHEMA,
-    tableName: TABLENAMES.ROLE,
+    tableName: TABLENAMES.EMAIL,
   },
 );
 
-export default Role;
+export default Email;

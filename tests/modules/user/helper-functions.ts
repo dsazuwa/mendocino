@@ -1,36 +1,39 @@
 import {
+  Admin,
+  AdminAccount,
+  AdminAccountStatusType,
+  AdminRole,
+  Customer,
+  CustomerAccount,
+  CustomerAccountStatusType,
+  CustomerIdentity,
+  Email,
   ProviderType,
-  User,
-  UserAccount,
-  UserAccountStatusType,
-  UserIdentity,
-  UserRole,
+  Role,
 } from '@user/models';
 import { ROLES } from '@user/utils/constants';
 
-export const createUserAccount = async (
+export const createCustomer = async (
   firstName: string,
   lastName: string,
   email: string,
   password: string | null,
-  status: UserAccountStatusType,
-  roles: number[],
+  status: CustomerAccountStatusType,
 ) => {
-  const user = await User.create({ firstName, lastName });
+  const customer = await Customer.create({ firstName, lastName });
 
-  const { userId } = user;
+  const { customerId } = customer;
 
-  const account = await UserAccount.create({
-    userId,
-    email,
+  const { emailId } = await Email.create({ email });
+
+  const account = await CustomerAccount.create({
+    customerId,
+    emailId,
     password,
     status,
   });
 
-  const promises = roles.map((roleId) => UserRole.create({ userId, roleId }));
-  await Promise.all(promises);
-
-  return { userId, user, account };
+  return { customerId, customer, account };
 };
 
 export const createUserAccountAndIdentity = async (
@@ -38,29 +41,65 @@ export const createUserAccountAndIdentity = async (
   lastName: string,
   email: string,
   password: string | null,
-  status: UserAccountStatusType,
+  status: CustomerAccountStatusType,
   identities: { identityId: string; provider: ProviderType }[],
 ) => {
-  const user = await User.create({ firstName, lastName });
+  const customer = await Customer.create({ firstName, lastName });
 
-  const { userId } = user;
+  const { customerId } = customer;
 
-  const account = await UserAccount.create({
-    userId,
-    email,
+  const { emailId } = await Email.create({ email });
+
+  const account = await CustomerAccount.create({
+    customerId,
+    emailId,
     password,
     status,
   });
 
-  const arr: UserIdentity[] = [];
+  const identityMappings = identities.map(({ identityId, provider }) => ({
+    customerId,
+    identityId,
+    provider,
+  }));
+  const createdIdentities = await CustomerIdentity.bulkCreate(identityMappings);
 
-  identities.forEach(async ({ identityId, provider }) => {
-    const i = await UserIdentity.create({ userId, identityId, provider });
+  return { customerId, customer, account, identitities: createdIdentities };
+};
 
-    arr.push(i);
+export const createAdmin = async (
+  firstName: string,
+  lastName: string,
+  email: string,
+  password: string,
+  status: AdminAccountStatusType,
+  roles: number[],
+) => {
+  const admin = await Admin.create({ firstName, lastName });
+
+  const { adminId } = admin;
+
+  const { emailId } = await Email.create({ email });
+
+  const account = await AdminAccount.create({
+    adminId,
+    emailId,
+    password,
+    status,
   });
 
-  await UserRole.create({ userId, roleId: ROLES.CUSTOMER.roleId });
+  const roleMappings = roles.map((roleId) => ({ adminId, roleId }));
+  await AdminRole.bulkCreate(roleMappings);
 
-  return { userId, user, account, identitities: arr };
+  return { adminId, admin, account };
+};
+
+export const createRoles = async () => {
+  await Role.bulkCreate([
+    ROLES.DELIVERY_DRIVER,
+    ROLES.CUSTOMER_SUPPORT,
+    ROLES.MANAGER,
+    ROLES.SUPER_USER,
+    ROLES.ROOT,
+  ]);
 };

@@ -1,22 +1,27 @@
 export const TABLENAMES = {
-  USER: 'user_profiles',
-  USER_ACCOUNT: 'user_accounts',
-  USER_IDENTITY: 'user_identities',
+  ADDRESS: 'addresses',
+  EMAIL: 'emails',
+  PHONE: 'phones',
 
   ROLE: 'roles',
-  USER_ROLE: 'users_roles',
+  ADMIN_ROLE: 'admins_roles',
 
-  AUTH_OTP: 'auth_otps',
-  ADDRESS: 'addresses',
-  PHONE_NUMBER: 'phone_numbers',
+  ADMIN: 'admin_profiles',
+  ADMIN_ACCOUNT: 'admin_accounts',
+  ADMIN_OTP: 'admin_otps',
+  ADMIN_PHONE: 'admin_phones',
+
+  CUSTOMER: 'customer_profiles',
+  CUSTOMER_ACCOUNT: 'customer_accounts',
+  CUSTOMER_IDENTITY: 'customer_identities',
+  CUSTOMER_OTP: 'customer_otps',
+  CUSTOMER_PHONE: 'customer_phones',
 };
 
 export const ROLES = {
-  GUEST: { roleId: 0, name: 'guest' },
-  CUSTOMER: { roleId: 1, name: 'customer' },
-  DELIVERY_DRIVER: { roleId: 2, name: 'delivery driver' },
-  CUSTOMER_SUPPORT: { roleId: 3, name: 'customer support' },
-  MANAGER: { roleId: 4, name: 'manager' },
-  SUPER_USER: { roleId: 5, name: 'super user' },
-  ROOT: { roleId: 6, name: 'root' },
+  DELIVERY_DRIVER: { roleId: 1, name: 'delivery driver' },
+  CUSTOMER_SUPPORT: { roleId: 2, name: 'customer support' },
+  MANAGER: { roleId: 3, name: 'manager' },
+  SUPER_USER: { roleId: 4, name: 'super user' },
+  ROOT: { roleId: 5, name: 'root' },
 } as const;

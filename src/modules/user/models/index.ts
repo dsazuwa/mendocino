@@ -1,49 +1,144 @@
 import Address from './address.model';
-import AuthOTP, { AuthOTPType } from './auth-otp.model';
-import PhoneNumber, { PhoneNumberStatusype } from './phone-number.model';
+import AdminAccount, { AdminAccountStatusType } from './admin-account.model';
+import AdminOTP, { AdminOTPType } from './admin-otp.model';
+import AdminPhone, { AdminPhoneStatusType } from './admin-phone.model';
+import AdminRole from './admin-role.model';
+import Admin from './admin.model';
+import CustomerAccount, {
+  CustomerAccountStatusType,
+} from './customer-account.model';
+import CustomerIdentity, { ProviderType } from './customer-identity.model';
+import CustomerOTP, { CustomerOTPType } from './customer-otp.model';
+import CustomerPhone, { CustomerPhoneStatusType } from './customer-phone.model';
+import Customer from './customer.model';
+import Email from './email.model';
+import Phone from './phone.model';
 import Role from './role.model';
-import UserAccount, { UserAccountStatusType } from './user-account.model';
-import UserIdentity, { ProviderType } from './user-identity.model';
-import UserRole from './user-role.model';
-import User from './user.model';
 
-User.hasOne(UserAccount, { foreignKey: 'userId', onDelete: 'CASCADE' });
-UserAccount.belongsTo(User, { foreignKey: 'userId', onDelete: 'CASCADE' });
+Admin.hasOne(AdminAccount, { foreignKey: 'adminId', onDelete: 'CASCADE' });
+AdminAccount.belongsTo(Admin, { foreignKey: 'adminId', onDelete: 'CASCADE' });
 
-User.hasMany(UserIdentity, { foreignKey: 'userId', onDelete: 'CASCADE' });
-UserIdentity.belongsTo(User, { foreignKey: 'userId', onDelete: 'CASCADE' });
+Customer.hasOne(CustomerAccount, {
+  foreignKey: 'customerId',
+  onDelete: 'CASCADE',
+});
+CustomerAccount.belongsTo(Customer, {
+  foreignKey: 'customerId',
+  onDelete: 'CASCADE',
+});
 
-UserAccount.hasMany(AuthOTP, { foreignKey: 'userId', onDelete: 'CASCADE' });
-AuthOTP.belongsTo(UserAccount, { foreignKey: 'userId', onDelete: 'CASCADE' });
+Email.hasOne(AdminAccount, {
+  foreignKey: 'emailId',
+  onDelete: 'CASCADE',
+});
+AdminAccount.belongsTo(Email, {
+  foreignKey: 'emailId',
+  onDelete: 'CASCADE',
+});
 
-Role.belongsToMany(User, {
-  through: 'UserRole',
+Email.hasOne(CustomerAccount, {
+  foreignKey: 'emailId',
+  onDelete: 'CASCADE',
+});
+CustomerAccount.belongsTo(Email, {
+  foreignKey: 'emailId',
+  onDelete: 'CASCADE',
+});
+
+Admin.hasMany(AdminOTP, { foreignKey: 'adminId', onDelete: 'CASCADE' });
+AdminOTP.belongsTo(Admin, {
+  foreignKey: 'adminId',
+  onDelete: 'CASCADE',
+});
+
+Customer.hasMany(CustomerOTP, {
+  foreignKey: 'customerId',
+  onDelete: 'CASCADE',
+});
+CustomerOTP.belongsTo(Customer, {
+  foreignKey: 'customerId',
+  onDelete: 'CASCADE',
+});
+
+Customer.hasMany(CustomerIdentity, {
+  foreignKey: 'customerId',
+  onDelete: 'CASCADE',
+});
+CustomerIdentity.belongsTo(Customer, {
+  foreignKey: 'customerId',
+  onDelete: 'CASCADE',
+});
+
+Role.belongsToMany(Admin, {
+  through: 'AdminRole',
   foreignKey: 'roleId',
   onDelete: 'CASCADE',
 });
-User.belongsToMany(Role, {
-  through: 'UserRole',
-  foreignKey: 'userId',
+Admin.belongsToMany(Role, {
+  through: 'AdminRole',
+  foreignKey: 'adminId',
   onDelete: 'CASCADE',
 });
 
-User.hasMany(Address, { foreignKey: 'userId', onDelete: 'CASCADE' });
-Address.belongsTo(User, { foreignKey: 'userId', onDelete: 'CASCADE' });
+AdminPhone.belongsTo(Phone, {
+  foreignKey: 'phoneId',
+  onDelete: 'CASCADE',
+});
+Phone.hasOne(AdminPhone, {
+  foreignKey: 'phoneId',
+  onDelete: 'CASCADE',
+});
 
-User.hasOne(PhoneNumber, { foreignKey: 'userId', onDelete: 'CASCADE' });
-PhoneNumber.belongsTo(User, { foreignKey: 'userId', onDelete: 'CASCADE' });
+AdminPhone.belongsTo(Admin, {
+  foreignKey: 'adminId',
+  onDelete: 'CASCADE',
+});
+Admin.hasOne(AdminPhone, {
+  foreignKey: 'adminId',
+  onDelete: 'CASCADE',
+});
+
+CustomerPhone.belongsTo(Phone, {
+  foreignKey: 'phoneId',
+  onDelete: 'CASCADE',
+});
+Phone.hasOne(CustomerPhone, {
+  foreignKey: 'phoneId',
+  onDelete: 'CASCADE',
+});
+
+CustomerPhone.belongsTo(Customer, {
+  foreignKey: 'customerId',
+  onDelete: 'CASCADE',
+});
+Customer.hasOne(CustomerPhone, {
+  foreignKey: 'customerId',
+  onDelete: 'CASCADE',
+});
+
+Customer.hasMany(Address, { foreignKey: 'customerId', onDelete: 'CASCADE' });
+Address.belongsTo(Customer, { foreignKey: 'customerId', onDelete: 'CASCADE' });
 
 export {
   Address,
-  AuthOTP,
-  AuthOTPType,
-  PhoneNumber,
-  PhoneNumberStatusype,
+  Admin,
+  AdminAccount,
+  AdminAccountStatusType,
+  AdminOTP,
+  AdminOTPType,
+  AdminPhone,
+  AdminPhoneStatusType,
+  AdminRole,
+  Customer,
+  CustomerAccount,
+  CustomerAccountStatusType,
+  CustomerIdentity,
+  CustomerOTP,
+  CustomerOTPType,
+  CustomerPhone,
+  CustomerPhoneStatusType,
+  Email,
+  Phone,
   ProviderType,
   Role,
-  User,
-  UserAccount,
-  UserAccountStatusType,
-  UserIdentity,
-  UserRole,
 };

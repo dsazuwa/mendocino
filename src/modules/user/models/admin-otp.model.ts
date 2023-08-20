@@ -11,26 +11,26 @@ import {
 import sequelize from '@App/db';
 import { ApiError } from '@App/utils';
 
-import { TABLENAMES } from '@user/utils/constants';
+import { TABLENAMES, USER_SCHEMA } from '@user/utils/constants';
 
-export type AuthOTPType = 'email' | 'password' | 'phone';
+export type AdminOTPType = 'email' | 'password' | 'phone';
 
-class AuthOTP extends Model<
-  InferAttributes<AuthOTP>,
-  InferCreationAttributes<AuthOTP>
+class AdminOTP extends Model<
+  InferAttributes<AdminOTP>,
+  InferCreationAttributes<AdminOTP>
 > {
   declare otpId: CreationOptional<number>;
 
-  declare userId: number;
+  declare adminId: number;
 
-  declare type: AuthOTPType;
+  declare type: AdminOTPType;
 
   declare password: string;
 
   declare expiresAt: Date;
 
   /* eslint-disable no-param-reassign */
-  public static async hashPassword(otp: AuthOTP) {
+  public static async hashPassword(otp: AdminOTP) {
     if (!otp.changed('password')) return;
 
     try {
@@ -55,14 +55,14 @@ class AuthOTP extends Model<
   }
 }
 
-AuthOTP.init(
+AdminOTP.init(
   {
     otpId: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,
     },
-    userId: {
+    adminId: {
       type: DataTypes.INTEGER,
       unique: 'compositeIndex',
       allowNull: false,
@@ -85,11 +85,12 @@ AuthOTP.init(
     sequelize,
     underscored: true,
     timestamps: false,
-    tableName: TABLENAMES.AUTH_OTP,
+    schema: USER_SCHEMA,
+    tableName: TABLENAMES.ADMIN_OTP,
     hooks: {
-      beforeSave: AuthOTP.hashPassword,
+      beforeSave: AdminOTP.hashPassword,
     },
   },
 );
 
-export default AuthOTP;
+export default AdminOTP;

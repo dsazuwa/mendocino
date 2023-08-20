@@ -8,39 +8,36 @@ import {
 
 import sequelize from '@App/db';
 
-import { TABLENAMES } from '@user/utils/constants';
+import { TABLENAMES, USER_SCHEMA } from '@user/utils/constants';
 
-export type ProviderType = 'google' | 'facebook';
-
-class UserIdentity extends Model<
-  InferAttributes<UserIdentity>,
-  InferCreationAttributes<UserIdentity>
+class Admin extends Model<
+  InferAttributes<Admin>,
+  InferCreationAttributes<Admin>
 > {
-  declare identityId: string;
+  declare adminId: CreationOptional<number>;
 
-  declare userId: number;
+  declare firstName: string;
 
-  declare provider: ProviderType;
+  declare lastName: string;
 
   declare createdAt: CreationOptional<Date>;
 
   declare updatedAt: CreationOptional<Date>;
 }
 
-UserIdentity.init(
+Admin.init(
   {
-    identityId: {
+    adminId: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+    },
+    firstName: {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    userId: {
-      type: DataTypes.INTEGER,
-      primaryKey: true,
-      allowNull: false,
-    },
-    provider: {
-      type: DataTypes.ENUM('google', 'facebook'),
-      primaryKey: true,
+    lastName: {
+      type: DataTypes.STRING,
       allowNull: false,
     },
     createdAt: {
@@ -55,8 +52,9 @@ UserIdentity.init(
   {
     sequelize,
     underscored: true,
-    tableName: TABLENAMES.USER_IDENTITY,
+    schema: USER_SCHEMA,
+    tableName: TABLENAMES.ADMIN,
   },
 );
 
-export default UserIdentity;
+export default Admin;

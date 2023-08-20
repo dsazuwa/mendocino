@@ -4,13 +4,13 @@ import {
   InferAttributes,
   InferCreationAttributes,
   Model,
-  QueryTypes,
+  SaveOptions,
   ValidationError,
 } from 'sequelize';
 
 import sequelize from '@App/db';
 
-import { ROLES, TABLENAMES } from '@user/utils/constants';
+import { TABLENAMES, USER_SCHEMA } from '@user/utils/constants';
 
 class Address extends Model<
   InferAttributes<Address>,
@@ -18,7 +18,7 @@ class Address extends Model<
 > {
   declare addressId: CreationOptional<number>;
 
-  declare userId: number;
+  declare customerId: number;
 
   declare addressLine1: string;
 
@@ -34,40 +34,22 @@ class Address extends Model<
 
   declare updatedAt: CreationOptional<Date>;
 
-  public static async enforceAddressLimitForCustomers(address: Address) {
-    const query = `
-      SELECT
-        u.user_id AS "userId",
-        array_agg(DISTINCT r.name) AS roles
-      FROM
-        ${TABLENAMES.USER} u
-      JOIN
-        ${TABLENAMES.USER_ROLE} ur ON u.user_id = ur.user_id
-      JOIN
-        ${TABLENAMES.ROLE} r ON r.role_id = ur.role_id
-      WHERE
-        u.user_id = ${address.userId}
-      GROUP BY
-        u.user_id;`;
+  public static async enforceAddressLimit(
+    address: Address,
+    options?: SaveOptions,
+  ) {
+    const { transaction } = options || {};
 
-    const result = await sequelize.query(query, { type: QueryTypes.SELECT });
-    const user = result[0] as { userId: number; roles: string[] } | undefined;
+    const addressCount = await Address.count({
+      where: { customerId: address.customerId },
+      transaction,
+    });
 
-    if (!user) throw new ValidationError('User not found', []);
-
-    if (user.roles.length === 1 && user.roles[0] === ROLES.CUSTOMER.name) {
-      const addressCount = await Address.count({
-        where: { userId: user.userId },
-      });
-
-      if (addressCount === 5)
-        throw new ValidationError(
-          'User has reached the maximum address limit',
-          [],
-        );
-    } else {
-      throw new ValidationError('Non-customers cannot have addresses', []);
-    }
+    if (addressCount === 5)
+      throw new ValidationError(
+        'User has reached the maximum address limit',
+        [],
+      );
   }
 }
 
@@ -78,7 +60,7 @@ Address.init(
       primaryKey: true,
       autoIncrement: true,
     },
-    userId: {
+    customerId: {
       type: DataTypes.INTEGER,
       allowNull: false,
     },
@@ -114,9 +96,10 @@ Address.init(
   {
     sequelize,
     underscored: true,
+    schema: USER_SCHEMA,
     tableName: TABLENAMES.ADDRESS,
     hooks: {
-      beforeSave: Address.enforceAddressLimitForCustomers,
+      beforeSave: Address.enforceAddressLimit,
     },
   },
 );
