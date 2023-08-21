@@ -121,7 +121,7 @@ CREATE TABLE users.admin_otps (
   admin_id INTEGER NOT NULL,
   type users.enum_admin_otps_type NOT NULL,
   password VARCHAR(100) NOT NULL,
-  expires_at TIMESTAMP NOT NULL,
+  expires_at TIMESTAMP WITH TIME ZONE NOT NULL,
   PRIMARY KEY (otp_id),
   UNIQUE (admin_id, type),
   CONSTRAINT fk_admin_id FOREIGN KEY (admin_id) REFERENCES users.admins (admin_id) ON DELETE CASCADE ON UPDATE NO ACTION
@@ -132,7 +132,7 @@ CREATE TABLE users.customer_otps (
   customer_id INTEGER NOT NULL,
   type users.enum_customer_otps_type NOT NULL,
   password VARCHAR(100) NOT NULL,
-  expires_at TIMESTAMP NOT NULL,
+  expires_at TIMESTAMP WITH TIME ZONE NOT NULL,
   PRIMARY KEY (otp_id),
   UNIQUE (customer_id, type),
   CONSTRAINT fk_customer_id FOREIGN KEY (customer_id) REFERENCES users.customers (customer_id) ON DELETE CASCADE ON UPDATE NO ACTION

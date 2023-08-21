@@ -156,6 +156,28 @@ describe('CustomerOTP Model', () => {
     });
   });
 
+  describe('compare password', () => {
+    const password = '07492';
+    let otp: CustomerOTP;
+
+    beforeAll(async () => {
+      otp = await CustomerOTP.create({
+        customerId,
+        type: 'phone',
+        password,
+        expiresAt: CustomerOTP.getExpiration(),
+      });
+    });
+
+    it('should return true for equal passwords', () => {
+      expect(otp.comparePasswords(password)).toBe(true);
+    });
+
+    it('should return false for non equal passwords', () => {
+      expect(otp.comparePasswords('00000')).toBe(false);
+    });
+  });
+
   it('should generate a 5-digit password', async () => {
     const code = CustomerOTP.generatePassword();
     expect(code.length).toBe(5);

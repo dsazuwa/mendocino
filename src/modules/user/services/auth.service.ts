@@ -1,61 +1,109 @@
 import { sign } from 'jsonwebtoken';
-import { Op, QueryTypes } from 'sequelize';
+import { QueryTypes, Transaction } from 'sequelize';
 
 import sequelize from '@App/db';
 
 import {
-  AuthOTP,
-  AuthOTPType,
+  Admin,
+  AdminAccount,
+  AdminRole,
+  Customer,
+  CustomerAccount,
+  CustomerIdentity,
+  CustomerOTP,
+  CustomerPassword,
+  Email,
   ProviderType,
   Role,
-  User,
-  UserAccount,
-  UserIdentity,
-  UserRole,
 } from '@user/models';
-import { ROLES } from '@user/utils/constants';
+import { USER_SCHEMA } from '@user/utils/constants';
 
 type JWTProviderType = ProviderType | 'email';
 
+const getUserIdForUser = async (email: string, transaction?: Transaction) => {
+  const schema = USER_SCHEMA;
+
+  const query = `
+    WITH UserWithEmail AS (
+      SELECT
+        CASE
+          WHEN EXISTS (SELECT 1 FROM ${schema}.${Admin.tableName} WHERE admin_id = ua.admin_id) THEN
+            ua.admin_id
+          ELSE
+            ca.customer_id
+        END AS user_id,
+        EXISTS (SELECT 1 FROM ${schema}.${Admin.tableName} WHERE admin_id = ua.admin_id) AS is_admin
+      FROM
+        ${schema}.${AdminAccount.tableName} ua
+        FULL JOIN ${schema}.${CustomerAccount.tableName} ca ON ua.email_id = ca.email_id
+        JOIN ${schema}.${Email.tableName} e ON ua.email_id = e.email_id OR ca.email_id = e.email_id
+      WHERE
+        e.email = '${email}')
+    SELECT
+      user_id AS "userId",
+      is_admin AS "isAdmin"
+    FROM
+      UserWithEmail;`;
+
+  const result = await sequelize.query(query, {
+    type: QueryTypes.SELECT,
+    transaction,
+  });
+
+  return result.length === 0
+    ? null
+    : (result[0] as { userId: number; isAdmin: boolean });
+};
+
 const authService = {
-  generateJWT: (userId: number, provider: JWTProviderType) =>
-    sign({ userId, provider }, process.env.JWT_SECRET, {
+  generateJWT: (email: string, provider: JWTProviderType) =>
+    sign({ email, provider }, process.env.JWT_SECRET, {
       expiresIn: '1 day',
     }),
 
-  getUserData: async (userId: number, provider: JWTProviderType) => {
-    const isEmailAuth = provider === 'email';
+  getUserData: async (userId: number, userType: 'customer' | 'admin') => {
+    const schema = USER_SCHEMA;
 
-    const statusField = isEmailAuth ? 'a.status' : "'active'";
-
-    const identityJoin = isEmailAuth
-      ? ''
-      : `JOIN ${UserIdentity.tableName} i 
-            ON u.user_id = i.user_id AND i.provider = '${provider}'`;
-
-    const statusGroupBy = isEmailAuth ? 'a.status,' : '';
-
-    const query = `
-      SELECT
-        u.user_id AS "userId",
-        u.first_name AS "firstName",
-        u.last_name AS "lastName",
-        a.email AS email,
-        ${statusField} AS status,
-        array_agg(DISTINCT r.name) AS roles
-      FROM
-        ${User.tableName} u
-      JOIN
-        ${UserAccount.tableName} a ON u.user_id = a.user_id
-      ${identityJoin}
-      JOIN
-        ${UserRole.tableName} ur ON u.user_id = ur.user_id
-      JOIN
-        ${Role.tableName} r ON r.role_id = ur.role_id
-      WHERE
-        u.user_id = ${userId}
-      GROUP BY
-        u.user_id, u.first_name, u.last_name,${statusGroupBy} a.email;`;
+    const query =
+      userType === 'customer'
+        ? `
+        SELECT
+          u.customer_id AS "userId",
+          u.first_name AS "firstName",
+          u.last_name AS "lastName",
+          e.email AS email,
+          a.status AS status,
+          ARRAY['customer'] AS roles
+        FROM
+          ${schema}.${Customer.tableName} u
+        JOIN
+          ${schema}.${CustomerAccount.tableName} a ON u.customer_id = a.customer_id
+        JOIN
+          ${schema}.${Email.tableName} e ON a.email_id = e.email_id
+        WHERE
+          u.customer_id = ${userId};`
+        : `
+        SELECT
+          u.admin_id AS "userId",
+          u.first_name AS "firstName",
+          u.last_name AS "lastName",
+          e.email AS email,
+          a.status AS status,
+          array_agg(DISTINCT r.name) AS roles
+        FROM
+          ${schema}.${Admin.tableName} u
+        JOIN
+          ${schema}.${AdminAccount.tableName} a ON u.admin_id = a.admin_id
+        JOIN
+          ${schema}.${Email.tableName} e ON a.email_id = e.email_id
+        JOIN
+          ${schema}.${AdminRole.tableName} ur ON u.admin_id = ur.admin_id
+        JOIN
+          ${schema}.${Role.tableName} r ON r.role_id = ur.role_id
+        WHERE
+          u.admin_id = ${userId}
+        GROUP BY
+          u.admin_id, u.first_name, u.last_name, a.status, e.email;`;
 
     const result = await sequelize.query(query, { type: QueryTypes.SELECT });
 
@@ -67,29 +115,29 @@ const authService = {
     provider: ProviderType,
     email: string,
   ) => {
+    const schema = USER_SCHEMA;
+
     const query = `
       SELECT
-        u.user_id AS "userId",
+        u.customer_id AS "userId",
         u.first_name AS "firstName",
         u.last_name AS "lastName",
-        a.email AS email,
+        e.email AS email,
         a.status AS status,
-        array_agg(DISTINCT r.name) AS roles,
-        i.identity_id AS "identityId"
+        i.identity_id AS "identityId",
+        ARRAY['customer'] AS roles
       FROM
-        ${User.tableName} u
+        ${schema}.${Customer.tableName} u
       JOIN
-        ${UserAccount.tableName} a ON u.user_id = a.user_id
-      LEFT JOIN 
-        ${UserIdentity.tableName} i ON u.user_id = i.user_id AND (i.provider = '${provider}' AND i.identity_id = '${identityId}')
+        ${schema}.${CustomerAccount.tableName} a ON u.customer_id = a.customer_id
+      JOIN
+        ${schema}.${Email.tableName} e ON a.email_id = e.email_id
       LEFT JOIN
-        ${UserRole.tableName} ur ON u.user_id = ur.user_id
-      LEFT JOIN
-        ${Role.tableName} r ON r.role_id = ur.role_id
+        ${schema}.${CustomerIdentity.tableName} i ON u.customer_id = i.customer_id AND (i.provider = '${provider}' AND i.identity_id = '${identityId}')
       WHERE
-        a.email = '${email}' OR (i.identity_id = '${identityId}' AND u.user_id = i.user_id)
+        e.email = '${email}' OR (i.identity_id = '${identityId}' AND u.customer_id = i.customer_id)
       GROUP BY
-        u.user_id, u.first_name, u.last_name, a.email, a.status, i.identity_id;`;
+        u.customer_id, u.first_name, u.last_name, e.email, a.status, i.identity_id;`;
 
     const result = await sequelize.query(query, { type: QueryTypes.SELECT });
     const user =
@@ -100,91 +148,48 @@ const authService = {
     if (user === undefined)
       return {
         user: undefined,
-        userExists: false,
         identityExists: false,
-        isCustomer: false,
       };
 
-    const isCustomer = user.roles.includes(ROLES.CUSTOMER.name);
+    if (user.email !== email)
+      return {
+        user: undefined,
+        identityExists: true,
+      };
+
     const identityExists = user.identityId !== null;
 
     return {
       user: user as Express.User,
-      userExists: true,
       identityExists,
-      isCustomer,
     };
   },
 
-  getAccount: (email: string, raw: boolean = false) =>
-    UserAccount.findOne({ where: { email }, raw }),
+  getUserIdForUser,
 
-  getIdentity: (
+  createIdentityForCustomer: (
     identityId: string,
-    provider: ProviderType,
-    raw: boolean = false,
-  ) =>
-    UserIdentity.findOne({
-      where: { identityId, provider },
-      raw,
-    }),
-
-  getAuthOTP: async (userId: number, password: string, type: AuthOTPType) => {
-    const authOTP = await AuthOTP.findOne({ where: { userId, type } });
-
-    const isValid =
-      authOTP !== null &&
-      authOTP.comparePasswords(password) &&
-      authOTP.expiresAt > new Date();
-
-    return isValid ? { authOTP, isValid } : { authOTP: null, isValid };
-  },
-
-  createAuthOTP: async (userId: number, type: AuthOTPType) =>
-    sequelize.transaction(async (transaction) => {
-      await AuthOTP.destroy({
-        where: { userId, type },
-        transaction,
-      });
-
-      const password = '12345';
-
-      await AuthOTP.create(
-        {
-          userId,
-          type,
-          password,
-          expiresAt: AuthOTP.getExpiration(),
-        },
-        { transaction },
-      );
-
-      return password;
-    }),
-
-  createUserIdentityForUser: (
-    identityId: string,
-    userId: number,
+    customerId: number,
     status: string,
     provider: ProviderType,
   ) =>
     sequelize.transaction(async (transaction) => {
       if (status === 'pending') {
-        await UserAccount.update(
+        await CustomerAccount.update(
           { status: 'active' },
-          { where: { userId }, transaction },
+          { where: { customerId }, transaction },
         );
       }
 
-      const identity = await UserIdentity.create(
-        { identityId, userId, provider },
+      const identity = await CustomerIdentity.create(
+        { identityId, customerId, provider },
         { transaction },
       );
 
       return identity;
     }),
 
-  createUserAndUserIdentity: (
+  createCustomerAndIdentity: (
     identityId: string,
     firstName: string,
     lastName: string,
@@ -192,103 +197,131 @@ const authService = {
     provider: ProviderType,
   ) =>
     sequelize.transaction(async (transaction) => {
-      const { userId } = await User.create(
+      const { customerId } = await Customer.create(
         { firstName, lastName },
         { transaction },
       );
 
-      await UserAccount.create(
-        { userId, email, status: 'active' },
+      const { emailId } = await Email.create({ email }, { transaction });
+
+      await CustomerAccount.create(
+        { customerId, emailId, status: 'active' },
         { transaction },
       );
 
-      const identity = await UserIdentity.create(
-        { identityId, userId, provider },
-        { transaction },
-      );
-
-      await UserRole.create(
-        { userId, roleId: ROLES.CUSTOMER.roleId },
+      const identity = await CustomerIdentity.create(
+        { identityId, customerId, provider },
         { transaction },
       );
 
       return identity;
     }),
 
-  createUser: async (
+  createCustomer: async (
     firstName: string,
     lastName: string,
     email: string,
     password: string,
   ) =>
     sequelize.transaction(async (transaction) => {
-      const { userId } = await User.create(
+      const { customerId } = await Customer.create(
         { firstName, lastName },
         { transaction },
       );
 
-      await UserAccount.create(
-        { userId, email, password, status: 'pending' },
+      const { emailId } = await Email.create({ email }, { transaction });
+
+      await CustomerAccount.create(
+        { customerId, emailId, status: 'pending' },
         { transaction },
       );
 
-      await AuthOTP.destroy({
-        where: { userId, type: 'email' },
+      await CustomerPassword.create({ customerId, password }, { transaction });
+
+      await CustomerOTP.destroy({
+        where: { customerId, type: 'email' },
         transaction,
       });
 
       const otp = '12345';
 
-      await AuthOTP.create(
+      await CustomerOTP.create(
         {
-          userId,
+          customerId,
           type: 'email',
           password: otp,
-          expiresAt: AuthOTP.getExpiration(),
+          expiresAt: CustomerOTP.getExpiration(),
         },
         { transaction },
       );
 
-      await UserRole.create(
-        { userId, roleId: ROLES.CUSTOMER.roleId },
-        { transaction },
-      );
-
-      return { userId, password: otp };
+      return { customerId, password: otp };
     }),
 
-  loginUser: async (email: string, password: string) => {
-    const account = await UserAccount.findOne({
-      where: {
-        email,
-        password: { [Op.ne]: null },
-      },
-    });
-
-    const isUser = account !== null && account.comparePasswords(password);
-
-    return isUser ? { account, isUser } : { account: null, isUser };
-  },
-
-  recoverPassword: (userId: number, password: string) =>
+  loginUser: (email: string, password: string) =>
     sequelize.transaction(async (transaction) => {
-      await AuthOTP.destroy({
-        where: { userId, type: 'password' },
+      const result = await getUserIdForUser(email, transaction);
+
+      if (!result) return null;
+
+      if (result.isAdmin) {
+        const adminId = result.userId;
+
+        const account = await AdminAccount.findOne({
+          where: { adminId },
+          transaction,
+        });
+
+        const isUser = account !== null && account.comparePasswords(password);
+        return isUser ? adminId : null;
+      }
+
+      const customerId = result.userId;
+
+      const account = await CustomerAccount.findOne({
+        where: { customerId },
+        raw: true,
         transaction,
       });
 
-      await UserAccount.update(
+      const customerPassword = await CustomerPassword.findOne({
+        where: { customerId },
+        transaction,
+      });
+
+      const isUser =
+        account !== null &&
+        customerPassword !== null &&
+        customerPassword.comparePasswords(password);
+
+      return isUser ? customerId : null;
+    }),
+
+  recoverCustomerPassword: (customerId: number, password: string) =>
+    sequelize.transaction(async (transaction) => {
+      await CustomerOTP.destroy({
+        where: { customerId, type: 'password' },
+        transaction,
+      });
+
+      await CustomerPassword.update(
         { password },
         {
-          where: { userId },
+          where: { customerId },
           individualHooks: true,
           transaction,
         },
       );
     }),
 
-  reactivate: (userId: number) =>
-    UserAccount.update({ status: 'active' }, { where: { userId } }),
+  reactivateCustomer: async (customerId: number) => {
+    const result = await CustomerAccount.update(
+      { status: 'active' },
+      { where: { customerId, status: 'disabled' } },
+    );
+
+    return result[0] === 1;
+  },
 };
 
 export default authService;

@@ -30,12 +30,12 @@ export const createCustomer = async (
 
     const { customerId } = customer;
 
-    const { emailId } = await Email.create({ email }, { transaction });
+    const customerEmail = await Email.create({ email }, { transaction });
 
     const account = await CustomerAccount.create(
       {
         customerId,
-        emailId,
+        emailId: customerEmail.emailId,
         status,
       },
       { transaction },
@@ -46,7 +46,7 @@ export const createCustomer = async (
       { transaction },
     );
 
-    return { customerId, customer, account, password: p };
+    return { customerId, customer, email: customerEmail, account, password: p };
   });
 
 export const createUserAccountAndIdentity = async (
@@ -65,12 +65,12 @@ export const createUserAccountAndIdentity = async (
 
     const { customerId } = customer;
 
-    const { emailId } = await Email.create({ email }, { transaction });
+    const adminEmail = await Email.create({ email }, { transaction });
 
     const account = await CustomerAccount.create(
       {
         customerId,
-        emailId,
+        emailId: adminEmail.emailId,
         status,
       },
       { transaction },
@@ -90,7 +90,14 @@ export const createUserAccountAndIdentity = async (
       { transaction },
     );
 
-    return { customerId, customer, account, password: p, createdIdentities };
+    return {
+      customerId,
+      customer,
+      email: adminEmail,
+      account,
+      password: p,
+      createdIdentities,
+    };
   });
 
 export const createAdmin = async (
@@ -106,12 +113,12 @@ export const createAdmin = async (
 
     const { adminId } = admin;
 
-    const { emailId } = await Email.create({ email }, { transaction });
+    const adminEmail = await Email.create({ email }, { transaction });
 
     const account = await AdminAccount.create(
       {
         adminId,
-        emailId,
+        emailId: adminEmail.emailId,
         password,
         status,
       },
@@ -121,7 +128,7 @@ export const createAdmin = async (
     const roleMappings = roles.map((roleId) => ({ adminId, roleId }));
     await AdminRole.bulkCreate(roleMappings, { transaction });
 
-    return { adminId, admin, account };
+    return { adminId, admin, email: adminEmail, account };
   });
 
 export const createRoles = async () => {
