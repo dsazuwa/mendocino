@@ -1,24 +1,22 @@
 import { Address } from '@user/models';
 import addressService from '@user/services/address.service';
-import { ROLES } from '@user/utils/constants';
 
-import { createUserAccount } from 'tests/modules/user/helper-functions';
+import { createCustomer } from 'tests/modules/user/helper-functions';
 
-import 'tests/user.db-setup';
+import 'tests/db-setup';
 
 describe('address management', () => {
-  let userId: number;
+  let customerId: number;
 
   beforeAll(async () => {
-    const { user } = await createUserAccount(
+    const { customer } = await createCustomer(
       'Jimmy',
       'Doe',
       'jimmydoe@gmail.com',
       'jimmyD0ePa$$',
       'active',
-      [ROLES.CUSTOMER.roleId],
     );
-    userId = user.userId;
+    customerId = customer.customerId;
   });
 
   beforeEach(async () => {
@@ -66,10 +64,10 @@ describe('address management', () => {
       ];
 
       await Address.bulkCreate(
-        addressData.map((data) => ({ userId, ...data })),
+        addressData.map((data) => ({ customerId, ...data })),
       );
 
-      const addresses = await addressService.getAddresses(userId);
+      const addresses = await addressService.getAddresses(customerId);
       expect(addresses).toMatchObject(expect.arrayContaining(addressData));
     });
 
@@ -91,13 +89,13 @@ describe('address management', () => {
         postalCode: '98765',
       };
 
-      const result = await addressService.createAddress(userId, data);
+      const result = await addressService.createAddress(customerId, data);
       expect(result).toBe(true);
 
       const { addressLine2, ...rest } = data;
 
       const address = await Address.findOne({
-        where: { userId, ...rest },
+        where: { customerId, ...rest },
         raw: true,
       });
       expect(address).not.toBeNull();
@@ -106,7 +104,7 @@ describe('address management', () => {
     it('should fail to create address if user has reach address count limit', async () => {
       await Address.bulkCreate([
         {
-          userId,
+          customerId,
           addressLine1: '123 Main St',
           addressLine2: null,
           city: 'Exampleville',
@@ -114,7 +112,7 @@ describe('address management', () => {
           postalCode: '12345',
         },
         {
-          userId,
+          customerId,
           addressLine1: '456 Elm Rd',
           addressLine2: 'Suite 789',
           city: 'Townsville',
@@ -122,7 +120,7 @@ describe('address management', () => {
           postalCode: '67890',
         },
         {
-          userId,
+          customerId,
           addressLine1: '789 Pine Ave',
           addressLine2: null,
           city: 'Cityburg',
@@ -130,7 +128,7 @@ describe('address management', () => {
           postalCode: '54321',
         },
         {
-          userId,
+          customerId,
           addressLine1: '101 Maple St',
           addressLine2: 'Unit 202',
           city: 'Villageville',
@@ -138,7 +136,7 @@ describe('address management', () => {
           postalCode: '45678',
         },
         {
-          userId,
+          customerId,
           addressLine1: '222 Oak Ln',
           addressLine2: null,
           city: 'Ruralville',
@@ -155,13 +153,13 @@ describe('address management', () => {
         postalCode: '98765',
       };
 
-      const result = await addressService.createAddress(userId, data);
+      const result = await addressService.createAddress(customerId, data);
       expect(result).toBe(false);
 
       const { addressLine2, ...rest } = data;
 
       const address = await Address.findOne({
-        where: { userId, ...rest },
+        where: { customerId, ...rest },
         raw: true,
       });
       expect(address).toBeNull();
@@ -173,7 +171,7 @@ describe('address management', () => {
   describe('update address', () => {
     it('should update address successfully', async () => {
       const { addressId } = await Address.create({
-        userId,
+        customerId,
         addressLine1: '222 Oak Ln',
         addressLine2: undefined,
         city: 'Ruralville',
@@ -183,13 +181,13 @@ describe('address management', () => {
 
       const state = 'CA';
 
-      const result = await addressService.updateAddress(userId, addressId, {
+      const result = await addressService.updateAddress(customerId, addressId, {
         state,
       });
       expect(result).toBe(1);
 
       const address = await Address.findOne({
-        where: { userId, addressId, state },
+        where: { customerId, addressId, state },
         raw: true,
       });
       expect(address).not.toBeNull();
@@ -210,7 +208,7 @@ describe('address management', () => {
     });
 
     it('should handle invalid address ID', async () => {
-      const result = await addressService.updateAddress(userId, 1, {
+      const result = await addressService.updateAddress(customerId, 1, {
         state: 'CA',
       });
       expect(result).toBe(0);
@@ -227,7 +225,7 @@ describe('address management', () => {
   describe('delete address', () => {
     it('should delete address', async () => {
       const { addressId } = await Address.create({
-        userId,
+        customerId,
         addressLine1: '222 Oak Ln',
         addressLine2: undefined,
         city: 'Ruralville',
@@ -235,7 +233,7 @@ describe('address management', () => {
         postalCode: '98765',
       });
 
-      const result = await addressService.deleteAddress(userId, addressId);
+      const result = await addressService.deleteAddress(customerId, addressId);
       expect(result).toBe(1);
 
       const address = await Address.findByPk(addressId, { raw: true });
@@ -244,7 +242,7 @@ describe('address management', () => {
 
     it('should fail to delete non existent address', async () => {
       const address = await Address.findOne({
-        where: { userId: 1000, addressId: 1 },
+        where: { customerId: 1000, addressId: 1 },
         raw: true,
       });
       expect(address).toBeNull();

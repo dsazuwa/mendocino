@@ -11,9 +11,9 @@ type AddressType = {
 };
 
 const addressService = {
-  getAddresses: (userId: number) =>
+  getAddresses: (customerId: number) =>
     Address.findAll({
-      where: { userId },
+      where: { customerId },
       attributes: [
         'addressLine1',
         'addressLine2',
@@ -24,15 +24,15 @@ const addressService = {
       raw: true,
     }),
 
-  createAddress: (userId: number, address: AddressType) =>
+  createAddress: (customerId: number, address: AddressType) =>
     sequelize.transaction(async (transaction) => {
       const addressCount = await Address.count({
-        where: { userId },
+        where: { customerId },
         transaction,
       });
 
       if (addressCount <= 4) {
-        await Address.create({ userId, ...address }, { transaction });
+        await Address.create({ customerId, ...address }, { transaction });
         return true;
       }
 
@@ -40,7 +40,7 @@ const addressService = {
     }),
 
   updateAddress: async (
-    userId: number,
+    customerId: number,
     addressId: number,
     address: Partial<AddressType>,
   ) => {
@@ -61,14 +61,14 @@ const addressService = {
     if (Object.keys(changes).length === 0) return 0;
 
     const result = await Address.update(changes, {
-      where: { userId, addressId },
+      where: { customerId, addressId },
     });
 
     return result[0];
   },
 
-  deleteAddress: (userId: number, addressId: number) =>
-    Address.destroy({ where: { userId, addressId } }),
+  deleteAddress: (customerId: number, addressId: number) =>
+    Address.destroy({ where: { customerId, addressId } }),
 };
 
 export default addressService;
