@@ -1,41 +1,64 @@
 import { Request } from 'express';
-import { Op, QueryTypes } from 'sequelize';
+import { QueryTypes } from 'sequelize';
 
 import sequelize from '@App/db';
 
 import {
   Address,
-  AuthOTP,
-  PhoneNumber,
+  Customer,
+  CustomerAccount,
+  CustomerAccountStatusType,
+  CustomerIdentity,
+  CustomerOTP,
+  CustomerPassword,
+  CustomerPhone,
+  Email,
+  Phone,
   ProviderType,
-  Role,
-  User,
-  UserAccount,
-  UserAccountStatusType,
-  UserIdentity,
-  UserRole,
 } from '@user/models';
+import { USER_SCHEMA } from '@user/utils/constants';
 
-const deleteUser = (userId: number) => User.destroy({ where: { userId } });
+const deleteIdentity = (customerId: number, provider: ProviderType) =>
+  CustomerIdentity.destroy({ where: { customerId, provider } });
 
-const deleteIdentity = (userId: number, provider: ProviderType) =>
-  UserIdentity.destroy({ where: { userId, provider } });
-
-const deactivate = (userId: number) =>
+const deactivate = (customerId: number) =>
   sequelize.transaction(async (transaction) => {
-    await UserAccount.update(
-      { status: 'inactive' as UserAccountStatusType },
-      { where: { userId }, transaction },
+    await CustomerAccount.update(
+      { status: 'disabled' as CustomerAccountStatusType },
+      { where: { customerId }, transaction },
     );
 
-    await UserIdentity.destroy({
-      where: { userId },
+    await CustomerIdentity.destroy({
+      where: { customerId },
       transaction,
     });
   });
 
+const deleteCustomer = async (customerId: number) =>
+  sequelize.transaction(async (transaction) => {
+    await Address.destroy({ where: { customerId }, transaction });
+
+    const phone = await CustomerPhone.findOne({
+      where: { customerId },
+      transaction,
+    });
+    if (phone)
+      await Phone.destroy({
+        where: { phoneId: phone.phoneId },
+        transaction,
+      });
+
+    await CustomerIdentity.destroy({ where: { customerId }, transaction });
+
+    const account = await CustomerAccount.findOne({
+      where: { customerId },
+      transaction,
+    });
+    await Email.destroy({ where: { emailId: account?.emailId }, transaction });
+  });
+
 const usersService = {
-  getUserData: async (req: Request) => {
+  getUserDataFromReq: async (req: Request) => {
     const u = req.user;
 
     return u
@@ -49,154 +72,184 @@ const usersService = {
       : null;
   },
 
-  getProfile: async (userId: number) => {
+  getCustomerProfile: async (customerId: number) => {
+    const schema = USER_SCHEMA;
+
     const query = `
       SELECT
-        u.first_name as "firstName",
-        u.last_name as "lastName",
+        c.first_name as "firstName",
+        c.last_name as "lastName",
         jsonb_build_object(
-          'address', a.email,
-          'isVerified', CASE WHEN a.status = 'active' THEN true ELSE false END
+          'address', email.email,
+          'isVerified', CASE WHEN account.status = 'active' THEN true ELSE false END
         ) AS "email",
-        CASE WHEN a.password IS NOT NULL 
+        CASE WHEN c_password.password IS NOT NULL 
           THEN true 
           ELSE false 
         END AS "hasPassword",
         ARRAY(
           SELECT provider
-          FROM ${UserIdentity.tableName} i
-          WHERE i.user_id = u.user_id
+          FROM ${schema}.${CustomerIdentity.tableName} i
+          WHERE i.customer_id = c.customer_id
         ) AS "authProviders",
-        ARRAY(
-          SELECT r.name
-          FROM ${UserRole.tableName} ur
-          JOIN ${Role.tableName} r ON ur.role_id = r.role_id
-          WHERE ur.user_id = u.user_id
-        ) AS "roles",
+        ARRAY['customer'] AS "roles",
         jsonb_build_object(
-          'phone', pn.phone_number,
-          'isVerified', CASE WHEN pn.status = 'active' THEN true ELSE false END
+          'phone', phone.phone_number,
+          'isVerified', CASE WHEN c_phone.status = 'active' THEN true ELSE false END
         ) AS "phoneNumber",
         (
-          SELECT jsonb_agg(
-            jsonb_build_object(
+          SELECT 
+            jsonb_agg(jsonb_build_object(
               'addressLine1', a.address_line1,
               'addressLine2', COALESCE(a.address_line2, ''),
               'city', a.city,
               'state', a.state,
               'postalCode', a.postal_code
-            )
-          )
-          FROM ${Address.tableName} a
-          WHERE a.user_id = u.user_id
+            ))
+          FROM ${schema}.${Address.tableName} a
+          WHERE a.customer_id = c.customer_id
         ) AS "addresses"
       FROM
-        ${User.tableName} u
+        ${schema}.${Customer.tableName} c
       JOIN 
-        ${UserAccount.tableName} a ON u.user_id = a.user_id
+        ${schema}.${CustomerAccount.tableName} account ON account.customer_id = c.customer_id
+      JOIN
+        ${schema}.${Email.tableName} email ON email.email_id = account.email_id
       LEFT JOIN
-        ${PhoneNumber.tableName} pn ON u.user_id = pn.user_id
+        ${schema}.${CustomerPassword.tableName} c_password ON c_password.customer_id = c.customer_id
+      LEFT JOIN
+        ${schema}.${CustomerPhone.tableName} c_phone ON c_phone.customer_id = c.customer_id
+      LEFT JOIN
+        ${schema}.${Phone.tableName} phone ON phone.phone_id = c_phone.phone_id
       WHERE
-        u.user_id = ${userId};`;
+        c.customer_id = ${customerId};`;
 
     const result = await sequelize.query(query, { type: QueryTypes.SELECT });
 
     return result.length === 0 ? null : result[0];
   },
 
-  verifyEmail: async (userId: number) =>
+  verifyEmail: async (customerId: number) =>
     sequelize.transaction(async (transaction) => {
-      await AuthOTP.destroy({
-        where: { userId, type: 'email' },
+      await CustomerOTP.destroy({
+        where: { customerId, type: 'email' },
         transaction,
       });
 
-      await UserAccount.update(
+      await CustomerAccount.update(
         { status: 'active' },
-        { where: { userId }, transaction },
+        { where: { customerId }, transaction },
       );
     }),
 
-  updateUser: (
-    userId: number,
+  updateCustomer: async (
+    customerId: number,
     firstName: string | undefined,
     lastName: string | undefined,
   ) => {
-    const values: Partial<User> = {};
+    const values: Partial<Customer> = {};
 
     if (firstName && firstName.trim().length > 0) values.firstName = firstName;
     if (lastName && lastName.trim().length > 0) values.lastName = lastName;
 
-    return User.update(values, { where: { userId } });
+    const result = await Customer.update(values, { where: { customerId } });
+
+    return result[0] === 1;
   },
 
-  createPassword: (userId: number, password: string) =>
-    UserAccount.update(
-      { password },
-      {
-        where: { userId, password: null },
-        individualHooks: true,
-      },
-    ),
+  createPassword: async (customerId: number, password: string) => {
+    const existingPassword = await CustomerPassword.findOne({
+      where: { customerId },
+      raw: true,
+    });
+
+    if (existingPassword) return false;
+
+    await CustomerPassword.create({ customerId, password });
+    return true;
+  },
 
   changePassword: async (
-    userId: number,
+    customerId: number,
     currentPassword: string,
     newPassword: string,
   ) => {
-    const account = await UserAccount.findOne({
-      where: { userId, password: { [Op.ne]: null } },
+    const existingPassword = await CustomerPassword.findOne({
+      where: { customerId },
     });
 
-    if (!account || !account.comparePasswords(currentPassword)) return false;
+    if (
+      !existingPassword ||
+      !existingPassword.comparePasswords(currentPassword)
+    )
+      return false;
 
-    await UserAccount.update(
+    await CustomerPassword.update(
       { password: newPassword },
-      { where: { userId }, individualHooks: true },
+      { where: { customerId }, individualHooks: true },
     );
 
     return true;
   },
 
   revokeSocialAuthentication: async (
-    userId: number,
+    customerId: number,
     provider: ProviderType,
   ) => {
-    const account = await UserAccount.findOne({
-      where: { userId, password: { [Op.ne]: null } },
-      raw: true,
-    });
+    type QueryReturnType = {
+      passwordExists: boolean;
+      identityExists: boolean;
+      otherIdentities: ProviderType[];
+    };
 
-    if (account) {
-      await deleteIdentity(userId, provider);
-      return { account: true };
+    const schema = USER_SCHEMA;
+
+    const query = `
+      SELECT
+        c.customer_id AS customerId,
+        CASE WHEN cp.customer_id IS NOT NULL THEN TRUE ELSE FALSE END AS "passwordExists",
+        ARRAY(
+          SELECT provider
+          FROM ${schema}.${CustomerIdentity.tableName} i
+          WHERE i.customer_id = c.customer_id AND i.provider <> '${provider}'
+        ) AS "otherIdentities"
+      FROM
+        ${schema}.${Customer.tableName} c
+      LEFT JOIN
+        ${schema}.${CustomerPassword.tableName} cp ON c.customer_id = cp.customer_id
+      LEFT JOIN
+        ${schema}.${CustomerIdentity.tableName} ci ON c.customer_id = ci.customer_id AND ci.provider = '${provider}'
+      WHERE
+        c.customer_id = ${customerId};`;
+
+    const result = await sequelize.query(query, { type: QueryTypes.SELECT });
+
+    if (result.length === 0) return { result: false };
+
+    const { passwordExists, otherIdentities } = result[0] as QueryReturnType;
+
+    if (passwordExists) {
+      await deleteIdentity(customerId, provider);
+      return { result: true, switchTo: 'email' };
     }
 
-    const otherIdentities = await UserIdentity.findAll({
-      where: { userId, provider: { [Op.ne]: provider } },
-      raw: true,
-    });
+    if (otherIdentities.length === 0) return { result: false };
 
-    if (otherIdentities.length === 0) {
-      await deleteUser(userId);
-      return { user: true };
-    }
-
-    await deleteIdentity(userId, provider);
+    await deleteIdentity(customerId, provider);
 
     return {
-      identity: true,
-      otherIdentity: otherIdentities[0].provider,
+      result: true,
+      switchTo: otherIdentities[0],
     };
   },
 
-  closeAccount: async (userId: number) => {
-    const account = await UserAccount.findOne({
-      where: { userId, password: { [Op.ne]: null } },
+  closeAccount: async (customerId: number) => {
+    const password = await CustomerPassword.findOne({
+      where: { customerId },
       raw: true,
     });
 
-    return account ? deactivate(userId) : deleteUser(userId);
+    return password ? deactivate(customerId) : deleteCustomer(customerId);
   },
 };
 
