@@ -5,6 +5,7 @@ ALTER TABLE IF EXISTS users.admin_accounts DROP CONSTRAINT fk_admin_id;
 ALTER TABLE IF EXISTS users.admin_accounts DROP CONSTRAINT fk_email_id;
 ALTER TABLE IF EXISTS users.customer_accounts DROP CONSTRAINT fk_customer_id;
 ALTER TABLE IF EXISTS users.customer_accounts DROP CONSTRAINT fk_email_id;
+ALTER TABLE IF EXISTS users.customer_passwords DROP CONSTRAINT fk_customer_id;
 ALTER TABLE IF EXISTS users.admin_otps DROP CONSTRAINT fk_admin_id;
 ALTER TABLE IF EXISTS users.customer_otps DROP CONSTRAINT fk_customer_id;
 ALTER TABLE IF EXISTS users.customer_identities DROP CONSTRAINT fk_customer_id;
@@ -26,6 +27,7 @@ DROP TABLE IF EXISTS users.roles;
 DROP TABLE IF EXISTS users.customer_identities;
 DROP TABLE IF EXISTS users.customer_otps;
 DROP TABLE IF EXISTS users.admin_otps;
+DROP TABLE IF EXISTS users.customer_passwords;
 DROP TABLE IF EXISTS users.customer_accounts;
 DROP TABLE IF EXISTS users.admin_accounts;
 DROP TABLE IF EXISTS users.customers;
@@ -57,14 +59,14 @@ CREATE TYPE users.enum_admin_phones_status AS ENUM ('active', 'pending');
 CREATE TYPE users.enum_customer_phones_status AS ENUM ('active', 'pending');
 
 -- Create tables
-CREATE TABLE IF NOT EXISTS users.emails (
+CREATE TABLE users.emails (
   email_id SERIAL,
   email VARCHAR(255) NOT NULL UNIQUE,
   created_at TIMESTAMP NOT NULL,
   PRIMARY KEY (email_id)
 );
 
-CREATE TABLE IF NOT EXISTS users.admins (
+CREATE TABLE users.admins (
   admin_id SERIAL,
   first_name VARCHAR(50) NOT NULL,
   last_name VARCHAR(50) NOT NULL,
@@ -73,7 +75,7 @@ CREATE TABLE IF NOT EXISTS users.admins (
   PRIMARY KEY (admin_id)
 );
 
-CREATE TABLE IF NOT EXISTS users.customers (
+CREATE TABLE users.customers (
   customer_id SERIAL,
   first_name VARCHAR(50) NOT NULL,
   last_name VARCHAR(50) NOT NULL,
@@ -82,7 +84,7 @@ CREATE TABLE IF NOT EXISTS users.customers (
   PRIMARY KEY (customer_id)
 );
 
-CREATE TABLE IF NOT EXISTS users.admin_accounts (
+CREATE TABLE users.admin_accounts (
   admin_id INTEGER NOT NULL,
   email_id INTEGER NOT NULL UNIQUE,
   password VARCHAR(255) NOT NULL,
@@ -94,16 +96,24 @@ CREATE TABLE IF NOT EXISTS users.admin_accounts (
   CONSTRAINT fk_email_id FOREIGN KEY (email_id) REFERENCES users.emails (email_id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS users.customer_accounts (
+CREATE TABLE users.customer_accounts (
   customer_id INTEGER NOT NULL,
   email_id INTEGER NOT NULL UNIQUE,
-  password VARCHAR(255),
   status users.enum_customer_accounts_status NOT NULL,
   created_at TIMESTAMP NOT NULL,
   updated_at TIMESTAMP NOT NULL,
   PRIMARY KEY (customer_id),
   CONSTRAINT fk_customer_id FOREIGN KEY (customer_id) REFERENCES users.customers (customer_id) ON DELETE CASCADE ON UPDATE NO ACTION,
   CONSTRAINT fk_email_id FOREIGN KEY (email_id) REFERENCES users.emails (email_id) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+CREATE TABLE users.customer_passwords (
+  customer_id INTEGER NOT NULL,
+  password VARCHAR(255) NOT NULL,
+  created_at TIMESTAMP NOT NULL,
+  updated_at TIMESTAMP NOT NULL,
+  PRIMARY KEY (customer_id),
+  CONSTRAINT fk_customer_id FOREIGN KEY (customer_id) REFERENCES users.customer_accounts (customer_id) ON DELETE CASCADE ON UPDATE NO ACTION
 );
 
 CREATE TABLE users.admin_otps (
@@ -130,12 +140,11 @@ CREATE TABLE users.customer_otps (
 
 CREATE TABLE users.customer_identities (
   identity_id VARCHAR(50),
-  customer_id INTEGER NOT NULL,
-  provider users.enum_customer_identities_provider NOT NULL,
+  customer_id INTEGER,
+  provider users.enum_customer_identities_provider,
   created_at TIMESTAMP NOT NULL,
   updated_at TIMESTAMP NOT NULL,
-  PRIMARY KEY (identity_id),
-  UNIQUE (customer_id, provider),
+  PRIMARY KEY (identity_id, customer_id, provider),
   CONSTRAINT fk_customer_id FOREIGN KEY (customer_id) REFERENCES users.customers (customer_id) ON DELETE CASCADE ON UPDATE NO ACTION
 );
 

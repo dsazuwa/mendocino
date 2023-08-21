@@ -22,7 +22,6 @@ describe('CustomerAccount Model', () => {
       const data = {
         customerId,
         emailId,
-        password: 'johnD0ePa$$',
         status: 'active' as CustomerAccountStatusType,
       };
 
@@ -53,7 +52,6 @@ describe('CustomerAccount Model', () => {
       await CustomerAccount.create({
         customerId,
         emailId: id1,
-        password: 'jaeD0ePa$$',
         status: 'active',
       });
 
@@ -61,7 +59,6 @@ describe('CustomerAccount Model', () => {
         CustomerAccount.create({
           customerId,
           emailId: id2,
-          password: 'juliusD0ePa$$',
           status: 'active',
         }),
       ).rejects.toThrow();
@@ -83,7 +80,6 @@ describe('CustomerAccount Model', () => {
       await CustomerAccount.create({
         customerId: customer1.customerId,
         emailId,
-        password: 'jakeD0ePa$$',
         status: 'active',
       });
 
@@ -91,7 +87,6 @@ describe('CustomerAccount Model', () => {
         CustomerAccount.create({
           customerId: customer2.customerId,
           emailId,
-          password: 'jacD0ePa$$',
           status: 'active',
         }),
       ).rejects.toThrow();
@@ -103,7 +98,6 @@ describe('CustomerAccount Model', () => {
       const data = {
         customerId: 1000,
         emailId,
-        password: 'jayD0ePa$$',
         status: 'active' as CustomerAccountStatusType,
       };
 
@@ -119,7 +113,6 @@ describe('CustomerAccount Model', () => {
       const data = {
         customerId,
         emailId: 12324535,
-        password: 'jayD0ePa$$',
         status: 'active' as CustomerAccountStatusType,
       };
 
@@ -138,8 +131,7 @@ describe('CustomerAccount Model', () => {
     await CustomerAccount.create({
       customerId,
       emailId,
-      password: 'janeD0ePa$$',
-      status: 'active' as CustomerAccountStatusType,
+      status: 'active',
     });
 
     let retrievedAccount = await CustomerAccount.findByPk(customerId, { raw });
@@ -160,22 +152,28 @@ describe('CustomerAccount Model', () => {
 
     const { emailId } = await Email.create({ email: 'joydoe@gmail.com' });
 
+    const { emailId: newEmailId } = await Email.create({
+      email: 'notjoydoe@gmail.com',
+    });
+
     await CustomerAccount.create({
       customerId,
       emailId,
-      password: 'joyD0ePa$$',
-      status: 'active' as CustomerAccountStatusType,
+      status: 'active',
     });
 
-    const password = 'joyousDoe@gmail.com';
-
     await CustomerAccount.update(
-      { password },
+      { emailId: newEmailId },
       { where: { customerId }, individualHooks: true },
     );
 
-    const updatedAccount = await CustomerAccount.findByPk(customerId);
-    expect(updatedAccount?.comparePasswords(password)).toBe(true);
+    const updatedAccount = await CustomerAccount.findOne({
+      where: {
+        customerId,
+        emailId: newEmailId,
+      },
+    });
+    expect(updatedAccount).not.toBeNull();
   });
 
   it('should delete Customer account', async () => {
@@ -189,92 +187,13 @@ describe('CustomerAccount Model', () => {
     await CustomerAccount.create({
       customerId,
       emailId,
-      password: 'joelD0ePa$$',
-      status: 'active' as CustomerAccountStatusType,
+      status: 'active',
     });
 
     await CustomerAccount.destroy({ where: { customerId } });
 
     const deletedAccount = await CustomerAccount.findByPk(customerId, { raw });
     expect(deletedAccount).toBeNull();
-  });
-
-  describe('hash password', () => {
-    it('should hash the password on create', async () => {
-      const { customerId } = await Customer.create({
-        firstName: 'Jen',
-        lastName: 'Doe',
-      });
-
-      const { emailId } = await Email.create({ email: 'jendoe@gmail.com' });
-
-      const data = {
-        customerId,
-        emailId,
-        password: 'janeD0ePa$$',
-        status: 'active' as CustomerAccountStatusType,
-      };
-
-      const account = await CustomerAccount.create(data);
-      expect(account.password).not.toEqual(data.password);
-      expect(account.comparePasswords(data.password)).toBeTruthy();
-    });
-
-    it('should hash the password on update', async () => {
-      const { customerId } = await Customer.create({
-        firstName: 'Jules',
-        lastName: 'Doe',
-      });
-
-      const { emailId } = await Email.create({ email: 'julesdoe@gmail.com' });
-
-      const data = {
-        customerId,
-        emailId,
-        password: 'julesD0ePa$$',
-        status: 'active' as CustomerAccountStatusType,
-      };
-      const newPassword = 'newJulesPa$$';
-
-      const account = await CustomerAccount.create(data);
-      await account.update({ password: newPassword });
-
-      expect(account.comparePasswords(data.password)).toBeFalsy();
-      expect(account.comparePasswords(newPassword)).toBeTruthy();
-
-      const a = await CustomerAccount.findByPk(customerId, { raw });
-      expect(a?.password).not.toBe(newPassword);
-    });
-  });
-
-  describe('compare password', () => {
-    let a: CustomerAccount;
-
-    const password = 'jeromeD0e@gmail.com';
-
-    beforeAll(async () => {
-      const { customerId } = await Customer.create({
-        firstName: 'Jerome',
-        lastName: 'Doe',
-      });
-
-      const { emailId } = await Email.create({ email: 'jeromedoe@gmail.com' });
-
-      a = await CustomerAccount.create({
-        customerId,
-        emailId,
-        password,
-        status: 'active' as CustomerAccountStatusType,
-      });
-    });
-
-    it('should return true for equal passwords', () => {
-      expect(a.comparePasswords(password)).toBe(true);
-    });
-
-    it('should return false for non equal passwords', () => {
-      expect(a.comparePasswords('falsePassword')).toBe(false);
-    });
   });
 });
 
@@ -290,8 +209,7 @@ describe('CustomerAccount and Customer Relationship', () => {
     await CustomerAccount.create({
       customerId,
       emailId,
-      password: 'JuneD0ePa$$',
-      status: 'active' as CustomerAccountStatusType,
+      status: 'active',
     });
 
     await CustomerAccount.destroy({ where: { customerId } });
@@ -316,8 +234,7 @@ describe('CustomerAccount and Customer Relationship', () => {
     await CustomerAccount.create({
       customerId,
       emailId,
-      password: 'JenD0ePa$$',
-      status: 'active' as CustomerAccountStatusType,
+      status: 'active',
     });
 
     await Customer.destroy({ where: { customerId } });

@@ -14,34 +14,24 @@ import { ApiError } from '@App/utils';
 
 import { TABLENAMES, USER_SCHEMA } from '@user/utils/constants';
 
-export type AdminAccountStatusType =
-  | 'active'
-  | 'pending'
-  | 'suspended'
-  | 'disabled';
-
-class AdminAccount extends Model<
-  InferAttributes<AdminAccount>,
-  InferCreationAttributes<AdminAccount>
+class CustomerPassword extends Model<
+  InferAttributes<CustomerPassword>,
+  InferCreationAttributes<CustomerPassword>
 > {
-  declare adminId: number;
-
-  declare emailId: number;
+  declare customerId: number;
 
   declare password: string;
-
-  declare status: AdminAccountStatusType;
 
   declare createdAt: CreationOptional<Date>;
 
   declare updatedAt: CreationOptional<Date>;
 
-  public static async hashPassword(customer: AdminAccount) {
-    if (!customer.changed('password')) return;
+  public static async hashPassword(password: CustomerPassword) {
+    if (!password.changed('password')) return;
 
     try {
-      const hashed = await hash(customer.password, 10);
-      customer.password = hashed;
+      const hashed = await hash(password.password, 10);
+      password.password = hashed;
     } catch (err) {
       throw ApiError.internal('Failed to hash password');
     }
@@ -52,23 +42,15 @@ class AdminAccount extends Model<
   }
 }
 
-AdminAccount.init(
+CustomerPassword.init(
   {
-    adminId: {
+    customerId: {
       type: DataTypes.INTEGER,
       primaryKey: true,
-    },
-    emailId: {
-      type: DataTypes.INTEGER,
       allowNull: false,
-      unique: true,
     },
     password: {
       type: DataTypes.STRING,
-      allowNull: false,
-    },
-    status: {
-      type: DataTypes.ENUM('active', 'pending', 'suspended', 'disabled'),
       allowNull: false,
     },
     createdAt: {
@@ -83,12 +65,13 @@ AdminAccount.init(
   {
     sequelize,
     underscored: true,
+    timestamps: true,
     schema: USER_SCHEMA,
-    tableName: TABLENAMES.ADMIN_ACCOUNT,
+    tableName: TABLENAMES.CUSTOMER_PASSWORD,
     hooks: {
-      beforeSave: AdminAccount.hashPassword,
+      beforeSave: CustomerPassword.hashPassword,
     },
   },
 );
 
-export default AdminAccount;
+export default CustomerPassword;

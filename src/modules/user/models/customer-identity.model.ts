@@ -31,6 +31,7 @@ CustomerIdentity.init(
   {
     identityId: {
       type: DataTypes.STRING,
+      primaryKey: true,
       allowNull: false,
     },
     customerId: {

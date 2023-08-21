@@ -103,7 +103,6 @@ describe('Email and CustomerAccount Assciation', () => {
     await CustomerAccount.create({
       customerId,
       emailId,
-      password: 'johnD0ePa$$',
       status: 'active',
     });
 
@@ -130,7 +129,6 @@ describe('Email and CustomerAccount Assciation', () => {
     await CustomerAccount.create({
       customerId,
       emailId,
-      password: 'johnD0ePa$$',
       status: 'active',
     });
 

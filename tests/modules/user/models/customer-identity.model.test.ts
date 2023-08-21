@@ -10,7 +10,7 @@ import 'tests/db-setup';
 
 const raw = true;
 
-describe('User Identity', () => {
+describe('Customer Identity', () => {
   it('should create user udentity', async () => {
     const { customerId } = await Customer.create({
       firstName: 'Jefe',
@@ -97,8 +97,8 @@ describe('User Identity', () => {
   });
 });
 
-describe('User Identity and User Relationship', () => {
-  it('deleting User Identity should not delete User', async () => {
+describe('Customer Identity and Customer Relationship', () => {
+  it('deleting CustomerIdentity should not delete Customer', async () => {
     const { customerId } = await Customer.create({
       firstName: 'Jacobo',
       lastName: 'Doe',
@@ -130,7 +130,7 @@ describe('User Identity and User Relationship', () => {
     expect(retrievedUser).not.toBeNull();
   });
 
-  it('deleting User should delete User Identity', async () => {
+  it('deleting Customer should delete CustomerIdentity', async () => {
     const { customerId } = await Customer.create({
       firstName: 'Jairo',
       lastName: 'Doe',
@@ -152,7 +152,8 @@ describe('User Identity and User Relationship', () => {
 
     await Customer.destroy({ where: { customerId } });
 
-    const retrievedIdentity = await CustomerIdentity.findByPk(customerId, {
+    const retrievedIdentity = await CustomerIdentity.findOne({
+      where: { customerId, provider: 'google' },
       raw,
     });
     expect(retrievedIdentity).toBeNull();

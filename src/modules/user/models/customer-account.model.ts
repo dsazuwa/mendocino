@@ -1,4 +1,3 @@
-import { compareSync, hash } from 'bcryptjs';
 import {
   CreationOptional,
   DataTypes,
@@ -8,7 +7,6 @@ import {
 } from 'sequelize';
 
 import sequelize from '@App/db';
-import { ApiError } from '@App/utils';
 
 import { TABLENAMES, USER_SCHEMA } from '@user/utils/constants';
 
@@ -26,31 +24,11 @@ class CustomerAccount extends Model<
 
   declare emailId: number;
 
-  declare password: CreationOptional<string | null>;
-
   declare status: CustomerAccountStatusType;
 
   declare createdAt: CreationOptional<Date>;
 
   declare updatedAt: CreationOptional<Date>;
-
-  /* eslint-disable no-param-reassign */
-  public static async hashPassword(customer: CustomerAccount) {
-    if (!customer.changed('password') || !customer.password) return;
-
-    try {
-      const hashed = await hash(customer.password, 10);
-      customer.password = hashed;
-    } catch (err) {
-      throw ApiError.internal('Failed to hash password');
-    }
-  }
-
-  comparePasswords(password: string) {
-    if (!this.password) return false;
-
-    return compareSync(password, this.password);
-  }
 }
 
 CustomerAccount.init(
@@ -63,9 +41,6 @@ CustomerAccount.init(
       type: DataTypes.INTEGER,
       allowNull: false,
       unique: true,
-    },
-    password: {
-      type: DataTypes.STRING,
     },
     status: {
       type: DataTypes.ENUM('active', 'pending', 'suspended', 'disabled'),
@@ -85,9 +60,6 @@ CustomerAccount.init(
     underscored: true,
     schema: USER_SCHEMA,
     tableName: TABLENAMES.CUSTOMER_ACCOUNT,
-    hooks: {
-      beforeSave: CustomerAccount.hashPassword,
-    },
   },
 );
 

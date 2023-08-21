@@ -35,7 +35,6 @@ ref: admin_accounts.email_id - emails.email_id
 Table customer_accounts {
   customer_id integer pk
   email_id varchar [not null]
-  password varchar
   status enum_customer_accounts_status [not null]
   created_at timestamp [not null]
   updated_at timestamp [not null]
@@ -43,6 +42,15 @@ Table customer_accounts {
 
 ref: customer_accounts.customer_id - customers.customer_id
 ref: customer_accounts.email_id - emails.email_id
+
+Table customer_passwords {
+  customer_id integer pk
+  password varchar [not null]
+  created_at timestamp [not null]
+  updated_at timestamp [not null]
+}
+
+ref: customer_passwords.customer_id - customer_accounts.customer_id
 
 Table admin_otps {
   otp_id integer pk
@@ -74,14 +82,10 @@ ref: customer_otps.customer_id > customers.customer_id
 
 Table customer_identities {
   identity_id integer pk
-  customer_id integer [not null]
-  provider enum_customer_identities_provider [not null]
+  customer_id integer pk [not null]
+  provider enum_customer_identities_provider pk [not null]
   created_at timestamp [not null]
   updated_at timestamp [not null]
-
-  Indexes {
-    (customer_id, provider) [unique]
-  }
 }
 
 ref: customer_identities.customer_id > customers.customer_id

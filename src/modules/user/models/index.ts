@@ -12,6 +12,7 @@ import CustomerOTP, { CustomerOTPType } from './customer-otp.model';
 import CustomerPhone, { CustomerPhoneStatusType } from './customer-phone.model';
 import Customer from './customer.model';
 import Email from './email.model';
+import CustomerPassword from './nustomer-password.model';
 import Phone from './phone.model';
 import Role from './role.model';
 
@@ -42,6 +43,15 @@ Email.hasOne(CustomerAccount, {
 });
 CustomerAccount.belongsTo(Email, {
   foreignKey: 'emailId',
+  onDelete: 'CASCADE',
+});
+
+CustomerPassword.belongsTo(CustomerAccount, {
+  foreignKey: 'customerId',
+  onDelete: 'CASCADE',
+});
+CustomerAccount.hasOne(CustomerPassword, {
+  foreignKey: 'customerId',
   onDelete: 'CASCADE',
 });
 
@@ -135,6 +145,7 @@ export {
   CustomerIdentity,
   CustomerOTP,
   CustomerOTPType,
+  CustomerPassword,
   CustomerPhone,
   CustomerPhoneStatusType,
   Email,
