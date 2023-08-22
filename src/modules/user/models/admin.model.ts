@@ -4,6 +4,7 @@ import {
   InferAttributes,
   InferCreationAttributes,
   Model,
+  literal,
 } from 'sequelize';
 
 import sequelize from '@App/db';
@@ -30,7 +31,7 @@ Admin.init(
     adminId: {
       type: DataTypes.INTEGER,
       primaryKey: true,
-      autoIncrement: true,
+      defaultValue: literal("nextval('users.admin_id_seq')"),
     },
     firstName: {
       type: DataTypes.STRING,

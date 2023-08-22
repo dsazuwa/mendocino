@@ -37,9 +37,9 @@ describe('Permit Active Guard', () => {
     expect(res.status).toHaveBeenCalledWith(401);
   });
 
-  it('should deny access to inactive user', () => {
+  it('should deny access to disabled user', () => {
     const req = {
-      user: { userId: 1, status: 'inactive' },
+      user: { userId: 1, status: 'disabled' },
     } as unknown as Request;
 
     const res = {

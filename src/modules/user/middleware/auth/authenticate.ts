@@ -8,8 +8,10 @@ const authenticate = (req: Request, res: Response, next: NextFunction) => {
     if (err) next(err);
     else if (!user)
       res.status(401).json({ message: messages.ERR_INVALID_ACCESS_TOKEN });
-    else if (user.status === 'inactive')
+    else if (user.status === 'disabled')
       res.status(401).json({ message: messages.ERR_DEACTIVATED_ACCOUNT });
+    else if (user.status === 'suspended')
+      res.status(401).json({ message: messages.ERR_SUSPENDED_ACCOUNT });
     else {
       req.user = user;
       next();

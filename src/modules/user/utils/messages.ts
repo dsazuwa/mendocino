@@ -13,7 +13,7 @@ const messages = {
   ERR_DEACTIVATED_ACCOUNT: 'User account deactivated',
   ERR_SUSPENDED_ACCOUNT: 'User account suspended',
 
-  ERR_ACTIVE_ACCOUNT: 'User account already active',
+  ERR_ACTIVE_ACCOUNT: 'User account active',
   ERR_VERIFIED_ACCOUNT: 'Account already verified',
 
   ERR_THIRD_PARTY_AUTH_MISSING_DETAILS:

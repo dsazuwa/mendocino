@@ -154,7 +154,6 @@ ref: addresses.customer_id > customers.customer_id
 Enum enum_admin_accounts_status {
   active
   pending
-  inactive
   disabled
 }
 

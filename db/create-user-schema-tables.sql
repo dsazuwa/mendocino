@@ -43,11 +43,17 @@ DROP TYPE IF EXISTS users.enum_admin_otps_type;
 DROP TYPE IF EXISTS users.enum_customer_accounts_status;
 DROP TYPE IF EXISTS users.enum_admin_accounts_status;
 
+DROP SEQUENCE IF EXISTS users.admin_id_seq;
+DROP SEQUENCE IF EXISTS users.customer_id_seq;
+
 -- Drop schema
 DROP SCHEMA IF EXISTS users;
 
 -- Create schema
 CREATE SCHEMA users;
+
+CREATE SEQUENCE users.customer_id_seq START 1 INCREMENT 2;
+CREATE SEQUENCE users.admin_id_seq START 2 INCREMENT 2;
 
 -- Create enums
 CREATE TYPE users.enum_admin_accounts_status AS ENUM ('active', 'pending', 'inactive', 'disabled');
@@ -67,7 +73,7 @@ CREATE TABLE users.emails (
 );
 
 CREATE TABLE users.admins (
-  admin_id SERIAL,
+  admin_id INTEGER DEFAULT nextval('users.admin_id_seq'),
   first_name VARCHAR(50) NOT NULL,
   last_name VARCHAR(50) NOT NULL,
   created_at TIMESTAMP NOT NULL,
@@ -76,7 +82,7 @@ CREATE TABLE users.admins (
 );
 
 CREATE TABLE users.customers (
-  customer_id SERIAL,
+  customer_id INTEGER DEFAULT nextval('users.customer_id_seq'),
   first_name VARCHAR(50) NOT NULL,
   last_name VARCHAR(50) NOT NULL,
   created_at TIMESTAMP NOT NULL,

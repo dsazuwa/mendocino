@@ -14,9 +14,9 @@ export const configureJWTStrategy = (passportStatic: PassportStatic) => {
       },
       async (jwt_payload, done) => {
         try {
-          const { userId, provider } = jwt_payload;
+          const { email, provider } = jwt_payload;
 
-          const user = await authService.getUserData(userId, provider);
+          const user = await authService.getUserFromPayload(email, provider);
 
           done(null, user);
         } catch (err) {

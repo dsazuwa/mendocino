@@ -14,11 +14,7 @@ import { ApiError } from '@App/utils';
 
 import { TABLENAMES, USER_SCHEMA } from '@user/utils/constants';
 
-export type AdminAccountStatusType =
-  | 'active'
-  | 'pending'
-  | 'suspended'
-  | 'disabled';
+export type AdminAccountStatusType = 'active' | 'pending' | 'disabled';
 
 class AdminAccount extends Model<
   InferAttributes<AdminAccount>,
