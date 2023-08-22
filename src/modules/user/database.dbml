@@ -161,7 +161,7 @@ Enum enum_customer_accounts_status {
   active
   pending
   suspended
-  disabled
+  deactivated
 }
 
 Enum enum_admin_otps_type {

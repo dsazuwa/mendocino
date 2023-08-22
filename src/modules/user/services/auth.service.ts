@@ -418,7 +418,7 @@ const authService = {
   reactivateCustomer: async (customerId: number) => {
     const result = await CustomerAccount.update(
       { status: 'active' },
-      { where: { customerId, status: 'disabled' } },
+      { where: { customerId, status: 'deactivated' } },
     );
 
     return result[0] === 1;

@@ -37,9 +37,9 @@ describe('Permit Pending Guard', () => {
     expect(res.status).toHaveBeenCalledWith(401);
   });
 
-  it('should deny access to disabled user', () => {
+  it('should deny access to deactivated user', () => {
     const req = {
-      user: { userId: 1, status: 'disabled' },
+      user: { userId: 1, status: 'deactivated' },
     } as unknown as Request;
 
     const res = {

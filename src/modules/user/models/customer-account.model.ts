@@ -14,7 +14,7 @@ export type CustomerAccountStatusType =
   | 'active'
   | 'pending'
   | 'suspended'
-  | 'disabled';
+  | 'deactivated';
 
 class CustomerAccount extends Model<
   InferAttributes<CustomerAccount>,
@@ -43,7 +43,7 @@ CustomerAccount.init(
       unique: true,
     },
     status: {
-      type: DataTypes.ENUM('active', 'pending', 'suspended', 'disabled'),
+      type: DataTypes.ENUM('active', 'pending', 'suspended', 'deactivated'),
       allowNull: false,
     },
     createdAt: {

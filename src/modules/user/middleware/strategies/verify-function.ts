@@ -40,7 +40,7 @@ const verifyFunction = async (
         ApiError.unauthorized(messages.ERR_THIRD_PARTY_AUTH_MISMATCH),
       );
 
-    if (user?.status === 'disabled')
+    if (user?.status === 'deactivated')
       return done(ApiError.unauthorized(messages.ERR_DEACTIVATED_ACCOUNT));
 
     if (user?.status === 'suspended')

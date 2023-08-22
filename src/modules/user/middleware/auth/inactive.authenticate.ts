@@ -12,7 +12,7 @@ const authenticateInactive = (
     if (err) next(err);
     else if (!user)
       res.status(401).json({ message: messages.ERR_INVALID_ACCESS_TOKEN });
-    else if (user.status !== 'disabled')
+    else if (user.status !== 'deactivated')
       res.status(401).json({ message: messages.ERR_ACTIVE_ACCOUNT });
     else {
       req.user = user;

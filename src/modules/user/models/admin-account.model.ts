@@ -64,7 +64,7 @@ AdminAccount.init(
       allowNull: false,
     },
     status: {
-      type: DataTypes.ENUM('active', 'pending', 'suspended', 'disabled'),
+      type: DataTypes.ENUM('active', 'pending', 'disabled'),
       allowNull: false,
     },
     createdAt: {

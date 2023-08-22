@@ -247,7 +247,7 @@ it('should return error if customer exists, but is admin', async () => {
   expect(i).toBeNull();
 });
 
-it('should return error if customer exists (disabled)', async () => {
+it('should return error if customer exists (deactivated)', async () => {
   const identityId = '6988232978752892';
   const firstName = 'Jacquet';
   const lastName = 'Doe';
@@ -259,7 +259,7 @@ it('should return error if customer exists (disabled)', async () => {
     lastName,
     email,
     password,
-    'disabled',
+    'deactivated',
   );
 
   const i = await CustomerIdentity.findOne({

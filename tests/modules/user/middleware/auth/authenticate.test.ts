@@ -83,7 +83,7 @@ it('should return 401 Unauthorized for a deactivated customer', async () => {
     'Doe',
     'jessica.doe@gmail.com',
     'jessD0ePa$$',
-    'disabled',
+    'deactivated',
   );
   const token = authService.generateJWT(email.email, 'email');
 

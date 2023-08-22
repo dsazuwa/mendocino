@@ -56,8 +56,8 @@ CREATE SEQUENCE users.customer_id_seq START 1 INCREMENT 2;
 CREATE SEQUENCE users.admin_id_seq START 2 INCREMENT 2;
 
 -- Create enums
-CREATE TYPE users.enum_admin_accounts_status AS ENUM ('active', 'pending', 'inactive', 'disabled');
-CREATE TYPE users.enum_customer_accounts_status AS ENUM ('active', 'pending', 'suspended', 'disabled');
+CREATE TYPE users.enum_admin_accounts_status AS ENUM ('active', 'pending', 'disabled');
+CREATE TYPE users.enum_customer_accounts_status AS ENUM ('active', 'pending', 'suspended', 'deactivated');
 CREATE TYPE users.enum_admin_otps_type AS ENUM ('email', 'password', 'phone');
 CREATE TYPE users.enum_customer_otps_type AS ENUM ('email', 'password', 'phone');
 CREATE TYPE users.enum_customer_identities_provider AS ENUM ('google', 'facebook');

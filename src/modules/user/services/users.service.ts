@@ -24,7 +24,7 @@ const deleteIdentity = (customerId: number, provider: ProviderType) =>
 const deactivate = (customerId: number) =>
   sequelize.transaction(async (transaction) => {
     await CustomerAccount.update(
-      { status: 'disabled' as CustomerAccountStatusType },
+      { status: 'deactivated' as CustomerAccountStatusType },
       { where: { customerId }, transaction },
     );
 

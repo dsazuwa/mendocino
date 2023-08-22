@@ -539,7 +539,7 @@ describe('reactivate customer', () => {
       'Doe',
       'jerydoe@gmail.com',
       'jerryD0ePa$$',
-      'disabled',
+      'deactivated',
     );
 
     const result = await authService.reactivateCustomer(customerId);

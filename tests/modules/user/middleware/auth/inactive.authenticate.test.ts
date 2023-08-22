@@ -3,7 +3,7 @@ import authService from '@user/services/auth.service';
 import { createCustomer } from 'tests/modules/user/helper-functions';
 import { request } from 'tests/supertest.helper';
 
-import 'tests/user.db-setup';
+import 'tests/db-setup';
 
 describe('Inative Authentication Middleware', () => {
   const URL = '/api/test/inactive/greeting';
@@ -14,7 +14,7 @@ describe('Inative Authentication Middleware', () => {
       'Doe',
       'jessdoe@gmail.com',
       'jessD0ePa$$',
-      'disabled',
+      'deactivated',
     );
     const token = authService.generateJWT(email.email, 'email');
 
