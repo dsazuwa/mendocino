@@ -3,237 +3,302 @@ import { Profile } from 'passport';
 import ApiError from '@utils/api-error';
 
 import verifyFunction from '@user/middleware/strategies/verify-function';
-import { ProviderType, User, UserAccount, UserIdentity } from '@user/models';
+import {
+  ProviderType,
+  Customer,
+  CustomerAccount,
+  CustomerIdentity,
+  Email,
+} from '@user/models';
 import authService from '@user/services/auth.service';
 import { ROLES } from '@user/utils/constants';
 import messages from '@user/utils/messages';
 
 import {
-  createUserAccount,
-  createUserAccountAndIdentity,
+  createAdmin,
+  createCustomer,
+  createCustomerAndIdentity,
+  createRoles,
 } from 'tests/modules/user/helper-functions';
 
-import 'tests/user.db-setup';
+import 'tests/db-setup';
 
 const raw = true;
 
-describe('Verify Function', () => {
-  const done = jest.fn();
+beforeAll(async () => {
+  createRoles();
+});
 
-  const callVerify = async (
-    identityId: string,
-    firstName: string,
-    lastName: string,
-    email: string,
-    provider: ProviderType,
-  ) => {
-    const profile = {
-      id: identityId,
-      emails: [{ value: email }],
-      name: { givenName: firstName, familyName: lastName },
-    } as unknown as Profile;
+const done = jest.fn();
 
-    await verifyFunction(profile, done, provider);
-  };
+const callVerify = async (
+  identityId: string,
+  firstName: string,
+  lastName: string,
+  email: string,
+  provider: ProviderType,
+) => {
+  const profile = {
+    id: identityId,
+    emails: [{ value: email }],
+    name: { givenName: firstName, familyName: lastName },
+  } as unknown as Profile;
 
-  it('should create user if user does not exists', async () => {
-    const identityId = '213254657845231';
-    const provider = 'google';
-    const firstName = 'Joseph';
-    const lastName = 'Doe';
-    const email = 'josephdoe@gmail.com';
+  await verifyFunction(profile, done, provider);
+};
 
-    let u = await User.findOne({ where: { firstName, lastName }, raw });
-    let a = await UserAccount.findOne({ where: { email }, raw });
-    let i = await UserIdentity.findOne({ where: { identityId }, raw });
+it('should create customer if they do not exist', async () => {
+  const identityId = '213254657845231';
+  const provider = 'google';
+  const firstName = 'Joseph';
+  const lastName = 'Doe';
+  const email = 'josephdoe@gmail.com';
 
-    expect(u).toBeNull();
-    expect(a).toBeNull();
-    expect(i).toBeNull();
+  let c = await Customer.findOne({ where: { firstName, lastName }, raw });
+  let e = await Email.findOne({ where: { email }, raw });
+  let i = await CustomerIdentity.findOne({ where: { identityId }, raw });
 
-    await callVerify(identityId, firstName, lastName, email, 'google');
+  expect(c).toBeNull();
+  expect(e).toBeNull();
+  expect(i).toBeNull();
 
-    u = await User.findOne({ where: { firstName, lastName }, raw });
-    a = await UserAccount.findOne({ where: { email }, raw });
-    i = await UserIdentity.findOne({
-      where: { identityId, userId: u?.userId, provider },
-      raw,
-    });
+  await callVerify(identityId, firstName, lastName, email, 'google');
 
-    expect(u).not.toBeNull();
-    expect(a).not.toBeNull();
-    expect(a?.password).toBe(null);
-    expect(i).not.toBeNull();
+  c = await Customer.findOne({ where: { firstName, lastName }, raw });
+  e = await Email.findOne({ where: { email }, raw });
+  i = await CustomerIdentity.findOne({
+    where: { identityId, customerId: c?.customerId, provider },
+    raw,
   });
 
-  it('should create new identity if User Account exists (active) but User Identity does not', async () => {
-    const identityId = '242739758613728489';
-    const firstName = 'Jacquelin';
-    const lastName = 'Doe';
-    const email = 'jacquelindoe@gmail.com';
-    const password = 'jacqD0ePa$$';
-    const provider = 'facebook';
+  expect(c).not.toBeNull();
+  expect(e).not.toBeNull();
+  expect(i).not.toBeNull();
+});
 
-    const { userId } = await createUserAccount(
-      firstName,
-      lastName,
-      email,
-      password,
-      'active',
-      [ROLES.CUSTOMER.roleId],
-    );
+it('should create new identity if CustomerAccount exists (active) but CustomerIdentity does not', async () => {
+  const identityId = '242739758613728489';
+  const firstName = 'Jacquelin';
+  const lastName = 'Doe';
+  const email = 'jacquelindoe@gmail.com';
+  const password = 'jacqD0ePa$$';
+  const provider = 'facebook';
 
-    let i = await UserIdentity.findOne({
-      where: { identityId, userId },
-      raw,
-    });
-    expect(i).toBeNull();
+  const { customerId } = await createCustomer(
+    firstName,
+    lastName,
+    email,
+    password,
+    'active',
+  );
 
-    await callVerify(identityId, firstName, lastName, email, provider);
+  let i = await CustomerIdentity.findOne({
+    where: { identityId, customerId },
+    raw,
+  });
+  expect(i).toBeNull();
 
-    i = await UserIdentity.findOne({
-      where: { identityId, userId, provider },
-      raw,
-    });
-    expect(i).not.toBeNull();
+  await callVerify(identityId, firstName, lastName, email, provider);
+
+  i = await CustomerIdentity.findOne({
+    where: { identityId, customerId, provider },
+    raw,
+  });
+  expect(i).not.toBeNull();
+});
+
+it('should create new identity if CustomerAccount exists (pending) but CustomerIdentity does not', async () => {
+  const identityId = '53849274264293027498';
+  const provider = 'facebook';
+  const firstName = 'Jean';
+  const lastName = 'Doe';
+  const email = 'jeandoe@gmail.com';
+  const password = 'jeanD0ePa$$';
+
+  const { customerId } = await createCustomer(
+    firstName,
+    lastName,
+    email,
+    password,
+    'pending',
+  );
+
+  let a = await CustomerAccount.findOne({
+    where: { customerId, status: 'pending' },
+    raw,
+  });
+  let i = await CustomerIdentity.findOne({
+    where: { identityId, customerId },
+    raw,
   });
 
-  it('should create new identity if User Account exists (pending) but User Identity does not', async () => {
-    const identityId = '53849274264293027498';
-    const provider = 'facebook';
-    const firstName = 'Jean';
-    const lastName = 'Doe';
-    const email = 'jeandoe@gmail.com';
-    const password = 'jeanD0ePa$$';
+  expect(a).not.toBeNull();
+  expect(i).toBeNull();
 
-    const { userId } = await createUserAccount(
-      firstName,
-      lastName,
-      email,
-      password,
-      'pending',
-      [ROLES.CUSTOMER.roleId],
-    );
+  await callVerify(identityId, firstName, lastName, email, provider);
 
-    let a = await UserAccount.findOne({
-      where: { userId, status: 'pending' },
-      raw,
-    });
-    let i = await UserIdentity.findOne({
-      where: { identityId, userId },
-      raw,
-    });
-
-    expect(a).not.toBeNull();
-    expect(i).toBeNull();
-
-    await callVerify(identityId, firstName, lastName, email, provider);
-
-    a = await UserAccount.findOne({
-      where: { userId, status: 'active' },
-      raw,
-    });
-    i = await UserIdentity.findOne({
-      where: { identityId, userId, provider },
-      raw,
-    });
-
-    expect(a).not.toBeNull();
-    expect(i).not.toBeNull();
+  a = await CustomerAccount.findOne({
+    where: { customerId, status: 'active' },
+    raw,
+  });
+  i = await CustomerIdentity.findOne({
+    where: { identityId, customerId, provider },
+    raw,
   });
 
-  it('should "login" user if both User Account and User Identity exists', async () => {
-    const identityId = '583683462429535730';
-    const firstName = 'Jules';
-    const lastName = 'Doe';
-    const email = 'julesdoe@gmail.com';
-    const password = 'julesD0ePa$$';
-    const provider = 'google';
+  expect(a).not.toBeNull();
+  expect(i).not.toBeNull();
+});
 
-    await createUserAccountAndIdentity(
-      firstName,
-      lastName,
-      email,
-      password,
-      'active',
-      [{ identityId, provider }],
-    );
+it('should "login" user if both CustomerAccount and CustomerIdentity exists', async () => {
+  const identityId = '583683462429535730';
+  const firstName = 'Jules';
+  const lastName = 'Doe';
+  const email = 'julesdoe@gmail.com';
+  const password = 'julesD0ePa$$';
+  const provider = 'google';
 
-    const { createUserAndUserIdentity, createUserIdentityForUser } =
-      authService;
+  await createCustomerAndIdentity(
+    firstName,
+    lastName,
+    email,
+    password,
+    'active',
+    [{ identityId, provider }],
+  );
 
-    const a = jest.fn();
-    const b = jest.fn();
+  const {
+    createIdentityForCustomer,
+    createCustomerAndIdentity: serviceCreateCustomerAndIdentity,
+  } = authService;
 
-    authService.createUserAndUserIdentity = a;
-    authService.createUserIdentityForUser = b;
+  const a = jest.fn();
+  const b = jest.fn();
 
-    await callVerify(identityId, firstName, lastName, email, provider);
+  authService.createIdentityForCustomer = a;
+  authService.createCustomerAndIdentity = b;
 
-    expect(a).not.toHaveBeenCalled();
-    expect(b).not.toHaveBeenCalled();
+  await callVerify(identityId, firstName, lastName, email, provider);
 
-    authService.createUserAndUserIdentity = createUserAndUserIdentity;
-    authService.createUserIdentityForUser = createUserIdentityForUser;
+  expect(a).not.toHaveBeenCalled();
+  expect(b).not.toHaveBeenCalled();
+
+  authService.createIdentityForCustomer = createIdentityForCustomer;
+  authService.createCustomerAndIdentity = serviceCreateCustomerAndIdentity;
+});
+
+it('should return error if identity exists but not for user with provided email', async () => {
+  const firstName = 'Juniper';
+  const lastName = 'Doe';
+  const email = 'juniperdoe@gmail.com';
+  const password = 'junipeD0ePa$$';
+  const identityId = '85930847728963982469';
+  const provider = 'facebook';
+
+  await createCustomerAndIdentity(
+    firstName,
+    lastName,
+    email,
+    password,
+    'active',
+    [{ identityId, provider }],
+  );
+
+  const { email: juanEmail } = await createCustomer(
+    'Juan',
+    'Doe',
+    'juandoe@gmail.com',
+    'juaneD0ePa$$',
+    'active',
+  );
+
+  await callVerify(identityId, firstName, lastName, juanEmail.email, provider);
+
+  expect(done).toHaveBeenLastCalledWith(
+    ApiError.unauthorized(messages.ERR_THIRD_PARTY_AUTH_MISMATCH),
+  );
+});
+
+it('should return error if customer exists, but is admin', async () => {
+  const identityId = '6988232978752892';
+  const firstName = 'Jerome';
+  const lastName = 'Doe';
+  const email = 'jeromedoe@gmail.com';
+  const password = 'jeromeD0ePa$$';
+  const provider = 'google';
+
+  await createAdmin(firstName, lastName, email, password, 'active', [
+    ROLES.SUPER_USER.roleId,
+  ]);
+
+  let i = await CustomerIdentity.findOne({
+    where: { identityId, provider },
+    raw,
   });
+  expect(i).toBeNull();
 
-  it('should return an error if user exists, but is not a customer', async () => {
-    const identityId = '6988232978752892';
-    const firstName = 'Jerome';
-    const lastName = 'Doe';
-    const email = 'jeromedoe@gmail.com';
-    const password = 'jeromeD0ePa$$';
+  await callVerify(identityId, firstName, lastName, email, provider);
 
-    const { userId } = await createUserAccount(
-      firstName,
-      lastName,
-      email,
-      password,
-      'active',
-      [ROLES.SUPER_USER.roleId],
-    );
+  expect(done).toHaveBeenLastCalledWith(
+    ApiError.unauthorized(messages.ERR_THIRD_PARTY_AUTH_ADMIN),
+  );
 
-    const i = await UserIdentity.findOne({
-      where: { identityId, userId },
-      raw,
-    });
-    expect(i).toBeNull();
+  i = await CustomerIdentity.findOne({ where: { identityId, provider }, raw });
+  expect(i).toBeNull();
+});
 
-    await callVerify(identityId, firstName, lastName, email, 'google');
+it('should return error if customer exists (disabled)', async () => {
+  const identityId = '6988232978752892';
+  const firstName = 'Jacquet';
+  const lastName = 'Doe';
+  const email = 'jacquetdoe@gmail.com';
+  const password = 'jacquetD0ePa$$';
 
-    expect(done).toHaveBeenLastCalledWith(
-      ApiError.unauthorized(messages.ERR_NON_CUSTOMER_THIRD_PARTY_AUTH),
-      undefined,
-    );
+  const { customerId } = await createCustomer(
+    firstName,
+    lastName,
+    email,
+    password,
+    'disabled',
+  );
+
+  const i = await CustomerIdentity.findOne({
+    where: { identityId, customerId },
+    raw,
   });
+  expect(i).toBeNull();
 
-  it('should return an error if User Account exists (inactive)', async () => {
-    const identityId = '6988232978752892';
-    const firstName = 'Jacquet';
-    const lastName = 'Doe';
-    const email = 'jacquetdoe@gmail.com';
-    const password = 'jacquetD0ePa$$';
+  await callVerify(identityId, firstName, lastName, email, 'google');
 
-    const { userId } = await createUserAccount(
-      firstName,
-      lastName,
-      email,
-      password,
-      'inactive',
-      [ROLES.CUSTOMER.roleId],
-    );
+  expect(done).toHaveBeenLastCalledWith(
+    ApiError.unauthorized(messages.ERR_DEACTIVATED_ACCOUNT),
+  );
+});
 
-    const i = await UserIdentity.findOne({
-      where: { identityId, userId },
-      raw,
-    });
-    expect(i).toBeNull();
+it('should return error if customer exists (suspended)', async () => {
+  const identityId = '59837803748027482';
+  const firstName = 'Jacquet';
+  const lastName = 'Doe';
+  const email = 'notjacquet@gmail.com';
+  const password = 'jacquetD0ePa$$';
 
-    await callVerify(identityId, firstName, lastName, email, 'google');
+  const { customerId } = await createCustomer(
+    firstName,
+    lastName,
+    email,
+    password,
+    'suspended',
+  );
 
-    expect(done).toHaveBeenLastCalledWith(
-      ApiError.unauthorized(messages.ERR_DEACTIVATED_ACCOUNT),
-      undefined,
-    );
+  const i = await CustomerIdentity.findOne({
+    where: { identityId, customerId },
+    raw,
   });
+  expect(i).toBeNull();
+
+  await callVerify(identityId, firstName, lastName, email, 'google');
+
+  expect(done).toHaveBeenLastCalledWith(
+    ApiError.unauthorized(messages.ERR_SUSPENDED_ACCOUNT),
+  );
 });

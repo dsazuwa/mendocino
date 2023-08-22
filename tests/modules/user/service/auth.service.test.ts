@@ -15,7 +15,7 @@ import {
   createAdmin,
   createCustomer,
   createRoles,
-  createUserAccountAndIdentity,
+  createCustomerAndIdentity,
 } from 'tests/modules/user/helper-functions';
 
 import 'tests/db-setup';
@@ -87,7 +87,7 @@ describe('get user data', () => {
 
   it('should return user data when for customer with identity', async () => {
     const { customerId, customer, email, account } =
-      await createUserAccountAndIdentity(
+      await createCustomerAndIdentity(
         'Juana',
         'Doe',
         'juanadoe@gmail.com',
@@ -147,7 +147,7 @@ describe('get user data for social authentication', () => {
     const provider = 'facebook';
 
     const { customerId, customer, email, account } =
-      await createUserAccountAndIdentity(
+      await createCustomerAndIdentity(
         'Juni',
         'Doe',
         'junidoe@gmail.com',
@@ -156,14 +156,13 @@ describe('get user data for social authentication', () => {
         [{ identityId, provider }],
       );
 
-    const { user, identityExists } =
+    const { user, isAdmin, identityExists } =
       await authService.getUserForSocialAuthentication(
         identityId,
         provider,
         email.email,
       );
 
-    expect(identityExists).toBe(true);
     expect(user).toMatchObject({
       userId: customerId,
       firstName: customer.firstName,
@@ -172,6 +171,8 @@ describe('get user data for social authentication', () => {
       status: account.status,
       roles: ['customer'],
     });
+    expect(isAdmin).toBe(false);
+    expect(identityExists).toBe(true);
   });
 
   it('account exists, but identity does not', async () => {
@@ -180,36 +181,58 @@ describe('get user data for social authentication', () => {
 
     const { customerId, customer, email, account } = await createCustomer(
       'June',
-      'Die',
+      'Doe',
       'junedoe@gmail.com',
       'juneD0epa$$',
       'active',
     );
 
-    const { user, identityExists } =
+    const { user, isAdmin, identityExists } =
       await authService.getUserForSocialAuthentication(
         identityId,
         provider,
         email.email,
       );
 
-    expect(identityExists).toBe(false);
     expect(user).toMatchObject({
       userId: customerId,
       firstName: customer.firstName,
       lastName: customer.lastName,
       email: email.email,
       status: account.status,
-      identityId: null,
       roles: ['customer'],
     });
+    expect(isAdmin).toBe(false);
+    expect(identityExists).toBe(false);
+  });
+
+  it('admin account exists', async () => {
+    const { email } = await createAdmin(
+      'Jane',
+      'Doe',
+      'janedoe@gmail.com',
+      'juneD0epa$$',
+      'active',
+      [ROLES.MANAGER.roleId],
+    );
+
+    const { user, isAdmin, identityExists } =
+      await authService.getUserForSocialAuthentication(
+        '859308786728963982469',
+        'facebook',
+        email.email,
+      );
+
+    expect(user).toBeNull();
+    expect(isAdmin).toBe(true);
+    expect(identityExists).toBe(false);
   });
 
   it('identity exists but not for user with provided email', async () => {
     const identityId = '85930847728963982469';
     const provider = 'facebook';
 
-    await createUserAccountAndIdentity(
+    await createCustomerAndIdentity(
       'Juniper',
       'Doe',
       'juniperdoe@gmail.com',
@@ -226,42 +249,28 @@ describe('get user data for social authentication', () => {
       'active',
     );
 
-    const { user, identityExists } =
+    const { user, isAdmin, identityExists } =
       await authService.getUserForSocialAuthentication(
         identityId,
         provider,
         juanEmail.email,
       );
 
+    expect(user).toBeNull();
+    expect(isAdmin).toBe(false);
     expect(identityExists).toBe(true);
-    expect(user).toBe(undefined);
-  });
-
-  it('neither account nor identity exist', async () => {
-    const identityId = '4675698097564453534636';
-    const provider = 'facebook';
-    const email = 'jelenadoe@gmail.com';
-
-    const { user, identityExists } =
-      await authService.getUserForSocialAuthentication(
-        identityId,
-        provider,
-        email,
-      );
-
-    expect(identityExists).toBe(false);
-    expect(user).not.toBeDefined();
   });
 
   it('should return undefined if user does not exists', async () => {
-    const { user, identityExists } =
+    const { user, isAdmin, identityExists } =
       await authService.getUserForSocialAuthentication(
         '693904397428648349',
         'facebook',
         'someemail@gmail.com',
       );
 
-    expect(user).not.toBeDefined();
+    expect(user).toBeNull();
+    expect(isAdmin).toBe(false);
     expect(identityExists).toBe(false);
   });
 });
@@ -473,7 +482,7 @@ describe('login', () => {
   it('should fail login if customer has no password', async () => {
     const email = 'jaffdoe@gmail.com';
 
-    const { customerId } = await createUserAccountAndIdentity(
+    const { customerId } = await createCustomerAndIdentity(
       'Jeff',
       'Doe',
       email,

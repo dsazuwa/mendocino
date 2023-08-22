@@ -9,11 +9,19 @@ const messages = {
 
   ERR_UNAUTHORIZED_ACCESS: 'Unauthorized',
   ERR_INVALID_ACCESS_TOKEN: 'Invalid access token',
-  ERR_DEACTIVATED_ACCOUNT: 'Deactivated account',
-  ERR_ACTIVE_ACCOUNT: 'Active account',
+
+  ERR_DEACTIVATED_ACCOUNT: 'User account deactivated',
+  ERR_SUSPENDED_ACCOUNT: 'User account suspended',
+
+  ERR_ACTIVE_ACCOUNT: 'User account already active',
   ERR_VERIFIED_ACCOUNT: 'Account already verified',
-  ERR_NON_CUSTOMER_THIRD_PARTY_AUTH:
+
+  ERR_THIRD_PARTY_AUTH_MISSING_DETAILS:
+    'Social authentication details are incomplete.',
+  ERR_THIRD_PARTY_AUTH_ADMIN:
     'Only customers can use third party authenticators',
+  ERR_THIRD_PARTY_AUTH_MISMATCH:
+    "Identity exists, but it doesn't match the provided email",
 
   // COMMON MESSAGES
 

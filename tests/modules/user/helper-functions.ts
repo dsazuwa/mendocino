@@ -49,7 +49,7 @@ export const createCustomer = async (
     return { customerId, customer, email: customerEmail, account, password: p };
   });
 
-export const createUserAccountAndIdentity = async (
+export const createCustomerAndIdentity = async (
   firstName: string,
   lastName: string,
   email: string,

@@ -22,47 +22,48 @@ const verifyFunction = async (
 
     if (!(email && firstName && lastName))
       return done(
-        ApiError.badRequest('Social authentication details missing'),
-        undefined,
+        ApiError.badRequest(messages.ERR_THIRD_PARTY_AUTH_MISSING_DETAILS),
       );
 
-    const { user, userExists, identityExists, isCustomer } =
+    const { isAdmin, user, identityExists } =
       await authService.getUserForSocialAuthentication(
         identityId,
         provider,
         email,
       );
 
-    if (userExists && !isCustomer)
+    if (isAdmin)
+      return done(ApiError.unauthorized(messages.ERR_THIRD_PARTY_AUTH_ADMIN));
+
+    if (!isAdmin && !user && identityExists)
       return done(
-        ApiError.unauthorized(messages.ERR_NON_CUSTOMER_THIRD_PARTY_AUTH),
-        undefined,
+        ApiError.unauthorized(messages.ERR_THIRD_PARTY_AUTH_MISMATCH),
       );
 
-    if (identityExists) return done(null, user);
+    if (user?.status === 'disabled')
+      return done(ApiError.unauthorized(messages.ERR_DEACTIVATED_ACCOUNT));
 
-    if (userExists && user?.status === 'inactive')
-      return done(
-        ApiError.unauthorized(messages.ERR_DEACTIVATED_ACCOUNT),
-        undefined,
-      );
+    if (user?.status === 'suspended')
+      return done(ApiError.unauthorized(messages.ERR_SUSPENDED_ACCOUNT));
 
-    const newIdentity = await (userExists
-      ? authService.createUserIdentityForUser(
+    if (user && identityExists) return done(null, user);
+
+    const { customerId } = user
+      ? await authService.createIdentityForCustomer(
           identityId,
-          user?.userId as number,
-          user?.status as string,
+          user.userId,
+          user.status,
           provider,
         )
-      : authService.createUserAndUserIdentity(
+      : await authService.createCustomerAndIdentity(
           identityId,
           firstName,
           lastName,
           email,
           provider,
-        ));
+        );
 
-    const u = await authService.getUserData(newIdentity.userId, provider);
+    const u = await authService.getUserData(customerId, 'customer');
     return done(null, u);
   } catch (err) {
     return done(err, undefined);

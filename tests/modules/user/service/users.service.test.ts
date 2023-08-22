@@ -15,7 +15,7 @@ import usersService from '@user/services/users.service';
 
 import {
   createCustomer,
-  createUserAccountAndIdentity,
+  createCustomerAndIdentity,
 } from 'tests/modules/user/helper-functions';
 
 import 'tests/db-setup';
@@ -73,7 +73,7 @@ describe('get customer profile', () => {
   });
 
   it('customer with account password, user identities, but no phone or address', async () => {
-    const { customerId } = await createUserAccountAndIdentity(
+    const { customerId } = await createCustomerAndIdentity(
       firstName,
       lastName,
       email,
@@ -98,7 +98,7 @@ describe('get customer profile', () => {
   });
 
   it('customer with identities but no account password, phone or address', async () => {
-    const { customerId } = await createUserAccountAndIdentity(
+    const { customerId } = await createCustomerAndIdentity(
       firstName,
       lastName,
       email,
@@ -323,7 +323,7 @@ describe('update user name ', () => {
 
 describe('create password', () => {
   it('should create password if user password is null', async () => {
-    const { customerId } = await createUserAccountAndIdentity(
+    const { customerId } = await createCustomerAndIdentity(
       'Josephine',
       'Doe',
       'josephinedoe@gmail.com',
@@ -414,7 +414,7 @@ describe('change password', () => {
   it('should return false if user_account password is null', async () => {
     const newPassword = 'newjolieD0epa$$';
 
-    const { customerId } = await createUserAccountAndIdentity(
+    const { customerId } = await createCustomerAndIdentity(
       'Jolie',
       'Doe',
       'joliepauldoe@gmail.com',
@@ -452,7 +452,7 @@ describe('revoke social authentication', () => {
   it('should delete identity if user has an account with a password', async () => {
     const provider = 'google';
 
-    const { customerId } = await createUserAccountAndIdentity(
+    const { customerId } = await createCustomerAndIdentity(
       'Jessica',
       'Doe',
       'jessicadoe@gmail.com',
@@ -483,7 +483,7 @@ describe('revoke social authentication', () => {
   });
 
   it('should delete identity if user has no account with password but other identities', async () => {
-    const { customerId } = await createUserAccountAndIdentity(
+    const { customerId } = await createCustomerAndIdentity(
       'Jack',
       'Doe',
       'jackdoe@gmail.com',
@@ -524,7 +524,7 @@ describe('revoke social authentication', () => {
   it('should return false if user has neither an account with a password nor anothor identitiy', async () => {
     const provider = 'google';
 
-    const { customerId } = await createUserAccountAndIdentity(
+    const { customerId } = await createCustomerAndIdentity(
       'Jess',
       'Doe',
       'jessdoe@gmail.com',
@@ -567,7 +567,7 @@ describe('revoke social authentication', () => {
 
 describe('close account', () => {
   it('should deactivate account if user has an account password', async () => {
-    const { customerId } = await createUserAccountAndIdentity(
+    const { customerId } = await createCustomerAndIdentity(
       'Jeff',
       'Doe',
       'jeffdoe@gmail.com',
@@ -592,7 +592,7 @@ describe('close account', () => {
   });
 
   it('should delete most customer details if they do not have a password', async () => {
-    const { customerId } = await createUserAccountAndIdentity(
+    const { customerId } = await createCustomerAndIdentity(
       'James',
       'Doe',
       'jamesdoe@gmail.com',

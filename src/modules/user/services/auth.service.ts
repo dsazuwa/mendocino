@@ -24,26 +24,24 @@ const getUserIdForUser = async (email: string, transaction?: Transaction) => {
   const schema = USER_SCHEMA;
 
   const query = `
-    WITH UserWithEmail AS (
       SELECT
         CASE
-          WHEN EXISTS (SELECT 1 FROM ${schema}.${Admin.tableName} WHERE admin_id = ua.admin_id) THEN
-            ua.admin_id
-          ELSE
-            ca.customer_id
-        END AS user_id,
-        EXISTS (SELECT 1 FROM ${schema}.${Admin.tableName} WHERE admin_id = ua.admin_id) AS is_admin
+          WHEN EXISTS (
+            SELECT 1 FROM ${schema}.${Admin.tableName} WHERE admin_id = ua.admin_id
+          ) THEN ua.admin_id
+          ELSE ca.customer_id
+        END AS "userId",
+        EXISTS (
+          SELECT 1 FROM ${schema}.${Admin.tableName} WHERE admin_id = ua.admin_id
+        ) AS "isAdmin"
       FROM
         ${schema}.${AdminAccount.tableName} ua
-        FULL JOIN ${schema}.${CustomerAccount.tableName} ca ON ua.email_id = ca.email_id
-        JOIN ${schema}.${Email.tableName} e ON ua.email_id = e.email_id OR ca.email_id = e.email_id
+      FULL JOIN
+        ${schema}.${CustomerAccount.tableName} ca ON ua.email_id = ca.email_id
+      JOIN
+        ${schema}.${Email.tableName} e ON ua.email_id = e.email_id OR ca.email_id = e.email_id
       WHERE
-        e.email = '${email}')
-    SELECT
-      user_id AS "userId",
-      is_admin AS "isAdmin"
-    FROM
-      UserWithEmail;`;
+        e.email = '${email}';`;
 
   const result = await sequelize.query(query, {
     type: QueryTypes.SELECT,
@@ -117,52 +115,81 @@ const authService = {
   ) => {
     const schema = USER_SCHEMA;
 
+    type QueryReturnType = {
+      user: Express.User;
+      isAdmin: boolean;
+      identityExists: boolean;
+    };
+
     const query = `
+      WITH UserWithEmail AS (
+        SELECT
+          CASE WHEN EXISTS (SELECT 1 FROM ${schema}.${Admin.tableName} WHERE admin_id = ua.admin_id) 
+            THEN ua.admin_id
+            ELSE ca.customer_id 
+          END AS user_id,
+          EXISTS (SELECT 1 FROM ${schema}.${Admin.tableName} WHERE admin_id = ua.admin_id) AS is_admin
+        FROM
+          ${schema}.${AdminAccount.tableName} ua
+        FULL JOIN
+          ${schema}.${CustomerAccount.tableName} ca ON ua.email_id = ca.email_id
+        JOIN
+          ${schema}.${Email.tableName} e ON ua.email_id = e.email_id OR ca.email_id = e.email_id
+        WHERE
+          e.email = '${email}'
+      )
       SELECT
-        u.customer_id AS "userId",
-        u.first_name AS "firstName",
-        u.last_name AS "lastName",
-        e.email AS email,
-        a.status AS status,
-        i.identity_id AS "identityId",
-        ARRAY['customer'] AS roles
-      FROM
-        ${schema}.${Customer.tableName} u
-      JOIN
-        ${schema}.${CustomerAccount.tableName} a ON u.customer_id = a.customer_id
-      JOIN
-        ${schema}.${Email.tableName} e ON a.email_id = e.email_id
-      LEFT JOIN
-        ${schema}.${CustomerIdentity.tableName} i ON u.customer_id = i.customer_id AND (i.provider = '${provider}' AND i.identity_id = '${identityId}')
-      WHERE
-        e.email = '${email}' OR (i.identity_id = '${identityId}' AND u.customer_id = i.customer_id)
-      GROUP BY
-        u.customer_id, u.first_name, u.last_name, e.email, a.status, i.identity_id;`;
+        uw.is_admin AS "isAdmin",
+        CASE WHEN uw.is_admin THEN FALSE ELSE u.identity_exists END AS "identityExists",
+        CASE WHEN uw.is_admin 
+          THEN NULL
+          ELSE json_build_object(
+            'userId', u.user_id,
+            'firstName', u.first_name,
+            'lastName', u.last_name,
+            'email', u.email,
+            'status', u.status,
+            'roles', u.roles)
+        END AS user
+      FROM UserWithEmail uw
+      FULL JOIN (
+        SELECT
+          u.customer_id AS user_id,
+          u.first_name AS first_name,
+          u.last_name AS last_name,
+          e.email AS email,
+          a.status AS status,
+          CASE WHEN i.identity_id IS NOT NULL THEN TRUE ELSE FALSE END AS identity_exists,
+          ARRAY['customer'] AS roles
+        FROM
+          ${schema}.${Customer.tableName} u
+        JOIN
+          ${schema}.${CustomerAccount.tableName} a ON u.customer_id = a.customer_id
+        JOIN
+          ${schema}.${Email.tableName} e ON a.email_id = e.email_id
+        LEFT JOIN
+          ${schema}.${CustomerIdentity.tableName} i ON u.customer_id = i.customer_id AND (i.provider = '${provider}' AND i.identity_id = '${identityId}')
+        WHERE
+          e.email = '${email}' OR (i.identity_id = '${identityId}' AND u.customer_id = i.customer_id)
+      ) u ON u.user_id = uw.user_id;`;
 
     const result = await sequelize.query(query, { type: QueryTypes.SELECT });
-    const user =
-      result.length === 0
-        ? undefined
-        : (result[0] as Express.User & { identityId: string });
 
-    if (user === undefined)
+    if (result.length === 0)
       return {
-        user: undefined,
+        user: null,
+        isAdmin: false,
         identityExists: false,
       };
 
-    if (user.email !== email)
+    if (result.length > 1)
       return {
-        user: undefined,
+        user: null,
+        isAdmin: false,
         identityExists: true,
       };
 
-    const identityExists = user.identityId !== null;
-
-    return {
-      user: user as Express.User,
-      identityExists,
-    };
+    return result[0] as QueryReturnType;
   },
 
   getUserIdForUser,
