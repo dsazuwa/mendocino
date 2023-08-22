@@ -1,24 +1,20 @@
 import { Request } from 'express';
 
-import {
-  Address,
-  Customer,
-  CustomerAccount,
-  CustomerIdentity,
-  CustomerOTP,
-  CustomerPassword,
-  CustomerPhone,
-  Email,
-  Phone,
-} from '@user/models';
-import usersService from '@user/services/users.service';
+import userService from '@user/services/user.service';
+import { ROLES } from '@user/utils/constants';
 
 import {
+  createAdmin,
   createCustomer,
   createCustomerAndIdentity,
+  createRoles,
 } from 'tests/modules/user/helper-functions';
 
 import 'tests/db-setup';
+
+beforeAll(async () => {
+  await createRoles();
+});
 
 describe('get user', () => {
   it('pending user account', async () => {
@@ -33,7 +29,7 @@ describe('get user', () => {
       user: { firstName, lastName, email, password, status, roles },
     } as unknown as Request;
 
-    const data = await usersService.getUserDataFromReq(req);
+    const data = await userService.getUserDataFromReq(req);
     expect(data).toMatchObject({ firstName, lastName, email, status, roles });
   });
 
@@ -49,601 +45,265 @@ describe('get user', () => {
       user: { firstName, lastName, email, password, status, roles },
     } as unknown as Request;
 
-    const data = await usersService.getUserDataFromReq(req);
+    const data = await userService.getUserDataFromReq(req);
     expect(data).toMatchObject({ firstName, lastName, email, status, roles });
   });
 });
 
-describe('get customer profile', () => {
-  const firstName = 'Jino';
-  const lastName = 'Doe';
-  const email = 'jinodoe@gmail.com';
-  const password = 'JinoD0ePa$$';
-  const phoneNumber = '9161710361';
+describe('get user data', () => {
+  it('should return user data for customer', async () => {
+    const { customerId, customer, email, account } = await createCustomer(
+      'Jacinto',
+      'Doe',
+      'jacintodoe@gmail.com',
+      'jacD0epa$$',
+      'active',
+    );
 
-  beforeEach(async () => {
-    await Customer.destroy({ where: {} });
-    await Email.destroy({ where: {} });
-    await Phone.destroy({ where: {} });
+    const result = await userService.getUserData(customerId, 'customer');
+
+    expect(result).toMatchObject({
+      userId: customerId,
+      firstName: customer.firstName,
+      lastName: customer.lastName,
+      email: email.email,
+      status: account.status,
+      roles: ['customer'],
+    });
   });
 
-  it('customer does not exist', async () => {
-    const result = await usersService.getCustomerProfile(1234);
+  it('should return user data when for customer with identity', async () => {
+    const { customerId, customer, email, account } =
+      await createCustomerAndIdentity(
+        'Juana',
+        'Doe',
+        'juanadoe@gmail.com',
+        null,
+        'active',
+        [{ identityId: '9043859372838624', provider: 'google' }],
+      );
+
+    const result = await userService.getUserData(customerId, 'customer');
+
+    expect(result).toMatchObject({
+      userId: customerId,
+      firstName: customer.firstName,
+      lastName: customer.lastName,
+      email: email.email,
+      status: account.status,
+      roles: ['customer'],
+    });
+  });
+
+  it('should return user data for admin', async () => {
+    const { CUSTOMER_SUPPORT, MANAGER } = ROLES;
+
+    const { adminId, admin, email, account } = await createAdmin(
+      'Jamie',
+      'Doe',
+      'jaime@gmail.com',
+      'jacD0epa$$',
+      'active',
+      [CUSTOMER_SUPPORT.roleId, MANAGER.roleId],
+    );
+
+    const result = await userService.getUserData(adminId, 'admin');
+
+    expect(result).toMatchObject({
+      userId: adminId,
+      firstName: admin.firstName,
+      lastName: admin.lastName,
+      email: email.email,
+      status: account.status,
+      roles: [CUSTOMER_SUPPORT.name, MANAGER.name],
+    });
+  });
+
+  it('should return undefined if user does not exist', async () => {
+    let result = await userService.getUserData(1000, 'customer');
+    expect(result).not.toBeDefined();
+
+    result = await userService.getUserData(1000, 'admin');
+    expect(result).not.toBeDefined();
+  });
+});
+
+describe('get user data for social authentication', () => {
+  it('account and identity exist for user', async () => {
+    const identityId = '97427987429868742642';
+    const provider = 'facebook';
+
+    const { customerId, customer, email, account } =
+      await createCustomerAndIdentity(
+        'Juni',
+        'Doe',
+        'junidoe@gmail.com',
+        null,
+        'active',
+        [{ identityId, provider }],
+      );
+
+    const { user, isAdmin, identityExists } =
+      await userService.getUserForSocialAuthentication(
+        identityId,
+        provider,
+        email.email,
+      );
+
+    expect(user).toMatchObject({
+      userId: customerId,
+      firstName: customer.firstName,
+      lastName: customer.lastName,
+      email: email.email,
+      status: account.status,
+      roles: ['customer'],
+    });
+    expect(isAdmin).toBe(false);
+    expect(identityExists).toBe(true);
+  });
+
+  it('account exists, but identity does not', async () => {
+    const identityId = '85930847728963982469';
+    const provider = 'facebook';
+
+    const { customerId, customer, email, account } = await createCustomer(
+      'June',
+      'Doe',
+      'junedoe@gmail.com',
+      'juneD0epa$$',
+      'active',
+    );
+
+    const { user, isAdmin, identityExists } =
+      await userService.getUserForSocialAuthentication(
+        identityId,
+        provider,
+        email.email,
+      );
+
+    expect(user).toMatchObject({
+      userId: customerId,
+      firstName: customer.firstName,
+      lastName: customer.lastName,
+      email: email.email,
+      status: account.status,
+      roles: ['customer'],
+    });
+    expect(isAdmin).toBe(false);
+    expect(identityExists).toBe(false);
+  });
+
+  it('admin account exists', async () => {
+    const { email } = await createAdmin(
+      'Jane',
+      'Doe',
+      'janedoe@gmail.com',
+      'juneD0epa$$',
+      'active',
+      [ROLES.MANAGER.roleId],
+    );
+
+    const { user, isAdmin, identityExists } =
+      await userService.getUserForSocialAuthentication(
+        '859308786728963982469',
+        'facebook',
+        email.email,
+      );
+
+    expect(user).toBeNull();
+    expect(isAdmin).toBe(true);
+    expect(identityExists).toBe(false);
+  });
+
+  it('identity exists but not for user with provided email', async () => {
+    const identityId = '85930847728963982469';
+    const provider = 'facebook';
+
+    await createCustomerAndIdentity(
+      'Juniper',
+      'Doe',
+      'juniperdoe@gmail.com',
+      'junipeD0ePa$$',
+      'active',
+      [{ identityId, provider }],
+    );
+
+    const { email: juanEmail } = await createCustomer(
+      'Juan',
+      'Doe',
+      'juandoe@gmail.com',
+      'juaneD0ePa$$',
+      'active',
+    );
+
+    const { user, isAdmin, identityExists } =
+      await userService.getUserForSocialAuthentication(
+        identityId,
+        provider,
+        juanEmail.email,
+      );
+
+    expect(user).toBeNull();
+    expect(isAdmin).toBe(false);
+    expect(identityExists).toBe(true);
+  });
+
+  it('should return undefined if user does not exists', async () => {
+    const { user, isAdmin, identityExists } =
+      await userService.getUserForSocialAuthentication(
+        '693904397428648349',
+        'facebook',
+        'someemail@gmail.com',
+      );
+
+    expect(user).toBeNull();
+    expect(isAdmin).toBe(false);
+    expect(identityExists).toBe(false);
+  });
+});
+
+describe('get userId for user', () => {
+  it('should return customerId', async () => {
+    const email = 'jazzdoe@gmail.com';
+
+    const { customerId } = await createCustomer(
+      'Jazz',
+      'Doe',
+      email,
+      'jazzD0ePa$$',
+      'active',
+    );
+
+    const result = await userService.getUserIdForUser(email);
+
+    expect(result).toMatchObject({
+      userId: customerId,
+      isAdmin: false,
+    });
+  });
+
+  it('should return adminId', async () => {
+    const email = 'jakdoe@gmail.com';
+
+    const { adminId } = await createAdmin(
+      'Jak',
+      'Doe',
+      email,
+      'jakD0ePa$$',
+      'active',
+      [ROLES.MANAGER.roleId],
+    );
+
+    const result = await userService.getUserIdForUser(email);
+
+    expect(result).toMatchObject({
+      userId: adminId,
+      isAdmin: true,
+    });
+  });
+
+  it('should return null for non-existent user', async () => {
+    const result = await userService.getUserIdForUser('false@gmail.com');
     expect(result).toBeNull();
-  });
-
-  it('customer with account password, user identities, but no phone or address', async () => {
-    const { customerId } = await createCustomerAndIdentity(
-      firstName,
-      lastName,
-      email,
-      password,
-      'active',
-      [
-        { identityId: '4247902749786824', provider: 'google' },
-        { identityId: '2487713797204', provider: 'facebook' },
-      ],
-    );
-
-    const result = await usersService.getCustomerProfile(customerId);
-    expect(result).toMatchObject({
-      firstName,
-      lastName,
-      email: { address: email, isVerified: true },
-      hasPassword: true,
-      authProviders: ['google', 'facebook'],
-      phoneNumber: { phone: null, isVerified: false },
-      addresses: null,
-    });
-  });
-
-  it('customer with identities but no account password, phone or address', async () => {
-    const { customerId } = await createCustomerAndIdentity(
-      firstName,
-      lastName,
-      email,
-      null,
-      'active',
-      [
-        { identityId: '4247902749786824', provider: 'google' },
-        { identityId: '2487713797204', provider: 'facebook' },
-      ],
-    );
-
-    const result = await usersService.getCustomerProfile(customerId);
-    expect(result).toMatchObject({
-      firstName,
-      lastName,
-      email: { address: email, isVerified: true },
-      hasPassword: false,
-      authProviders: ['google', 'facebook'],
-      phoneNumber: { phone: null, isVerified: false },
-      addresses: null,
-    });
-  });
-
-  it('customer with phone number', async () => {
-    const { customerId } = await createCustomer(
-      firstName,
-      lastName,
-      email,
-      password,
-      'pending',
-    );
-
-    const { phoneId } = await Phone.create({ phoneNumber });
-    await CustomerPhone.create({ customerId, phoneId, status: 'pending' });
-
-    let result = await usersService.getCustomerProfile(customerId);
-    expect(result).toMatchObject({
-      firstName,
-      lastName,
-      email: { address: email, isVerified: false },
-      hasPassword: true,
-      authProviders: [],
-      phoneNumber: { phone: phoneNumber, isVerified: false },
-      addresses: null,
-    });
-
-    await CustomerPhone.update(
-      { status: 'active' },
-      { where: { customerId, phoneId } },
-    );
-
-    result = await usersService.getCustomerProfile(customerId);
-    expect(result).toMatchObject({
-      firstName,
-      lastName,
-      email: { address: email, isVerified: false },
-      hasPassword: true,
-      authProviders: [],
-      phoneNumber: { phone: phoneNumber, isVerified: true },
-      addresses: null,
-    });
-  });
-
-  it('customer with phone and addresses', async () => {
-    const { customerId } = await createCustomer(
-      firstName,
-      lastName,
-      email,
-      password,
-      'pending',
-    );
-
-    const { phoneId } = await Phone.create({ phoneNumber });
-    await CustomerPhone.create({ customerId, phoneId, status: 'pending' });
-
-    const addresses = await Address.bulkCreate([
-      {
-        customerId,
-        addressLine1: '1957 Kembery Drive',
-        addressLine2: 'off access road',
-        city: 'Roselle',
-        state: 'IL',
-        postalCode: '60172',
-      },
-      {
-        customerId,
-        addressLine1: '1561 Coburn Hollow Road',
-        city: 'Peoria',
-        state: 'IL',
-        postalCode: '61602',
-      },
-    ]);
-
-    const result = await usersService.getCustomerProfile(customerId);
-    expect(result).toMatchObject({
-      firstName,
-      lastName,
-      email: { address: email, isVerified: false },
-      hasPassword: true,
-      authProviders: [],
-      phoneNumber: { phone: phoneNumber, isVerified: false },
-      addresses: [
-        {
-          addressLine1: addresses[0].addressLine1,
-          addressLine2: addresses[0].addressLine2,
-          city: addresses[0].city,
-          state: addresses[0].state,
-          postalCode: addresses[0].postalCode,
-        },
-        {
-          addressLine1: addresses[1].addressLine1,
-          addressLine2: '',
-          city: addresses[1].city,
-          state: addresses[1].state,
-          postalCode: addresses[1].postalCode,
-        },
-      ],
-    });
-  });
-});
-
-describe('verify email', () => {
-  it('should verify the email', async () => {
-    const { customerId } = await createCustomer(
-      'Jo',
-      'Doe',
-      'jodoe@gmail.com',
-      'joD0ePa$$',
-      'pending',
-    );
-
-    await usersService.verifyEmail(customerId);
-
-    const otp = await CustomerOTP.findOne({
-      where: { customerId, type: 'email' },
-      raw: true,
-    });
-    expect(otp).toBeNull();
-
-    const account = await CustomerAccount.findOne({
-      where: { customerId, status: 'active' },
-      raw: true,
-    });
-    expect(account).not.toBeNull();
-  });
-});
-
-describe('update user name ', () => {
-  const firstName = 'Jazz';
-  const lastName = 'Doe';
-
-  const newFirst = 'Jasmine';
-  const newLast = 'Dough';
-
-  let customerId: number;
-
-  beforeEach(async () => {
-    await Customer.destroy({ where: {} });
-    await Email.destroy({ where: {} });
-
-    const { customer } = await createCustomer(
-      firstName,
-      lastName,
-      'jazzdoe@gmail.com',
-      'JazzD0ePa$$',
-      'active',
-    );
-    customerId = customer.customerId;
-  });
-
-  const testUpdateUser = async (
-    fName: string | undefined,
-    lName: string | undefined,
-    expectedFirst: string,
-    expectedLast: string,
-    expectedResult: boolean,
-  ) => {
-    const result = await usersService.updateCustomer(customerId, fName, lName);
-    expect(result).toBe(expectedResult);
-
-    const user = await Customer.findOne({
-      where: { customerId, firstName: expectedFirst, lastName: expectedLast },
-      raw: true,
-    });
-    expect(user).not.toBeNull();
-  };
-
-  it('should update user if both firstName and lastName are provided', async () => {
-    await testUpdateUser(newFirst, newLast, newFirst, newLast, true);
-  });
-
-  describe('should update user if firstName is provided', () => {
-    it('but lastName is an empty string', async () => {
-      await testUpdateUser(newFirst, '', newFirst, lastName, true);
-    });
-
-    it('but lastName is undefined', async () => {
-      await testUpdateUser(newFirst, undefined, newFirst, lastName, true);
-    });
-  });
-
-  describe('should update user if lastName is provided', () => {
-    it('but firstName is an empty string', async () => {
-      await testUpdateUser('', newLast, firstName, newLast, true);
-    });
-
-    it('but firstName is undefined', async () => {
-      await testUpdateUser(undefined, newLast, firstName, newLast, true);
-    });
-  });
-
-  describe('should not update user', () => {
-    it('if both firstName and lastName are empty strings', async () => {
-      await testUpdateUser('', ' ', firstName, lastName, false);
-    });
-
-    it('if both firstName and lastName are undefined', async () => {
-      await testUpdateUser(undefined, undefined, firstName, lastName, false);
-    });
-  });
-});
-
-describe('create password', () => {
-  it('should create password if user password is null', async () => {
-    const { customerId } = await createCustomerAndIdentity(
-      'Josephine',
-      'Doe',
-      'josephinedoe@gmail.com',
-      null,
-      'active',
-      [{ identityId: '923042892739426871638', provider: 'google' }],
-    );
-    const password = 'josephineD0ePa$$';
-
-    const result = await usersService.createPassword(customerId, password);
-    expect(result).toBe(true);
-
-    const retrievedPassword = await CustomerPassword.findByPk(customerId);
-    expect(retrievedPassword?.comparePasswords(password)).toBe(true);
-  });
-
-  it('should not create password if user password is not null', async () => {
-    const { customerId } = await createCustomer(
-      'Julie',
-      'Doe',
-      'juliedoe@gmail.com',
-      'julieD0ePa$$',
-      'active',
-    );
-    const newPassword = 'newjulieD0ePa$$';
-
-    const result = await usersService.createPassword(customerId, newPassword);
-    expect(result).toBe(false);
-
-    const retrievedPassword = await CustomerPassword.findByPk(customerId);
-    expect(retrievedPassword?.comparePasswords(newPassword)).toBe(false);
-  });
-});
-
-describe('change password', () => {
-  it('should change password and return true for valid customerId', async () => {
-    const password = 'jeanD0epa$$';
-    const newPassword = 'newjeanD0epa$$';
-
-    const { customerId } = await createCustomer(
-      'Jean Paul',
-      'Doe',
-      'jeanpauldoe@gmail.com',
-      password,
-      'active',
-    );
-
-    const result = await usersService.changePassword(
-      customerId,
-      password,
-      newPassword,
-    );
-    expect(result).toBe(true);
-
-    const retrievedPassword = await CustomerPassword.findOne({
-      where: { customerId },
-    });
-    expect(retrievedPassword?.comparePasswords(newPassword)).toBe(true);
-  });
-
-  it('should return false for wrong current password', async () => {
-    const password = 'julietteD0epa$$';
-    const newPassword = 'newjeanD0epa$$';
-
-    const { customerId } = await createCustomer(
-      'Juliette',
-      'Doe',
-      'juliettepauldoe@gmail.com',
-      password,
-      'active',
-    );
-
-    const result = await usersService.changePassword(
-      customerId,
-      newPassword,
-      newPassword,
-    );
-
-    expect(result).toBe(false);
-
-    const retrievedPassword = await CustomerPassword.findOne({
-      where: { customerId },
-    });
-    expect(retrievedPassword?.comparePasswords(newPassword)).toBe(false);
-    expect(retrievedPassword?.comparePasswords(password)).toBe(true);
-  });
-
-  it('should return false if user_account password is null', async () => {
-    const newPassword = 'newjolieD0epa$$';
-
-    const { customerId } = await createCustomerAndIdentity(
-      'Jolie',
-      'Doe',
-      'joliepauldoe@gmail.com',
-      null,
-      'active',
-      [{ identityId: '2343256478656532', provider: 'facebook' }],
-    );
-
-    const result = await usersService.changePassword(
-      customerId,
-      'somePassword',
-      newPassword,
-    );
-
-    expect(result).toBe(false);
-
-    const retrievedPassword = await CustomerPassword.findOne({
-      where: { customerId },
-    });
-    expect(retrievedPassword).toBeNull();
-  });
-
-  it('should return false for invalid customerId', async () => {
-    const result = await usersService.changePassword(
-      10000,
-      'wrongOldPassword',
-      'newpassword',
-    );
-
-    expect(result).toBe(false);
-  });
-});
-
-describe('revoke social authentication', () => {
-  it('should delete identity if user has an account with a password', async () => {
-    const provider = 'google';
-
-    const { customerId } = await createCustomerAndIdentity(
-      'Jessica',
-      'Doe',
-      'jessicadoe@gmail.com',
-      'jessicaD0ePa$$',
-      'active',
-      [{ identityId: '3654755345356474363', provider }],
-    );
-
-    const { result, switchTo } = await usersService.revokeSocialAuthentication(
-      customerId,
-      provider,
-    );
-
-    expect(result).toBe(true);
-    expect(switchTo).toBe('email');
-
-    const i = await CustomerIdentity.findOne({
-      where: { customerId, provider },
-      raw: true,
-    });
-    expect(i).toBeNull();
-
-    const a = await CustomerAccount.findByPk(customerId, { raw: true });
-    expect(a).not.toBeNull();
-
-    const c = await Customer.findByPk(customerId, { raw: true });
-    expect(c).not.toBeNull();
-  });
-
-  it('should delete identity if user has no account with password but other identities', async () => {
-    const { customerId } = await createCustomerAndIdentity(
-      'Jack',
-      'Doe',
-      'jackdoe@gmail.com',
-      null,
-      'active',
-      [
-        { identityId: '52429584297428924', provider: 'google' },
-        { identityId: '58991388923428739', provider: 'facebook' },
-      ],
-    );
-
-    const { result, switchTo } = await usersService.revokeSocialAuthentication(
-      customerId,
-      'facebook',
-    );
-    expect(result).toBe(true);
-    expect(switchTo).toBe('google');
-
-    let i = await CustomerIdentity.findOne({
-      where: { customerId, provider: 'facebook' },
-      raw: true,
-    });
-    expect(i).toBeNull();
-
-    i = await CustomerIdentity.findOne({
-      where: { customerId, provider: 'google' },
-      raw: true,
-    });
-    expect(i).not.toBeNull();
-
-    const a = await CustomerAccount.findByPk(customerId, { raw: true });
-    expect(a).not.toBeNull();
-
-    const c = await Customer.findByPk(customerId, { raw: true });
-    expect(c).not.toBeNull();
-  });
-
-  it('should return false if user has neither an account with a password nor anothor identitiy', async () => {
-    const provider = 'google';
-
-    const { customerId } = await createCustomerAndIdentity(
-      'Jess',
-      'Doe',
-      'jessdoe@gmail.com',
-      null,
-      'active',
-      [{ identityId: '94044248328749827', provider }],
-    );
-
-    const { result, switchTo } = await usersService.revokeSocialAuthentication(
-      customerId,
-      provider,
-    );
-
-    expect(result).toBe(false);
-    expect(switchTo).toBeUndefined();
-
-    const i = await CustomerIdentity.findOne({
-      where: { customerId, provider },
-      raw: true,
-    });
-    expect(i).not.toBeNull();
-
-    const a = await CustomerAccount.findByPk(customerId, { raw: true });
-    expect(a).not.toBeNull();
-
-    const c = await Customer.findByPk(customerId, { raw: true });
-    expect(c).not.toBeNull();
-  });
-
-  it('should return false if user does not exist', async () => {
-    const { result, switchTo } = await usersService.revokeSocialAuthentication(
-      8930274824282,
-      'google',
-    );
-
-    expect(result).toBe(false);
-    expect(switchTo).toBeUndefined();
-  });
-});
-
-describe('close account', () => {
-  it('should deactivate account if user has an account password', async () => {
-    const { customerId } = await createCustomerAndIdentity(
-      'Jeff',
-      'Doe',
-      'jeffdoe@gmail.com',
-      'jeffD0ePa$$',
-      'active',
-      [{ identityId: '2435674867433235', provider: 'google' }],
-    );
-
-    await usersService.closeAccount(customerId);
-
-    const i = await CustomerIdentity.findOne({
-      where: { customerId },
-      raw: true,
-    });
-    expect(i).toBeNull();
-
-    const a = await CustomerAccount.findByPk(customerId, { raw: true });
-    expect(a).not.toBeNull();
-
-    const u = await Customer.findByPk(customerId, { raw: true });
-    expect(u).not.toBeNull();
-  });
-
-  it('should delete most customer details if they do not have a password', async () => {
-    const { customerId } = await createCustomerAndIdentity(
-      'James',
-      'Doe',
-      'jamesdoe@gmail.com',
-      null,
-      'active',
-      [{ identityId: '23274274781623876298', provider: 'google' }],
-    );
-    const phoneNumber = '1234567890';
-
-    const { phoneId } = await Phone.create({ phoneNumber });
-    await CustomerPhone.create({ customerId, phoneId, status: 'active' });
-
-    await Address.bulkCreate([
-      {
-        customerId,
-        addressLine1: '1957 Kembery Drive',
-        addressLine2: 'off access road',
-        city: 'Roselle',
-        state: 'IL',
-        postalCode: '60172',
-      },
-      {
-        customerId,
-        addressLine1: '1561 Coburn Hollow Road',
-        city: 'Peoria',
-        state: 'IL',
-        postalCode: '61602',
-      },
-    ]);
-
-    await usersService.closeAccount(customerId);
-
-    const p = await Phone.findOne({
-      where: { phoneId, phoneNumber },
-      raw: true,
-    });
-    expect(p).toBeNull();
-
-    const ad = await Address.findOne({ where: { customerId }, raw: true });
-    expect(ad).toBeNull();
-
-    const i = await CustomerIdentity.findOne({
-      where: { customerId },
-      raw: true,
-    });
-    expect(i).toBeNull();
-
-    const a = await CustomerAccount.findByPk(customerId, { raw: true });
-    expect(a).toBeNull();
-
-    const c = await Customer.findByPk(customerId, { raw: true });
-    expect(c).not.toBeNull();
   });
 });

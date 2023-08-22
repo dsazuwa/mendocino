@@ -6,6 +6,7 @@ import { ApiError } from '@App/utils';
 
 import { ProviderType } from '@user/models';
 import authService from '@user/services/auth.service';
+import userService from '@user/services/user.service';
 import messages from '@user/utils/messages';
 
 const verifyFunction = async (
@@ -26,7 +27,7 @@ const verifyFunction = async (
       );
 
     const { isAdmin, user, identityExists } =
-      await authService.getUserForSocialAuthentication(
+      await userService.getUserForSocialAuthentication(
         identityId,
         provider,
         email,
@@ -63,7 +64,7 @@ const verifyFunction = async (
           provider,
         );
 
-    const u = await authService.getUserData(customerId, 'customer');
+    const u = await userService.getUserData(customerId, 'customer');
     return done(null, u);
   } catch (err) {
     return done(err, undefined);
