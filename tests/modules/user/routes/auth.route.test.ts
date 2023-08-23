@@ -7,6 +7,8 @@ import {
   CustomerAccount,
   Email,
   CustomerPassword,
+  AdminOTP,
+  Admin,
 } from '@user/models';
 import authService from '@user/services/auth.service';
 import userService from '@user/services/user.service';
@@ -14,12 +16,14 @@ import userService from '@user/services/user.service';
 import { getTokenFrom, request } from 'tests/supertest.helper';
 
 import {
+  createAdmin,
   createCustomer,
   createCustomerAndIdentity,
   createRoles,
 } from 'tests/modules/user/helper-functions';
 
 import 'tests/db-setup';
+import { ROLES } from '@App/modules/user';
 
 const BASE_URL = '/api/auth';
 const raw = true;
@@ -161,13 +165,177 @@ describe('Email Authentication', () => {
   });
 
   describe(`POST ${BASE_URL}/login`, () => {
-    it('should pass for correct credentials', async () => {
-      const email = 'joandoe@gmail.com';
-      const password = 'joanD0ePa$$';
+    describe('customer', () => {
+      it('should pass for correct credentials', async () => {
+        const email = 'joandoe@gmail.com';
+        const password = 'joanD0ePa$$';
 
-      await createCustomer('Joan', 'Doe', email, password, 'active');
+        await createCustomer('Joan', 'Doe', email, password, 'active');
+        const response = await request
+          .post(`${BASE_URL}/login`)
+          .send({ email, password });
+
+        expect(response.status).toBe(200);
+
+        const token = getTokenFrom(response.headers['set-cookie']);
+        expect(token).not.toEqual('');
+      });
+
+      it('should fail for wrong password', async () => {
+        const email = 'notjoandoe@gmail.com';
+
+        await createCustomer('Joan', 'Doe', email, 'D0epa$$w0rd', 'active');
+
+        const response = await request
+          .post(`${BASE_URL}/login`)
+          .send({ email, password: 'wrong-password' });
+
+        expect(response.status).toBe(401);
+
+        const token = getTokenFrom(response.headers['set-cookie']);
+        expect(token).toEqual('');
+      });
+
+      it('should fail for user_account with null password', async () => {
+        const email = 'jolenedoe@gmail.com';
+
+        await createCustomerAndIdentity(
+          'Jolene',
+          'Doe',
+          email,
+          null,
+          'active',
+          [{ identityId: '2453675876525431', provider: 'google' }],
+        );
+
+        const response = await request
+          .post(`${BASE_URL}/login`)
+          .send({ email, password: 'wrong-password' });
+
+        expect(response.status).toBe(401);
+
+        const token = getTokenFrom(response.headers['set-cookie']);
+        expect(token).toEqual('');
+      });
+
+      it('should fail for deactivated account', async () => {
+        const email = 'jeandoe@gmail.com';
+        const password = 'jeanD0ePa$$';
+
+        await createCustomer('Jean', 'Doe', email, password, 'deactivated');
+
+        const response = await request
+          .post(`${BASE_URL}/login`)
+          .send({ email, password });
+
+        expect(response.status).toBe(401);
+
+        const token = getTokenFrom(response.headers['set-cookie']);
+        expect(token).toEqual('');
+
+        const { accessToken, user } = response.body;
+
+        expect(user).toBeDefined();
+        expect(accessToken).toBeDefined();
+      });
+
+      it('should fail for suspended account', async () => {
+        const email = 'notdoe@gmail.com';
+        const password = 'joanD0ePa$$';
+
+        await createCustomer('Jolene', 'Doe', email, password, 'suspended');
+
+        const response = await request
+          .post(`${BASE_URL}/login`)
+          .send({ email, password });
+
+        expect(response.status).toBe(401);
+
+        const token = getTokenFrom(response.headers['set-cookie']);
+        expect(token).toEqual('');
+      });
+    });
+
+    describe('admin', () => {
+      const email = 'jonathan@gmail.com';
+      const password = 'jonathanD0ePa$$';
+
+      beforeEach(async () => {
+        await Email.destroy({ where: {} });
+        await Admin.destroy({ where: {} });
+      });
+
+      it('should pass for correct credentials', async () => {
+        await createAdmin('Jonathan', 'Doe', email, password, 'active', [
+          ROLES.CUSTOMER_SUPPORT.roleId,
+        ]);
+
+        const response = await request
+          .post(`${BASE_URL}/login`)
+          .send({ email, password });
+
+        expect(response.status).toBe(200);
+        expect(response.body.user).toBeDefined();
+
+        const token = getTokenFrom(response.headers['set-cookie']);
+        expect(token).toEqual('');
+      });
+
+      it('should fail for disabled user', async () => {
+        await createAdmin('Jonathan', 'Doe', email, password, 'disabled', [
+          ROLES.CUSTOMER_SUPPORT.roleId,
+        ]);
+
+        const response = await request
+          .post(`${BASE_URL}/login`)
+          .send({ email, password });
+
+        expect(response.status).toBe(401);
+
+        const token = getTokenFrom(response.headers['set-cookie']);
+        expect(token).toEqual('');
+      });
+    });
+  });
+
+  describe(`POST ${BASE_URL}/login/:id/:otp`, () => {
+    const email = 'jonathan@gmail.com';
+    const password = 'jonathanD0ePa$$';
+
+    const mockOTP = '12345';
+
+    let adminId: number;
+
+    beforeAll(async () => {
+      await Email.destroy({ where: {} });
+      await Admin.destroy({ where: {} });
+
+      const { admin } = await createAdmin(
+        'Jonathan',
+        'Doe',
+        email,
+        password,
+        'active',
+        [ROLES.CUSTOMER_SUPPORT.roleId],
+      );
+
+      adminId = admin.adminId;
+    });
+
+    it('should pass on correct credentials', async () => {
+      await AdminOTP.destroy({
+        where: { adminId, type: 'login' },
+      });
+
+      await AdminOTP.create({
+        adminId,
+        type: 'login',
+        password: mockOTP,
+        expiresAt: CustomerOTP.getExpiration(),
+      });
+
       const response = await request
-        .post(`${BASE_URL}/login`)
+        .post(`${BASE_URL}/login/${adminId}/${mockOTP}`)
         .send({ email, password });
 
       expect(response.status).toBe(200);
@@ -176,67 +344,9 @@ describe('Email Authentication', () => {
       expect(token).not.toEqual('');
     });
 
-    it('should fail for wrong password', async () => {
-      const email = 'notjoandoe@gmail.com';
-
-      await createCustomer('Joan', 'Doe', email, 'D0epa$$w0rd', 'active');
-
+    it('should fail for invalid credentials', async () => {
       const response = await request
-        .post(`${BASE_URL}/login`)
-        .send({ email, password: 'wrong-password' });
-
-      expect(response.status).toBe(401);
-
-      const token = getTokenFrom(response.headers['set-cookie']);
-      expect(token).toEqual('');
-    });
-
-    it('should fail for user_account with null password', async () => {
-      const email = 'jolenedoe@gmail.com';
-
-      await createCustomerAndIdentity('Jolene', 'Doe', email, null, 'active', [
-        { identityId: '2453675876525431', provider: 'google' },
-      ]);
-
-      const response = await request
-        .post(`${BASE_URL}/login`)
-        .send({ email, password: 'wrong-password' });
-
-      expect(response.status).toBe(401);
-
-      const token = getTokenFrom(response.headers['set-cookie']);
-      expect(token).toEqual('');
-    });
-
-    it('should fail for deactivated account', async () => {
-      const email = 'jeandoe@gmail.com';
-      const password = 'jeanD0ePa$$';
-
-      await createCustomer('Jean', 'Doe', email, password, 'deactivated');
-
-      const response = await request
-        .post(`${BASE_URL}/login`)
-        .send({ email, password });
-
-      expect(response.status).toBe(401);
-
-      const token = getTokenFrom(response.headers['set-cookie']);
-      expect(token).toEqual('');
-
-      const { accessToken, user } = response.body;
-
-      expect(user).toBeDefined();
-      expect(accessToken).toBeDefined();
-    });
-
-    it('should fail for suspended account', async () => {
-      const email = 'notdoe@gmail.com';
-      const password = 'joanD0ePa$$';
-
-      await createCustomer('Jolene', 'Doe', email, password, 'suspended');
-
-      const response = await request
-        .post(`${BASE_URL}/login`)
+        .post(`${BASE_URL}/login/2/${mockOTP}`)
         .send({ email, password });
 
       expect(response.status).toBe(401);

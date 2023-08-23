@@ -13,7 +13,7 @@ import { ApiError } from '@App/utils';
 
 import { TABLENAMES, USER_SCHEMA } from '@user/utils/constants';
 
-export type AdminOTPType = 'email' | 'password' | 'phone';
+export type AdminOTPType = 'email' | 'password' | 'phone' | 'login';
 
 class AdminOTP extends Model<
   InferAttributes<AdminOTP>,
@@ -68,7 +68,7 @@ AdminOTP.init(
       allowNull: false,
     },
     type: {
-      type: DataTypes.ENUM('email', 'password', 'phone'),
+      type: DataTypes.ENUM('email', 'password', 'phone', 'login'),
       unique: 'compositeIndex',
       allowNull: false,
     },

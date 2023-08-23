@@ -2,9 +2,9 @@ import { NextFunction, Request, Response } from 'express';
 
 import { ProviderType } from '@user/models';
 import authService from '@user/services/auth.service';
+import otpService from '@user/services/otp.service';
 import userService from '@user/services/user.service';
 import messages from '@user/utils/messages';
-import otpService from '../services/otp.service';
 
 export const socialLogin = async (
   req: Request,
@@ -111,21 +111,9 @@ export const login = async (
 
     const user = await authService.loginUser(email, password);
 
-    if (!user) return res.status(401).json({ message: messages.LOGIN_FAILED });
+    if (!user) return res.status(401).json({ message: messages.LOGIN_FAIL });
 
     const { userId, isAdmin, status } = user;
-
-    const userData = await userService.getUserData(
-      userId,
-      isAdmin ? 'admin' : 'customer',
-    );
-
-    if (status === 'deactivated')
-      return res.status(401).json({
-        accessToken: authService.generateJWT(email, 'email'),
-        user: userData,
-        message: messages.ERR_DEACTIVATED_ACCOUNT,
-      });
 
     if (status === 'suspended')
       return res.status(401).json({
@@ -137,12 +125,65 @@ export const login = async (
         message: messages.ERR_DEACTIVATED_ACCOUNT,
       });
 
+    if (isAdmin) {
+      const userData = await userService.getUserData(userId, 'admin');
+
+      await otpService.createAdminOTP(userId, 'login');
+
+      return res.status(200).json({
+        message: messages.LOGIN_ADMIN_2FA,
+        user: userData,
+      });
+    }
+
+    const userData = await userService.getUserData(userId, 'customer');
+
+    if (status === 'deactivated')
+      return res.status(401).json({
+        accessToken: authService.generateJWT(email, 'email'),
+        user: userData,
+        message: messages.ERR_DEACTIVATED_ACCOUNT,
+      });
+
     setAccessTokenCookie(res, authService.generateJWT(email, 'email'));
 
-    res.status(200).json({
+    return res.status(200).json({
       message: messages.LOGIN_SUCCESS,
       user: userData,
     });
+  } catch (e) {
+    next(e);
+  }
+};
+
+export const loginAdmin = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { id, otp } = req.params;
+
+    if (!id || !otp)
+      return res
+        .status(400)
+        .json({ message: messages.LOGIN_ADMIN_2FA_INVALID });
+
+    const userId = parseInt(id, 10);
+
+    const { isValid } = await otpService.getAdminOTP(userId, 'login', otp);
+
+    if (!isValid)
+      return res.status(401).json({ message: messages.INVALID_AUTH_OTP });
+
+    const user = await userService.getUserData(userId, 'customer');
+
+    setAccessTokenCookie(
+      res,
+      authService.generateJWT(user?.email as string, 'email'),
+    );
+
+    res.status(200).json({ message: messages.LOGIN_ADMIN_2FA_SUCCESS, user });
   } catch (e) {
     next(e);
   }
@@ -187,7 +228,7 @@ export const requestPasswordRecovery = async (
     if (!user.hasPassword)
       return res
         .status(403)
-        .json({ message: messages.REQUEST_RECOVERY_FAILED_THIRD_PARTY_AUTH });
+        .json({ message: messages.REQUEST_RECOVERY_FAIL_THIRD_PARTY_AUTH });
 
     await otpService.createCustomerOTP(user.userId, 'password');
 

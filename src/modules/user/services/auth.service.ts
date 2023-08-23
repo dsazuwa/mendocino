@@ -117,11 +117,11 @@ const authService = {
 
       if (!result) return null;
 
-      if (result.isAdmin) {
-        const adminId = result.userId;
+      const { isAdmin, userId } = result;
 
+      if (isAdmin) {
         const account = await AdminAccount.findOne({
-          where: { adminId },
+          where: { adminId: userId },
           transaction,
         });
 
@@ -129,23 +129,21 @@ const authService = {
 
         return isUser
           ? {
-              isAdmin: true,
-              userId: adminId,
+              isAdmin,
+              userId,
               status: account.status,
             }
           : null;
       }
 
-      const customerId = result.userId;
-
       const account = await CustomerAccount.findOne({
-        where: { customerId },
+        where: { customerId: userId },
         raw: true,
         transaction,
       });
 
       const customerPassword = await CustomerPassword.findOne({
-        where: { customerId },
+        where: { customerId: userId },
         transaction,
       });
 
@@ -156,8 +154,8 @@ const authService = {
 
       return isUser
         ? {
-            isAdmin: false,
-            userId: customerId,
+            isAdmin,
+            userId,
             status: account.status,
           }
         : null;

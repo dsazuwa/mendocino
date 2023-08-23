@@ -4,15 +4,17 @@ import {
   recoverPasswordSchema,
   requestRecoverySchema,
   verifyRecoveryOTPSchema,
+  loginAdminSchema,
 } from '@user/middleware/validators/auth.validator';
 
 import {
   testEmailRules,
+  testIdRules,
   testOTPRules,
   testPasswordRules,
 } from './common.validator';
 
-describe('User Validator', () => {
+describe('Auth Validator', () => {
   describe('register schema', () => {
     const body = {
       firstName: 'Joe',
@@ -61,6 +63,22 @@ describe('User Validator', () => {
     });
 
     testEmailRules(loginSchema, body);
+  });
+
+  describe('login admin', () => {
+    it('should pass for valid data', () => {
+      const data = { params: { id: '1', otp: '12345' } };
+      expect(() => loginAdminSchema.parse(data)).not.toThrow();
+    });
+
+    it('should throw error for empty data', () => {
+      const data = { body: { id: ' ', otp: ' ' } };
+      expect(() => loginAdminSchema.parse(data)).toThrow();
+    });
+
+    testOTPRules(loginAdminSchema, {}, { id: '1' });
+
+    testIdRules(loginAdminSchema, {}, { otp: '12345' });
   });
 
   describe('request recover schema', () => {

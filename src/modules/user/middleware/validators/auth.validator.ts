@@ -1,6 +1,11 @@
 import { object, string } from 'zod';
 
-import { emailRules, otpRules, passwordRules } from './common.validator';
+import {
+  emailRules,
+  idRules,
+  otpRules,
+  passwordRules,
+} from './common.validator';
 
 export const registerSchema = object({
   body: object({
@@ -20,6 +25,10 @@ export const loginSchema = object({
     email: emailRules,
     password: string().trim().nonempty(),
   }),
+});
+
+export const loginAdminSchema = object({
+  params: object({ id: idRules, otp: otpRules }),
 });
 
 export const requestRecoverySchema = object({

@@ -168,6 +168,7 @@ Enum enum_admin_otps_type {
   email
   password
   phone
+  login
 }
 
 Enum enum_customer_otps_type {

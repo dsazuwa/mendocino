@@ -7,6 +7,7 @@ import {
   facebookLogin,
   googleLogin,
   login,
+  loginAdmin,
   logout,
   reactivate,
   recoverPassword,
@@ -16,6 +17,7 @@ import {
 } from '@user/controllers/auth.controller';
 import { authenticateInactive } from '@user/middleware/auth';
 import {
+  loginAdminSchema,
   loginSchema,
   recoverPasswordSchema,
   registerSchema,
@@ -24,6 +26,36 @@ import {
 } from '@user/middleware/validators/auth.validator';
 
 const authRouter = Router();
+
+authRouter.post(
+  '/register',
+  trimRequestBody,
+  validate(registerSchema),
+  register,
+);
+
+authRouter.post('/login', trimRequestBody, validate(loginSchema), login);
+authRouter.post('/login/:id/:otp', validate(loginAdminSchema), loginAdmin);
+
+authRouter.post('/logout', logout);
+
+authRouter.post(
+  '/recover',
+  validate(requestRecoverySchema),
+  requestPasswordRecovery,
+);
+authRouter.post(
+  '/recover/:otp',
+  validate(verifyRecoveryOTPSchema),
+  verifyRecoveryOTP,
+);
+authRouter.patch(
+  '/recover/:otp',
+  validate(recoverPasswordSchema),
+  recoverPassword,
+);
+
+authRouter.patch('/reactivate', authenticateInactive, reactivate);
 
 authRouter.get(
   '/google',
@@ -50,34 +82,5 @@ authRouter.get(
   passport.authenticate('facebook', { session: false }),
   facebookLogin,
 );
-
-authRouter.post(
-  '/register',
-  trimRequestBody,
-  validate(registerSchema),
-  register,
-);
-
-authRouter.post('/login', trimRequestBody, validate(loginSchema), login);
-
-authRouter.post('/logout', logout);
-
-authRouter.post(
-  '/recover',
-  validate(requestRecoverySchema),
-  requestPasswordRecovery,
-);
-authRouter.post(
-  '/recover/:otp',
-  validate(verifyRecoveryOTPSchema),
-  verifyRecoveryOTP,
-);
-authRouter.patch(
-  '/recover/:otp',
-  validate(recoverPasswordSchema),
-  recoverPassword,
-);
-
-authRouter.patch('/reactivate', authenticateInactive, reactivate);
 
 export default authRouter;
