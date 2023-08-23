@@ -2,7 +2,9 @@ import { NextFunction, Request, Response } from 'express';
 
 import { ProviderType } from '@user/models';
 import authService from '@user/services/auth.service';
+import userService from '@user/services/user.service';
 import messages from '@user/utils/messages';
+import otpService from '../services/otp.service';
 
 export const socialLogin = async (
   req: Request,
@@ -12,21 +14,21 @@ export const socialLogin = async (
 ) => {
   try {
     const userId = req.user?.userId;
+    const email = req.user?.email;
 
-    if (!userId) res.status(401);
-    else {
-      const token = authService.generateJWT(userId, provider);
+    if (!userId || !email) return res.status(401);
 
-      const userData = await authService.getUserData(userId, provider);
+    const token = authService.generateJWT(email, provider);
 
-      res.redirect(
-        `${
-          process.env.FRONTEND_BASE_URL
-        }/OAuthRedirecting?token=${token}&user=${encodeURIComponent(
-          JSON.stringify(userData),
-        )}`,
-      );
-    }
+    const userData = await userService.getUserData(userId, 'customer');
+
+    res.redirect(
+      `${
+        process.env.FRONTEND_BASE_URL
+      }/OAuthRedirecting?token=${token}&user=${encodeURIComponent(
+        JSON.stringify(userData),
+      )}`,
+    );
   } catch (e) {
     next(e);
   }
@@ -72,23 +74,23 @@ export const register = async (
   try {
     const { firstName, lastName, email, password } = req.body;
 
-    const acct = await authService.getAccount(email, true);
+    const acct = await userService.getUserIdForUser(email);
 
     if (acct)
       return res
         .status(409)
         .json({ message: messages.REGISTER_ALREADY_EXISTS });
 
-    const { userId } = await authService.createUser(
+    const { customerId } = await authService.createCustomer(
       firstName,
       lastName,
       email,
       password,
     );
 
-    const userData = await authService.getUserData(userId, 'email');
+    const userData = await userService.getUserData(customerId, 'customer');
 
-    setAccessTokenCookie(res, authService.generateJWT(userId, 'email'));
+    setAccessTokenCookie(res, authService.generateJWT(email, 'email'));
 
     res.status(200).json({
       message: messages.REGISTER_SUCCESS,
@@ -107,23 +109,35 @@ export const login = async (
   try {
     const { email, password } = req.body;
 
-    const { account, isUser } = await authService.loginUser(email, password);
+    const user = await authService.loginUser(email, password);
 
-    if (!isUser)
-      return res.status(401).json({ message: messages.LOGIN_FAILED });
+    if (!user) return res.status(401).json({ message: messages.LOGIN_FAILED });
 
-    const { userId, status } = account;
+    const { userId, isAdmin, status } = user;
 
-    const userData = await authService.getUserData(userId, 'email');
+    const userData = await userService.getUserData(
+      userId,
+      isAdmin ? 'admin' : 'customer',
+    );
 
-    if (status === 'inactive')
-      return res.status(403).json({
-        accessToken: authService.generateJWT(userId, 'email'),
+    if (status === 'deactivated')
+      return res.status(401).json({
+        accessToken: authService.generateJWT(email, 'email'),
         user: userData,
         message: messages.ERR_DEACTIVATED_ACCOUNT,
       });
 
-    setAccessTokenCookie(res, authService.generateJWT(userId, 'email'));
+    if (status === 'suspended')
+      return res.status(401).json({
+        message: messages.ERR_SUSPENDED_ACCOUNT,
+      });
+
+    if (status === 'disabled')
+      return res.status(401).json({
+        message: messages.ERR_DEACTIVATED_ACCOUNT,
+      });
+
+    setAccessTokenCookie(res, authService.generateJWT(email, 'email'));
 
     res.status(200).json({
       message: messages.LOGIN_SUCCESS,
@@ -155,17 +169,27 @@ export const requestPasswordRecovery = async (
   try {
     const { email } = req.body;
 
-    const account = await authService.getAccount(email, true);
+    const user = await userService.getUserForRecovery(email);
 
-    if (!account)
+    if (!user)
       return res.status(200).json({ message: messages.REQUEST_RECOVERY });
 
-    if (account.password === null)
+    if (user.status === 'deactivated')
+      return res.status(401).json({
+        message: messages.ERR_DEACTIVATED_ACCOUNT,
+      });
+
+    if (user.status === 'suspended')
+      return res.status(401).json({
+        message: messages.ERR_SUSPENDED_ACCOUNT,
+      });
+
+    if (!user.hasPassword)
       return res
         .status(403)
         .json({ message: messages.REQUEST_RECOVERY_FAILED_THIRD_PARTY_AUTH });
 
-    await authService.createAuthOTP(account.userId, 'password');
+    await otpService.createCustomerOTP(user.userId, 'password');
 
     res.status(200).json({ message: messages.REQUEST_RECOVERY });
   } catch (e) {
@@ -182,15 +206,15 @@ export const verifyRecoveryOTP = async (
     const { otp } = req.params;
     const { email } = req.body;
 
-    const account = await authService.getAccount(email, true);
+    const user = await userService.getUserIdForUser(email);
 
-    if (!account)
+    if (!user)
       return res.status(401).json({ message: messages.INVALID_AUTH_OTP });
 
-    const { isValid } = await authService.getAuthOTP(
-      account.userId,
-      otp,
+    const { isValid } = await otpService.getCustomerOTP(
+      user.userId,
       'password',
+      otp,
     );
 
     if (!isValid)
@@ -211,23 +235,27 @@ export const recoverPassword = async (
     const { otp } = req.params;
     const { email, password } = req.body;
 
-    const account = await authService.getAccount(email, true);
+    const user = await userService.getUserIdForUser(email);
 
-    if (!account)
+    if (!user)
       return res.status(401).json({ message: messages.INVALID_AUTH_OTP });
 
-    const { userId } = account;
+    const { userId } = user;
 
-    const { isValid } = await authService.getAuthOTP(userId, otp, 'password');
+    const { isValid } = await otpService.getCustomerOTP(
+      userId,
+      'password',
+      otp,
+    );
 
     if (!isValid)
       return res.status(401).json({ message: messages.INVALID_AUTH_OTP });
 
-    await authService.recoverPassword(userId, password);
+    await authService.recoverCustomerPassword(userId, password);
 
-    const userData = await authService.getUserData(userId, 'email');
+    const userData = await userService.getUserData(userId, 'customer');
 
-    setAccessTokenCookie(res, authService.generateJWT(userId, 'email'));
+    setAccessTokenCookie(res, authService.generateJWT(email, 'email'));
 
     res.status(200).json({
       message: messages.RECOVER_PASSWORD_SUCCESS,
@@ -244,13 +272,16 @@ export const reactivate = async (
   next: NextFunction,
 ) => {
   try {
-    const userId = req.user?.userId ?? -1;
+    const userId = req.user?.userId;
+    const email = req.user?.email;
 
-    await authService.reactivate(userId);
+    if (!email || !userId) return res.status(401);
 
-    const userData = await authService.getUserData(userId, 'email');
+    await authService.reactivateCustomer(userId);
 
-    setAccessTokenCookie(res, authService.generateJWT(userId, 'email'));
+    const userData = await userService.getUserData(userId, 'customer');
+
+    setAccessTokenCookie(res, authService.generateJWT(email, 'email'));
 
     res.status(200).json({
       message: messages.REACTIVATE_SUCCESS,

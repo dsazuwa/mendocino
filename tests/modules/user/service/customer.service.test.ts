@@ -32,7 +32,7 @@ describe('get customer profile', () => {
   });
 
   it('customer does not exist', async () => {
-    const result = await customerService.getCustomerProfile(1234);
+    const result = await customerService.getProfile(1234);
     expect(result).toBeNull();
   });
 
@@ -49,7 +49,7 @@ describe('get customer profile', () => {
       ],
     );
 
-    const result = await customerService.getCustomerProfile(customerId);
+    const result = await customerService.getProfile(customerId);
     expect(result).toMatchObject({
       firstName,
       lastName,
@@ -74,7 +74,7 @@ describe('get customer profile', () => {
       ],
     );
 
-    const result = await customerService.getCustomerProfile(customerId);
+    const result = await customerService.getProfile(customerId);
     expect(result).toMatchObject({
       firstName,
       lastName,
@@ -98,7 +98,7 @@ describe('get customer profile', () => {
     const { phoneId } = await Phone.create({ phoneNumber });
     await CustomerPhone.create({ customerId, phoneId, status: 'pending' });
 
-    let result = await customerService.getCustomerProfile(customerId);
+    let result = await customerService.getProfile(customerId);
     expect(result).toMatchObject({
       firstName,
       lastName,
@@ -114,7 +114,7 @@ describe('get customer profile', () => {
       { where: { customerId, phoneId } },
     );
 
-    result = await customerService.getCustomerProfile(customerId);
+    result = await customerService.getProfile(customerId);
     expect(result).toMatchObject({
       firstName,
       lastName,
@@ -156,7 +156,7 @@ describe('get customer profile', () => {
       },
     ]);
 
-    const result = await customerService.getCustomerProfile(customerId);
+    const result = await customerService.getProfile(customerId);
     expect(result).toMatchObject({
       firstName,
       lastName,
@@ -240,11 +240,7 @@ describe('update user name ', () => {
     expectedLast: string,
     expectedResult: boolean,
   ) => {
-    const result = await customerService.updateCustomer(
-      customerId,
-      fName,
-      lName,
-    );
+    const result = await customerService.updateName(customerId, fName, lName);
     expect(result).toBe(expectedResult);
 
     const user = await Customer.findOne({

@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 
-import authService from '@user/services/auth.service';
-import phonesService from '@user/services/phones.service';
+import adminPhoneService from '@user/services/admin-phone.service';
+import otpService from '@user/services/otp.service';
 import messages from '@user/utils/messages';
 
 export const registerPhone = async (
@@ -10,10 +10,12 @@ export const registerPhone = async (
   next: NextFunction,
 ) => {
   try {
-    const userId = req.user?.userId ?? -1;
+    const userId = req.user?.userId;
     const { phoneNumber } = req.body;
 
-    await phonesService.createPhone(userId, phoneNumber);
+    if (!userId) return res.status(401);
+
+    await adminPhoneService.createPhone(userId, phoneNumber);
 
     res.status(200).json({ message: messages.REGISTER_PHONE_SUCCESS });
   } catch (e) {
@@ -27,9 +29,11 @@ export const resendVerifySMS = async (
   next: NextFunction,
 ) => {
   try {
-    const userId = req.user?.userId ?? -1;
+    const userId = req.user?.userId;
 
-    await authService.createAuthOTP(userId, 'phone');
+    if (!userId) return res.status(401);
+
+    await otpService.createAdminOTP(userId, 'phone');
 
     res.status(200).json({ message: messages.REQUEST_VERIFICATION_SMS });
   } catch (e) {
@@ -43,15 +47,17 @@ export const verifyPhone = async (
   next: NextFunction,
 ) => {
   try {
-    const userId = req.user?.userId ?? -1;
+    const userId = req.user?.userId;
     const { otp } = req.params;
 
-    const { isValid } = await authService.getAuthOTP(userId, otp, 'phone');
+    if (!userId) return res.status(401);
+
+    const { isValid } = await otpService.getAdminOTP(userId, 'phone', otp);
 
     if (!isValid)
       return res.status(401).json({ message: messages.INVALID_AUTH_OTP });
 
-    await phonesService.verifyPhone(userId);
+    await adminPhoneService.verifyPhone(userId);
 
     res.status(200).json({ message: messages.VERIFY_PHONE_SUCCESS });
   } catch (e) {
@@ -65,14 +71,16 @@ export const deletePhone = async (
   next: NextFunction,
 ) => {
   try {
-    const userId = req.user?.userId ?? -1;
+    const userId = req.user?.userId;
 
-    const result = await phonesService.deletePhone(userId);
+    if (!userId) return res.status(401);
 
-    if (result === 0)
-      return res.status(400).json({ message: messages.DELETE_PHONE_FAIL });
+    const result = await adminPhoneService.deletePhone(userId);
 
-    res.status(200).json({ message: messages.DELETE_PHONE_SUCCESS });
+    if (result)
+      return res.status(200).json({ message: messages.DELETE_PHONE_SUCCESS });
+
+    return res.status(400).json({ message: messages.DELETE_PHONE_FAIL });
   } catch (e) {
     next(e);
   }

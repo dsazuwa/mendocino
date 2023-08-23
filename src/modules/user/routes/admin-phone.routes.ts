@@ -7,8 +7,8 @@ import {
   registerPhone,
   resendVerifySMS,
   verifyPhone,
-} from '@App/modules/user/controllers/admin-phone.controller';
-import { authenticate } from '@user/middleware/auth';
+} from '@user/controllers/admin-phone.controller';
+import { authenticate, authorizeAdmin } from '@user/middleware/auth';
 import {
   registerPhoneSchema,
   verifyPhoneSchema,
@@ -16,7 +16,7 @@ import {
 
 const adminPhoneRouter = Router();
 
-adminPhoneRouter.use(authenticate);
+adminPhoneRouter.use(authenticate, authorizeAdmin);
 
 adminPhoneRouter.post(
   '',

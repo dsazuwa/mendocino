@@ -126,7 +126,14 @@ const authService = {
         });
 
         const isUser = account !== null && account.comparePasswords(password);
-        return isUser ? adminId : null;
+
+        return isUser
+          ? {
+              isAdmin: true,
+              userId: adminId,
+              status: account.status,
+            }
+          : null;
       }
 
       const customerId = result.userId;
@@ -147,7 +154,13 @@ const authService = {
         customerPassword !== null &&
         customerPassword.comparePasswords(password);
 
-      return isUser ? customerId : null;
+      return isUser
+        ? {
+            isAdmin: false,
+            userId: customerId,
+            status: account.status,
+          }
+        : null;
     }),
 
   recoverCustomerPassword: (customerId: number, password: string) =>

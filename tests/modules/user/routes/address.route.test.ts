@@ -1,35 +1,33 @@
 import { Address } from '@user/models';
 import addressService from '@user/services/address.service';
 import authService from '@user/services/auth.service';
-import { ROLES } from '@user/utils/constants';
 
-import { createUserAccount } from 'tests/modules/user/helper-functions';
+import { createCustomer } from 'tests/modules/user/helper-functions';
 import { request } from 'tests/supertest.helper';
 
-import 'tests/user.db-setup';
+import 'tests/db-setup';
 
-const BASE_URL = '/api/address';
+const BASE_URL = '/api/customers/me/address';
 
 describe('Address management', () => {
-  let userId: number;
+  let customerId: number;
   let jwt: string;
 
   beforeAll(async () => {
-    const { user } = await createUserAccount(
+    const { customer, email } = await createCustomer(
       'Jamal',
       'Doe',
       'jamaldoe@gmail.com',
       'jamalD0ePa$$',
       'active',
-      [ROLES.CUSTOMER.roleId],
     );
 
-    userId = user.userId;
-    jwt = authService.generateJWT(userId, 'email');
+    customerId = customer.customerId;
+    jwt = authService.generateJWT(email.email, 'email');
   });
 
   beforeEach(async () => {
-    await Address.destroy({ where: { userId } });
+    await Address.destroy({ where: { customerId } });
   });
 
   it(`GET ${BASE_URL} should get user's addresses`, async () => {
@@ -71,7 +69,9 @@ describe('Address management', () => {
       },
     ];
 
-    await Address.bulkCreate(addressData.map((data) => ({ userId, ...data })));
+    await Address.bulkCreate(
+      addressData.map((data) => ({ customerId, ...data })),
+    );
 
     const response = await request.get(BASE_URL).auth(jwt, { type: 'bearer' });
 
@@ -101,7 +101,7 @@ describe('Address management', () => {
     const { addressLine2, ...rest } = data;
 
     const address = await Address.findOne({
-      where: { userId, ...rest },
+      where: { customerId, ...rest },
       raw: true,
     });
     expect(address).not.toBeNull();
@@ -110,7 +110,7 @@ describe('Address management', () => {
   it(`POST ${BASE_URL} should fail to create address after reaching limit`, async () => {
     await Address.bulkCreate([
       {
-        userId,
+        customerId,
         addressLine1: '123 Main St',
         addressLine2: null,
         city: 'Exampleville',
@@ -118,7 +118,7 @@ describe('Address management', () => {
         postalCode: '12345',
       },
       {
-        userId,
+        customerId,
         addressLine1: '456 Elm Rd',
         addressLine2: 'Suite 789',
         city: 'Townsville',
@@ -126,7 +126,7 @@ describe('Address management', () => {
         postalCode: '67890',
       },
       {
-        userId,
+        customerId,
         addressLine1: '789 Pine Ave',
         addressLine2: null,
         city: 'Cityburg',
@@ -134,7 +134,7 @@ describe('Address management', () => {
         postalCode: '54321',
       },
       {
-        userId,
+        customerId,
         addressLine1: '101 Maple St',
         addressLine2: 'Unit 202',
         city: 'Villageville',
@@ -142,7 +142,7 @@ describe('Address management', () => {
         postalCode: '45678',
       },
       {
-        userId,
+        customerId,
         addressLine1: '222 Oak Ln',
         addressLine2: null,
         city: 'Ruralville',
@@ -159,13 +159,13 @@ describe('Address management', () => {
       postalCode: '98765',
     };
 
-    const result = await addressService.createAddress(userId, data);
+    const result = await addressService.createAddress(customerId, data);
     expect(result).toBe(false);
 
     const { addressLine2, ...rest } = data;
 
     const address = await Address.findOne({
-      where: { userId, ...rest },
+      where: { customerId, ...rest },
       raw: true,
     });
     expect(address).toBeNull();
@@ -175,7 +175,7 @@ describe('Address management', () => {
 
   it(`PATCH ${BASE_URL}/id should update address`, async () => {
     const { addressId } = await Address.create({
-      userId,
+      customerId,
       addressLine1: '222 Oak Ln',
       addressLine2: undefined,
       city: 'Ruralville',
@@ -192,7 +192,7 @@ describe('Address management', () => {
       .expect(200);
 
     const address = await Address.findOne({
-      where: { userId, addressId, state },
+      where: { customerId, addressId, state },
       raw: true,
     });
     expect(address).not.toBeNull();
@@ -200,7 +200,7 @@ describe('Address management', () => {
 
   it(`DELETE ${BASE_URL}/id should delete address`, async () => {
     const { addressId } = await Address.create({
-      userId,
+      customerId,
       addressLine1: '222 Oak Ln',
       addressLine2: undefined,
       city: 'Ruralville',

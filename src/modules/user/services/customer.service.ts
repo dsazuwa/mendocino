@@ -57,7 +57,7 @@ const deleteCustomer = async (customerId: number) =>
   });
 
 const customerService = {
-  getCustomerProfile: async (customerId: number) => {
+  getProfile: async (customerId: number) => {
     const schema = USER_SCHEMA;
 
     const query = `
@@ -127,7 +127,7 @@ const customerService = {
       );
     }),
 
-  updateCustomer: async (
+  updateName: async (
     customerId: number,
     firstName: string | undefined,
     lastName: string | undefined,
@@ -182,15 +182,18 @@ const customerService = {
     provider: ProviderType,
   ) => {
     type QueryReturnType = {
+      email: string;
       passwordExists: boolean;
-      identityExists: boolean;
       otherIdentities: ProviderType[];
     };
+
+    type SwitchToType = ProviderType | 'email';
 
     const schema = USER_SCHEMA;
 
     const query = `
       SELECT
+        e.email AS email,
         c.customer_id AS customerId,
         CASE WHEN cp.customer_id IS NOT NULL THEN TRUE ELSE FALSE END AS "passwordExists",
         ARRAY(
@@ -201,9 +204,13 @@ const customerService = {
       FROM
         ${schema}.${Customer.tableName} c
       LEFT JOIN
-        ${schema}.${CustomerPassword.tableName} cp ON c.customer_id = cp.customer_id
+        ${schema}.${CustomerAccount.tableName} ca ON ca.customer_id = c.customer_id
       LEFT JOIN
-        ${schema}.${CustomerIdentity.tableName} ci ON c.customer_id = ci.customer_id AND ci.provider = '${provider}'
+        ${schema}.${Email.tableName} e ON e.email_id = ca.email_id
+      LEFT JOIN
+        ${schema}.${CustomerPassword.tableName} cp ON cp.customer_id = c.customer_id
+      LEFT JOIN
+        ${schema}.${CustomerIdentity.tableName} ci ON ci.customer_id = c.customer_id AND ci.provider = '${provider}'
       WHERE
         c.customer_id = ${customerId};`;
 
@@ -211,11 +218,16 @@ const customerService = {
 
     if (result.length === 0) return { result: false };
 
-    const { passwordExists, otherIdentities } = result[0] as QueryReturnType;
+    const { email, passwordExists, otherIdentities } =
+      result[0] as QueryReturnType;
 
     if (passwordExists) {
       await deleteIdentity(customerId, provider);
-      return { result: true, switchTo: 'email' };
+      return {
+        result: true,
+        switchTo: 'email' as SwitchToType,
+        email,
+      };
     }
 
     if (otherIdentities.length === 0) return { result: false };
@@ -224,7 +236,8 @@ const customerService = {
 
     return {
       result: true,
-      switchTo: otherIdentities[0],
+      switchTo: otherIdentities[0] as SwitchToType,
+      email,
     };
   },
 

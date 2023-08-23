@@ -12,7 +12,7 @@ import {
   revokeSocialAuthentication,
   updateUserName,
   verifyEmail,
-} from '@user/controllers/users.controller';
+} from '@user/controllers/customer.controller';
 import { authenticate, authorize } from '@user/middleware/auth';
 import { permitPending } from '@user/middleware/route-guards';
 import {
@@ -22,42 +22,49 @@ import {
   updateUserNameSchema,
   verifyEmailSchema,
 } from '@user/middleware/validators/users.validator';
-import { ROLES } from '@user/utils/constants';
 
-const usersRouter = Router();
+const customerRouter = Router();
 
-usersRouter.use(authenticate);
+customerRouter.use(authenticate);
 
-usersRouter.get('', getUserData);
+customerRouter.get('', getUserData);
 
-usersRouter.use(authorize([ROLES.CUSTOMER.name]));
+customerRouter.use(authorize(['customer']));
 
-usersRouter.get('/profile', getProfile);
+customerRouter.get('/profile', getProfile);
 
-usersRouter.post('/verify', permitPending, resendVerifyEmail);
-usersRouter.patch(
+customerRouter.post('/verify', permitPending, resendVerifyEmail);
+customerRouter.patch(
   '/verify/:otp',
   validate(verifyEmailSchema),
   permitPending,
   verifyEmail,
 );
 
-usersRouter.patch(
+customerRouter.patch(
   '/name',
   trimRequestBody,
   validate(updateUserNameSchema),
   updateUserName,
 );
 
-usersRouter.post('/password', validate(createPasswordSchema), createPassword);
-usersRouter.patch('/password', validate(changePasswordSchema), changePassword);
+customerRouter.post(
+  '/password',
+  validate(createPasswordSchema),
+  createPassword,
+);
+customerRouter.patch(
+  '/password',
+  validate(changePasswordSchema),
+  changePassword,
+);
 
-usersRouter.patch(
+customerRouter.patch(
   '/revoke-social-auth',
   validate(revokeSocialAuthenticationSchema),
   revokeSocialAuthentication,
 );
 
-usersRouter.patch('/close', closeAccount);
+customerRouter.patch('/close', closeAccount);
 
-export default usersRouter;
+export default customerRouter;

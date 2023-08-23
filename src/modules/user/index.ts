@@ -1,5 +1,6 @@
 import authenticate from './middleware/auth/authenticate';
 import authorize from './middleware/auth/authorize';
+import authorizeAdmin from './middleware/auth/authorize.admin';
 import authenticateInactive from './middleware/auth/inactive.authenticate';
 
 import { configureGoogleStrategy } from './middleware/strategies/google.strategy';
@@ -14,6 +15,7 @@ export {
   authenticate,
   authenticateInactive,
   authorize,
+  authorizeAdmin,
   configureGoogleStrategy,
   configureJWTStrategy,
   userRouter,

@@ -9,6 +9,7 @@ import {
   Customer,
   CustomerAccount,
   CustomerIdentity,
+  CustomerPassword,
   Email,
   ProviderType,
   Role,
@@ -140,6 +141,8 @@ const userService = {
 
     return result.length === 0 ? undefined : (result[0] as Express.User);
   },
+
+  getUserIdForUser,
 
   getUserData: async (userId: number, userType: 'customer' | 'admin') => {
     const schema = USER_SCHEMA;
@@ -274,7 +277,35 @@ const userService = {
     return result[0] as QueryReturnType;
   },
 
-  getUserIdForUser,
+  getUserForRecovery: async (email: string) => {
+    const schema = USER_SCHEMA;
+
+    const query = `
+      SELECT
+        c.customer_id AS "userId",
+        c.first_name AS "firstName",
+        c.last_name AS "lastName",
+        e.email AS email,
+        CASE WHEN cp.password IS NULL THEN FALSE ELSE TRUE END AS "hasPassword",
+        ca.status AS status,
+        ARRAY['customer'] AS roles
+      FROM
+        ${schema}.${Customer.tableName} c
+      JOIN
+        ${schema}.${CustomerAccount.tableName} ca ON ca.customer_id = c.customer_id
+      JOIN
+        ${schema}.${Email.tableName} e ON e.email_id = ca.email_id
+      LEFT JOIN
+        ${schema}.${CustomerPassword.tableName} cp ON cp.customer_id = c.customer_id
+      WHERE
+        e.email = '${email}';`;
+
+    const result = await sequelize.query(query, { type: QueryTypes.SELECT });
+
+    return result.length === 0
+      ? undefined
+      : (result[0] as Express.User & { hasPassword: boolean });
+  },
 };
 
 export default userService;

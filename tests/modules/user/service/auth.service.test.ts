@@ -201,8 +201,12 @@ describe('login', () => {
       [ROLES.CUSTOMER_SUPPORT.roleId],
     );
 
-    const userId = await authService.loginUser(email, password);
-    expect(userId).toBe(adminId);
+    const result = await authService.loginUser(email, password);
+    expect(result).toMatchObject({
+      isAdmin: true,
+      userId: adminId,
+      status: 'active',
+    });
   });
 
   it('should login customer on valid data', async () => {
@@ -217,8 +221,12 @@ describe('login', () => {
       'active',
     );
 
-    const userId = await authService.loginUser(email, password);
-    expect(userId).toBe(customerId);
+    const result = await authService.loginUser(email, password);
+    expect(result).toMatchObject({
+      isAdmin: false,
+      userId: customerId,
+      status: 'active',
+    });
   });
 
   it('should fail login if customer has no password', async () => {
@@ -239,19 +247,19 @@ describe('login', () => {
     });
     expect(password).toBeNull();
 
-    const userId = await authService.loginUser(email, 'jazzd0ePa$$');
-    expect(userId).toBeNull();
+    const result = await authService.loginUser(email, 'jazzd0ePa$$');
+    expect(result).toBeNull();
   });
 
   it('should fail login on wrong credentials', async () => {
-    let userId = await authService.loginUser('jandoe@gmail.com', '1234567890');
-    expect(userId).toBe(null);
+    let result = await authService.loginUser('jandoe@gmail.com', '1234567890');
+    expect(result).toBe(null);
 
-    userId = await authService.loginUser('january@gmail.com', '1234567890');
-    expect(userId).toBe(null);
+    result = await authService.loginUser('january@gmail.com', '1234567890');
+    expect(result).toBe(null);
 
-    userId = await authService.loginUser('notjanuary@gmail.com', '1234567890');
-    expect(userId).toBe(null);
+    result = await authService.loginUser('notjanuary@gmail.com', '1234567890');
+    expect(result).toBe(null);
   });
 });
 

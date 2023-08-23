@@ -14,11 +14,10 @@ import {
   deleteAddressSchema,
   updateAddressSchema,
 } from '@user/middleware/validators/address.validator';
-import { ROLES } from '@user/utils/constants';
 
 const addressRouter = Router();
 
-addressRouter.use([authenticate, authorize([ROLES.CUSTOMER.name])]);
+addressRouter.use([authenticate, authorize(['customer'])]);
 
 addressRouter.get('', getAddress);
 addressRouter.post(

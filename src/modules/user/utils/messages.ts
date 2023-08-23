@@ -60,6 +60,7 @@ const messages = {
 
   REVOKE_SOCIAL_SUCCESS: (provider: string) =>
     `Successfully revoked ${capitalizeFirst(provider)} authentication`,
+  REVOKE_SOCIAL_FAILED: 'Failed to revoke authentication',
 
   CLOSE_CLIENT_ACCOUNT: 'Account successfully closed!',
 
