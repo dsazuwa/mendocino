@@ -24,7 +24,7 @@ describe('get admin otp', () => {
       'notjadoe@gmail.com',
       'jaD0ePa$$',
       'active',
-      [ROLES.SUPER_USER.roleId],
+      [ROLES.SUPER_ADMIN.roleId],
     );
 
     adminId = admin.adminId;
@@ -151,7 +151,7 @@ describe('create admin otp', () => {
       'jessica@gmail.com',
       'jaD0ePa$$',
       'active',
-      [ROLES.SUPER_USER.roleId],
+      [ROLES.SUPER_ADMIN.roleId],
     );
 
     adminId = admin.adminId;

@@ -228,7 +228,7 @@ it('should return error if customer exists, but is admin', async () => {
   const provider = 'google';
 
   await createAdmin(firstName, lastName, email, password, 'active', [
-    ROLES.SUPER_USER.roleId,
+    ROLES.SUPER_ADMIN.roleId,
   ]);
 
   let i = await CustomerIdentity.findOne({

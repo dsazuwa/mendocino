@@ -25,6 +25,6 @@ export const ROLES = {
   DELIVERY_DRIVER: { roleId: 1, name: 'delivery driver' },
   CUSTOMER_SUPPORT: { roleId: 2, name: 'customer support' },
   MANAGER: { roleId: 3, name: 'manager' },
-  SUPER_USER: { roleId: 4, name: 'super user' },
+  SUPER_ADMIN: { roleId: 4, name: 'super admin' },
   ROOT: { roleId: 5, name: 'root' },
 } as const;

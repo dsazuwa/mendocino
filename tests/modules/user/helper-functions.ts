@@ -136,7 +136,7 @@ export const createRoles = async () => {
     ROLES.DELIVERY_DRIVER,
     ROLES.CUSTOMER_SUPPORT,
     ROLES.MANAGER,
-    ROLES.SUPER_USER,
+    ROLES.SUPER_ADMIN,
     ROLES.ROOT,
   ]);
 };
