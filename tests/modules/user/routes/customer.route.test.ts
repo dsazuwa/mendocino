@@ -19,32 +19,8 @@ import { getTokenFrom, request } from 'tests/supertest.helper';
 import 'tests/db-setup';
 
 const BASE_URL = '/api/customers/me';
+
 const raw = true;
-
-describe(`GET ${BASE_URL}`, () => {
-  it('return data for pending customer', async () => {
-    const firstName = 'Joyce';
-    const lastName = 'Doe';
-    const email = 'joycedoe@gmail.com';
-    const password = 'joyceD0epa$$';
-    const status = 'pending';
-
-    await createCustomer(firstName, lastName, email, password, status);
-
-    const jwt = authService.generateJWT(email, 'email');
-
-    const response = await request.get(BASE_URL).auth(jwt, { type: 'bearer' });
-
-    expect(response.status).toBe(200);
-    expect(response.body.user).toMatchObject({
-      firstName,
-      lastName,
-      email,
-      status,
-      roles: ['customer'],
-    });
-  });
-});
 
 describe(`GET ${BASE_URL}/profile`, () => {
   it('return profile for customer', async () => {

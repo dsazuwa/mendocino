@@ -3,24 +3,9 @@ import { NextFunction, Request, Response } from 'express';
 import authService from '@user/services/auth.service';
 import customerService from '@user/services/customer.service';
 import otpService from '@user/services/otp.service';
-import userService from '@user/services/user.service';
 
 import messages from '@user/utils/messages';
 import { setAccessTokenCookie } from './auth.controller';
-
-export const getUserData = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
-  try {
-    const user = await userService.getUserDataFromReq(req);
-
-    res.status(200).json({ user });
-  } catch (e) {
-    next(e);
-  }
-};
 
 export const getProfile = async (
   req: Request,
@@ -105,7 +90,7 @@ export const createPassword = async (
     const result = await customerService.createPassword(userId, password);
 
     if (!result)
-      return res.status(409).json({ message: messages.CREATE_PASSWORD_FAILED });
+      return res.status(409).json({ message: messages.CREATE_PASSWORD_FAIL });
 
     res.status(200).json({ message: messages.CREATE_PASSWORD_SUCCESS });
   } catch (e) {
@@ -129,7 +114,7 @@ export const changePassword = async (
     );
 
     if (!result)
-      return res.status(404).json({ message: messages.PASSWORD_CHANGE_FAILED });
+      return res.status(404).json({ message: messages.PASSWORD_CHANGE_FAIL });
 
     res.status(200).json({ message: messages.PASSWORD_CHANGE_SUCCESS });
   } catch (e) {
@@ -152,7 +137,7 @@ export const revokeSocialAuthentication = async (
       await customerService.revokeSocialAuthentication(userId, provider);
 
     if (!result || switchTo === undefined)
-      return res.status(400).json({ message: messages.REVOKE_SOCIAL_FAILED });
+      return res.status(400).json({ message: messages.REVOKE_SOCIAL_FAIL });
 
     if (switchTo === 'email') {
       setAccessTokenCookie(res, authService.generateJWT(email, 'email'));

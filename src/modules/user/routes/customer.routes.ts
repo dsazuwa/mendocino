@@ -7,7 +7,6 @@ import {
   closeAccount,
   createPassword,
   getProfile,
-  getUserData,
   resendVerifyEmail,
   revokeSocialAuthentication,
   updateUserName,
@@ -25,11 +24,7 @@ import {
 
 const customerRouter = Router();
 
-customerRouter.use(authenticate);
-
-customerRouter.get('', getUserData);
-
-customerRouter.use(authorize(['customer']));
+customerRouter.use(authenticate, authorize(['customer']));
 
 customerRouter.get('/profile', getProfile);
 

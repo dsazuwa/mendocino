@@ -32,35 +32,43 @@ const messages = {
   REGISTER_ALREADY_EXISTS: 'Email already exists',
   REGISTER_SUCCESS: 'Successfully registered!',
 
-  LOGIN_FAILED: 'Incorrect email or password',
   LOGIN_SUCCESS: 'Logged in!',
+  LOGIN_FAIL: 'Incorrect email or password',
+  LOGIN_ADMIN_2FA: '2FA OTP sent to your email',
+
+  LOGIN_ADMIN_2FA_INVALID: 'Invalid request',
+  LOGIN_ADMIN_2FA_SUCCESS: 'Logged in!',
 
   LOGOUT: 'Logged out!',
 
   REQUEST_RECOVERY: 'Recovery OTP sent',
-  REQUEST_RECOVERY_FAILED_THIRD_PARTY_AUTH: 'Log in with your social account',
+  REQUEST_RECOVERY_FAIL_THIRD_PARTY_AUTH: 'Log in with your social account',
 
   VERIFY_RECOVERY_SUCCESS: 'Account verified!',
   RECOVER_PASSWORD_SUCCESS: 'Password successfully reset!',
 
   REACTIVATE_SUCCESS: 'Account reactivated!',
 
-  // USERS ROUTER MESSAGES
+  // USERS ROUTER
+
+  GET_USER_FAIL: 'Failed to get user',
+
+  // CUSTOMERS ROUTER MESSAGES
 
   REQUEST_VERIFICATION_EMAIL: 'New OTP sent to your email',
   VERIFY_EMAIL_SUCCESS: 'Email verified!',
 
   UPDATE_USER_NAME: 'Successfully updated name!',
 
-  CREATE_PASSWORD_FAILED: 'Failed to create password',
   CREATE_PASSWORD_SUCCESS: 'Password successfully created!',
+  CREATE_PASSWORD_FAIL: 'Failed to create password',
 
-  PASSWORD_CHANGE_FAILED: 'User account does not exist',
   PASSWORD_CHANGE_SUCCESS: 'Password Successfully changed!',
+  PASSWORD_CHANGE_FAIL: 'User account does not exist',
 
   REVOKE_SOCIAL_SUCCESS: (provider: string) =>
     `Successfully revoked ${capitalizeFirst(provider)} authentication`,
-  REVOKE_SOCIAL_FAILED: 'Failed to revoke authentication',
+  REVOKE_SOCIAL_FAIL: 'Failed to revoke authentication',
 
   CLOSE_CLIENT_ACCOUNT: 'Account successfully closed!',
 
@@ -72,8 +80,8 @@ const messages = {
 
   VERIFY_PHONE_SUCCESS: 'Phone number verified!',
 
-  DELETE_PHONE_FAIL: 'No phone number on record',
   DELETE_PHONE_SUCCESS: 'Phone number deleted!',
+  DELETE_PHONE_FAIL: 'No phone number on record',
 
   // ADDRESS ROUTER MESSAGES
 
