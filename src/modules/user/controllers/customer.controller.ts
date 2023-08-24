@@ -31,7 +31,10 @@ export const resendVerifyEmail = async (
   try {
     const userId = req.user?.userId ?? -1;
 
-    await otpService.createCustomerOTP(userId, 'email');
+    await otpService.createOTP(userId, {
+      userType: 'customer',
+      otpType: 'email',
+    });
 
     res.status(200).json({ message: messages.REQUEST_VERIFICATION_EMAIL });
   } catch (e) {
@@ -48,7 +51,10 @@ export const verifyEmail = async (
     const userId = req.user?.userId ?? -1;
     const { otp } = req.params;
 
-    const { isValid } = await otpService.getCustomerOTP(userId, 'email', otp);
+    const { isValid } = await otpService.getOTP(userId, otp, {
+      userType: 'customer',
+      otpType: 'email',
+    });
 
     if (!isValid)
       return res.status(401).json({ message: messages.INVALID_AUTH_OTP });

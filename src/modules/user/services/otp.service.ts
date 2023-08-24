@@ -7,13 +7,66 @@ import {
   CustomerOTPType,
 } from '@user/models';
 
+const createAdminOTP = (adminId: number, type: AdminOTPType) =>
+  sequelize.transaction(async (transaction) => {
+    await AdminOTP.destroy({
+      where: { adminId, type },
+      transaction,
+    });
+
+    const password = '12345';
+
+    await AdminOTP.create(
+      {
+        adminId,
+        type,
+        password,
+        expiresAt: AdminOTP.getExpiration(),
+      },
+      { transaction },
+    );
+
+    return password;
+  });
+
+const createCustomerOTP = (customerId: number, type: CustomerOTPType) =>
+  sequelize.transaction(async (transaction) => {
+    await CustomerOTP.destroy({
+      where: { customerId, type },
+      transaction,
+    });
+
+    const password = '12345';
+
+    await CustomerOTP.create(
+      {
+        customerId,
+        type,
+        password,
+        expiresAt: CustomerOTP.getExpiration(),
+      },
+      { transaction },
+    );
+
+    return password;
+  });
+
 const otpService = {
-  getAdminOTP: async (
-    adminId: number,
-    type: AdminOTPType,
+  getOTP: async (
+    userId: number,
     password: string,
+    type:
+      | { userType: 'admin'; otpType: AdminOTPType }
+      | { userType: 'customer'; otpType: CustomerOTPType },
   ) => {
-    const otp = await AdminOTP.findOne({ where: { adminId, type } });
+    const { userType, otpType } = type;
+
+    const otp =
+      userType === 'admin'
+        ? await AdminOTP.findOne({ where: { adminId: userId, type: otpType } })
+        : await CustomerOTP.findOne({
+            where: { customerId: userId, type: otpType },
+          });
 
     const isValid =
       otp !== null &&
@@ -23,64 +76,18 @@ const otpService = {
     return isValid ? { otp, isValid } : { otp: null, isValid };
   },
 
-  getCustomerOTP: async (
-    customerId: number,
-    type: CustomerOTPType,
-    password: string,
+  createOTP: (
+    userId: number,
+    type:
+      | { userType: 'admin'; otpType: AdminOTPType }
+      | { userType: 'customer'; otpType: CustomerOTPType },
   ) => {
-    const otp = await CustomerOTP.findOne({ where: { customerId, type } });
+    const { userType, otpType } = type;
 
-    const isValid =
-      otp !== null &&
-      otp.comparePasswords(password) &&
-      otp.expiresAt > new Date();
-
-    return isValid ? { otp, isValid } : { otp: null, isValid };
+    return userType === 'admin'
+      ? createAdminOTP(userId, otpType)
+      : createCustomerOTP(userId, otpType);
   },
-
-  createAdminOTP: async (adminId: number, type: AdminOTPType) =>
-    sequelize.transaction(async (transaction) => {
-      await AdminOTP.destroy({
-        where: { adminId, type },
-        transaction,
-      });
-
-      const password = '12345';
-
-      await AdminOTP.create(
-        {
-          adminId,
-          type,
-          password,
-          expiresAt: AdminOTP.getExpiration(),
-        },
-        { transaction },
-      );
-
-      return password;
-    }),
-
-  createCustomerOTP: async (customerId: number, type: CustomerOTPType) =>
-    sequelize.transaction(async (transaction) => {
-      await CustomerOTP.destroy({
-        where: { customerId, type },
-        transaction,
-      });
-
-      const password = '12345';
-
-      await CustomerOTP.create(
-        {
-          customerId,
-          type,
-          password,
-          expiresAt: CustomerOTP.getExpiration(),
-        },
-        { transaction },
-      );
-
-      return password;
-    }),
 };
 
 export default otpService;

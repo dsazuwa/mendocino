@@ -128,7 +128,10 @@ export const login = async (
     if (isAdmin) {
       const userData = await userService.getUserData(userId, 'admin');
 
-      await otpService.createAdminOTP(userId, 'login');
+      await otpService.createOTP(userId, {
+        userType: 'admin',
+        otpType: 'login',
+      });
 
       return res.status(200).json({
         message: messages.LOGIN_ADMIN_2FA,
@@ -171,7 +174,10 @@ export const loginAdmin = async (
 
     const userId = parseInt(id, 10);
 
-    const { isValid } = await otpService.getAdminOTP(userId, 'login', otp);
+    const { isValid } = await otpService.getOTP(userId, otp, {
+      userType: 'admin',
+      otpType: 'login',
+    });
 
     if (!isValid)
       return res.status(401).json({ message: messages.INVALID_AUTH_OTP });
@@ -232,11 +238,10 @@ export const requestPasswordRecovery = async (
         .status(403)
         .json({ message: messages.REQUEST_RECOVERY_FAIL_THIRD_PARTY_AUTH });
 
-    const otpMethod = isAdmin
-      ? otpService.createAdminOTP
-      : otpService.createCustomerOTP;
-
-    await otpMethod(userId, 'password');
+    await otpService.createOTP(userId, {
+      userType: isAdmin ? 'admin' : 'customer',
+      otpType: 'password',
+    });
 
     res.status(200).json({ message: messages.REQUEST_RECOVERY });
   } catch (e) {
@@ -260,11 +265,10 @@ export const verifyRecoveryOTP = async (
 
     const { userId, isAdmin } = user;
 
-    const otpMethod = isAdmin
-      ? otpService.getAdminOTP
-      : otpService.getCustomerOTP;
-
-    const { isValid } = await otpMethod(userId, 'password', otp);
+    const { isValid } = await otpService.getOTP(userId, otp, {
+      userType: isAdmin ? 'admin' : 'customer',
+      otpType: 'password',
+    });
 
     if (!isValid)
       return res.status(401).json({ message: messages.INVALID_AUTH_OTP });
@@ -291,11 +295,10 @@ export const recoverPassword = async (
 
     const { userId, isAdmin } = user;
 
-    const otpMethod = isAdmin
-      ? otpService.getAdminOTP
-      : otpService.getCustomerOTP;
-
-    const { isValid } = await otpMethod(userId, 'password', otp);
+    const { isValid } = await otpService.getOTP(userId, otp, {
+      userType: isAdmin ? 'admin' : 'customer',
+      otpType: 'password',
+    });
 
     if (!isValid)
       return res.status(401).json({ message: messages.INVALID_AUTH_OTP });

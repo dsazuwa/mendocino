@@ -15,6 +15,7 @@ beforeAll(async () => {
 });
 
 describe('get admin otp', () => {
+  const userType = 'admin';
   let adminId: number;
 
   beforeAll(async () => {
@@ -35,37 +36,57 @@ describe('get admin otp', () => {
   });
 
   it('otp exists and password is valid', async () => {
+    const otpType = 'phone';
     const password = '45623';
 
     await AdminOTP.create({
       adminId,
-      type: 'phone',
+      type: otpType,
       password,
       expiresAt: AdminOTP.getExpiration(),
     });
 
-    const result = await otpService.getAdminOTP(adminId, 'phone', password);
+    const result = await otpService.getOTP(adminId, password, {
+      userType,
+      otpType,
+    });
 
     expect(result.otp).not.toBeNull();
     expect(result.isValid).toBe(true);
   });
 
   it('otp exists and password is not valid', async () => {
+    const otpType = 'phone';
+
     await AdminOTP.create({
       adminId,
-      type: 'phone',
+      type: otpType,
       password: '90876',
       expiresAt: AdminOTP.getExpiration(),
     });
 
-    const result = await otpService.getAdminOTP(adminId, 'phone', '12345');
+    const result = await otpService.getOTP(adminId, '12345', {
+      userType,
+      otpType,
+    });
 
     expect(result.otp).toBeNull();
     expect(result.isValid).toBe(false);
   });
 
   it('otp does not exist', async () => {
-    const result = await otpService.getAdminOTP(adminId, 'phone', '54321');
+    const otpType = 'email';
+
+    const otp = await AdminOTP.findOne({
+      where: { adminId, type: otpType },
+      raw: true,
+    });
+    expect(otp).toBeNull();
+
+    const result = await otpService.getOTP(adminId, '12345', {
+      userType,
+      otpType,
+    });
 
     expect(result.otp).toBeNull();
     expect(result.isValid).toBe(false);
@@ -73,6 +94,7 @@ describe('get admin otp', () => {
 });
 
 describe('get customer otp', () => {
+  const userType = 'customer';
   let customerId: number;
 
   beforeAll(async () => {
@@ -92,49 +114,57 @@ describe('get customer otp', () => {
   });
 
   it('otp exists and password is valid', async () => {
+    const otpType = 'phone';
     const password = '45623';
 
     await CustomerOTP.create({
       customerId,
-      type: 'phone',
+      type: otpType,
       password,
       expiresAt: CustomerOTP.getExpiration(),
     });
 
-    const result = await otpService.getCustomerOTP(
-      customerId,
-      'phone',
-      password,
-    );
+    const result = await otpService.getOTP(customerId, password, {
+      userType,
+      otpType,
+    });
 
     expect(result.otp).not.toBeNull();
     expect(result.isValid).toBe(true);
   });
 
   it('otp exists and password is not valid', async () => {
+    const otpType = 'phone';
+
     await CustomerOTP.create({
       customerId,
-      type: 'phone',
+      type: otpType,
       password: '90876',
       expiresAt: CustomerOTP.getExpiration(),
     });
 
-    const result = await otpService.getCustomerOTP(
-      customerId,
-      'phone',
-      '12345',
-    );
+    const result = await otpService.getOTP(customerId, '12345', {
+      userType,
+      otpType,
+    });
 
     expect(result.otp).toBeNull();
     expect(result.isValid).toBe(false);
   });
 
   it('otp does not exist', async () => {
-    const result = await otpService.getCustomerOTP(
-      customerId,
-      'phone',
-      '54321',
-    );
+    const otpType = 'email';
+
+    const otp = await CustomerOTP.findOne({
+      where: { customerId, type: otpType },
+      raw: true,
+    });
+    expect(otp).toBeNull();
+
+    const result = await otpService.getOTP(customerId, '54321', {
+      userType,
+      otpType,
+    });
 
     expect(result.otp).toBeNull();
     expect(result.isValid).toBe(false);
@@ -142,6 +172,7 @@ describe('get customer otp', () => {
 });
 
 describe('create admin otp', () => {
+  const userType = 'admin';
   let adminId: number;
 
   beforeAll(async () => {
@@ -162,24 +193,28 @@ describe('create admin otp', () => {
   });
 
   it('should create new otp', async () => {
-    const password = await otpService.createAdminOTP(adminId, 'phone');
+    const otpType = 'phone';
+
+    const password = await otpService.createOTP(adminId, { userType, otpType });
 
     const otp = await AdminOTP.findOne({
-      where: { adminId, type: 'phone' },
+      where: { adminId, type: otpType },
     });
     expect(otp).not.toBeNull();
     expect(otp?.comparePasswords(password)).toBe(true);
   });
 
   it('should delete previous otp and create a new one', async () => {
+    const otpType = 'email';
+
     const { otpId: previousId } = await AdminOTP.create({
       adminId,
-      type: 'email',
+      type: otpType,
       password: '12670',
       expiresAt: AdminOTP.getExpiration(),
     });
 
-    await otpService.createAdminOTP(adminId, 'email');
+    await otpService.createOTP(adminId, { userType, otpType });
 
     const previousOTP = await AdminOTP.findByPk(previousId, { raw: true });
     expect(previousOTP).toBeNull();
@@ -187,6 +222,7 @@ describe('create admin otp', () => {
 });
 
 describe('create customer otp', () => {
+  const userType = 'customer';
   let customerId: number;
 
   beforeAll(async () => {
@@ -206,24 +242,31 @@ describe('create customer otp', () => {
   });
 
   it('should create new otp', async () => {
-    const password = await otpService.createCustomerOTP(customerId, 'phone');
+    const otpType = 'phone';
+
+    const password = await otpService.createOTP(customerId, {
+      userType,
+      otpType,
+    });
 
     const otp = await CustomerOTP.findOne({
-      where: { customerId, type: 'phone' },
+      where: { customerId, type: otpType },
     });
     expect(otp).not.toBeNull();
     expect(otp?.comparePasswords(password)).toBe(true);
   });
 
   it('should delete previous otp and create a new one', async () => {
+    const otpType = 'email';
+
     const { otpId: previousId } = await CustomerOTP.create({
       customerId,
-      type: 'email',
+      type: otpType,
       password: '12670',
       expiresAt: CustomerOTP.getExpiration(),
     });
 
-    await otpService.createCustomerOTP(customerId, 'email');
+    await otpService.createOTP(customerId, { userType, otpType });
 
     const previousOTP = await CustomerOTP.findByPk(previousId, { raw: true });
     expect(previousOTP).toBeNull();
