@@ -4,6 +4,7 @@ import sequelize from '@App/db';
 
 import {
   AdminAccount,
+  AdminOTP,
   Customer,
   CustomerAccount,
   CustomerIdentity,
@@ -161,22 +162,46 @@ const authService = {
         : null;
     }),
 
-  recoverCustomerPassword: (customerId: number, password: string) =>
-    sequelize.transaction(async (transaction) => {
-      await CustomerOTP.destroy({
-        where: { customerId, type: 'password' },
-        transaction,
-      });
+  recoverPassword: (
+    userType: 'admin' | 'customer',
+    userId: number,
+    password: string,
+  ) =>
+    userType === 'admin'
+      ? sequelize.transaction(async (transaction) => {
+          await AdminOTP.destroy({
+            where: { adminId: userId, type: 'password' },
+            transaction,
+          });
 
-      await CustomerPassword.update(
-        { password },
-        {
-          where: { customerId },
-          individualHooks: true,
-          transaction,
-        },
-      );
-    }),
+          const result = await AdminAccount.update(
+            { password },
+            {
+              where: { adminId: userId },
+              individualHooks: true,
+              transaction,
+            },
+          );
+
+          return result[0] === 1;
+        })
+      : sequelize.transaction(async (transaction) => {
+          await CustomerOTP.destroy({
+            where: { customerId: userId, type: 'password' },
+            transaction,
+          });
+
+          const result = await CustomerPassword.update(
+            { password },
+            {
+              where: { customerId: userId },
+              individualHooks: true,
+              transaction,
+            },
+          );
+
+          return result[0] === 1;
+        }),
 
   reactivateCustomer: async (customerId: number) => {
     const result = await CustomerAccount.update(

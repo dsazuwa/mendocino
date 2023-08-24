@@ -45,7 +45,9 @@ const messages = {
   REQUEST_RECOVERY_FAIL_THIRD_PARTY_AUTH: 'Log in with your social account',
 
   VERIFY_RECOVERY_SUCCESS: 'Account verified!',
+
   RECOVER_PASSWORD_SUCCESS: 'Password successfully reset!',
+  RECOVER_PASSWORD_FAIL: 'Failed to recover password',
 
   REACTIVATE_SUCCESS: 'Account reactivated!',
 

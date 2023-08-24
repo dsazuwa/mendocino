@@ -281,30 +281,67 @@ const userService = {
     const schema = USER_SCHEMA;
 
     const query = `
+
+    WITH UserRole AS (
       SELECT
-        c.customer_id AS "userId",
-        c.first_name AS "firstName",
-        c.last_name AS "lastName",
-        e.email AS email,
-        CASE WHEN cp.password IS NULL THEN FALSE ELSE TRUE END AS "hasPassword",
-        ca.status AS status,
-        ARRAY['customer'] AS roles
+        CASE
+          WHEN EXISTS (
+            SELECT 1 FROM ${schema}.${Admin.tableName} WHERE admin_id = ua.admin_id
+          ) THEN ua.admin_id
+          ELSE ca.customer_id
+        END AS user_id,
+        EXISTS (
+          SELECT 1 FROM ${schema}.${Admin.tableName} WHERE admin_id = ua.admin_id
+        ) AS is_admin,
+        e.email
       FROM
-        ${schema}.${Customer.tableName} c
+        ${schema}.${AdminAccount.tableName} ua
+      FULL JOIN
+        ${schema}.${CustomerAccount.tableName} ca ON ua.email_id = ca.email_id
       JOIN
-        ${schema}.${CustomerAccount.tableName} ca ON ca.customer_id = c.customer_id
-      JOIN
-        ${schema}.${Email.tableName} e ON e.email_id = ca.email_id
-      LEFT JOIN
-        ${schema}.${CustomerPassword.tableName} cp ON cp.customer_id = c.customer_id
+        ${schema}.${Email.tableName} e ON ua.email_id = e.email_id OR ca.email_id = e.email_id
       WHERE
-        e.email = '${email}';`;
+        e.email = '${email}'
+    )
+    SELECT
+      ur.is_admin AS "isAdmin",
+      CASE WHEN ur.is_admin THEN a.admin_id ELSE c.customer_id END AS "userId",
+      CASE WHEN ur.is_admin THEN a.first_name ELSE c.first_name END AS "firstName",
+      CASE WHEN ur.is_admin THEN a.last_name ELSE c.last_name END AS "lastName",
+      ur.email AS email,
+      CASE
+        WHEN ur.is_admin THEN TRUE
+        ELSE CASE WHEN cp.password IS NULL THEN FALSE ELSE TRUE END
+      END AS "hasPassword",
+      CASE WHEN ur.is_admin THEN aa.status::text ELSE ca.status::text END AS status,
+      CASE WHEN ur.is_admin THEN array_agg(DISTINCT r.name) ELSE ARRAY['customer'] END AS roles
+    FROM
+      UserRole ur
+    LEFT JOIN
+      ${schema}.${Admin.tableName} a ON a.admin_id = ur.user_id
+    LEFT JOIN
+      ${schema}.${AdminAccount.tableName} aa ON aa.admin_id = a.admin_id
+    LEFT JOIN
+      ${schema}.${AdminRole.tableName} ar ON ar.admin_id = a.admin_id
+    LEFT JOIN
+      ${schema}.${Role.tableName} r ON r.role_id = ar.role_id
+    LEFT JOIN
+      ${schema}.${Customer.tableName} c ON c.customer_id = ur.user_id
+    LEFT JOIN
+      ${schema}.${CustomerAccount.tableName} ca ON ca.customer_id = c.customer_id
+    LEFT JOIN
+      ${schema}.${CustomerPassword.tableName} cp ON cp.customer_id = c.customer_id
+    GROUP BY
+      ur.is_admin, ur.email, a.admin_id, c.customer_id, cp.password, aa.status, ca.status;`;
 
     const result = await sequelize.query(query, { type: QueryTypes.SELECT });
 
     return result.length === 0
       ? undefined
-      : (result[0] as Express.User & { hasPassword: boolean });
+      : (result[0] as Express.User & {
+          isAdmin: boolean;
+          hasPassword: boolean;
+        });
   },
 };
 

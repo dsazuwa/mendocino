@@ -2,16 +2,17 @@ import { Request, Response } from 'express';
 
 import { facebookLogin, googleLogin } from '@user/controllers/auth.controller';
 import {
-  CustomerOTP,
+  Admin,
+  AdminOTP,
   Customer,
   CustomerAccount,
-  Email,
+  CustomerOTP,
   CustomerPassword,
-  AdminOTP,
-  Admin,
+  Email,
 } from '@user/models';
 import authService from '@user/services/auth.service';
 import userService from '@user/services/user.service';
+import { ROLES } from '@user/utils/constants';
 
 import { getTokenFrom, request } from 'tests/supertest.helper';
 
@@ -23,9 +24,9 @@ import {
 } from 'tests/modules/user/helper-functions';
 
 import 'tests/db-setup';
-import { ROLES } from '@App/modules/user';
 
 const BASE_URL = '/api/auth';
+
 const raw = true;
 
 beforeAll(async () => {
@@ -369,7 +370,7 @@ describe('Recover Account', () => {
   const mockOTP = '123456';
 
   describe(`POST ${BASE_URL}/recover`, () => {
-    it('should create a new recover password otp', async () => {
+    it('should create a new recover password otp for customer', async () => {
       const email = 'janetdoe@gmail.com';
 
       const { customerId } = await createCustomer(
@@ -398,6 +399,36 @@ describe('Recover Account', () => {
       expect(newOTP?.otpId).not.toEqual(otp?.otpId);
     });
 
+    it('should create a new recover password otp for admin', async () => {
+      const email = 'janetdoe.admin@gmail.com';
+
+      const { adminId } = await createAdmin(
+        'Janet',
+        'Doe',
+        email,
+        'janetD0epa$$',
+        'active',
+        [ROLES.CUSTOMER_SUPPORT.roleId],
+      );
+
+      await request.post(`${BASE_URL}/recover`).send({ email }).expect(200);
+
+      const otp = await AdminOTP.findOne({
+        where: { adminId, type: 'password' },
+        raw,
+      });
+      expect(otp).not.toBeNull();
+
+      await request.post(`${BASE_URL}/recover`).send({ email }).expect(200);
+
+      const newOTP = await AdminOTP.findOne({
+        where: { adminId, type: 'password' },
+        raw,
+      });
+      expect(newOTP).not.toBeNull();
+      expect(newOTP?.otpId).not.toEqual(otp?.otpId);
+    });
+
     it('should fail to create new otp on user_account with null password', async () => {
       const email = 'jadoe@gmail.com';
 
@@ -412,26 +443,48 @@ describe('Recover Account', () => {
   describe(`POST ${BASE_URL}/recover/:otp`, () => {
     const email = 'jdoe@gmail.com';
 
-    let customerId: number;
-
-    beforeAll(async () => {
-      const { customer } = await createCustomer(
+    it('should verify customer account for recovery', async () => {
+      const { customerId } = await createCustomer(
         'J',
         'Doe',
         email,
         'jD0ePa$$',
         'active',
       );
-      customerId = customer.customerId;
-    });
 
-    it('should verify user account for recovery', async () => {
       await CustomerOTP.destroy({
         where: { customerId, type: 'password' },
       });
 
       await CustomerOTP.create({
         customerId,
+        type: 'password',
+        password: mockOTP,
+        expiresAt: CustomerOTP.getExpiration(),
+      });
+
+      await request
+        .post(`${BASE_URL}/recover/${mockOTP}`)
+        .send({ email })
+        .expect(200);
+    });
+
+    it('should verify admin account for recovery', async () => {
+      const { adminId } = await createAdmin(
+        'J',
+        'Doe',
+        'j.doe@gmail.com',
+        'jD0ePa$$',
+        'active',
+        [ROLES.MANAGER.roleId],
+      );
+
+      await AdminOTP.destroy({
+        where: { adminId, type: 'password' },
+      });
+
+      await AdminOTP.create({
+        adminId,
         type: 'password',
         password: mockOTP,
         expiresAt: CustomerOTP.getExpiration(),
@@ -514,7 +567,7 @@ describe('Recover Account', () => {
         .expect(401);
     });
 
-    it('should reset password', async () => {
+    it('should reset customer password', async () => {
       await CustomerOTP.destroy({
         where: { customerId, type: 'password' },
       });
@@ -538,6 +591,47 @@ describe('Recover Account', () => {
 
       const usedOTP = await CustomerOTP.findOne({
         where: { customerId, type: 'password' },
+        raw,
+      });
+
+      expect(usedOTP).toBeNull();
+    });
+
+    it('should reset admin password', async () => {
+      const adminEmail = 'janelle@gmail.com';
+
+      const { adminId } = await createAdmin(
+        'Janelle',
+        'Doe',
+        adminEmail,
+        'jD0ePa$$',
+        'active',
+        [ROLES.ROOT.roleId],
+      );
+
+      await AdminOTP.destroy({
+        where: { adminId, type: 'password' },
+      });
+
+      await AdminOTP.create({
+        adminId,
+        type: 'password',
+        password: mockOTP,
+        expiresAt: AdminOTP.getExpiration(),
+      });
+
+      await request
+        .patch(`${BASE_URL}/recover/${mockOTP}`)
+        .send({ email: adminEmail, password: newPassword })
+        .expect(200);
+
+      await request
+        .post(`/api/auth/login`)
+        .send({ email, password: newPassword })
+        .expect(200);
+
+      const usedOTP = await AdminOTP.findOne({
+        where: { adminId, type: 'password' },
         raw,
       });
 

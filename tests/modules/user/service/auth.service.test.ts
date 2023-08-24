@@ -1,6 +1,7 @@
 import { sign } from 'jsonwebtoken';
 
 import {
+  AdminAccount,
   Customer,
   CustomerAccount,
   CustomerIdentity,
@@ -263,8 +264,8 @@ describe('login', () => {
   });
 });
 
-describe('recover password otp', () => {
-  it('should recover the password successfully', async () => {
+describe('recover password', () => {
+  it('should recover the customer password', async () => {
     const { customerId } = await createCustomer(
       'Jack',
       'Doe',
@@ -275,10 +276,28 @@ describe('recover password otp', () => {
 
     const newPassword = 'newD0epa$$word';
 
-    await authService.recoverCustomerPassword(customerId, newPassword);
+    await authService.recoverPassword('customer', customerId, newPassword);
 
     const password = await CustomerPassword.findOne({ where: { customerId } });
     expect(password?.comparePasswords(newPassword)).toBe(true);
+  });
+
+  it('should recover the admin password', async () => {
+    const { adminId } = await createAdmin(
+      'Jack',
+      'Doe',
+      'jackdoe.admin@gmail.com',
+      'jackD0epas$$',
+      'active',
+      [ROLES.CUSTOMER_SUPPORT.roleId],
+    );
+
+    const newPassword = 'newD0epa$$word';
+
+    await authService.recoverPassword('admin', adminId, newPassword);
+
+    const account = await AdminAccount.findOne({ where: { adminId } });
+    expect(account?.comparePasswords(newPassword)).toBe(true);
   });
 });
 
