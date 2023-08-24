@@ -1,6 +1,6 @@
 import authenticate from './middleware/auth/authenticate';
 import authorize from './middleware/auth/authorize';
-import authorizeAdmin from './middleware/auth/authorize.admin';
+import authorizeAdmin from './middleware/auth/admin.authorize';
 import authenticateInactive from './middleware/auth/inactive.authenticate';
 
 import { configureGoogleStrategy } from './middleware/strategies/google.strategy';
