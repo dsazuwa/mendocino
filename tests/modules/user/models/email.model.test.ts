@@ -43,27 +43,23 @@ describe('Email Model', () => {
     expect(retrievedEmail).not.toBeNull();
   });
 
-  it('should update email', async () => {
+  it('should fail to update email', async () => {
     const oldEmail = 'jondoe@gmail.com';
     const newEmail = 'johndoe@gmail.com';
 
-    const email = await Email.create({ email: oldEmail });
+    await Email.create({ email: oldEmail });
 
-    await email.update({ email: newEmail });
+    try {
+      await Email.update({ email: newEmail }, { where: { email: oldEmail } });
 
-    let retrievedEmail = await Email.findOne({
-      where: { email: newEmail },
-      raw: true,
-    });
-    expect(retrievedEmail).not.toBeNull();
-
-    await Email.update({ email: oldEmail }, { where: { email: newEmail } });
-
-    retrievedEmail = await Email.findOne({
-      where: { email: oldEmail },
-      raw: true,
-    });
-    expect(retrievedEmail).not.toBeNull();
+      expect(true).toBe(false);
+    } catch (e) {
+      const retrievedEmail = await Email.findOne({
+        where: { email: newEmail },
+        raw: true,
+      });
+      expect(retrievedEmail).toBeNull();
+    }
   });
 
   it('should delete email', async () => {

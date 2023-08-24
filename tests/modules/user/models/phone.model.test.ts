@@ -43,30 +43,26 @@ describe('Phone Model', () => {
     expect(retrievedPhone).not.toBeNull();
   });
 
-  it('should update phone number', async () => {
+  it('should fail to update phone number', async () => {
     const oldPhone = '1234567890';
     const newPhone = '0987654321';
 
-    const phone = await Phone.create({ phoneNumber: oldPhone });
+    await Phone.create({ phoneNumber: oldPhone });
 
-    await phone.update({ phoneNumber: newPhone });
+    try {
+      await Phone.update(
+        { phoneNumber: newPhone },
+        { where: { phoneNumber: oldPhone } },
+      );
 
-    let retrievedPhone = await Phone.findOne({
-      where: { phoneNumber: newPhone },
-      raw: true,
-    });
-    expect(retrievedPhone).not.toBeNull();
-
-    await Phone.update(
-      { phoneNumber: oldPhone },
-      { where: { phoneNumber: newPhone } },
-    );
-
-    retrievedPhone = await Phone.findOne({
-      where: { phoneNumber: oldPhone },
-      raw: true,
-    });
-    expect(retrievedPhone).not.toBeNull();
+      expect(true).toBe(false);
+    } catch (e) {
+      const retrievedPhone = await Phone.findOne({
+        where: { phoneNumber: newPhone },
+        raw: true,
+      });
+      expect(retrievedPhone).toBeNull();
+    }
   });
 
   it('should delete phone number', async () => {
