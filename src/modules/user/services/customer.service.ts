@@ -58,8 +58,6 @@ const deleteCustomer = async (customerId: number) =>
 
 const customerService = {
   getProfile: async (customerId: number) => {
-    const schema = USER_SCHEMA;
-
     const query = `
       SELECT
         c.first_name as "firstName",
@@ -74,7 +72,7 @@ const customerService = {
         END AS "hasPassword",
         ARRAY(
           SELECT provider
-          FROM ${schema}.${CustomerIdentity.tableName} i
+          FROM ${USER_SCHEMA}.${CustomerIdentity.tableName} i
           WHERE i.customer_id = c.customer_id
         ) AS "authProviders",
         ARRAY['customer'] AS "roles",
@@ -91,21 +89,21 @@ const customerService = {
               'state', a.state,
               'postalCode', a.postal_code
             ))
-          FROM ${schema}.${Address.tableName} a
+          FROM ${USER_SCHEMA}.${Address.tableName} a
           WHERE a.customer_id = c.customer_id
         ) AS "addresses"
       FROM
-        ${schema}.${Customer.tableName} c
+        ${USER_SCHEMA}.${Customer.tableName} c
       JOIN 
-        ${schema}.${CustomerAccount.tableName} account ON account.customer_id = c.customer_id
+        ${USER_SCHEMA}.${CustomerAccount.tableName} account ON account.customer_id = c.customer_id
       JOIN
-        ${schema}.${Email.tableName} email ON email.email_id = account.email_id
+        ${USER_SCHEMA}.${Email.tableName} email ON email.email_id = account.email_id
       LEFT JOIN
-        ${schema}.${CustomerPassword.tableName} c_password ON c_password.customer_id = c.customer_id
+        ${USER_SCHEMA}.${CustomerPassword.tableName} c_password ON c_password.customer_id = c.customer_id
       LEFT JOIN
-        ${schema}.${CustomerPhone.tableName} c_phone ON c_phone.customer_id = c.customer_id
+        ${USER_SCHEMA}.${CustomerPhone.tableName} c_phone ON c_phone.customer_id = c.customer_id
       LEFT JOIN
-        ${schema}.${Phone.tableName} phone ON phone.phone_id = c_phone.phone_id
+        ${USER_SCHEMA}.${Phone.tableName} phone ON phone.phone_id = c_phone.phone_id
       WHERE
         c.customer_id = ${customerId};`;
 
@@ -169,27 +167,19 @@ const customerService = {
     )
       return false;
 
-    await CustomerPassword.update(
+    const result = await CustomerPassword.update(
       { password: newPassword },
       { where: { customerId }, individualHooks: true },
     );
 
-    return true;
+    return result[0] === 1;
   },
 
   revokeSocialAuthentication: async (
     customerId: number,
     provider: ProviderType,
   ) => {
-    type QueryReturnType = {
-      email: string;
-      passwordExists: boolean;
-      otherIdentities: ProviderType[];
-    };
-
     type SwitchToType = ProviderType | 'email';
-
-    const schema = USER_SCHEMA;
 
     const query = `
       SELECT
@@ -198,19 +188,19 @@ const customerService = {
         CASE WHEN cp.customer_id IS NOT NULL THEN TRUE ELSE FALSE END AS "passwordExists",
         ARRAY(
           SELECT provider
-          FROM ${schema}.${CustomerIdentity.tableName} i
+          FROM ${USER_SCHEMA}.${CustomerIdentity.tableName} i
           WHERE i.customer_id = c.customer_id AND i.provider <> '${provider}'
         ) AS "otherIdentities"
       FROM
-        ${schema}.${Customer.tableName} c
+        ${USER_SCHEMA}.${Customer.tableName} c
       LEFT JOIN
-        ${schema}.${CustomerAccount.tableName} ca ON ca.customer_id = c.customer_id
+        ${USER_SCHEMA}.${CustomerAccount.tableName} ca ON ca.customer_id = c.customer_id
       LEFT JOIN
-        ${schema}.${Email.tableName} e ON e.email_id = ca.email_id
+        ${USER_SCHEMA}.${Email.tableName} e ON e.email_id = ca.email_id
       LEFT JOIN
-        ${schema}.${CustomerPassword.tableName} cp ON cp.customer_id = c.customer_id
+        ${USER_SCHEMA}.${CustomerPassword.tableName} cp ON cp.customer_id = c.customer_id
       LEFT JOIN
-        ${schema}.${CustomerIdentity.tableName} ci ON ci.customer_id = c.customer_id AND ci.provider = '${provider}'
+        ${USER_SCHEMA}.${CustomerIdentity.tableName} ci ON ci.customer_id = c.customer_id AND ci.provider = '${provider}'
       WHERE
         c.customer_id = ${customerId};`;
 
@@ -218,8 +208,11 @@ const customerService = {
 
     if (result.length === 0) return { result: false };
 
-    const { email, passwordExists, otherIdentities } =
-      result[0] as QueryReturnType;
+    const { email, passwordExists, otherIdentities } = result[0] as {
+      email: string;
+      passwordExists: boolean;
+      otherIdentities: ProviderType[];
+    };
 
     if (passwordExists) {
       await deleteIdentity(customerId, provider);

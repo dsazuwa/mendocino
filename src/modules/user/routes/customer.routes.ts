@@ -45,11 +45,13 @@ customerRouter.patch(
 
 customerRouter.post(
   '/password',
+  trimRequestBody,
   validate(createPasswordSchema),
   createPassword,
 );
 customerRouter.patch(
   '/password',
+  trimRequestBody,
   validate(changePasswordSchema),
   changePassword,
 );
