@@ -1,0 +1,77 @@
+                        **** AUTH ROUTER ****
+
+POST   /auth/register                    register customer
+POST   /auth/login                       login user
+POST   /auth/logout                      logout
+POST   /auth/recover                     request password recovery
+POST   /auth/recover/:otp                verify recovery otp
+PATCH  /auth/recover/:otp                recover password
+PATCH  /auth/reactivate                  reactivate customer
+
+GET    /auth/google                      google auth
+GET    /auth/google/callback             google callback
+GET    /auth/facebook                    facebook auth
+GET    /auth/facebook/callback           facebook callback
+
+                        **** USERS ROUTER ****    
+GET    /users/me                         get user data (largely for app routing)
+
+                        **** ADMINS ROUTER ****
+
+GET    /admins                           get all admins
+POST   /admins                           create new admin
+GET    /admins/:userId                   get admin with userId
+PATCH  /admins/:userId/status            update admin status
+PUT    /admins/:userId/role              update admin role
+
+                        **** ADMIN ROUTER ****
+
+PATCH  /admins/me/name                   update name
+PATCH  /admins/me/password/              change password
+
+                        **** ADMIN PHONE ROUTER ****
+
+POST   /admins/me/phone                  create phone
+PATCH  /admins/me/phone/resend           resend phone verify otp
+PATCH  /admins/me/phone/:otp             verify phone
+DELETE /admins/me/phone                  delete phone
+
+                        **** CUSTOMERS ROUTER ****
+
+GET    /customers                        get all customers
+GET    /customers/:id                    get customer with userId
+PATCH  /customers/:id/status             update customer status
+
+                        **** CUSTOMER ROUTER ****
+
+GET    /customers/me/profile             get customer profile
+POST   /customers/me/verify              request new verify otp
+PATCH  /customers/me/verify/:otp         verify email
+PATCH  /customers/me/name                update name
+POST   /customers/me/password            create password
+PATCH  /customers/me/password            change password
+PATCH  /customers/me/revoke-social-auth  revoke social auth
+PATCH  /customers/me/close               deactivate account
+
+                        **** ADDRESS ROUTER ****
+
+GET    /customers/me/address             get customer addresses
+POST   /customers/me/address             create address
+PATCH  /customers/me/address/:id         update address
+DELETE /customers/me/address/:id         delete address
+
+                        **** CUSTOMER PHONE ROUTER ****
+
+POST   /customers/me/phone               create phone
+PATCH  /customers/me/phone/resend        resend phone verify otp
+PATCH  /customers/me/phone/:otp          verify phone
+DELETE /customers/me/phone               delete phone
+
+                        **** ROLES ROUTER ****
+
+GET    /roles                            get all roles
+POST   /roles                            create a new role
+GET    /roles/:id                        get details of specific role
+PATCH  /roles/:id                        update role (description)
+DELETE /roles/:id                        conditional delete: must not be associated with any admin
+GET    /roles/admins                     get admins with role
