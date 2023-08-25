@@ -21,6 +21,10 @@ export const TABLENAMES = {
   CUSTOMER_PHONE: 'customer_phones',
 };
 
+export const VIEWS = {
+  USER_TYPE: 'user_type_view',
+};
+
 export const ROLES = {
   DELIVERY_DRIVER: { roleId: 1, name: 'delivery driver' },
   CUSTOMER_SUPPORT: { roleId: 2, name: 'customer support' },

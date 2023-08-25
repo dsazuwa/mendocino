@@ -638,87 +638,87 @@ describe('Recover Account', () => {
       expect(usedOTP).toBeNull();
     });
   });
+});
 
-  describe(`PATCH ${BASE_URL}/reactivate`, () => {
-    it('should reactivate inactive user', async () => {
-      const status = 'deactivated';
+describe(`PATCH ${BASE_URL}/reactivate`, () => {
+  it('should reactivate inactive user', async () => {
+    const status = 'deactivated';
 
-      const { customerId, email } = await createCustomer(
-        'Janelle',
-        'Doe',
-        'janelledoe@gmail.com',
-        'janelleD0ePa$$',
-        status,
-      );
+    const { customerId, email } = await createCustomer(
+      'Janelle',
+      'Doe',
+      'janelledoe@gmail.com',
+      'janelleD0ePa$$',
+      status,
+    );
 
-      const token = authService.generateJWT(email.email, 'email');
+    const token = authService.generateJWT(email.email, 'email');
 
-      let a = await CustomerAccount.findOne({
-        where: { customerId, status },
-        raw,
-      });
-      expect(a).not.toBeNull();
-
-      await request
-        .patch(`${BASE_URL}/reactivate`)
-        .auth(token, { type: 'bearer' })
-        .expect(200);
-
-      a = await CustomerAccount.findOne({
-        where: { customerId, status: 'active' },
-        raw,
-      });
-      expect(a).not.toBeNull();
+    let a = await CustomerAccount.findOne({
+      where: { customerId, status },
+      raw,
     });
+    expect(a).not.toBeNull();
 
-    it('should fail for active user', async () => {
-      const status = 'active';
+    await request
+      .patch(`${BASE_URL}/reactivate`)
+      .auth(token, { type: 'bearer' })
+      .expect(200);
 
-      const { customerId, email } = await createCustomer(
-        'Josee',
-        'Doe',
-        'joseedoe@gmail.com',
-        'joseeD0ePa$$',
-        status,
-      );
-
-      const token = authService.generateJWT(email.email, 'email');
-
-      let a = CustomerAccount.findOne({ where: { customerId, status }, raw });
-      expect(a).resolves.not.toBeNull();
-
-      await request
-        .patch(`${BASE_URL}/reactivate`)
-        .auth(token, { type: 'bearer' })
-        .expect(401);
-
-      a = CustomerAccount.findOne({ where: { customerId, status }, raw });
-      expect(a).not.toBeNull();
+    a = await CustomerAccount.findOne({
+      where: { customerId, status: 'active' },
+      raw,
     });
+    expect(a).not.toBeNull();
+  });
 
-    it('should fail for pending user', async () => {
-      const status = 'pending';
+  it('should fail for active user', async () => {
+    const status = 'active';
 
-      const { customerId, email } = await createCustomer(
-        'Jaclyn',
-        'Doe',
-        'jaclyndoe@gmail.com',
-        'jaclynD0ePa$$',
-        status,
-      );
+    const { customerId, email } = await createCustomer(
+      'Josee',
+      'Doe',
+      'joseedoe@gmail.com',
+      'joseeD0ePa$$',
+      status,
+    );
 
-      const token = authService.generateJWT(email.email, 'email');
+    const token = authService.generateJWT(email.email, 'email');
 
-      let a = CustomerAccount.findOne({ where: { customerId, status }, raw });
-      expect(a).resolves.not.toBeNull();
+    let a = CustomerAccount.findOne({ where: { customerId, status }, raw });
+    expect(a).resolves.not.toBeNull();
 
-      await request
-        .patch(`${BASE_URL}/reactivate`)
-        .auth(token, { type: 'bearer' })
-        .expect(401);
+    await request
+      .patch(`${BASE_URL}/reactivate`)
+      .auth(token, { type: 'bearer' })
+      .expect(401);
 
-      a = CustomerAccount.findOne({ where: { customerId, status }, raw });
-      expect(a).not.toBeNull();
-    });
+    a = CustomerAccount.findOne({ where: { customerId, status }, raw });
+    expect(a).not.toBeNull();
+  });
+
+  it('should fail for pending user', async () => {
+    const status = 'pending';
+
+    const { customerId, email } = await createCustomer(
+      'Jaclyn',
+      'Doe',
+      'jaclyndoe@gmail.com',
+      'jaclynD0ePa$$',
+      status,
+    );
+
+    const token = authService.generateJWT(email.email, 'email');
+
+    let a = CustomerAccount.findOne({ where: { customerId, status }, raw });
+    expect(a).resolves.not.toBeNull();
+
+    await request
+      .patch(`${BASE_URL}/reactivate`)
+      .auth(token, { type: 'bearer' })
+      .expect(401);
+
+    a = CustomerAccount.findOne({ where: { customerId, status }, raw });
+    expect(a).not.toBeNull();
   });
 });

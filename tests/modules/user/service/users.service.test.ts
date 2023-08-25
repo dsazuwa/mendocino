@@ -16,37 +16,49 @@ beforeAll(async () => {
   await createRoles();
 });
 
-describe('get user', () => {
-  it('pending user account', async () => {
-    const firstName = 'Joan';
-    const lastName = 'Doe';
-    const email = 'joandoe@gmail.com';
-    const password = 'joanD0epa$$';
-    const status = 'pending';
-    const roles = ['customer'];
+describe('get userId for user', () => {
+  it('should return customerId', async () => {
+    const email = 'jazzdoe@gmail.com';
 
-    const req = {
-      user: { firstName, lastName, email, password, status, roles },
-    } as unknown as Request;
+    const { customerId } = await createCustomer(
+      'Jazz',
+      'Doe',
+      email,
+      'jazzD0ePa$$',
+      'active',
+    );
 
-    const data = await userService.getUserDataFromReq(req);
-    expect(data).toMatchObject({ firstName, lastName, email, status, roles });
+    const result = await userService.getUserIdForUser(email);
+
+    expect(result).toMatchObject({
+      userId: customerId,
+      isAdmin: false,
+    });
   });
 
-  it('active user account', async () => {
-    const firstName = 'Jeronimo';
-    const lastName = 'Doe';
-    const email = 'jeronimodoe@gmail.com';
-    const password = 'jeroD0ePa$$';
-    const status = 'active';
-    const roles = ['ceo', 'manager'];
+  it('should return adminId', async () => {
+    const email = 'jakdoe@gmail.com';
 
-    const req = {
-      user: { firstName, lastName, email, password, status, roles },
-    } as unknown as Request;
+    const { adminId } = await createAdmin(
+      'Jak',
+      'Doe',
+      email,
+      'jakD0ePa$$',
+      'active',
+      [ROLES.MANAGER.roleId],
+    );
 
-    const data = await userService.getUserDataFromReq(req);
-    expect(data).toMatchObject({ firstName, lastName, email, status, roles });
+    const result = await userService.getUserIdForUser(email);
+
+    expect(result).toMatchObject({
+      userId: adminId,
+      isAdmin: true,
+    });
+  });
+
+  it('should return null for non-existent user', async () => {
+    const result = await userService.getUserIdForUser('false@gmail.com');
+    expect(result).toBeNull();
   });
 });
 
@@ -125,6 +137,109 @@ describe('get user data', () => {
 
     result = await userService.getUserData(1000, 'admin');
     expect(result).not.toBeDefined();
+  });
+});
+
+describe('get user data from req', () => {
+  it('pending user account', async () => {
+    const firstName = 'Joan';
+    const lastName = 'Doe';
+    const email = 'joandoe@gmail.com';
+    const password = 'joanD0epa$$';
+    const status = 'pending';
+    const roles = ['customer'];
+
+    const req = {
+      user: { firstName, lastName, email, password, status, roles },
+    } as unknown as Request;
+
+    const data = await userService.getUserDataFromReq(req);
+    expect(data).toMatchObject({ firstName, lastName, email, status, roles });
+  });
+
+  it('active user account', async () => {
+    const firstName = 'Jeronimo';
+    const lastName = 'Doe';
+    const email = 'jeronimodoe@gmail.com';
+    const password = 'jeroD0ePa$$';
+    const status = 'active';
+    const roles = ['ceo', 'manager'];
+
+    const req = {
+      user: { firstName, lastName, email, password, status, roles },
+    } as unknown as Request;
+
+    const data = await userService.getUserDataFromReq(req);
+    expect(data).toMatchObject({ firstName, lastName, email, status, roles });
+  });
+});
+
+describe('get user from payload', () => {
+  it('should return data for admin', async () => {
+    const { ROOT } = ROLES;
+
+    const { adminId, admin, account, email } = await createAdmin(
+      'Jess',
+      'Doe',
+      'jessdoe@gmail.com',
+      'jessD0ePa$$',
+      'active',
+      [ROOT.roleId],
+    );
+
+    const result = await userService.getUserFromPayload(email.email, 'email');
+    expect(result).toMatchObject({
+      userId: adminId,
+      firstName: admin.firstName,
+      lastName: admin.lastName,
+      email: email.email,
+      status: account.status,
+      roles: [ROOT.name],
+    });
+  });
+
+  it('should return data for customer', async () => {
+    const { customerId, customer, account, email } = await createCustomer(
+      'Jess',
+      'Doe',
+      'not.jessdoe@gmail.com',
+      'jessD0ePa$$',
+      'active',
+    );
+
+    const result = await userService.getUserFromPayload(email.email, 'email');
+    expect(result).toMatchObject({
+      userId: customerId,
+      firstName: customer.firstName,
+      lastName: customer.lastName,
+      email: email.email,
+      status: account.status,
+      roles: ['customer'],
+    });
+  });
+
+  it('should return data for active customer using third party auth', async () => {
+    const provider = 'google';
+
+    const { customerId, customer, account, email } =
+      await createCustomerAndIdentity(
+        'Jessica',
+        'Doe',
+        'notjessicadoe@gmail.com',
+        'jessD0ePa$$',
+        'active',
+        [{ identityId: '234w756532435674', provider }],
+      );
+
+    const result = await userService.getUserFromPayload(email.email, provider);
+    expect(result).toMatchObject({
+      userId: customerId,
+      firstName: customer.firstName,
+      lastName: customer.lastName,
+      email: email.email,
+      status: account.status,
+      roles: ['customer'],
+    });
   });
 });
 
@@ -262,48 +377,73 @@ describe('get user data for social authentication', () => {
   });
 });
 
-describe('get userId for user', () => {
-  it('should return customerId', async () => {
-    const email = 'jazzdoe@gmail.com';
-
-    const { customerId } = await createCustomer(
-      'Jazz',
+describe('getUserForRecovery', () => {
+  it('for admin with password', async () => {
+    const { adminId, admin, email, account } = await createAdmin(
+      'Jim',
       'Doe',
-      email,
-      'jazzD0ePa$$',
+      'jimdoe@gmail.com',
+      'jimD0ePa$$',
       'active',
+      [ROLES.ROOT.roleId],
     );
 
-    const result = await userService.getUserIdForUser(email);
-
+    const result = await userService.getUserForRecovery(email.email);
     expect(result).toMatchObject({
-      userId: customerId,
-      isAdmin: false,
-    });
-  });
-
-  it('should return adminId', async () => {
-    const email = 'jakdoe@gmail.com';
-
-    const { adminId } = await createAdmin(
-      'Jak',
-      'Doe',
-      email,
-      'jakD0ePa$$',
-      'active',
-      [ROLES.MANAGER.roleId],
-    );
-
-    const result = await userService.getUserIdForUser(email);
-
-    expect(result).toMatchObject({
-      userId: adminId,
       isAdmin: true,
+      userId: adminId,
+      firstName: admin.firstName,
+      lastName: admin.lastName,
+      email: email.email,
+      hasPassword: true,
+      status: account.status,
+      roles: [ROLES.ROOT.name],
     });
   });
 
-  it('should return null for non-existent user', async () => {
-    const result = await userService.getUserIdForUser('false@gmail.com');
-    expect(result).toBeNull();
+  it('for customer with password', async () => {
+    const { customerId, customer, email, account } = await createCustomer(
+      'Jimmy',
+      'Doe',
+      'jimmydoe@gmail.com',
+      'jimD0ePa$$',
+      'active',
+    );
+
+    const result = await userService.getUserForRecovery(email.email);
+    expect(result).toMatchObject({
+      isAdmin: false,
+      userId: customerId,
+      firstName: customer.firstName,
+      lastName: customer.lastName,
+      email: email.email,
+      hasPassword: true,
+      status: account.status,
+      roles: ['customer'],
+    });
+  });
+
+  it('for customer with not password', async () => {
+    const { customerId, customer, email, account } =
+      await createCustomerAndIdentity(
+        'Jim Bob',
+        'Doe',
+        'jimmbobdoe@gmail.com',
+        null,
+        'active',
+        [{ identityId: '0837418974832197432987432', provider: 'google' }],
+      );
+
+    const result = await userService.getUserForRecovery(email.email);
+    expect(result).toMatchObject({
+      isAdmin: false,
+      userId: customerId,
+      firstName: customer.firstName,
+      lastName: customer.lastName,
+      email: email.email,
+      hasPassword: false,
+      status: account.status,
+      roles: ['customer'],
+    });
   });
 });
