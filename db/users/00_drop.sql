@@ -1,20 +1,13 @@
 -- Drop triggers
-DROP TRIGGER IF EXISTS after_insert_admin ON users.admins;
-DROP TRIGGER IF EXISTS after_insert_customer ON users.customers;
 DROP TRIGGER IF EXISTS before_update_email ON users.emails;
 DROP TRIGGER IF EXISTS before_update_phone ON users.phones;
 
 -- Drop functions
-DROP FUNCTION IF EXISTS users.update_user_type_view();
 DROP FUNCTION IF EXISTS users.prevent_update_email();
 DROP FUNCTION IF EXISTS users.prevent_update_phone();
 
--- Indexes
-DROP INDEX IF EXISTS idx_user_type_view_email;
-DROP INDEX IF EXISTS idx_user_type_view_userId;
-
 -- Drop views
-DROP MATERIALIZED VIEW IF EXISTS users.user_type_view;
+DROP VIEW IF EXISTS users.user_type_view;
 
 -- Drop constrants
 ALTER TABLE IF EXISTS users.admin_accounts DROP CONSTRAINT fk_admin_id;
@@ -50,6 +43,10 @@ DROP TABLE IF EXISTS users.customers;
 DROP TABLE IF EXISTS users.admins;
 DROP TABLE IF EXISTS users.emails;
 
+-- Drop sequences
+DROP SEQUENCE IF EXISTS users.admin_id_seq;
+DROP SEQUENCE IF EXISTS users.customer_id_seq;
+
 -- Drop enums
 DROP TYPE IF EXISTS users.enum_customer_phones_status;
 DROP TYPE IF EXISTS users.enum_admin_phones_status;
@@ -58,9 +55,6 @@ DROP TYPE IF EXISTS users.enum_customer_otps_type;
 DROP TYPE IF EXISTS users.enum_admin_otps_type;
 DROP TYPE IF EXISTS users.enum_customer_accounts_status;
 DROP TYPE IF EXISTS users.enum_admin_accounts_status;
-
-DROP SEQUENCE IF EXISTS users.admin_id_seq;
-DROP SEQUENCE IF EXISTS users.customer_id_seq;
 
 -- Drop schema
 DROP SCHEMA IF EXISTS users;
