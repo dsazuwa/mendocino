@@ -1,4 +1,3 @@
--- Create views
 CREATE VIEW users.user_type_view AS
 SELECT
   CASE
