@@ -1,0 +1,124 @@
+Table menu.menu_items {
+  menu_item_id integer pk
+  name string [not null, unique]
+  description string [not null]
+  status enum_menu_items_status [not null]
+  photo_url string [not null]
+  created_at timestamp [not null]
+  updated_at timestamp [not null]
+}
+
+Table menu.menu_categories {
+  category_id integer pk
+  name string [not null, unique]
+  created_at timestamp [not null]
+  updated_at timestamp [not null]
+}
+
+Table menu.menu_items_menu_categories {
+  menu_item_id integer [not null]
+  category_id integer [not null]
+  created_at timestamp [not null]
+  updated_at timestamp [not null]
+}
+
+Ref: menu.menu_items_menu_categories.menu_item_id - menu.menu_items.menu_item_id
+Ref: menu.menu_items_menu_categories.category_id > menu.menu_categories.category_id
+
+Table menu.menu_tags {
+  tag_id integer pk
+  name string [not null, unique]
+  description string [not null]
+  created_at timestamp [not null]
+  updated_at timestamp [not null]
+}
+
+Table menu.menu_items_menu_tags {
+  menu_item_id integer [not null]
+  tag_id integer [not null]
+  created_at timestamp [not null]
+  updated_at timestamp [not null]
+
+  Indexes {
+    (menu_item_id, tag_id) [unique]
+  }
+}
+
+Ref: menu.menu_items_menu_tags.menu_item_id > menu.menu_items.menu_item_id
+Ref: menu.menu_items_menu_tags.tag_id > menu.menu_tags.tag_id
+
+Table menu.menu_sizes {
+  size_id integer pk
+  name varchar [not null, unique]
+  created_at timestamp [not null]
+  updated_at timestamp [not null]
+}
+
+Table menu.menu_item_prices {
+  price_id integer pk
+  menu_item_id integer [not null]
+  size_id integer [not null]
+  base_price decimal [not null]
+  created_at timestamp [not null]
+  updated_at timestamp [not null]
+
+  Indexes {
+    (menu_item_id) [unique]          // [where "size_id IS NULL"]
+    (menu_item_id, size_id) [unique] // [where "size_id IS NOT NULL"]
+  }
+}
+
+Ref: menu.menu_item_prices.menu_item_id > menu.menu_items.menu_item_id
+Ref: menu.menu_item_prices.size_id > menu.menu_sizes.size_id
+
+Table menu.discounts {
+  discount_id integer pk
+  menu_item_id integer [not null]
+  discount_value decimal [not null]
+  discount_unit enum_discount_unit [not null]
+  min_order_value decimal [not null]
+  max_discount_amount decimal [not null]
+  valid_from timestamp [not null]
+  valid_until timestamp [not null]
+  created_at timestamp [not null]
+  updated_at timestamp [not null] 
+}
+
+Table menu.menu_item_discounts {
+  menu_item_id integer [not null]
+  discount_id integer [not null]
+  created_at timestamp [not null]
+
+  Indexes {
+    (menu_item_id, discount_id) [unique]
+  }
+}
+
+Ref: menu.menu_item_discounts.discount_id > menu.discounts.discount_id
+Ref: menu.menu_item_discounts.menu_item_id > menu.menu_items.menu_item_id
+
+Table menu.menu_category_discounts {
+  category_id integer [not null]
+  discount_id integer [not null]
+  created_at timestamp [not null]
+
+  Indexes {
+    (category_id, discount_id) [unique]
+  }
+}
+
+Ref: menu.menu_category_discounts.discount_id > menu.discounts.discount_id
+Ref: menu.menu_category_discounts.category_id > menu.menu_categories.category_id
+
+Enum enum_menu_items_status {
+  active
+  sold_out
+  coming_soon
+  inactive
+  discountinued
+}
+
+Enum enum_discount_unit {
+  percentage
+  amount
+}

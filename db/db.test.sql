@@ -14,6 +14,3 @@
 \i db/menu/02_enums.sql
 \i db/menu/03_tables.sql
 \i db/menu/04_views.sql
-
--- populate db
-\i db/menu/05_data.sql
