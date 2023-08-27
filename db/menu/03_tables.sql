@@ -22,6 +22,7 @@ CREATE TABLE menu.items_categories (
   category_id INTEGER NOT NULL,
   created_at TIMESTAMP NOT NULL,
   updated_at TIMESTAMP NOT NULL,
+  UNIQUE(item_id),
   CONSTRAINT fk_item_id FOREIGN KEY (item_id) REFERENCES menu.items (item_id) ON DELETE CASCADE ON UPDATE NO ACTION,
   CONSTRAINT fk_category_id FOREIGN KEY (category_id) REFERENCES menu.categories (category_id) ON DELETE CASCADE ON UPDATE NO ACTION
 );
@@ -76,9 +77,9 @@ WHERE size_id IS NOT NULL;
 
 CREATE TABLE menu.discounts (
   discount_id SERIAL,
-  discount_value DECIMAL(10, 4) NOT NULL,
-  discount_unit menu.enum_discount_unit NOT NULL,
-  min_order_value INTEGER NOT NULL,
+  value DECIMAL(10, 4) NOT NULL,
+  unit menu.enum_discount_unit NOT NULL,
+  min_order_value DECIMAL(10, 4) NOT NULL,
   max_discount_amount DECIMAL(10, 4) NOT NULL,
   valid_from TIMESTAMP NOT NULL,
   valid_until TIMESTAMP NOT NULL,

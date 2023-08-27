@@ -1,6 +1,19 @@
 import sequelize from '@App/db';
 
 import {
+  Category,
+  CategoryDiscount,
+  Discount,
+  Item,
+  ItemCategory,
+  ItemDiscount,
+  ItemPrice,
+  ItemTag,
+  Size,
+  Tag,
+} from '@menu/models';
+
+import {
   Address,
   Admin,
   AdminAccount,
@@ -18,6 +31,21 @@ import {
 } from '@user/models';
 
 beforeAll(async () => {
+  // Menu
+  await CategoryDiscount.destroy({ where: {} });
+
+  await ItemDiscount.destroy({ where: {} });
+  await ItemPrice.destroy({ where: {} });
+  await ItemTag.destroy({ where: {} });
+  await ItemCategory.destroy({ where: {} });
+
+  await Discount.destroy({ where: {} });
+  await Size.destroy({ where: {} });
+  await Category.destroy({ where: {} });
+  await Tag.destroy({ where: {} });
+  await Item.destroy({ where: {} });
+
+  // User
   await Address.destroy({ where: {} });
 
   await AdminRole.destroy({ where: {} });

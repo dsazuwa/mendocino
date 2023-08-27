@@ -12,7 +12,8 @@
       "@App/*": ["src/*"],
       "@middleware/*": ["src/middleware/*"],
       "@utils/*": ["src/utils/*"],
-      "@user/*":["src/modules/user/*"]
+      "@user/*":["src/modules/user/*"],
+      "@menu/*":["src/modules/menu/*"]
     },
     "types": ["node", "jest"],
     "resolveJsonModule": true,
