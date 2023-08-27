@@ -1,6 +1,6 @@
 CREATE VIEW menu.menu_view AS
 SELECT
-  m.menu_item_id AS "menuItemId",
+  m.item_id AS "itemId",
   m.name AS name,
   m.description AS description,
   c.name AS category,
@@ -8,11 +8,11 @@ SELECT
     SELECT
       array_agg(DISTINCT t.name) FILTER (WHERE t.name IS NOT NULL)
     FROM
-      menu.menu_items_menu_tags mt
+      menu.items_tags mt
     JOIN
-      menu.menu_tags t ON t.tag_id = mt.tag_id
+      menu.tags t ON t.tag_id = mt.tag_id
     WHERE
-      mt.menu_item_id = m.menu_item_id
+      mt.item_id = m.item_id
   ) AS tags,
   (
     SELECT
@@ -31,17 +31,17 @@ SELECT
         END
       )
     FROM
-      menu.menu_item_prices p
+      menu.items_prices p
     LEFT JOIN
-      menu.menu_sizes s ON s.size_id = p.size_id
+      menu.sizes s ON s.size_id = p.size_id
     WHERE
-      p.menu_item_id = m.menu_item_id
+      p.item_id = m.item_id
   ) AS prices,
   m.status AS status,
   m.photo_url AS "photoUrl"
 FROM
-  menu.menu_items m
+  menu.items m
 JOIN
-  menu.menu_items_menu_categories mc ON mc.menu_item_id = m.menu_item_id
+  menu.items_categories mc ON mc.item_id = m.item_id
 JOIN
-  menu.menu_categories c ON c.category_id = mc.category_id;
+  menu.categories c ON c.category_id = mc.category_id;

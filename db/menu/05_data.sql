@@ -1,5 +1,5 @@
 INSERT INTO
-  menu.menu_categories
+  menu.categories
   (
     "category_id",
     "name",
@@ -18,7 +18,7 @@ VALUES
   (DEFAULT, 'soups', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 INSERT INTO
-  menu.menu_tags
+  menu.tags
   (
     "tag_id",
     "name",
@@ -34,7 +34,7 @@ VALUES
   (DEFAULT, 'N', 'Contains Nuts', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 INSERT INTO
-  menu.menu_sizes
+  menu.sizes
   (
     "size_id",
     "name",
@@ -51,9 +51,9 @@ VALUES
   (DEFAULT, 'medium deli side', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 INSERT INTO
-  menu.menu_items
+  menu.items
   (
-    "menu_item_id",
+    "item_id",
     "name",
     "description",
     "status",
@@ -404,9 +404,9 @@ VALUES
   );
 
 INSERT INTO
-  menu.menu_items_menu_categories
+  menu.items_categories
   (
-    "menu_item_id",
+    "item_id",
     "category_id",
     "created_at",
     "updated_at"
@@ -452,10 +452,10 @@ VALUES
   (38, 9, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 INSERT INTO
-  menu.menu_item_prices
+  menu.items_prices
   (
     "price_id",
-    "menu_item_id",
+    "item_id",
     "size_id",
     "base_price",
     "created_at",
@@ -520,9 +520,9 @@ VALUES
   (DEFAULT, 38, 5, 7.50, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 INSERT INTO
-  menu.menu_items_menu_tags
+  menu.items_tags
   (
-    "menu_item_id",
+    "item_id",
     "tag_id",
     "created_at",
     "updated_at"
