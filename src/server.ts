@@ -1,5 +1,3 @@
-import 'module-alias/register';
-
 import { config } from 'dotenv';
 
 import createApp from './app';
