@@ -72,7 +72,7 @@ export const testIdRules = (schema: AnyZodObject, b?: object, p?: object) => {
     });
   });
 
-  it('should throw error for invalid otp', () => {
+  it('should throw error for invalid id', () => {
     const ids: string[] = ['nonNumeric', '1234w', '', ' ', '12 34'];
 
     ids.forEach((id) => {
