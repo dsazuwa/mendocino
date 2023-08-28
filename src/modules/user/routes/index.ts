@@ -1,11 +1,11 @@
 import { Router } from 'express';
 
 import addressRouter from './address.route';
-import adminPhoneRouter from './admin-phone.routes';
-import adminRouter from './admin.routes';
+import adminPhoneRouter from './admin-phone.route';
+import adminRouter from './admin.route';
 import authRouter from './auth.route';
-import customerPhoneRouter from './customer-phone.router';
-import customerRouter from './customer.routes';
+import customerPhoneRouter from './customer-phone.route';
+import customerRouter from './customer.route';
 import testRouter from './test.route';
 import usersRouter from './users.route';
 
