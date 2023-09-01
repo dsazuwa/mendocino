@@ -2,16 +2,7 @@ import { QueryTypes } from 'sequelize';
 
 import sequelize from '@App/db';
 
-type MenuItem = {
-  itemId: number;
-  name: string;
-  description: string;
-  category: string;
-  tags: string[] | null;
-  prices: { size: string; price: string }[];
-  status: string;
-  photoUrl: string;
-};
+import { MenuItem } from '@menu/types';
 
 const menuService = {
   getMenu: async () => {
