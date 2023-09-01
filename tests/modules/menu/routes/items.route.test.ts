@@ -20,6 +20,8 @@ let managerJWT: string;
 let customerJWT: string;
 
 beforeAll(async () => {
+  await createMenu();
+
   await createRoles();
 
   let email = 'joedoe@gmail.com';
@@ -43,10 +45,6 @@ beforeAll(async () => {
 });
 
 describe(`GET ${BASE_URL}`, () => {
-  beforeAll(async () => {
-    await createMenu();
-  });
-
   it('should return all menu items', async () => {
     await request.get(BASE_URL).expect(401);
     await request
@@ -191,6 +189,104 @@ describe(`PATCH ${BASE_URL}/:id`, () => {
       .patch(`${BASE_URL}/${itemId}`)
       .send({ status: 'foodies' })
       .auth(superJWT, { type: 'bearer' })
+      .expect(400);
+  });
+});
+
+describe(`PATCH ${BASE_URL}/:id/status`, () => {
+  let categoryId: number;
+
+  beforeEach(async () => {
+    await Item.destroy({ where: {} });
+
+    const category = await Category.findOne({
+      where: { name: 'foodie favorites' },
+      raw: true,
+    });
+    categoryId = category?.categoryId || -1;
+  });
+
+  it('should update active status to sold out', async () => {
+    const { itemId } = await createItem(
+      'Prosciutto & Chicken',
+      'italian prosciutto & shaved, roasted chicken breast with fresh mozzarella, crushed honey roasted almonds, basil pesto, balsamic glaze drizzle, tomatoes on panini-pressed ciabatta',
+      categoryId,
+      null,
+      [{ sizeId: null, price: '12.65' }],
+      'active',
+      'ProsciuttoChicken.jpg',
+    );
+
+    const status = 'sold out';
+
+    await request
+      .patch(`${BASE_URL}/${itemId}/status`)
+      .send({ status })
+      .auth(managerJWT, { type: 'bearer' })
+      .expect(200);
+
+    const item = await Item.findOne({ where: { itemId, status }, raw: true });
+    expect(item).not.toBeNull();
+  });
+
+  it('should update sold out status to active', async () => {
+    const { itemId } = await createItem(
+      'Prosciutto & Chicken',
+      'italian prosciutto & shaved, roasted chicken breast with fresh mozzarella, crushed honey roasted almonds, basil pesto, balsamic glaze drizzle, tomatoes on panini-pressed ciabatta',
+      categoryId,
+      null,
+      [{ sizeId: null, price: '12.65' }],
+      'sold out',
+      'ProsciuttoChicken.jpg',
+    );
+
+    const status = 'active';
+
+    await request
+      .patch(`${BASE_URL}/${itemId}/status`)
+      .send({ status })
+      .auth(managerJWT, { type: 'bearer' })
+      .expect(200);
+
+    const item = await Item.findOne({ where: { itemId, status }, raw: true });
+    expect(item).not.toBeNull();
+  });
+
+  it('should fail to update to same status', async () => {
+    const status = 'active';
+
+    const { itemId } = await createItem(
+      'Prosciutto & Chicken',
+      'italian prosciutto & shaved, roasted chicken breast with fresh mozzarella, crushed honey roasted almonds, basil pesto, balsamic glaze drizzle, tomatoes on panini-pressed ciabatta',
+      categoryId,
+      null,
+      [{ sizeId: null, price: '12.65' }],
+      status,
+      'ProsciuttoChicken.jpg',
+    );
+
+    await request
+      .patch(`${BASE_URL}/${itemId}/status`)
+      .send({ status })
+      .auth(managerJWT, { type: 'bearer' })
+      .expect(400);
+  });
+
+  it('should fail to update status if current status is not one of active/sold out', async () => {
+    const { itemId } = await createItem(
+      'Prosciutto & Chicken',
+      'italian prosciutto & shaved, roasted chicken breast with fresh mozzarella, crushed honey roasted almonds, basil pesto, balsamic glaze drizzle, tomatoes on panini-pressed ciabatta',
+      categoryId,
+      null,
+      [{ sizeId: null, price: '12.65' }],
+      'coming soon',
+      'ProsciuttoChicken.jpg',
+    );
+
+    await request
+      .patch(`${BASE_URL}/${itemId}/status`)
+      .send({ status: 'active' })
+      .auth(managerJWT, { type: 'bearer' })
       .expect(400);
   });
 });

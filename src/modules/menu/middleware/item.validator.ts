@@ -110,7 +110,12 @@ export const updateItemSchema = object({
 export const updateItemStatusSchema = object({
   params: object({ id: idRules }),
   body: object({
-    status: string().trim().nonempty('Status required'),
+    status: string()
+      .trim()
+      .nonempty('Status required')
+      .refine((value) => value === 'active' || value === 'sold out', {
+        message: 'Invalid status: must be either active or sold out',
+      }),
   }),
 });
 

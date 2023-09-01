@@ -165,6 +165,21 @@ const itemsService = {
         );
       }
     }),
+
+  updateItemStatus: async (itemId: number, status: 'active' | 'sold out') => {
+    const result =
+      status === 'active'
+        ? await Item.update(
+            { status },
+            { where: { itemId, status: 'sold out' } },
+          )
+        : await Item.update(
+            { status },
+            { where: { itemId, status: 'active' } },
+          );
+
+    return result[0] === 1;
+  },
 };
 
 export default itemsService;

@@ -8,10 +8,12 @@ import {
   createItem,
   getItems,
   updateItem,
+  updateItemStatus,
 } from '@menu/controllers/items.controller';
 import {
   createItemSchema,
   updateItemSchema,
+  updateItemStatusSchema,
 } from '@menu/middleware/item.validator';
 
 const MANAGER = ROLES.MANAGER.name;
@@ -37,6 +39,14 @@ itemRouter.patch(
   trimRequestBody,
   validate(updateItemSchema),
   updateItem,
+);
+
+itemRouter.patch(
+  '/:id/status',
+  authorize([MANAGER]),
+  trimRequestBody,
+  validate(updateItemStatusSchema),
+  updateItemStatus,
 );
 
 export default itemRouter;

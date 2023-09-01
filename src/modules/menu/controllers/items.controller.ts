@@ -60,7 +60,30 @@ export const updateItem = async (
       status,
     );
 
-    res.status(200).json({ message: 'Item updated!' });
+    res.status(200).json({ message: messages.UPDATE_ITEM });
+  } catch (e) {
+    next(e);
+  }
+};
+
+export const updateItemStatus = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+
+    const result = await itemsService.updateItemStatus(
+      parseInt(id, 10),
+      status,
+    );
+
+    if (result)
+      return res.status(200).json({ message: messages.UPDATE_ITEM_STATUS });
+
+    res.status(400).json({ message: messages.UPDATE_ITEM_STATUS_FAIL });
   } catch (e) {
     next(e);
   }

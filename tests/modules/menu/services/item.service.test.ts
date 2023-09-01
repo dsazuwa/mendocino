@@ -344,3 +344,55 @@ describe('update menu item', () => {
     ).rejects.toThrowError();
   });
 });
+
+describe('update menu item', () => {
+  let categoryId: number;
+
+  beforeEach(async () => {
+    await Item.destroy({ where: {} });
+
+    const category = await Category.findOne({
+      where: { name: 'foodie favorites' },
+      raw: true,
+    });
+    categoryId = category?.categoryId || -1;
+  });
+
+  it('should update active status to sold out', async () => {
+    const { itemId } = await createItem(
+      'Prosciutto & Chicken',
+      'italian prosciutto & shaved, roasted chicken breast with fresh mozzarella, crushed honey roasted almonds, basil pesto, balsamic glaze drizzle, tomatoes on panini-pressed ciabatta',
+      categoryId,
+      null,
+      [{ sizeId: null, price: '12.65' }],
+      'active',
+      'ProsciuttoChicken.jpg',
+    );
+
+    const status = 'sold out';
+
+    await itemsService.updateItemStatus(itemId, status);
+
+    const item = await Item.findOne({ where: { itemId, status }, raw: true });
+    expect(item).not.toBeNull();
+  });
+
+  it('should update sold out status to active', async () => {
+    const { itemId } = await createItem(
+      'Prosciutto & Chicken',
+      'italian prosciutto & shaved, roasted chicken breast with fresh mozzarella, crushed honey roasted almonds, basil pesto, balsamic glaze drizzle, tomatoes on panini-pressed ciabatta',
+      categoryId,
+      null,
+      [{ sizeId: null, price: '12.65' }],
+      'sold out',
+      'ProsciuttoChicken.jpg',
+    );
+
+    const status = 'active';
+
+    await itemsService.updateItemStatus(itemId, status);
+
+    const item = await Item.findOne({ where: { itemId, status }, raw: true });
+    expect(item).not.toBeNull();
+  });
+});

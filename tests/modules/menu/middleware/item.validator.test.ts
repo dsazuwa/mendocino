@@ -182,7 +182,14 @@ describe('update item status schema', () => {
     expect(() =>
       updateItemStatusSchema.parse({
         params: { id: '123' },
-        body: { status: 'out of stock' },
+        body: { status: 'active' },
+      }),
+    ).not.toThrow();
+
+    expect(() =>
+      updateItemStatusSchema.parse({
+        params: { id: '123' },
+        body: { status: 'sold out' },
       }),
     ).not.toThrow();
   });
