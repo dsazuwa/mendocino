@@ -15,7 +15,7 @@ it(`GET ${BASE_URL} should return current menu`, async () => {
   expect(response.status).toBe(200);
 
   const { menu } = response.body;
-  expect(menu.length).toBe(2);
+  expect(menu.length).toBe(3);
 });
 
 it(`GET ${BASE_URL}/grouped should return current menu grouped by category`, async () => {

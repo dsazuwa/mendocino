@@ -45,16 +45,65 @@ export const createItem = (
 
 export const createMenu = async () => {
   const categories = await Category.bulkCreate([
+    { name: "chef's creations" },
+    { name: 'foodie favorites' },
     { name: 'bowls' },
     { name: 'kids' },
   ]);
 
-  await Tag.bulkCreate([{ name: 'VG', description: 'Vegeterian' }]);
+  const chefCreations = categories[0].categoryId;
+  const foodieFavs = categories[1].categoryId;
+  const bowls = categories[2].categoryId;
+  const kids = categories[3].categoryId;
+
+  const tags = await Tag.bulkCreate([
+    { name: 'V', description: 'Vegan' },
+    { name: 'VG', description: 'Vegeterian' },
+    { name: 'GF', description: 'Gluten Free' },
+    { name: 'RGF', description: 'Request Gluten Free' },
+    { name: 'N', description: 'Nuts' },
+  ]);
+
+  const v = tags[0].tagId;
+  // vg = tags[1].tagId,
+  const gf = tags[2].tagId;
+  const rgf = tags[3].tagId;
+  const n = tags[4].tagId;
+
+  await createItem(
+    'Hot Honey Peach & Prosciutto',
+    'italian prosciutto & sliced peaches with fresh mozzarella, crushed honey roasted almonds, Calabrian chili aioli, hot peach honey, arugula on a toasted sesame roll',
+    chefCreations,
+    [rgf, n],
+    [{ sizeId: null, price: '13.25' }],
+    'coming soon',
+    'PeachProsciutto.jpg',
+  );
+
+  await createItem(
+    'Strawberry Fields Salad with Chicken',
+    'shaved, roasted chicken breast, strawberries, watermelon radish, shaved fennel, fresh mint, red onions, goat gouda, toasted pistachios, mixed greens, romaine with greek yogurt poppyseed dressing',
+    chefCreations,
+    [gf, n],
+    [{ sizeId: null, price: '13.25' }],
+    'coming soon',
+    'StrawberryFields.jpg',
+  );
+
+  await createItem(
+    'Vegan Banh Mi',
+    'organic marinated, baked tofu with vegan aioli, sweet chili sauce, pickled daikon & carrots, cucumbers, jalapeños, Thai basil, cilantro on panini-pressed ciabatta',
+    foodieFavs,
+    [v],
+    [{ sizeId: null, price: '11.5' }],
+    'discountinued',
+    'VeganBahnMi.jpg',
+  );
 
   await createItem(
     'Chimichurri Steak & Shishito Bowl',
     'roasted carved steak over ancient grains tossed with caramelized onion jam & chimichurri, baby spinach, roasted shishito peppers with broccolini, tomatoes & red onions, grilled lemon',
-    categories[0].categoryId,
+    bowls,
     null,
     [{ sizeId: null, price: '14.55' }],
     'active',
@@ -64,20 +113,20 @@ export const createMenu = async () => {
   await createItem(
     'Mediterranean Chicken Bowl',
     'sliced, roasted chicken over cracked whole-grain bulgar tossed with lemon-dill vinaigrette & tahini yogurt sauce, baby spinach, romanesco brocolli, tomatoes, yellow peppers & red onions, topped with pickled golden raisins and sumac',
-    categories[0].categoryId,
+    bowls,
     null,
     [{ sizeId: null, price: '14.55' }],
-    'coming soon',
+    'active',
     'ChimichurriSteakBowl.jpg',
   );
 
   await createItem(
     'Grilled Turkey & Cheddar Sandwich',
     'add herb mayo, yellow mustard, or tomato by request',
-    categories[1].categoryId,
+    kids,
     null,
     [{ sizeId: null, price: '7.5' }],
-    'sold out',
+    'active',
     'TurkeyCheddar.jpg',
   );
 };

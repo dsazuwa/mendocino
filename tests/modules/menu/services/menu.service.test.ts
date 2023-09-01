@@ -12,7 +12,7 @@ describe('get menu', () => {
   it('should return menu items that are either active or sold out', async () => {
     const menu = await menuService.getMenu();
 
-    if (menu) expect(menu.length).toBe(2);
+    if (menu) expect(menu.length).toBe(3);
     else expect(true).toBe(false);
   });
 });

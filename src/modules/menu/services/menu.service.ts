@@ -33,6 +33,7 @@ const menuService = {
           )
         ) AS items
       FROM menu.menu_view
+      WHERE status IN ('active', 'sold out')
       GROUP BY category;`;
 
     const result = await sequelize.query(query, { type: QueryTypes.SELECT });
