@@ -11,6 +11,7 @@ import {
 } from './middleware/error';
 import logger from './utils/logger';
 
+import { menuRouter } from './modules/menu';
 import {
   configureGoogleStrategy,
   configureJWTStrategy,
@@ -53,6 +54,7 @@ const createApp = () => {
   });
 
   app.use('/api', userRouter);
+  app.use('/api/menu', menuRouter);
 
   app.use(notFoundHandler);
   app.use(syntaxErrorHandlier);
