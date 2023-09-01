@@ -180,6 +180,11 @@ const itemsService = {
 
     return result[0] === 1;
   },
+
+  deleteItem: async (itemId: number) => {
+    const result = await Item.destroy({ where: { itemId } });
+    return result === 1;
+  },
 };
 
 export default itemsService;

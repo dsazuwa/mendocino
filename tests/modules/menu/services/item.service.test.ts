@@ -396,3 +396,40 @@ describe('update menu item', () => {
     expect(item).not.toBeNull();
   });
 });
+
+describe('delete menu item', () => {
+  let categoryId: number;
+
+  beforeAll(async () => {
+    await Item.destroy({ where: {} });
+
+    const category = await Category.findOne({
+      where: { name: 'foodie favorites' },
+      raw: true,
+    });
+    categoryId = category?.categoryId || -1;
+  });
+
+  it('should delete item', async () => {
+    const { itemId } = await createItem(
+      'Prosciutto & Chicken',
+      'italian prosciutto & shaved, roasted chicken breast with fresh mozzarella, crushed honey roasted almonds, basil pesto, balsamic glaze drizzle, tomatoes on panini-pressed ciabatta',
+      categoryId,
+      null,
+      [{ sizeId: null, price: '12.65' }],
+      'active',
+      'ProsciuttoChicken.jpg',
+    );
+
+    const result = await itemsService.deleteItem(itemId);
+    expect(result).toBe(true);
+
+    const item = await Item.findOne({ where: { itemId }, raw: true });
+    expect(item).toBeNull();
+  });
+
+  it('should fail to delete if item does not exist', async () => {
+    const result = await itemsService.deleteItem(-1);
+    expect(result).toBe(false);
+  });
+});

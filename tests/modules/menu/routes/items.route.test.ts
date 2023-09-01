@@ -196,14 +196,16 @@ describe(`PATCH ${BASE_URL}/:id`, () => {
 describe(`PATCH ${BASE_URL}/:id/status`, () => {
   let categoryId: number;
 
-  beforeEach(async () => {
-    await Item.destroy({ where: {} });
-
+  beforeAll(async () => {
     const category = await Category.findOne({
       where: { name: 'foodie favorites' },
       raw: true,
     });
     categoryId = category?.categoryId || -1;
+  });
+
+  beforeEach(async () => {
+    await Item.destroy({ where: {} });
   });
 
   it('should update active status to sold out', async () => {
@@ -287,6 +289,47 @@ describe(`PATCH ${BASE_URL}/:id/status`, () => {
       .patch(`${BASE_URL}/${itemId}/status`)
       .send({ status: 'active' })
       .auth(managerJWT, { type: 'bearer' })
+      .expect(400);
+  });
+});
+
+describe(`DELETE ${BASE_URL}/:id`, () => {
+  let categoryId: number;
+
+  beforeAll(async () => {
+    await Item.destroy({ where: {} });
+
+    const category = await Category.findOne({
+      where: { name: 'foodie favorites' },
+      raw: true,
+    });
+    categoryId = category?.categoryId || -1;
+  });
+
+  it('should delete item', async () => {
+    const { itemId } = await createItem(
+      'Prosciutto & Chicken',
+      'italian prosciutto & shaved, roasted chicken breast with fresh mozzarella, crushed honey roasted almonds, basil pesto, balsamic glaze drizzle, tomatoes on panini-pressed ciabatta',
+      categoryId,
+      null,
+      [{ sizeId: null, price: '12.65' }],
+      'active',
+      'ProsciuttoChicken.jpg',
+    );
+
+    await request
+      .delete(`${BASE_URL}/${itemId}`)
+      .auth(superJWT, { type: 'bearer' })
+      .expect(200);
+
+    const item = await Item.findOne({ where: { itemId }, raw: true });
+    expect(item).toBeNull();
+  });
+
+  it('should fail to delete if item does not exist', async () => {
+    await request
+      .delete(`${BASE_URL}/-1`)
+      .auth(superJWT, { type: 'bearer' })
       .expect(400);
   });
 });

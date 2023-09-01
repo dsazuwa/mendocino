@@ -88,3 +88,22 @@ export const updateItemStatus = async (
     next(e);
   }
 };
+
+export const deleteItem = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    // TODO: add condition to only delete if there are no current or previous orders associated with menu item
+    const { id } = req.params;
+
+    const result = await itemsService.deleteItem(parseInt(id, 10));
+
+    if (result) return res.status(200).json({ message: messages.DELETE_ITEM });
+
+    res.status(400).json({ message: messages.DELETE_ITEM_FAIL });
+  } catch (e) {
+    next(e);
+  }
+};

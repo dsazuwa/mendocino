@@ -6,12 +6,14 @@ import { authenticate, authorize, ROLES } from '@App/modules/user';
 
 import {
   createItem,
+  deleteItem,
   getItems,
   updateItem,
   updateItemStatus,
 } from '@menu/controllers/items.controller';
 import {
   createItemSchema,
+  deleteItemSchema,
   updateItemSchema,
   updateItemStatusSchema,
 } from '@menu/middleware/item.validator';
@@ -47,6 +49,13 @@ itemRouter.patch(
   trimRequestBody,
   validate(updateItemStatusSchema),
   updateItemStatus,
+);
+
+itemRouter.delete(
+  '/:id',
+  authorize([SUPER_ADMIN]),
+  validate(deleteItemSchema),
+  deleteItem,
 );
 
 export default itemRouter;
