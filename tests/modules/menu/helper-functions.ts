@@ -1,3 +1,5 @@
+import { QueryTypes } from 'sequelize';
+
 import sequelize from '@App/db';
 
 import {
@@ -7,8 +9,22 @@ import {
   ItemPrice,
   ItemStatusType,
   ItemTag,
+  Size,
   Tag,
 } from '@menu/models';
+import { MenuItem } from '@menu/types';
+
+export const getItem = async (itemId: number) => {
+  const query = `
+      SELECT 
+        "itemId", name, description, category, tags, prices, status, "photoUrl"
+      FROM menu.menu_view
+      WHERE "itemId" = ${itemId};`;
+
+  const result = await sequelize.query(query, { type: QueryTypes.SELECT });
+
+  return result.length === 0 ? null : (result[0] as MenuItem);
+};
 
 export const createItem = (
   name: string,
@@ -47,14 +63,15 @@ export const createMenu = async () => {
   const categories = await Category.bulkCreate([
     { name: "chef's creations" },
     { name: 'foodie favorites' },
+    { name: 'deli sides' },
     { name: 'bowls' },
     { name: 'kids' },
   ]);
 
   const chefCreations = categories[0].categoryId;
   const foodieFavs = categories[1].categoryId;
-  const bowls = categories[2].categoryId;
-  const kids = categories[3].categoryId;
+  const bowls = categories[3].categoryId;
+  const kids = categories[4].categoryId;
 
   const tags = await Tag.bulkCreate([
     { name: 'V', description: 'Vegan' },
@@ -65,10 +82,15 @@ export const createMenu = async () => {
   ]);
 
   const v = tags[0].tagId;
-  // vg = tags[1].tagId,
   const gf = tags[2].tagId;
   const rgf = tags[3].tagId;
   const n = tags[4].tagId;
+
+  await Size.bulkCreate([
+    { name: 'small' },
+    { name: 'medium' },
+    { name: 'large' },
+  ]);
 
   await createItem(
     'Hot Honey Peach & Prosciutto',

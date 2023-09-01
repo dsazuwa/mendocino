@@ -16,3 +16,28 @@ export const getItems = async (
     next(e);
   }
 };
+
+export const createItem = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { name, description, category, tags, prices, photoUrl, status } =
+      req.body;
+
+    const itemId = await itemsService.createItem(
+      name,
+      description,
+      category,
+      tags,
+      prices,
+      photoUrl,
+      status,
+    );
+
+    res.status(200).json({ message: `New menu item #${itemId} created` });
+  } catch (e) {
+    next(e);
+  }
+};

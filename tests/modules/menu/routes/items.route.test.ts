@@ -10,6 +10,7 @@ import {
 import { request } from 'tests/supertest.helper';
 
 import 'tests/db-setup';
+import { Item } from '@App/modules/menu/models';
 
 const BASE_URL = '/api/menu/items';
 
@@ -18,8 +19,6 @@ let managerJWT: string;
 let customerJWT: string;
 
 beforeAll(async () => {
-  await createMenu();
-
   await createRoles();
 
   let email = 'joedoe@gmail.com';
@@ -42,17 +41,76 @@ beforeAll(async () => {
   await createCustomer('Jess', 'Doe', email, 'jessD0ePa$$', 'active');
 });
 
-it(`GET ${BASE_URL} should return all menu items`, async () => {
-  await request.get(BASE_URL).expect(401);
-  await request.get(BASE_URL).auth(customerJWT, { type: 'bearer' }).expect(401);
+describe(`GET ${BASE_URL}`, () => {
+  beforeAll(async () => {
+    await createMenu();
+  });
 
-  let response = await request.get(BASE_URL).auth(superJWT, { type: 'bearer' });
+  it('should return all menu items', async () => {
+    await request.get(BASE_URL).expect(401);
+    await request
+      .get(BASE_URL)
+      .auth(customerJWT, { type: 'bearer' })
+      .expect(401);
 
-  expect(response.status).toBe(200);
-  expect(response.body.menu.length).toBe(6);
+    let response = await request
+      .get(BASE_URL)
+      .auth(superJWT, { type: 'bearer' });
 
-  response = await request.get(BASE_URL).auth(managerJWT, { type: 'bearer' });
+    expect(response.status).toBe(200);
+    expect(response.body.menu.length).toBe(6);
 
-  expect(response.status).toBe(200);
-  expect(response.body.menu.length).toBe(6);
+    response = await request.get(BASE_URL).auth(managerJWT, { type: 'bearer' });
+
+    expect(response.status).toBe(200);
+    expect(response.body.menu.length).toBe(6);
+  });
+});
+
+describe(`POST ${BASE_URL}`, () => {
+  beforeEach(async () => {
+    await Item.destroy({ where: {} });
+  });
+
+  it('should create item', async () => {
+    const data = {
+      name: 'Prosciutto & Chicken',
+      description:
+        'italian prosciutto & shaved, roasted chicken breast with fresh mozzarella, crushed honey roasted almonds, basil pesto, balsamic glaze drizzle, tomatoes on panini-pressed ciabatta',
+      category: 'foodie favorites',
+      tags: ['N', 'RGF'],
+      prices: [{ size: 'default', price: '12.65' }],
+      photoUrl: 'ProsciuttoChicken.jpg',
+      status: 'active',
+    };
+
+    const response = await request
+      .post(BASE_URL)
+      .send(data)
+      .auth(superJWT, { type: 'bearer' });
+
+    expect(response.status).toBe(200);
+  });
+
+  it('should fail to create item on invalid price', async () => {
+    const data = {
+      name: 'Prosciutto & Chicken',
+      description:
+        'italian prosciutto & shaved, roasted chicken breast with fresh mozzarella, crushed honey roasted almonds, basil pesto, balsamic glaze drizzle, tomatoes on panini-pressed ciabatta',
+      category: 'foodie favorites',
+      tags: ['N', 'RGF'],
+      prices: [
+        { size: 'small', price: '6.65' },
+        { size: 'default', price: '12.65' },
+      ],
+      photoUrl: 'ProsciuttoChicken.jpg',
+      status: 'active',
+    };
+
+    await request
+      .post(BASE_URL)
+      .send(data)
+      .auth(superJWT, { type: 'bearer' })
+      .expect(400);
+  });
 });

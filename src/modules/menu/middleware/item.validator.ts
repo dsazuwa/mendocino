@@ -32,7 +32,13 @@ export const createItemSchema = object({
 
     tags: array(string()).optional(),
 
-    prices: array(pricesSchema),
+    prices: array(pricesSchema).refine(
+      (prices) => {
+        const hasDefaultSize = prices.some((item) => item.size === 'default');
+        return !hasDefaultSize || (hasDefaultSize && prices.length === 1);
+      },
+      { message: "Can't have multiple prices, if there is a default price" },
+    ),
 
     status: string().trim().nonempty('Status required'),
 
@@ -63,7 +69,16 @@ export const updateItemSchema = object({
 
     tags: array(string()).optional(),
 
-    prices: array(pricesSchema).optional(),
+    prices: array(pricesSchema)
+      .optional()
+      .refine(
+        (prices) => {
+          if (!prices) return true;
+          const hasDefaultSize = prices.some((item) => item.size === 'default');
+          return !hasDefaultSize || (hasDefaultSize && prices.length === 1);
+        },
+        { message: "Can't have multiple prices if there is a default price" },
+      ),
 
     status: string().optional(),
 

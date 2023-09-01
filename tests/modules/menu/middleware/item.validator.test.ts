@@ -60,6 +60,26 @@ describe('create item schema', () => {
     expect(() => createItemSchema.parse(data)).toThrow();
   });
 
+  it('should throw error if data has multiple prices with default', () => {
+    const data = {
+      body: {
+        name: 'Hot Honey Peach & Prosciutto',
+        description:
+          'italian prosciutto & sliced peaches with fresh mozzarella, crushed honey roasted almonds, Calabrian chili aioli, hot peach honey, arugula on a toasted sesame roll',
+        category: "chef's creations",
+        tags: [],
+        prices: [
+          { size: 'default', price: '12' },
+          { size: 'small', price: '5' },
+        ],
+        status: 'active',
+        photoUrl: 'PeachProsciutto.jpg',
+      },
+    };
+
+    expect(() => createItemSchema.parse(data)).toThrow();
+  });
+
   it('should throw error for empty data', () => {
     const data = {
       body: {
