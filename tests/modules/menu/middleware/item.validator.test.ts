@@ -80,6 +80,26 @@ describe('create item schema', () => {
     expect(() => createItemSchema.parse(data)).toThrow();
   });
 
+  it('should throw error for invalid status', () => {
+    const data = {
+      body: {
+        name: 'Hot Honey Peach & Prosciutto',
+        description:
+          'italian prosciutto & sliced peaches with fresh mozzarella, crushed honey roasted almonds, Calabrian chili aioli, hot peach honey, arugula on a toasted sesame roll',
+        category: "chef's creations",
+        tags: [],
+        prices: [
+          { size: 'default', price: '12' },
+          { size: 'small', price: '5' },
+        ],
+        status: 'actively',
+        photoUrl: 'PeachProsciutto.jpg',
+      },
+    };
+
+    expect(() => createItemSchema.parse(data)).toThrow();
+  });
+
   it('should throw error for empty data', () => {
     const data = {
       body: {
@@ -126,14 +146,6 @@ describe('update item schema', () => {
 
     expect(() =>
       updateItemSchema.parse({ params, body: { category: data.category } }),
-    ).not.toThrow();
-
-    expect(() =>
-      updateItemSchema.parse({ params, body: { tags: data.tags } }),
-    ).not.toThrow();
-
-    expect(() =>
-      updateItemSchema.parse({ params, body: { prices: data.prices } }),
     ).not.toThrow();
 
     expect(() =>

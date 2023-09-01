@@ -1,6 +1,6 @@
 import { object, array, string } from 'zod';
 
-import { idRules } from './common.validator';
+import { idRules, isItemStatusType } from './common.validator';
 
 const pricesSchema = object({
   size: string().trim().nonempty(),
@@ -40,7 +40,12 @@ export const createItemSchema = object({
       { message: "Can't have multiple prices, if there is a default price" },
     ),
 
-    status: string().trim().nonempty('Status required'),
+    status: string()
+      .trim()
+      .nonempty('Status required')
+      .refine((value) => isItemStatusType(value), {
+        message: 'Invalid status',
+      }),
 
     photoUrl: string()
       .trim()
@@ -67,20 +72,24 @@ export const updateItemSchema = object({
 
     category: string().optional(),
 
-    tags: array(string()).optional(),
+    // tags: array(string()).optional(),
 
-    prices: array(pricesSchema)
+    // prices: array(pricesSchema)
+    //   .optional()
+    //   .refine(
+    //     (prices) => {
+    //       if (!prices) return true;
+    //       const hasDefaultSize = prices.some((item) => item.size === 'default');
+    //       return !hasDefaultSize || (hasDefaultSize && prices.length === 1);
+    //     },
+    //     { message: "Can't have multiple prices if there is a default price" },
+    //   ),
+
+    status: string()
       .optional()
-      .refine(
-        (prices) => {
-          if (!prices) return true;
-          const hasDefaultSize = prices.some((item) => item.size === 'default');
-          return !hasDefaultSize || (hasDefaultSize && prices.length === 1);
-        },
-        { message: "Can't have multiple prices if there is a default price" },
-      ),
-
-    status: string().optional(),
+      .refine((value) => !value || (value && isItemStatusType(value)), {
+        message: 'Invalid status',
+      }),
 
     photoUrl: string()
       .optional()
@@ -88,12 +97,10 @@ export const updateItemSchema = object({
         message: 'Url must be 100 or fewer characters long',
       }),
   }).refine(
-    ({ name, description, category, tags, prices, status, photoUrl }) =>
+    ({ name, description, category, status, photoUrl }) =>
       (!!name && name.length > 0) ||
       (!!description && description.length > 0) ||
       (!!category && category.length > 0) ||
-      (!!tags && tags.length > 0) ||
-      !!prices ||
       (!!status && status.length > 0) ||
       (!!photoUrl && photoUrl.length > 0),
     { message: 'At least one field is required' },
