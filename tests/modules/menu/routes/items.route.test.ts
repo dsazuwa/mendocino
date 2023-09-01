@@ -1,7 +1,9 @@
 import { ROLES } from '@App/modules/user';
 import authService from '@user/services/auth.service';
 
-import { createMenu } from 'tests/modules/menu/helper-functions';
+import { Category, Item, ItemCategory } from '@menu/models';
+
+import { createItem, createMenu } from 'tests/modules/menu/helper-functions';
 import {
   createAdmin,
   createCustomer,
@@ -10,7 +12,6 @@ import {
 import { request } from 'tests/supertest.helper';
 
 import 'tests/db-setup';
-import { Item } from '@App/modules/menu/models';
 
 const BASE_URL = '/api/menu/items';
 
@@ -110,6 +111,85 @@ describe(`POST ${BASE_URL}`, () => {
     await request
       .post(BASE_URL)
       .send(data)
+      .auth(superJWT, { type: 'bearer' })
+      .expect(400);
+  });
+});
+
+describe(`PATCH ${BASE_URL}/:id`, () => {
+  let itemId: number;
+
+  beforeEach(async () => {
+    await Item.destroy({ where: {} });
+
+    const category = await Category.findOne({
+      where: { name: 'foodie favorites' },
+      raw: true,
+    });
+
+    const item = await createItem(
+      'Prosciutto & Chicken',
+      'italian prosciutto & shaved, roasted chicken breast with fresh mozzarella, crushed honey roasted almonds, basil pesto, balsamic glaze drizzle, tomatoes on panini-pressed ciabatta',
+      category?.categoryId || -1,
+      null,
+      [{ sizeId: null, price: '12.65' }],
+      'active',
+      'ProsciuttoChicken.jpg',
+    );
+
+    itemId = item.itemId;
+  });
+
+  it('should update item name', async () => {
+    const name = 'Prosciutto & Chicken';
+
+    const response = await request
+      .patch(`${BASE_URL}/${itemId}`)
+      .send({ name })
+      .auth(superJWT, { type: 'bearer' });
+
+    expect(response.status).toBe(200);
+
+    const item = await Item.findOne({ where: { itemId, name }, raw: true });
+    expect(item).not.toBeNull();
+  });
+
+  it('should update item category', async () => {
+    const category = 'bowls';
+
+    const response = await request
+      .patch(`${BASE_URL}/${itemId}`)
+      .send({ category })
+      .auth(superJWT, { type: 'bearer' });
+
+    expect(response.status).toBe(200);
+
+    const c = await Category.findOne({
+      where: { name: category },
+      raw: true,
+    });
+
+    const categoryId = c ? c.categoryId : -1;
+
+    const item = await ItemCategory.findOne({
+      where: { itemId, categoryId },
+      raw: true,
+    });
+    expect(item).not.toBeNull();
+  });
+
+  it('should fail to update on invalid category', async () => {
+    await request
+      .patch(`${BASE_URL}/${itemId}`)
+      .send({ name: 'Prosciutto & Chicken', category: 'foodies' })
+      .auth(superJWT, { type: 'bearer' })
+      .expect(400);
+  });
+
+  it('should fail to update on invalid status', async () => {
+    await request
+      .patch(`${BASE_URL}/${itemId}`)
+      .send({ status: 'foodies' })
       .auth(superJWT, { type: 'bearer' })
       .expect(400);
   });

@@ -41,3 +41,27 @@ export const createItem = async (
     next(e);
   }
 };
+
+export const updateItem = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { id } = req.params;
+    const { name, description, category, photoUrl, status } = req.body;
+
+    await itemsService.updateItem(
+      parseInt(id, 10),
+      name,
+      description,
+      category,
+      photoUrl,
+      status,
+    );
+
+    res.status(200).json({ message: 'Item updated!' });
+  } catch (e) {
+    next(e);
+  }
+};

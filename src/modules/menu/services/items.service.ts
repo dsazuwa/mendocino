@@ -1,4 +1,4 @@
-import { Op, QueryTypes } from 'sequelize';
+import { Op, QueryTypes, Transaction } from 'sequelize';
 
 import sequelize from '@App/db';
 import { ApiError } from '@App/utils';
@@ -15,9 +15,10 @@ import {
 } from '@menu/models';
 import { MenuItem, PriceType } from '@menu/types';
 
-const getCategoryId = async (name: string) => {
+const getCategoryId = async (name: string, transaction?: Transaction) => {
   const retrievedCategory = await Category.findOne({
     where: { name: { [Op.like]: name } },
+    transaction,
   });
 
   if (!retrievedCategory)
@@ -26,7 +27,10 @@ const getCategoryId = async (name: string) => {
   return retrievedCategory.categoryId;
 };
 
-const getTagIds = async (tags: string[] | null) => {
+const getTagIds = async (
+  tags: string[] | undefined,
+  transaction?: Transaction,
+) => {
   if (!tags) return null;
 
   const tagIds: number[] = [];
@@ -34,6 +38,7 @@ const getTagIds = async (tags: string[] | null) => {
   const promises = tags.map(async (t) => {
     const tag = await Tag.findOne({
       where: { name: { [Op.iLike]: t } },
+      transaction,
       raw: true,
     });
 
@@ -47,7 +52,7 @@ const getTagIds = async (tags: string[] | null) => {
   return tagIds;
 };
 
-const getSizeIds = async (prices: PriceType[]) => {
+const getSizeIds = async (prices: PriceType[], transaction?: Transaction) => {
   if (prices.length === 1) return [{ sizeId: null, price: prices[0].price }];
 
   const a: { sizeId: number; price: number }[] = [];
@@ -55,6 +60,7 @@ const getSizeIds = async (prices: PriceType[]) => {
   const promises = prices.map(async (p) => {
     const retrievedSize = await Size.findOne({
       where: { name: { [Op.iLike]: p.size } },
+      transaction,
       raw: true,
     });
 
@@ -85,7 +91,7 @@ const itemsService = {
     name: string,
     description: string,
     category: string,
-    tags: string[] | null,
+    tags: string[] | undefined,
     prices: PriceType[],
     photoUrl: string,
     status: ItemStatusType,
@@ -126,6 +132,39 @@ const itemsService = {
       return itemId;
     });
   },
+
+  updateItem: (
+    itemId: number,
+    name: string | undefined,
+    description: string | undefined,
+    category: string | undefined,
+    photoUrl: string | undefined,
+    status: ItemStatusType | undefined,
+  ) =>
+    sequelize.transaction(async (transaction) => {
+      const itemValues: Partial<Item> = {};
+
+      if (name && name.trim().length > 0) itemValues.name = name;
+
+      if (description && description.trim().length > 0)
+        itemValues.description = description;
+
+      if (photoUrl && photoUrl.trim().length > 0)
+        itemValues.photoUrl = photoUrl;
+
+      if (status && status.trim().length > 0) itemValues.status = status;
+
+      await Item.update(itemValues, { where: { itemId }, transaction });
+
+      if (category) {
+        const categoryId = await getCategoryId(category, transaction);
+
+        await ItemCategory.update(
+          { categoryId },
+          { where: { itemId }, transaction },
+        );
+      }
+    }),
 };
 
 export default itemsService;

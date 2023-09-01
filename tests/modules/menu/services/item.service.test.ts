@@ -1,7 +1,11 @@
-import { Item } from '@menu/models';
+import { Category, Item, ItemCategory } from '@menu/models';
 import itemsService from '@menu/services/items.service';
 
-import { createMenu, getItem } from 'tests/modules/menu/helper-functions';
+import {
+  createItem,
+  createMenu,
+  getItem,
+} from 'tests/modules/menu/helper-functions';
 
 import 'tests/db-setup';
 
@@ -36,7 +40,7 @@ describe('create menu item', () => {
       name,
       description,
       category,
-      null,
+      undefined,
       prices,
       photoUrl,
       status,
@@ -137,7 +141,7 @@ describe('create menu item', () => {
       name,
       description,
       category,
-      null,
+      undefined,
       prices,
       photoUrl,
       status,
@@ -148,7 +152,7 @@ describe('create menu item', () => {
         name,
         description,
         category,
-        null,
+        undefined,
         prices,
         photoUrl,
         status,
@@ -250,5 +254,93 @@ describe('create menu item', () => {
       const item = await Item.findOne({ where: { name }, raw: true });
       expect(item).toBeNull();
     }
+  });
+});
+
+describe('update menu item', () => {
+  let itemId: number;
+
+  beforeEach(async () => {
+    await Item.destroy({ where: {} });
+
+    const category = await Category.findOne({
+      where: { name: 'foodie favorites' },
+      raw: true,
+    });
+
+    const item = await createItem(
+      'Prosciutto & Chicken',
+      'italian prosciutto & shaved, roasted chicken breast with fresh mozzarella, crushed honey roasted almonds, basil pesto, balsamic glaze drizzle, tomatoes on panini-pressed ciabatta',
+      category?.categoryId || -1,
+      null,
+      [{ sizeId: null, price: '12.65' }],
+      'active',
+      'ProsciuttoChicken.jpg',
+    );
+
+    itemId = item.itemId;
+  });
+
+  it('should update name', async () => {
+    const name = 'Prosciutto and Chicken';
+
+    await itemsService.updateItem(
+      itemId,
+      name,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+    );
+
+    const item = await Item.findOne({ where: { itemId, name }, raw: true });
+    expect(item).not.toBeNull();
+  });
+
+  it('should update category', async () => {
+    const category = 'bowls';
+
+    await itemsService.updateItem(
+      itemId,
+      undefined,
+      undefined,
+      category,
+      undefined,
+      undefined,
+    );
+
+    const c = await Category.findOne({
+      where: { name: category },
+      raw: true,
+    });
+
+    const categoryId = c ? c.categoryId : -1;
+
+    const item = await ItemCategory.findOne({
+      where: { itemId, categoryId },
+      raw: true,
+    });
+    expect(item).not.toBeNull();
+  });
+
+  it('should throw error on invalid category', async () => {
+    const category = 'foodies';
+
+    const c = await Category.findOne({
+      where: { name: category },
+      raw: true,
+    });
+    expect(c).toBeNull();
+
+    expect(
+      itemsService.updateItem(
+        itemId,
+        undefined,
+        undefined,
+        category,
+        undefined,
+        undefined,
+      ),
+    ).rejects.toThrowError();
   });
 });
