@@ -1,6 +1,6 @@
 CREATE TABLE menu.items (
   item_id SERIAL,
-  name VARCHAR(100) UNIQUE NOT NULL,
+  name VARCHAR(100) NOT NULL,
   description VARCHAR(255) NOT NULL,
   status menu.enum_items_status NOT NULL,
   photo_url VARCHAR(100) NOT NULL,
@@ -11,7 +11,7 @@ CREATE TABLE menu.items (
 
 CREATE TABLE menu.categories (
   category_id SERIAL,
-  name VARCHAR(50) UNIQUE NOT NULL,
+  name VARCHAR(50) NOT NULL,
   created_at TIMESTAMP NOT NULL,
   updated_at TIMESTAMP NOT NULL,
   PRIMARY KEY (category_id)
@@ -29,7 +29,7 @@ CREATE TABLE menu.items_categories (
 
 CREATE TABLE menu.tags (
   tag_id SERIAL,
-  name VARCHAR(5) UNIQUE NOT NULL,
+  name VARCHAR(5) NOT NULL,
   description VARCHAR(50) NOT NULL,
   created_at TIMESTAMP NOT NULL,
   updated_at TIMESTAMP NOT NULL,
@@ -48,7 +48,7 @@ CREATE TABLE menu.items_tags (
 
 CREATE TABLE menu.sizes (
   size_id SERIAL,
-  name VARCHAR(20) UNIQUE NOT NULL,
+  name VARCHAR(20) NOT NULL,
   created_at TIMESTAMP NOT NULL,
   updated_at TIMESTAMP NOT NULL,
   PRIMARY KEY (size_id)
@@ -66,14 +66,6 @@ CREATE TABLE menu.items_prices (
   CONSTRAINT fk_item_id FOREIGN KEY (item_id) REFERENCES menu.items (item_id) ON DELETE CASCADE ON UPDATE NO ACTION,
   CONSTRAINT fk_size_id FOREIGN KEY (size_id) REFERENCES menu.sizes (size_id) ON DELETE CASCADE ON UPDATE NO ACTION
 );
-
-CREATE UNIQUE INDEX idx_unique_item_size_null
-ON menu.items_prices (item_id)
-WHERE size_id IS NULL;
-
-CREATE UNIQUE INDEX idx_unique_item_size_not_null
-ON menu.items_prices (item_id, size_id)
-WHERE size_id IS NOT NULL;
 
 CREATE TABLE menu.discounts (
   discount_id SERIAL,

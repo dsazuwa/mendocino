@@ -5,7 +5,7 @@ CREATE SEQUENCE users.admin_id_seq START 2 INCREMENT 2;
 -- Create tables
 CREATE TABLE users.emails (
   email_id SERIAL,
-  email VARCHAR(255) NOT NULL UNIQUE,
+  email VARCHAR(255) NOT NULL,
   created_at TIMESTAMP NOT NULL,
   PRIMARY KEY (email_id)
 );
@@ -94,7 +94,7 @@ CREATE TABLE users.customer_identities (
 
 CREATE TABLE users.roles (
   role_id SERIAL,
-  name VARCHAR(50) UNIQUE NOT NULL,
+  name VARCHAR(50) NOT NULL,
   PRIMARY KEY (role_id)
 );
 
@@ -110,7 +110,7 @@ CREATE TABLE users.admins_roles (
 
 CREATE TABLE users.phones (
   phone_id SERIAL,
-  phone_number VARCHAR(10) UNIQUE NOT NULL,
+  phone_number VARCHAR(10) UNIQUE CHECK (phone_number ~ '^[0-9]+$') NOT NULL,
   created_at TIMESTAMP NOT NULL,
   PRIMARY KEY (phone_id)
 );

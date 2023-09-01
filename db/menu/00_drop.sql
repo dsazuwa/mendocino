@@ -2,6 +2,9 @@
 DROP VIEW IF EXISTS menu.menu_view;
 
 -- Drop indexes
+DROP INDEX IF EXISTS menu.idx_item_name_unique;
+DROP INDEX IF EXISTS menu.idx_category_name_unique;
+DROP INDEX IF EXISTS menu.idx_tag_name_unique;
 DROP INDEX IF EXISTS menu.idx_unique_item_size_null;
 DROP INDEX IF EXISTS menu.idx_unique_item_size_not_null;
 

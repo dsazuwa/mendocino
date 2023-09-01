@@ -9,6 +9,10 @@ DROP FUNCTION IF EXISTS users.prevent_update_phone();
 -- Drop views
 DROP VIEW IF EXISTS users.user_type_view;
 
+-- Drop indexes
+DROP INDEX IF EXISTS users.idx_email_lower_unique;
+DROP INDEX IF EXISTS users.idx_role_lower_unique;
+
 -- Drop constrants
 ALTER TABLE IF EXISTS users.admin_accounts DROP CONSTRAINT fk_admin_id;
 ALTER TABLE IF EXISTS users.admin_accounts DROP CONSTRAINT fk_email_id;
