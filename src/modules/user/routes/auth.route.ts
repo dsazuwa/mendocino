@@ -13,6 +13,7 @@ import {
   recoverPassword,
   register,
   requestPasswordRecovery,
+  setCookieAfterCallBack,
   verifyRecoveryOTP,
 } from '@user/controllers/auth.controller';
 import { authenticateInactive } from '@user/middleware/auth';
@@ -22,6 +23,7 @@ import {
   recoverPasswordSchema,
   registerSchema,
   requestRecoverySchema,
+  setCookieSchema,
   verifyRecoveryOTPSchema,
 } from '@user/middleware/validators/auth.validator';
 
@@ -81,6 +83,13 @@ authRouter.get(
   '/facebook/callback',
   passport.authenticate('facebook', { session: false }),
   facebookLogin,
+);
+
+authRouter.get(
+  '/set-cookie',
+  trimRequestBody,
+  validate(setCookieSchema),
+  setCookieAfterCallBack,
 );
 
 export default authRouter;

@@ -44,3 +44,7 @@ export const recoverPasswordSchema = object({
   params: object({ otp: otpRules }),
   body: object({ email: emailRules, password: passwordRules }),
 });
+
+export const setCookieSchema = object({
+  body: object({ token: string().trim().nonempty() }),
+});

@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
+import { JwtPayload, verify } from 'jsonwebtoken';
 
 import { ProviderType } from '@user/models';
 import authService from '@user/services/auth.service';
@@ -6,63 +7,19 @@ import otpService from '@user/services/otp.service';
 import userService from '@user/services/user.service';
 import messages from '@user/utils/messages';
 
-export const socialLogin = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-  provider: ProviderType,
-) => {
-  try {
-    const userId = req.user?.userId;
-    const email = req.user?.email;
-
-    if (!userId || !email) return res.status(401);
-
-    const token = authService.generateJWT(email, provider);
-
-    const userData = await userService.getUserData(userId, 'customer');
-
-    res.redirect(
-      `${
-        process.env.FRONTEND_BASE_URL
-      }/OAuthRedirecting?token=${token}&user=${encodeURIComponent(
-        JSON.stringify(userData),
-      )}`,
-    );
-  } catch (e) {
-    next(e);
-  }
-};
-
-export const googleLogin = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
-  try {
-    await socialLogin(req, res, next, 'google');
-  } catch (e) {
-    next(e);
-  }
-};
-
-export const facebookLogin = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
-  try {
-    await socialLogin(req, res, next, 'facebook');
-  } catch (e) {
-    next(e);
-  }
-};
-
 export const setAccessTokenCookie = (res: Response, jwt: string) => {
+  const expirationDate = new Date(Date.now() + 86400 * 1000);
+
   res.cookie('access-token', jwt, {
     secure: true,
     httpOnly: true,
-    expires: new Date(Date.now() + 86400 * 1000),
+    expires: expirationDate,
+  });
+
+  res.cookie('auth-flag', jwt, {
+    secure: true,
+    httpOnly: false,
+    expires: expirationDate,
   });
 };
 
@@ -348,6 +305,80 @@ export const reactivate = async (
       message: messages.REACTIVATE_SUCCESS,
       user: userData,
     });
+  } catch (e) {
+    next(e);
+  }
+};
+
+export const socialLogin = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+  provider: ProviderType,
+) => {
+  try {
+    const userId = req.user?.userId;
+    const email = req.user?.email;
+
+    if (!userId || !email) return res.status(401);
+
+    const token = authService.generateJWT(email, provider);
+
+    const userData = await userService.getUserData(userId, 'customer');
+
+    res.redirect(
+      `${
+        process.env.FRONTEND_BASE_URL
+      }/OAuthRedirecting?token=${token}&user=${encodeURIComponent(
+        JSON.stringify(userData),
+      )}`,
+    );
+  } catch (e) {
+    next(e);
+  }
+};
+
+export const googleLogin = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    await socialLogin(req, res, next, 'google');
+  } catch (e) {
+    next(e);
+  }
+};
+
+export const facebookLogin = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    await socialLogin(req, res, next, 'facebook');
+  } catch (e) {
+    next(e);
+  }
+};
+
+export const setCookieAfterCallBack = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { token } = req.body;
+
+    const decoded = verify(token, process.env.JWT_SECRET) as JwtPayload;
+
+    const user = await userService.getUserFromPayload(decoded.email, 'email');
+
+    if (!user) return res.status(401).json({ message: 'Invalid token' });
+
+    setAccessTokenCookie(res, token);
+
+    res.status(200).json({ message: 'Set auth cookie', user });
   } catch (e) {
     next(e);
   }
