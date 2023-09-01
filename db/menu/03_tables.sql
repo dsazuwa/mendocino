@@ -18,11 +18,11 @@ CREATE TABLE menu.categories (
 );
 
 CREATE TABLE menu.items_categories (
-  item_id INTEGER UNIQUE NOT NULL,
+  item_id INTEGER NOT NULL,
   category_id INTEGER NOT NULL,
   created_at TIMESTAMP NOT NULL,
   updated_at TIMESTAMP NOT NULL,
-  UNIQUE(item_id),
+  UNIQUE (item_id),
   CONSTRAINT fk_item_id FOREIGN KEY (item_id) REFERENCES menu.items (item_id) ON DELETE CASCADE ON UPDATE NO ACTION,
   CONSTRAINT fk_category_id FOREIGN KEY (category_id) REFERENCES menu.categories (category_id) ON DELETE CASCADE ON UPDATE NO ACTION
 );
