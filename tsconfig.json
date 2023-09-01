@@ -7,13 +7,13 @@
     "emitDecoratorMetadata": true,
     "module": "commonjs",
     "moduleResolution": "NodeNext",
-    "baseUrl": "./src",
+    "baseUrl": "./",
     "paths": {
-      "@App/*": ["*"],
-      "@middleware/*": ["middleware/*"],
-      "@utils/*": ["utils/*"],
-      "@user/*":["modules/user/*"],
-      "@menu/*":["modules/menu/*"]
+      "@App/*": ["src/*"],
+      "@middleware/*": ["src/middleware/*"],
+      "@utils/*": ["src/utils/*"],
+      "@user/*":["src/modules/user/*"],
+      "@menu/*":["src/modules/menu/*"]
     },
     "types": ["node", "jest"],
     "resolveJsonModule": true,
