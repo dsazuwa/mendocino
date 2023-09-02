@@ -1,3 +1,4 @@
+import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import express, { Request, Response } from 'express';
 import helmet from 'helmet';
@@ -8,7 +9,8 @@ import {
   errorHandler,
   notFoundHandler,
   syntaxErrorHandlier,
-} from './middleware/error';
+  extractJWTFromCookie,
+} from './middleware';
 import logger from './utils/logger';
 
 import { menuRouter } from './modules/menu';
@@ -24,7 +26,7 @@ const createApp = () => {
   app.use(cors({ origin: true, credentials: true }));
   app.use(express.urlencoded({ extended: true }));
   app.use(express.json());
-
+  app.use(cookieParser());
   app.use(
     helmet({
       hidePoweredBy: true,
@@ -43,6 +45,8 @@ const createApp = () => {
       },
     }),
   );
+
+  app.use(extractJWTFromCookie);
 
   app.use(passport.initialize());
 

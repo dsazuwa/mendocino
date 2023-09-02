@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 
-import { errorHandler } from '@middleware/error';
+import { errorHandler } from '@App/middleware';
 import { ApiError, logger } from '@App/utils';
 
 logger.error = jest.fn();

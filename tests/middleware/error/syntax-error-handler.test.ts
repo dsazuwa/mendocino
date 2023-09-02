@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 
-import { syntaxErrorHandlier } from '@middleware/error';
+import { syntaxErrorHandlier } from '@App/middleware';
 import ApiError from '@App/utils/api-error';
 
 describe('Syntax Error Handler', () => {

@@ -16,7 +16,7 @@ export const setAccessTokenCookie = (res: Response, jwt: string) => {
     expires: expirationDate,
   });
 
-  res.cookie('auth-flag', jwt, {
+  res.cookie('auth-flag', true, {
     secure: true,
     httpOnly: false,
     expires: expirationDate,
