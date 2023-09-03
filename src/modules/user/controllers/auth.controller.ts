@@ -404,7 +404,10 @@ export const setCookieAfterCallBack = async (
 
     const user = await userService.getUserFromPayload(decoded.email, 'email');
 
-    if (!user) return res.status(401).json({ message: 'Invalid token' });
+    if (!user)
+      return res
+        .status(401)
+        .json({ message: messages.SET_COOKIE_USER_NOT_FOUND });
 
     const refreshToken = await authService.generateRefreshToken(
       user.userId,
@@ -412,7 +415,7 @@ export const setCookieAfterCallBack = async (
     );
     setAccessTokenCookie(res, token, refreshToken);
 
-    res.status(200).json({ message: 'Set auth cookie', user });
+    res.status(200).json({ message: messages.SET_COOKIE_SUCCESS, user });
   } catch (e) {
     next(e);
   }

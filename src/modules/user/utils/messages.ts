@@ -51,6 +51,9 @@ const messages = {
 
   REACTIVATE_SUCCESS: 'Account reactivated!',
 
+  SET_COOKIE_USER_NOT_FOUND: 'Invalid token',
+  SET_COOKIE_SUCCESS: 'Authentication cookies set',
+
   // USERS ROUTER
 
   GET_USER_FAIL: 'Failed to get user',
