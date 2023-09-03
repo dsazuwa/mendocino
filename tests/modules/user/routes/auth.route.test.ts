@@ -128,7 +128,10 @@ describe('Email Authentication', () => {
       const response = await request.post(`${BASE_URL}/register`).send(data);
       expect(response.status).toBe(200);
 
-      const token = getTokenFrom(response.headers['set-cookie']);
+      const token = getTokenFrom(
+        response.headers['set-cookie'],
+        'access-token',
+      );
       expect(token).not.toEqual('');
 
       const user = await Customer.findOne({
@@ -178,7 +181,10 @@ describe('Email Authentication', () => {
 
         expect(response.status).toBe(200);
 
-        const token = getTokenFrom(response.headers['set-cookie']);
+        const token = getTokenFrom(
+          response.headers['set-cookie'],
+          'access-token',
+        );
         expect(token).not.toEqual('');
       });
 
@@ -193,7 +199,10 @@ describe('Email Authentication', () => {
 
         expect(response.status).toBe(401);
 
-        const token = getTokenFrom(response.headers['set-cookie']);
+        const token = getTokenFrom(
+          response.headers['set-cookie'],
+          'access-token',
+        );
         expect(token).toEqual('');
       });
 
@@ -215,7 +224,10 @@ describe('Email Authentication', () => {
 
         expect(response.status).toBe(401);
 
-        const token = getTokenFrom(response.headers['set-cookie']);
+        const token = getTokenFrom(
+          response.headers['set-cookie'],
+          'access-token',
+        );
         expect(token).toEqual('');
       });
 
@@ -231,7 +243,10 @@ describe('Email Authentication', () => {
 
         expect(response.status).toBe(401);
 
-        const token = getTokenFrom(response.headers['set-cookie']);
+        const token = getTokenFrom(
+          response.headers['set-cookie'],
+          'access-token',
+        );
         expect(token).toEqual('');
 
         const { accessToken, user } = response.body;
@@ -252,7 +267,10 @@ describe('Email Authentication', () => {
 
         expect(response.status).toBe(401);
 
-        const token = getTokenFrom(response.headers['set-cookie']);
+        const token = getTokenFrom(
+          response.headers['set-cookie'],
+          'access-token',
+        );
         expect(token).toEqual('');
       });
     });
@@ -278,7 +296,10 @@ describe('Email Authentication', () => {
         expect(response.status).toBe(200);
         expect(response.body.user).toBeDefined();
 
-        const token = getTokenFrom(response.headers['set-cookie']);
+        const token = getTokenFrom(
+          response.headers['set-cookie'],
+          'access-token',
+        );
         expect(token).toEqual('');
       });
 
@@ -293,7 +314,10 @@ describe('Email Authentication', () => {
 
         expect(response.status).toBe(401);
 
-        const token = getTokenFrom(response.headers['set-cookie']);
+        const token = getTokenFrom(
+          response.headers['set-cookie'],
+          'access-token',
+        );
         expect(token).toEqual('');
       });
     });
@@ -341,7 +365,10 @@ describe('Email Authentication', () => {
 
       expect(response.status).toBe(200);
 
-      const token = getTokenFrom(response.headers['set-cookie']);
+      const token = getTokenFrom(
+        response.headers['set-cookie'],
+        'access-token',
+      );
       expect(token).not.toEqual('');
     });
 
@@ -352,7 +379,10 @@ describe('Email Authentication', () => {
 
       expect(response.status).toBe(401);
 
-      const token = getTokenFrom(response.headers['set-cookie']);
+      const token = getTokenFrom(
+        response.headers['set-cookie'],
+        'access-token',
+      );
       expect(token).toEqual('');
     });
   });
@@ -361,7 +391,7 @@ describe('Email Authentication', () => {
     const response = await request.post(`${BASE_URL}/logout`);
     expect(response.status).toBe(200);
 
-    const token = getTokenFrom(response.headers['set-cookie']);
+    const token = getTokenFrom(response.headers['set-cookie'], 'access-token');
     expect(token).toEqual('');
   });
 });

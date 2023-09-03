@@ -435,7 +435,10 @@ describe(`PATCH ${BASE_URL}/revoke-social-auth`, () => {
 
     expect(response.status).toBe(200);
 
-    const accessToken = getTokenFrom(response.headers['set-cookie']);
+    const accessToken = getTokenFrom(
+      response.headers['set-cookie'],
+      'access-token',
+    );
     expect(accessToken).not.toEqual('');
 
     const decoded = verify(accessToken, process.env.JWT_SECRET) as JwtPayload;
@@ -471,7 +474,10 @@ describe(`PATCH ${BASE_URL}/revoke-social-auth`, () => {
 
     expect(response.status).toBe(200);
 
-    const accessToken = getTokenFrom(response.headers['set-cookie']);
+    const accessToken = getTokenFrom(
+      response.headers['set-cookie'],
+      'access-token',
+    );
     expect(accessToken).not.toEqual('');
 
     const decoded = verify(accessToken, process.env.JWT_SECRET) as JwtPayload;
