@@ -19,6 +19,9 @@ export const TABLENAMES = {
   CUSTOMER_IDENTITY: 'customer_identities',
   CUSTOMER_OTP: 'customer_otps',
   CUSTOMER_PHONE: 'customer_phones',
+
+  ADMIN_REFRESH_TOKEN: 'admin_refresh_tokens',
+  CUSTOMER_REFRESH_TOKEN: 'customer_refresh_tokens',
 };
 
 export const VIEWS = {

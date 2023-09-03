@@ -151,6 +151,28 @@ Table addresses {
 
 ref: addresses.customer_id > customers.customer_id
 
+Table admin_refresh_tokens {
+  token_id integer pk
+  admin_id integer [not null]
+  token varchar [not null]
+  revoked boolean [not null]
+  expires_at timestamp [not null]
+  created_at timestamp [not null]
+}
+
+ref: admin_refresh_tokens.admin_id > admins.admin_id
+
+Table customer_refresh_tokens {
+  token_id integer pk
+  customer_id integer [not null]
+  token varchar [not null]
+  revoked boolean [not null]
+  expires_at timestamp [not null]
+  created_at timestamp [not null]
+}
+
+ref: customer_refresh_tokens.customer_id > customers.customer_id
+
 Enum enum_admin_accounts_status {
   active
   pending

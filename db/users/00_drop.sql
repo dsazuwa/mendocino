@@ -1,13 +1,18 @@
 -- Drop triggers
+DROP TRIGGER IF EXISTS before_update_prevent_admin_id  ON users.admins;
+DROP TRIGGER IF EXISTS before_update_prevent_customer_id  ON users.customers;
 DROP TRIGGER IF EXISTS before_update_email ON users.emails;
 DROP TRIGGER IF EXISTS before_update_phone ON users.phones;
 
 -- Drop functions
+DROP FUNCTION IF EXISTS users.prevent_admin_id_update();
+DROP FUNCTION IF EXISTS users.prevent_customer_id_update();
 DROP FUNCTION IF EXISTS users.prevent_update_email();
 DROP FUNCTION IF EXISTS users.prevent_update_phone();
 
 -- Drop views
 DROP VIEW IF EXISTS users.user_type_view;
+DROP VIEW IF EXISTS users.all_refresh_tokens;
 
 -- Drop indexes
 DROP INDEX IF EXISTS users.idx_email_lower_unique;
@@ -29,8 +34,12 @@ ALTER TABLE IF EXISTS users.admin_phones DROP CONSTRAINT fk_admin_id;
 ALTER TABLE IF EXISTS users.admin_phones DROP CONSTRAINT fk_phone_id;
 ALTER TABLE IF EXISTS users.customer_phones DROP CONSTRAINT fk_customer_id;
 ALTER TABLE IF EXISTS users.customer_phones DROP CONSTRAINT fk_phone_id;
+ALTER TABLE IF EXISTS users.admin_refresh_tokens DROP CONSTRAINT fk_admin_id;
+ALTER TABLE IF EXISTS users.customer_refresh_tokens DROP CONSTRAINT fk_customer_id;
 
 -- Drop tables
+DROP TABLE IF EXISTS users.customer_refresh_tokens;
+DROP TABLE IF EXISTS users.admin_refresh_tokens;
 DROP TABLE IF EXISTS users.addresses;
 DROP TABLE IF EXISTS users.customer_phones;
 DROP TABLE IF EXISTS users.admin_phones;
@@ -46,6 +55,7 @@ DROP TABLE IF EXISTS users.admin_accounts;
 DROP TABLE IF EXISTS users.customers;
 DROP TABLE IF EXISTS users.admins;
 DROP TABLE IF EXISTS users.emails;
+
 
 -- Drop sequences
 DROP SEQUENCE IF EXISTS users.admin_id_seq;

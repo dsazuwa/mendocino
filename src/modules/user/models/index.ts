@@ -2,6 +2,7 @@ import Address from './address.model';
 import AdminAccount, { AdminAccountStatusType } from './admin-account.model';
 import AdminOTP, { AdminOTPType } from './admin-otp.model';
 import AdminPhone, { AdminPhoneStatusType } from './admin-phone.model';
+import AdminRefreshToken from './admin-refresh-token.model';
 import AdminRole from './admin-role.model';
 import Admin from './admin.model';
 import CustomerAccount, {
@@ -10,6 +11,7 @@ import CustomerAccount, {
 import CustomerIdentity, { ProviderType } from './customer-identity.model';
 import CustomerOTP, { CustomerOTPType } from './customer-otp.model';
 import CustomerPhone, { CustomerPhoneStatusType } from './customer-phone.model';
+import CustomerRefreshToken from './customer-refresh-token.model';
 import Customer from './customer.model';
 import Email from './email.model';
 import CustomerPassword from './nustomer-password.model';
@@ -129,6 +131,24 @@ Customer.hasOne(CustomerPhone, {
 Customer.hasMany(Address, { foreignKey: 'customerId', onDelete: 'CASCADE' });
 Address.belongsTo(Customer, { foreignKey: 'customerId', onDelete: 'CASCADE' });
 
+Admin.hasMany(AdminRefreshToken, {
+  foreignKey: 'adminId',
+  onDelete: 'CASCADE',
+});
+AdminRefreshToken.belongsTo(Admin, {
+  foreignKey: 'adminId',
+  onDelete: 'CASCADE',
+});
+
+Customer.hasMany(CustomerRefreshToken, {
+  foreignKey: 'customerId',
+  onDelete: 'CASCADE',
+});
+CustomerRefreshToken.belongsTo(Customer, {
+  foreignKey: 'customerId',
+  onDelete: 'CASCADE',
+});
+
 export {
   Address,
   Admin,
@@ -138,6 +158,7 @@ export {
   AdminOTPType,
   AdminPhone,
   AdminPhoneStatusType,
+  AdminRefreshToken,
   AdminRole,
   Customer,
   CustomerAccount,
@@ -148,6 +169,7 @@ export {
   CustomerPassword,
   CustomerPhone,
   CustomerPhoneStatusType,
+  CustomerRefreshToken,
   Email,
   Phone,
   ProviderType,

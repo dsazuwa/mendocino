@@ -16,6 +16,7 @@ CREATE TABLE users.admins (
   last_name VARCHAR(50) NOT NULL,
   created_at TIMESTAMP NOT NULL,
   updated_at TIMESTAMP NOT NULL,
+  CHECK (admin_id % 2 = 0),
   PRIMARY KEY (admin_id)
 );
 
@@ -25,6 +26,7 @@ CREATE TABLE users.customers (
   last_name VARCHAR(50) NOT NULL,
   created_at TIMESTAMP NOT NULL,
   updated_at TIMESTAMP NOT NULL,
+  CHECK (customer_id % 2 = 1),
   PRIMARY KEY (customer_id)
 );
 
@@ -148,5 +150,27 @@ CREATE TABLE users.addresses (
   created_at TIMESTAMP NOT NULL,
   updated_at TIMESTAMP NOT NULL,
   PRIMARY KEY (address_id),
+  CONSTRAINT fk_customer_id FOREIGN KEY (customer_id) REFERENCES users.customers (customer_id) ON DELETE CASCADE ON UPDATE NO ACTION
+);
+
+CREATE TABLE users.admin_refresh_tokens (
+  token_id SERIAL,
+  admin_id INTEGER NOT NULL,
+  token VARCHAR(255) NOT NULL,
+  revoked BOOLEAN NOT NULL,
+  expires_at TIMESTAMP NOT NULL,
+  created_at TIMESTAMP NOT NULL,
+  PRIMARY KEY (token_id),
+  CONSTRAINT fk_admin_id FOREIGN KEY (admin_id) REFERENCES users.admins (admin_id) ON DELETE CASCADE ON UPDATE NO ACTION
+);
+
+CREATE TABLE users.customer_refresh_tokens (
+  token_id SERIAL,
+  customer_id INTEGER NOT NULL,
+  token VARCHAR(255) NOT NULL,
+  revoked BOOLEAN NOT NULL,
+  expires_at TIMESTAMP NOT NULL,
+  created_at TIMESTAMP NOT NULL,
+  PRIMARY KEY (token_id),
   CONSTRAINT fk_customer_id FOREIGN KEY (customer_id) REFERENCES users.customers (customer_id) ON DELETE CASCADE ON UPDATE NO ACTION
 );
