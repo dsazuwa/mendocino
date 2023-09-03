@@ -7,19 +7,30 @@ import otpService from '@user/services/otp.service';
 import userService from '@user/services/user.service';
 import messages from '@user/utils/messages';
 
-export const setAccessTokenCookie = (res: Response, jwt: string) => {
-  const expirationDate = new Date(Date.now() + 86400 * 1000);
+export const setAccessTokenCookie = (
+  res: Response,
+  jwt: string,
+  refreshToken: string,
+) => {
+  const inSevenDays = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+  const inFiveMins = new Date(Date.now() + 5 * 60 * 1000);
 
   res.cookie('access-token', jwt, {
     secure: true,
     httpOnly: true,
-    expires: expirationDate,
+    expires: inFiveMins,
+  });
+
+  res.cookie('refresh-token', refreshToken, {
+    secure: true,
+    httpOnly: true,
+    expires: inSevenDays,
   });
 
   res.cookie('auth-flag', true, {
     secure: true,
     httpOnly: false,
-    expires: expirationDate,
+    expires: inSevenDays,
   });
 };
 
@@ -47,7 +58,13 @@ export const register = async (
 
     const userData = await userService.getUserData(customerId, 'customer');
 
-    setAccessTokenCookie(res, authService.generateJWT(email, 'email'));
+    const jwt = authService.generateJWT(email, 'email');
+    const refreshToken = await authService.generateRefreshToken(
+      customerId,
+      false,
+    );
+
+    setAccessTokenCookie(res, jwt, refreshToken);
 
     res.status(200).json({
       message: messages.REGISTER_SUCCESS,
@@ -105,7 +122,10 @@ export const login = async (
         message: messages.ERR_DEACTIVATED_ACCOUNT,
       });
 
-    setAccessTokenCookie(res, authService.generateJWT(email, 'email'));
+    const jwt = authService.generateJWT(email, 'email');
+    const refreshToken = await authService.generateRefreshToken(userId, false);
+
+    setAccessTokenCookie(res, jwt, refreshToken);
 
     return res.status(200).json({
       message: messages.LOGIN_SUCCESS,
@@ -141,10 +161,10 @@ export const loginAdmin = async (
 
     const user = await userService.getUserData(userId, 'customer');
 
-    setAccessTokenCookie(
-      res,
-      authService.generateJWT(user?.email as string, 'email'),
-    );
+    const jwt = authService.generateJWT(user?.email as string, 'email');
+    const refreshToken = await authService.generateRefreshToken(userId, true);
+
+    setAccessTokenCookie(res, jwt, refreshToken);
 
     res.status(200).json({ message: messages.LOGIN_ADMIN_2FA_SUCCESS, user });
   } catch (e) {
@@ -159,6 +179,8 @@ export const logout = async (
 ) => {
   try {
     res.clearCookie('access-token');
+    res.clearCookie('refresh-token');
+    res.clearCookie('auth-flag');
     res.status(200).json({ message: messages.LOGOUT });
   } catch (e) {
     next(e);
@@ -273,7 +295,13 @@ export const recoverPassword = async (
 
     const userData = await userService.getUserData(userId, userType);
 
-    setAccessTokenCookie(res, authService.generateJWT(email, 'email'));
+    const jwt = authService.generateJWT(email, 'email');
+    const refreshToken = await authService.generateRefreshToken(
+      userId,
+      isAdmin,
+    );
+
+    setAccessTokenCookie(res, jwt, refreshToken);
 
     res.status(200).json({
       message: messages.RECOVER_PASSWORD_SUCCESS,
@@ -299,7 +327,9 @@ export const reactivate = async (
 
     const userData = await userService.getUserData(userId, 'customer');
 
-    setAccessTokenCookie(res, authService.generateJWT(email, 'email'));
+    const jwt = authService.generateJWT(email, 'email');
+    const refreshToken = await authService.generateRefreshToken(userId, false);
+    setAccessTokenCookie(res, jwt, refreshToken);
 
     res.status(200).json({
       message: messages.REACTIVATE_SUCCESS,
@@ -376,7 +406,11 @@ export const setCookieAfterCallBack = async (
 
     if (!user) return res.status(401).json({ message: 'Invalid token' });
 
-    setAccessTokenCookie(res, token);
+    const refreshToken = await authService.generateRefreshToken(
+      user.userId,
+      false,
+    );
+    setAccessTokenCookie(res, token, refreshToken);
 
     res.status(200).json({ message: 'Set auth cookie', user });
   } catch (e) {

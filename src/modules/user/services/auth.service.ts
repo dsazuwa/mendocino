@@ -1,3 +1,4 @@
+import { randomUUID } from 'crypto';
 import { sign } from 'jsonwebtoken';
 
 import sequelize from '@App/db';
@@ -5,11 +6,13 @@ import sequelize from '@App/db';
 import {
   AdminAccount,
   AdminOTP,
+  AdminRefreshToken,
   Customer,
   CustomerAccount,
   CustomerIdentity,
   CustomerOTP,
   CustomerPassword,
+  CustomerRefreshToken,
   Email,
   ProviderType,
 } from '@user/models';
@@ -20,6 +23,28 @@ const authService = {
     sign({ email, provider }, process.env.JWT_SECRET, {
       expiresIn: '1 day',
     }),
+
+  generateRefreshToken: async (userId: number, isAdmin: boolean) => {
+    const token = randomUUID();
+    const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+
+    if (isAdmin)
+      await AdminRefreshToken.create({
+        adminId: userId,
+        token,
+        revoked: false,
+        expiresAt,
+      });
+    else
+      await CustomerRefreshToken.create({
+        customerId: userId,
+        token,
+        revoked: false,
+        expiresAt,
+      });
+
+    return token;
+  },
 
   createIdentityForCustomer: (
     identityId: string,
