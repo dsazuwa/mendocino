@@ -1,3 +1,4 @@
+import { Request } from 'express';
 import { QueryTypes, Transaction } from 'sequelize';
 
 import sequelize from '@App/db';
@@ -15,19 +16,18 @@ import {
   Role,
 } from '@user/models';
 import { USER_SCHEMA, VIEWS } from '@user/utils/constants';
-import { Request } from 'express';
 
 const userService = {
   getUserIdForUser: async (email: string, transaction?: Transaction) => {
     const query = `
     SELECT
-      utv.user_id AS "userId",
-      utv.is_admin AS "isAdmin",
-      utv.email AS email
+      user_id AS "userId",
+      is_admin AS "isAdmin",
+      email AS email
     FROM
-      ${USER_SCHEMA}.${VIEWS.USER_TYPE} utv
+      ${USER_SCHEMA}.${VIEWS.USER_TYPE}
     WHERE
-      utv.email = '${email}';`;
+      email = '${email}';`;
 
     const result = await sequelize.query(query, {
       type: QueryTypes.SELECT,
@@ -53,11 +53,9 @@ const userService = {
         FROM
           ${USER_SCHEMA}.${Customer.tableName} u
         JOIN
-          ${USER_SCHEMA}.${CustomerAccount.tableName} a ON u.customer_id = a.customer_id
+          ${USER_SCHEMA}.${CustomerAccount.tableName} a ON a.customer_id = u.customer_id AND a.customer_id = ${userId}
         JOIN
-          ${USER_SCHEMA}.${Email.tableName} e ON a.email_id = e.email_id
-        WHERE
-          u.customer_id = ${userId};`
+          ${USER_SCHEMA}.${Email.tableName} e ON a.email_id = e.email_id;`
         : `
         SELECT
           u.admin_id AS "userId",
@@ -69,15 +67,13 @@ const userService = {
         FROM
           ${USER_SCHEMA}.${Admin.tableName} u
         JOIN
-          ${USER_SCHEMA}.${AdminAccount.tableName} a ON u.admin_id = a.admin_id
+          ${USER_SCHEMA}.${AdminAccount.tableName} a ON u.admin_id = a.admin_id AND a.admin_id = ${userId}
         JOIN
           ${USER_SCHEMA}.${Email.tableName} e ON a.email_id = e.email_id
         JOIN
           ${USER_SCHEMA}.${AdminRole.tableName} ur ON u.admin_id = ur.admin_id
         JOIN
           ${USER_SCHEMA}.${Role.tableName} r ON r.role_id = ur.role_id
-        WHERE
-          u.admin_id = ${userId}
         GROUP BY
           u.admin_id, u.first_name, u.last_name, a.status, e.email;`;
 
@@ -107,49 +103,49 @@ const userService = {
     const query =
       provider === 'email'
         ? `
-        SELECT
-          CASE WHEN utv.is_admin THEN a.admin_id ELSE c.customer_id END AS "userId",
-          CASE WHEN utv.is_admin THEN a.first_name ELSE c.first_name END AS "firstName",
-          CASE WHEN utv.is_admin THEN a.last_name ELSE c.last_name END AS "lastName",
-          utv.email AS email,
-          CASE WHEN utv.is_admin THEN aa.status::text ELSE ca.status::text END AS status,
-          CASE WHEN utv.is_admin THEN array_agg(DISTINCT r.name) ELSE ARRAY['customer'] END AS roles
-        FROM
-          ${USER_SCHEMA}.${VIEWS.USER_TYPE} utv
-        LEFT JOIN
-          ${USER_SCHEMA}.${Admin.tableName} a ON a.admin_id = utv.user_id
-        LEFT JOIN
-          ${USER_SCHEMA}.${AdminAccount.tableName} aa ON aa.admin_id = a.admin_id
-        LEFT JOIN
-          ${USER_SCHEMA}.${AdminRole.tableName} ar ON ar.admin_id = a.admin_id
-        LEFT JOIN
-          ${USER_SCHEMA}.${Role.tableName} r ON r.role_id = ar.role_id
-        LEFT JOIN
-          ${USER_SCHEMA}.${Customer.tableName} c ON c.customer_id = utv.user_id
-        LEFT JOIN
-          ${USER_SCHEMA}.${CustomerAccount.tableName} ca ON ca.customer_id = c.customer_id
-        WHERE
-          utv.email = '${email}'
-        GROUP BY
-          utv.is_admin, utv.email, a.admin_id, c.customer_id, aa.status, ca.status;`
+          WITH u AS (
+            SELECT user_id, is_admin, email
+            FROM ${USER_SCHEMA}.${VIEWS.USER_TYPE}
+            WHERE email = '${email}'
+          )
+          SELECT
+            CASE WHEN u.is_admin THEN a.admin_id ELSE c.customer_id END AS "userId",
+            CASE WHEN u.is_admin THEN a.first_name ELSE c.first_name END AS "firstName",
+            CASE WHEN u.is_admin THEN a.last_name ELSE c.last_name END AS "lastName",
+            u.email AS email,
+            CASE WHEN u.is_admin THEN aa.status::text ELSE ca.status::text END AS status,
+            CASE WHEN u.is_admin THEN array_agg(DISTINCT r.name) ELSE ARRAY['customer'] END AS roles
+          FROM u
+          LEFT JOIN
+            ${USER_SCHEMA}.${Admin.tableName} a ON a.admin_id = u.user_id
+          LEFT JOIN
+            ${USER_SCHEMA}.${AdminAccount.tableName} aa ON aa.admin_id = a.admin_id
+          LEFT JOIN
+            ${USER_SCHEMA}.${AdminRole.tableName} ar ON ar.admin_id = a.admin_id
+          LEFT JOIN
+            ${USER_SCHEMA}.${Role.tableName} r ON r.role_id = ar.role_id
+          LEFT JOIN
+            ${USER_SCHEMA}.${Customer.tableName} c ON c.customer_id = u.user_id
+          LEFT JOIN
+            ${USER_SCHEMA}.${CustomerAccount.tableName} ca ON ca.customer_id = c.customer_id
+          GROUP BY
+            u.is_admin, u.email, a.admin_id, c.customer_id, aa.status, ca.status;`
         : `
-        SELECT
-          c.customer_id AS "userId",
-          c.first_name AS "firstName",
-          c.last_name AS "lastName",
-          e.email AS email,
-          ca.status AS status,
-          ARRAY['customer'] AS roles
-        FROM
-          ${USER_SCHEMA}.${Customer.tableName} c
-        JOIN
-          ${USER_SCHEMA}.${CustomerAccount.tableName} ca ON ca.customer_id = c.customer_id
-        JOIN
-          ${USER_SCHEMA}.${Email.tableName} e ON e.email_id = ca.email_id
-        JOIN
-          ${USER_SCHEMA}.${CustomerIdentity.tableName} ci ON ci.customer_id = c.customer_id AND ci.provider = '${provider}'
-        WHERE
-          e.email = '${email}';`;
+          SELECT
+            c.customer_id AS "userId",
+            c.first_name AS "firstName",
+            c.last_name AS "lastName",
+            e.email AS email,
+            ca.status AS status,
+            ARRAY['customer'] AS roles
+          FROM
+            ${USER_SCHEMA}.${Email.tableName} e
+          JOIN
+            ${USER_SCHEMA}.${CustomerAccount.tableName} ca ON ca.email_id = e.email_id AND e.email = '${email}'
+          JOIN
+            ${USER_SCHEMA}.${Customer.tableName} c ON c.customer_id = ca.customer_id
+          JOIN
+            ${USER_SCHEMA}.${CustomerIdentity.tableName} ci ON ci.customer_id = c.customer_id AND ci.provider = '${provider}';`;
 
     const result = await sequelize.query(query, { type: QueryTypes.SELECT });
 
@@ -162,8 +158,10 @@ const userService = {
     email: string,
   ) => {
     const query = `
-      WITH filtered_user_type AS (
-        SELECT * FROM ${USER_SCHEMA}.${VIEWS.USER_TYPE} v WHERE v.email = '${email}'
+      WITH ut AS (
+        SELECT user_id, is_admin, email
+        FROM ${USER_SCHEMA}.${VIEWS.USER_TYPE}
+        WHERE email = '${email}'
       )
       SELECT
         ut.is_admin AS "isAdmin",
@@ -178,7 +176,7 @@ const userService = {
             'status', u.status,
             'roles', u.roles)
         END AS user
-      FROM filtered_user_type ut
+      FROM ut
       FULL JOIN (
         SELECT
           u.customer_id AS user_id,
@@ -195,9 +193,9 @@ const userService = {
         JOIN
           ${USER_SCHEMA}.${Email.tableName} e ON a.email_id = e.email_id
         LEFT JOIN
-          ${USER_SCHEMA}.${CustomerIdentity.tableName} i ON u.customer_id = i.customer_id AND (i.provider = '${provider}' AND i.identity_id = '${identityId}')
+          ${USER_SCHEMA}.${CustomerIdentity.tableName} i ON u.customer_id = i.customer_id
         WHERE
-          e.email = '${email}' OR (i.identity_id = '${identityId}' AND u.customer_id = i.customer_id)
+          e.email = '${email}' OR (i.identity_id = '${identityId}' AND i.provider = '${provider}')
       ) u ON u.user_id = ut.user_id;`;
 
     const result = await sequelize.query(query, { type: QueryTypes.SELECT });
@@ -225,22 +223,27 @@ const userService = {
 
   getUserForRecovery: async (email: string) => {
     const query = `
+      WITH u AS (
+        SELECT user_id, is_admin, email
+        FROM ${USER_SCHEMA}.${VIEWS.USER_TYPE}
+        WHERE email = '${email}'
+      )
       SELECT
-        utv.is_admin AS "isAdmin",
-        CASE WHEN utv.is_admin THEN a.admin_id ELSE c.customer_id END AS "userId",
-        CASE WHEN utv.is_admin THEN a.first_name ELSE c.first_name END AS "firstName",
-        CASE WHEN utv.is_admin THEN a.last_name ELSE c.last_name END AS "lastName",
-        utv.email AS email,
+        u.is_admin AS "isAdmin",
+        CASE WHEN u.is_admin THEN a.admin_id ELSE c.customer_id END AS "userId",
+        CASE WHEN u.is_admin THEN a.first_name ELSE c.first_name END AS "firstName",
+        CASE WHEN u.is_admin THEN a.last_name ELSE c.last_name END AS "lastName",
+        u.email AS email,
         CASE
-          WHEN utv.is_admin THEN TRUE
+          WHEN u.is_admin THEN TRUE
           ELSE CASE WHEN cp.password IS NULL THEN FALSE ELSE TRUE END
         END AS "hasPassword",
-        CASE WHEN utv.is_admin THEN aa.status::text ELSE ca.status::text END AS status,
-        CASE WHEN utv.is_admin THEN array_agg(DISTINCT r.name) ELSE ARRAY['customer'] END AS roles
+        CASE WHEN u.is_admin THEN aa.status::text ELSE ca.status::text END AS status,
+        CASE WHEN u.is_admin THEN array_agg(DISTINCT r.name) ELSE ARRAY['customer'] END AS roles
       FROM
-        ${USER_SCHEMA}.${VIEWS.USER_TYPE} utv
+        u
       LEFT JOIN
-        ${USER_SCHEMA}.${Admin.tableName} a ON a.admin_id = utv.user_id
+        ${USER_SCHEMA}.${Admin.tableName} a ON a.admin_id = u.user_id
       LEFT JOIN
         ${USER_SCHEMA}.${AdminAccount.tableName} aa ON aa.admin_id = a.admin_id
       LEFT JOIN
@@ -248,15 +251,13 @@ const userService = {
       LEFT JOIN
         ${USER_SCHEMA}.${Role.tableName} r ON r.role_id = ar.role_id
       LEFT JOIN
-        ${USER_SCHEMA}.${Customer.tableName} c ON c.customer_id = utv.user_id
+        ${USER_SCHEMA}.${Customer.tableName} c ON c.customer_id = u.user_id
       LEFT JOIN
         ${USER_SCHEMA}.${CustomerAccount.tableName} ca ON ca.customer_id = c.customer_id
       LEFT JOIN
         ${USER_SCHEMA}.${CustomerPassword.tableName} cp ON cp.customer_id = c.customer_id
-      WHERE
-        utv.email = '${email}'
       GROUP BY
-        utv.is_admin, utv.email, a.admin_id, c.customer_id, cp.password, aa.status, ca.status;`;
+        u.is_admin, u.email, a.admin_id, c.customer_id, cp.password, aa.status, ca.status;`;
 
     const result = await sequelize.query(query, { type: QueryTypes.SELECT });
 
