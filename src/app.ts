@@ -9,7 +9,6 @@ import {
   errorHandler,
   notFoundHandler,
   syntaxErrorHandlier,
-  extractJWTFromCookie,
 } from './middleware';
 import logger from './utils/logger';
 
@@ -17,6 +16,7 @@ import { menuRouter } from './modules/menu';
 import {
   configureGoogleStrategy,
   configureJWTStrategy,
+  extractJWTFromCookie,
   userRouter,
 } from './modules/user';
 

@@ -5,9 +5,9 @@ const extractJWTFromCookie = (
   res: Response,
   next: NextFunction,
 ) => {
-  const token = req.cookies['access-token'];
+  const jwt = req.cookies['access-token'];
 
-  if (token) req.headers.authorization = `Bearer ${token}`;
+  if (jwt) req.headers.authorization = `Bearer ${jwt}`;
 
   next();
 };

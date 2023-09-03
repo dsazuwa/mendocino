@@ -1,7 +1,8 @@
+import authorizeAdmin from './middleware/auth/admin.authorize';
 import authenticate from './middleware/auth/authenticate';
 import authorize from './middleware/auth/authorize';
-import authorizeAdmin from './middleware/auth/admin.authorize';
 import authenticateInactive from './middleware/auth/inactive.authenticate';
+import extractJWTFromCookie from './middleware/jwt-extractor.middleware';
 
 import { configureGoogleStrategy } from './middleware/strategies/google.strategy';
 import { configureJWTStrategy } from './middleware/strategies/jwt.strategy';
@@ -18,5 +19,6 @@ export {
   authorizeAdmin,
   configureGoogleStrategy,
   configureJWTStrategy,
+  extractJWTFromCookie,
   userRouter,
 };
