@@ -1,4 +1,4 @@
-import { sign } from 'jsonwebtoken';
+import { JwtPayload, verify } from 'jsonwebtoken';
 
 import {
   AdminAccount,
@@ -15,8 +15,8 @@ import { ROLES } from '@user/utils/constants';
 import {
   createAdmin,
   createCustomer,
-  createRoles,
   createCustomerAndIdentity,
+  createRoles,
 } from 'tests/modules/user/helper-functions';
 
 import 'tests/db-setup';
@@ -31,36 +31,33 @@ describe('generate JWT token', () => {
   const email = 'janicedoe@gmail.com';
 
   it('should generate a token for email', async () => {
-    const token = authService.generateJWT(email, 'email');
-    const decoded = sign(
-      { email, provider: 'email' },
-      `${process.env.JWT_SECRET}`,
-      { expiresIn: '1 day' },
-    );
+    const provider = 'email';
 
-    expect(token).toEqual(decoded);
+    const token = authService.generateJWT(email, provider);
+
+    const decoded = verify(token, process.env.JWT_SECRET) as JwtPayload;
+    expect(decoded.email).toBe(email);
+    expect(decoded.provider).toBe(provider);
   });
 
   it('should generate a token for google', async () => {
-    const token = authService.generateJWT(email, 'google');
-    const decoded = sign(
-      { email, provider: 'google' },
-      `${process.env.JWT_SECRET}`,
-      { expiresIn: '1 day' },
-    );
+    const provider = 'google';
 
-    expect(token).toEqual(decoded);
+    const token = authService.generateJWT(email, provider);
+
+    const decoded = verify(token, process.env.JWT_SECRET) as JwtPayload;
+    expect(decoded.email).toBe(email);
+    expect(decoded.provider).toBe(provider);
   });
 
   it('should generate a token for facebook', async () => {
-    const token = authService.generateJWT(email, 'facebook');
-    const decoded = sign(
-      { email, provider: 'facebook' },
-      `${process.env.JWT_SECRET}`,
-      { expiresIn: '1 day' },
-    );
+    const provider = 'facebook';
 
-    expect(token).toEqual(decoded);
+    const token = authService.generateJWT(email, provider);
+
+    const decoded = verify(token, process.env.JWT_SECRET) as JwtPayload;
+    expect(decoded.email).toBe(email);
+    expect(decoded.provider).toBe(provider);
   });
 });
 
