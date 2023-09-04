@@ -39,24 +39,9 @@ const userService = {
       : (result[0] as { userId: number; isAdmin: boolean; email: string });
   },
 
-  getUserData: async (userId: number, userType: 'customer' | 'admin') => {
-    const query =
-      userType === 'customer'
-        ? `
-        SELECT
-          u.customer_id AS "userId",
-          u.first_name AS "firstName",
-          u.last_name AS "lastName",
-          e.email AS email,
-          a.status AS status,
-          ARRAY['customer'] AS roles
-        FROM
-          ${USER_SCHEMA}.${Customer.tableName} u
-        JOIN
-          ${USER_SCHEMA}.${CustomerAccount.tableName} a ON a.customer_id = u.customer_id AND a.customer_id = ${userId}
-        JOIN
-          ${USER_SCHEMA}.${Email.tableName} e ON a.email_id = e.email_id;`
-        : `
+  getUserData: async (userId: number, isAdmin: boolean) => {
+    const query = isAdmin
+      ? `
         SELECT
           u.admin_id AS "userId",
           u.first_name AS "firstName",
@@ -75,7 +60,21 @@ const userService = {
         JOIN
           ${USER_SCHEMA}.${Role.tableName} r ON r.role_id = ur.role_id
         GROUP BY
-          u.admin_id, u.first_name, u.last_name, a.status, e.email;`;
+          u.admin_id, u.first_name, u.last_name, a.status, e.email;`
+      : `
+        SELECT
+          u.customer_id AS "userId",
+          u.first_name AS "firstName",
+          u.last_name AS "lastName",
+          e.email AS email,
+          a.status AS status,
+          ARRAY['customer'] AS roles
+        FROM
+          ${USER_SCHEMA}.${Customer.tableName} u
+        JOIN
+          ${USER_SCHEMA}.${CustomerAccount.tableName} a ON a.customer_id = u.customer_id AND a.customer_id = ${userId}
+        JOIN
+          ${USER_SCHEMA}.${Email.tableName} e ON a.email_id = e.email_id;`;
 
     const result = await sequelize.query(query, { type: QueryTypes.SELECT });
 

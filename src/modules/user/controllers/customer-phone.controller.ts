@@ -34,7 +34,7 @@ export const resendVerifySMS = async (
     if (!userId) return res.status(401);
 
     await otpService.createOTP(userId, {
-      userType: 'customer',
+      isAdmin: false,
       otpType: 'phone',
     });
 
@@ -56,7 +56,7 @@ export const verifyPhone = async (
     if (!userId) return res.status(401);
 
     const { isValid } = await otpService.getOTP(userId, otp, {
-      userType: 'customer',
+      isAdmin: false,
       otpType: 'phone',
     });
 

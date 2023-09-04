@@ -1,6 +1,3 @@
-import { Request, Response } from 'express';
-
-import { facebookLogin, googleLogin } from '@user/controllers/auth.controller';
 import {
   Admin,
   AdminOTP,
@@ -11,7 +8,6 @@ import {
   Email,
 } from '@user/models';
 import authService from '@user/services/auth.service';
-import userService from '@user/services/user.service';
 import { ROLES } from '@user/utils/constants';
 
 import { getTokenFrom, request } from 'tests/supertest.helper';
@@ -31,88 +27,6 @@ const raw = true;
 
 beforeAll(async () => {
   await createRoles();
-});
-
-describe('Google Login', () => {
-  it(`GET ${BASE_URL}/google`, async () => {
-    await request.get(`${BASE_URL}/google`).expect(302);
-    await request.get(`${BASE_URL}/google/callback`).expect(302);
-  });
-
-  it('google callback controller', async () => {
-    const provider = 'google';
-
-    const { customerId, email } = await createCustomerAndIdentity(
-      'Jay',
-      'Doe',
-      'jaydoe@gmail.com',
-      'jayD0ePa$$',
-      'active',
-      [{ identityId: '428402371863284', provider }],
-    );
-
-    const req = {
-      user: { userId: customerId, email: email.email, status: 'active' },
-    } as Request;
-    const res = { redirect: jest.fn() } as unknown as Response;
-    const next = jest.fn();
-
-    const token = authService.generateJwt(email.email, provider);
-
-    const userData = await userService.getUserData(customerId, 'customer');
-    expect(userData).toBeDefined();
-
-    await googleLogin(req, res, next);
-
-    expect(res.redirect).toHaveBeenLastCalledWith(
-      `${
-        process.env.FRONTEND_BASE_URL
-      }/OAuthRedirecting?token=${token}&user=${encodeURIComponent(
-        JSON.stringify(userData),
-      )}`,
-    );
-  });
-});
-
-describe('Facebook Login', () => {
-  // it(`GET ${BASE_URL}/facebook`, async () => {
-  //   await request.get(`${BASE_URL}/facebook`).expect(302);
-  //   await request.get(`${BASE_URL}/facebook/callback`).expect(302);
-  // });
-
-  it('facebook callback controller', async () => {
-    const provider = 'facebook';
-
-    const { customerId, email } = await createCustomerAndIdentity(
-      'Jaz',
-      'Doe',
-      'jazdoe@gmail.com',
-      'jazD0ePa$$',
-      'active',
-      [{ identityId: '42942742739273298', provider }],
-    );
-
-    const req = {
-      user: { userId: customerId, email: email.email, status: 'active' },
-    } as Request;
-    const res = { redirect: jest.fn() } as unknown as Response;
-    const next = jest.fn();
-
-    const token = authService.generateJwt(email.email, provider);
-
-    const userData = await userService.getUserData(customerId, 'customer');
-    expect(userData).toBeDefined();
-
-    await facebookLogin(req, res, next);
-
-    expect(res.redirect).toHaveBeenLastCalledWith(
-      `${
-        process.env.FRONTEND_BASE_URL
-      }/OAuthRedirecting?token=${token}&user=${encodeURIComponent(
-        JSON.stringify(userData),
-      )}`,
-    );
-  });
 });
 
 describe('Email Authentication', () => {

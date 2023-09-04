@@ -15,7 +15,7 @@ beforeAll(async () => {
 });
 
 describe('get admin otp', () => {
-  const userType = 'admin';
+  const isAdmin = true;
   let adminId: number;
 
   beforeAll(async () => {
@@ -47,7 +47,7 @@ describe('get admin otp', () => {
     });
 
     const result = await otpService.getOTP(adminId, password, {
-      userType,
+      isAdmin,
       otpType,
     });
 
@@ -66,7 +66,7 @@ describe('get admin otp', () => {
     });
 
     const result = await otpService.getOTP(adminId, '12345', {
-      userType,
+      isAdmin,
       otpType,
     });
 
@@ -84,7 +84,7 @@ describe('get admin otp', () => {
     expect(otp).toBeNull();
 
     const result = await otpService.getOTP(adminId, '12345', {
-      userType,
+      isAdmin,
       otpType,
     });
 
@@ -94,7 +94,7 @@ describe('get admin otp', () => {
 });
 
 describe('get customer otp', () => {
-  const userType = 'customer';
+  const isAdmin = false;
   let customerId: number;
 
   beforeAll(async () => {
@@ -125,7 +125,7 @@ describe('get customer otp', () => {
     });
 
     const result = await otpService.getOTP(customerId, password, {
-      userType,
+      isAdmin,
       otpType,
     });
 
@@ -144,7 +144,7 @@ describe('get customer otp', () => {
     });
 
     const result = await otpService.getOTP(customerId, '12345', {
-      userType,
+      isAdmin,
       otpType,
     });
 
@@ -162,7 +162,7 @@ describe('get customer otp', () => {
     expect(otp).toBeNull();
 
     const result = await otpService.getOTP(customerId, '54321', {
-      userType,
+      isAdmin,
       otpType,
     });
 
@@ -172,7 +172,7 @@ describe('get customer otp', () => {
 });
 
 describe('create admin otp', () => {
-  const userType = 'admin';
+  const isAdmin = true;
   let adminId: number;
 
   beforeAll(async () => {
@@ -195,7 +195,7 @@ describe('create admin otp', () => {
   it('should create new otp', async () => {
     const otpType = 'phone';
 
-    const password = await otpService.createOTP(adminId, { userType, otpType });
+    const password = await otpService.createOTP(adminId, { isAdmin, otpType });
 
     const otp = await AdminOTP.findOne({
       where: { adminId, type: otpType },
@@ -214,7 +214,7 @@ describe('create admin otp', () => {
       expiresAt: AdminOTP.getExpiration(),
     });
 
-    await otpService.createOTP(adminId, { userType, otpType });
+    await otpService.createOTP(adminId, { isAdmin, otpType });
 
     const previousOTP = await AdminOTP.findByPk(previousId, { raw: true });
     expect(previousOTP).toBeNull();
@@ -222,7 +222,7 @@ describe('create admin otp', () => {
 });
 
 describe('create customer otp', () => {
-  const userType = 'customer';
+  const isAdmin = false;
   let customerId: number;
 
   beforeAll(async () => {
@@ -245,7 +245,7 @@ describe('create customer otp', () => {
     const otpType = 'phone';
 
     const password = await otpService.createOTP(customerId, {
-      userType,
+      isAdmin,
       otpType,
     });
 
@@ -266,7 +266,7 @@ describe('create customer otp', () => {
       expiresAt: CustomerOTP.getExpiration(),
     });
 
-    await otpService.createOTP(customerId, { userType, otpType });
+    await otpService.createOTP(customerId, { isAdmin, otpType });
 
     const previousOTP = await CustomerOTP.findByPk(previousId, { raw: true });
     expect(previousOTP).toBeNull();

@@ -3,7 +3,6 @@ import { NextFunction, Request, Response } from 'express';
 import authService from '@user/services/auth.service';
 import customerService from '@user/services/customer.service';
 import otpService from '@user/services/otp.service';
-
 import messages from '@user/utils/messages';
 import { setAccessTokenCookie } from './auth.controller';
 
@@ -32,7 +31,7 @@ export const resendVerifyEmail = async (
     const userId = req.user?.userId ?? -1;
 
     await otpService.createOTP(userId, {
-      userType: 'customer',
+      isAdmin: false,
       otpType: 'email',
     });
 
@@ -52,7 +51,7 @@ export const verifyEmail = async (
     const { otp } = req.params;
 
     const { isValid } = await otpService.getOTP(userId, otp, {
-      userType: 'customer',
+      isAdmin: false,
       otpType: 'email',
     });
 

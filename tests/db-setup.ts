@@ -19,15 +19,18 @@ import {
   AdminAccount,
   AdminOTP,
   AdminPhone,
+  AdminRefreshToken,
   AdminRole,
   Customer,
   CustomerAccount,
   CustomerIdentity,
   CustomerOTP,
   CustomerPhone,
+  CustomerRefreshToken,
   Email,
   Phone,
   Role,
+  CustomerPassword,
 } from '@user/models';
 
 beforeAll(async () => {
@@ -48,6 +51,7 @@ beforeAll(async () => {
   // User
   await Address.destroy({ where: {} });
 
+  await AdminRefreshToken.destroy({ where: {} });
   await AdminRole.destroy({ where: {} });
   await AdminPhone.destroy({ where: {} });
   await AdminOTP.destroy({ where: {} });
@@ -55,8 +59,10 @@ beforeAll(async () => {
   await Admin.destroy({ where: {} });
 
   await CustomerPhone.destroy({ where: {} });
+  await CustomerRefreshToken.destroy({ where: {} });
   await CustomerOTP.destroy({ where: {} });
   await CustomerIdentity.destroy({ where: {} });
+  await CustomerPassword.destroy({ where: {} });
   await CustomerAccount.destroy({ where: {} });
   await Customer.destroy({ where: {} });
 

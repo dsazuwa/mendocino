@@ -304,12 +304,8 @@ const authService = {
         : null;
     }),
 
-  recoverPassword: (
-    userType: 'admin' | 'customer',
-    userId: number,
-    password: string,
-  ) =>
-    userType === 'admin'
+  recoverPassword: (isAdmin: boolean, userId: number, password: string) =>
+    isAdmin
       ? sequelize.transaction(async (transaction) => {
           await AdminOTP.destroy({
             where: { adminId: userId, type: 'password' },

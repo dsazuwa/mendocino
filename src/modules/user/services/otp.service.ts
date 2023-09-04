@@ -56,17 +56,16 @@ const otpService = {
     userId: number,
     password: string,
     type:
-      | { userType: 'admin'; otpType: AdminOTPType }
-      | { userType: 'customer'; otpType: CustomerOTPType },
+      | { isAdmin: true; otpType: AdminOTPType }
+      | { isAdmin: false; otpType: CustomerOTPType },
   ) => {
-    const { userType, otpType } = type;
+    const { isAdmin, otpType } = type;
 
-    const otp =
-      userType === 'admin'
-        ? await AdminOTP.findOne({ where: { adminId: userId, type: otpType } })
-        : await CustomerOTP.findOne({
-            where: { customerId: userId, type: otpType },
-          });
+    const otp = isAdmin
+      ? await AdminOTP.findOne({ where: { adminId: userId, type: otpType } })
+      : await CustomerOTP.findOne({
+          where: { customerId: userId, type: otpType },
+        });
 
     const isValid =
       otp !== null &&
@@ -79,12 +78,12 @@ const otpService = {
   createOTP: (
     userId: number,
     type:
-      | { userType: 'admin'; otpType: AdminOTPType }
-      | { userType: 'customer'; otpType: CustomerOTPType },
+      | { isAdmin: true; otpType: AdminOTPType }
+      | { isAdmin: false; otpType: CustomerOTPType },
   ) => {
-    const { userType, otpType } = type;
+    const { isAdmin, otpType } = type;
 
-    return userType === 'admin'
+    return isAdmin
       ? createAdminOTP(userId, otpType)
       : createCustomerOTP(userId, otpType);
   },

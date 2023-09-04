@@ -273,7 +273,7 @@ describe('recover password', () => {
 
     const newPassword = 'newD0epa$$word';
 
-    await authService.recoverPassword('customer', customerId, newPassword);
+    await authService.recoverPassword(false, customerId, newPassword);
 
     const password = await CustomerPassword.findOne({ where: { customerId } });
     expect(password?.comparePasswords(newPassword)).toBe(true);
@@ -291,7 +291,7 @@ describe('recover password', () => {
 
     const newPassword = 'newD0epa$$word';
 
-    await authService.recoverPassword('admin', adminId, newPassword);
+    await authService.recoverPassword(true, adminId, newPassword);
 
     const account = await AdminAccount.findOne({ where: { adminId } });
     expect(account?.comparePasswords(newPassword)).toBe(true);

@@ -60,7 +60,7 @@ export const register = async (
       password,
     );
 
-    const userData = await userService.getUserData(customerId, 'customer');
+    const userData = await userService.getUserData(customerId, false);
 
     const { jwt, refreshToken } = await authService.generateTokens(
       false,
@@ -104,10 +104,10 @@ export const login = async (
       });
 
     if (isAdmin) {
-      const userData = await userService.getUserData(userId, 'admin');
+      const userData = await userService.getUserData(userId, true);
 
       await otpService.createOTP(userId, {
-        userType: 'admin',
+        isAdmin: true,
         otpType: 'login',
       });
 
@@ -117,7 +117,7 @@ export const login = async (
       });
     }
 
-    const userData = await userService.getUserData(userId, 'customer');
+    const userData = await userService.getUserData(userId, false);
 
     if (status === 'deactivated')
       return res.status(401).json({
@@ -159,14 +159,14 @@ export const loginAdmin = async (
     const userId = parseInt(id, 10);
 
     const { isValid } = await otpService.getOTP(userId, otp, {
-      userType: 'admin',
+      isAdmin: true,
       otpType: 'login',
     });
 
     if (!isValid)
       return res.status(401).json({ message: messages.INVALID_AUTH_OTP });
 
-    const user = await userService.getUserData(userId, 'customer');
+    const user = await userService.getUserData(userId, false);
 
     const { jwt, refreshToken } = await authService.generateTokens(
       true,
@@ -231,7 +231,7 @@ export const requestPasswordRecovery = async (
         .json({ message: messages.REQUEST_RECOVERY_FAIL_THIRD_PARTY_AUTH });
 
     await otpService.createOTP(userId, {
-      userType: isAdmin ? 'admin' : 'customer',
+      isAdmin,
       otpType: 'password',
     });
 
@@ -258,7 +258,7 @@ export const verifyRecoveryOTP = async (
     const { userId, isAdmin } = user;
 
     const { isValid } = await otpService.getOTP(userId, otp, {
-      userType: isAdmin ? 'admin' : 'customer',
+      isAdmin,
       otpType: 'password',
     });
 
@@ -288,25 +288,19 @@ export const recoverPassword = async (
     const { userId, isAdmin } = user;
 
     const { isValid } = await otpService.getOTP(userId, otp, {
-      userType: isAdmin ? 'admin' : 'customer',
+      isAdmin,
       otpType: 'password',
     });
 
     if (!isValid)
       return res.status(401).json({ message: messages.INVALID_AUTH_OTP });
 
-    const userType = isAdmin ? 'admin' : 'customer';
-
-    const result = await authService.recoverPassword(
-      userType,
-      userId,
-      password,
-    );
+    const result = await authService.recoverPassword(isAdmin, userId, password);
 
     if (!result)
       return res.status(400).json({ message: messages.RECOVER_PASSWORD_FAIL });
 
-    const userData = await userService.getUserData(userId, userType);
+    const userData = await userService.getUserData(userId, isAdmin);
 
     const { jwt, refreshToken } = await authService.generateTokens(
       isAdmin,
@@ -339,7 +333,7 @@ export const reactivate = async (
 
     await authService.reactivateCustomer(userId);
 
-    const userData = await userService.getUserData(userId, 'customer');
+    const userData = await userService.getUserData(userId, false);
 
     const { jwt, refreshToken } = await authService.generateTokens(
       false,
@@ -377,7 +371,7 @@ export const socialLogin = async (
       provider,
     );
 
-    const userData = await userService.getUserData(userId, 'customer');
+    const userData = await userService.getUserData(userId, false);
 
     res.redirect(
       `${
