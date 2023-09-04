@@ -43,18 +43,40 @@ const generateRefreshToken = async (
     await AdminRefreshToken.create({
       adminId: userId,
       token,
-      revoked: false,
       expiresAt,
     });
   else
     await CustomerRefreshToken.create({
       customerId: userId,
       token,
-      revoked: false,
       expiresAt,
     });
 
   return refreshToken;
+};
+
+export const getRefreshToken = async (userId: number, token: string) => {
+  const query = `
+    SELECT
+      is_admin AS "isAdmin",
+      user_id AS "userId",
+      email,
+      token,
+      expires_at AS "expiresAt"
+    FROM users.get_refresh_token($userId, $token)`;
+
+  const result = (await sequelize.query(query, {
+    type: QueryTypes.SELECT,
+    bind: { userId, token },
+  })) as {
+    isAdmin: boolean;
+    userId: number;
+    email: string;
+    token: string;
+    expiresAt: Date;
+  }[];
+
+  return result.length === 0 ? null : result[0];
 };
 
 const authService = {
@@ -99,34 +121,11 @@ const authService = {
 
     const { userId, token, provider } = decoded;
 
-    const query = `
-        SELECT
-          is_admin AS "isAdmin",
-          user_id AS "userId",
-          email,
-          token,
-          revoked,
-          expires_at AS "expiresAt"
-        FROM users.get_refresh_token($userId, $token)`;
+    const result = await getRefreshToken(userId, token);
 
-    const result = (await sequelize.query(query, {
-      type: QueryTypes.SELECT,
-      bind: { userId, token },
-    })) as {
-      isAdmin: boolean;
-      userId: number;
-      email: string;
-      token: string;
-      revoked: boolean;
-      expiresAt: Date;
-    }[];
+    if (!result || result.expiresAt < new Date()) return null;
 
-    if (result.length === 0) return null;
-
-    const { revoked, expiresAt } = result[0];
-    if (revoked || expiresAt < new Date()) return null;
-
-    return { userId, token, provider } as {
+    return { userId, email: result.email, token, provider } as {
       userId: number;
       email: string;
       token: string;
@@ -143,6 +142,25 @@ const authService = {
       refreshT.email === accessT.email &&
       refreshT.provider === accessT.provider
     );
+  },
+
+  revokeRefreshToken: async (refreshToken: string | undefined) => {
+    if (!refreshToken) return;
+
+    const { userId, token } = verify(
+      refreshToken,
+      process.env.REFRESH_TOKEN_SECRET,
+    ) as JwtPayload;
+
+    const result = await getRefreshToken(userId, token);
+
+    if (!result) return;
+    if (result.isAdmin)
+      await AdminRefreshToken.destroy({ where: { adminId: userId, token } });
+    else
+      await CustomerRefreshToken.destroy({
+        where: { customerId: userId, token },
+      });
   },
 
   createIdentityForCustomer: (

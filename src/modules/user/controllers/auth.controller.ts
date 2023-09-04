@@ -188,9 +188,12 @@ export const logout = async (
   next: NextFunction,
 ) => {
   try {
+    await authService.revokeRefreshToken(req.cookies['refresh-token']);
+
     res.clearCookie('access-token');
     res.clearCookie('refresh-token');
     res.clearCookie('auth-flag');
+
     res.status(200).json({ message: messages.LOGOUT });
   } catch (e) {
     next(e);
