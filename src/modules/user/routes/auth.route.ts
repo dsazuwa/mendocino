@@ -86,13 +86,13 @@ authRouter.get(
   facebookLogin,
 );
 
-authRouter.get(
+authRouter.post(
   '/set-cookie',
   trimRequestBody,
   validate(setCookieSchema),
   setCookieAfterCallBack,
 );
 
-authRouter.get('/refresh', refreshJwt);
+authRouter.post('/refresh', refreshJwt);
 
 export default authRouter;

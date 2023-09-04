@@ -11,8 +11,8 @@ GET    /auth/google                      google auth
 GET    /auth/google/callback             google callback
 GET    /auth/facebook                    facebook auth
 GET    /auth/facebook/callback           facebook callback
-GET    /auth/set-cookie                  set auth cookies after callback
-GET    /auth/refresh                     refresh access-token jwt
+POST   /auth/set-cookie                  set auth cookies after callback
+POST   /auth/refresh                     refresh access-token jwt
 
                         **** USERS ROUTER ****    
 GET    /users/me                         get user data (largely for app routing)

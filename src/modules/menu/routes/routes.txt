@@ -1,0 +1,36 @@
+                        **** ITEM ROUTER ****
+GET     /menu                             get current menu
+GET     /menu/grouped                     get items grouped by category
+
+GET     /menu/items                       get all menu items
+POST    /menu/items                       create item
+GET     /menu/items/:id                   get item details
+PATCH   /menu/items/:id                   update item (name, description, category, tags, status, sizes, price, photo)
+PATCH   /menu/items/:id/status            update item status 'active' | 'sold out' [manager route]
+
+                        **** PHOTO ROUTER ****
+GET     /menu/items/photo                 get photos
+POST    /menu/items/photo                 upload photo
+PATCH   /menu/items/photo/:id             update photo name in cloud and associated menu items
+DELETE  /menu/items/photo/:id             delete photo
+
+                        **** CATEGORY ROUTER ****
+GET     /menu/category                    get categories
+POST    /menu/category                    create categories
+GET     /menu/category/:id                get category details
+PATCH   /menu/category/:id                update category
+DELETE  /menu/category/:id                conditional delete (if no item is associated with it)
+
+                        **** TAG ROUTER ****
+GET     /menu/tag                         get tags
+POST    /menu/tag                         create tags
+GET     /menu/tag/:id                     get tag details
+PATCH   /menu/tag/:id                     update tag
+DELETE  /menu/tag/:id                     conditional delete (if no item is associated with it)
+
+                        **** DISCOUNT ROUTER ****
+GET     /menu/discount                    get discounts
+POST    /menu/discount                    create discount
+GET     /menu/discount/:id                get discount details
+PATCH   /menu/discount/:id                update discount
+DELETE  /menu/discount/:id                conditional delete (if no item or category is associated with it)
