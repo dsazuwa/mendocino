@@ -17,6 +17,7 @@ import {
   configureGoogleStrategy,
   configureJWTStrategy,
   extractJWTFromCookie,
+  jwtErrorHandler,
   userRouter,
 } from './modules/user';
 
@@ -61,6 +62,7 @@ const createApp = () => {
   app.use('/api/menu', menuRouter);
 
   app.use(notFoundHandler);
+  app.use(jwtErrorHandler);
   app.use(syntaxErrorHandlier);
   app.use(errorHandler);
 
