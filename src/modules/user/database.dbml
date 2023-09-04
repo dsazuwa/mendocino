@@ -155,7 +155,6 @@ Table admin_refresh_tokens {
   token_id integer pk
   admin_id integer [not null]
   token varchar [not null]
-  revoked boolean [not null]
   expires_at timestamp [not null]
   created_at timestamp [not null]
 }
@@ -166,7 +165,6 @@ Table customer_refresh_tokens {
   token_id integer pk
   customer_id integer [not null]
   token varchar [not null]
-  revoked boolean [not null]
   expires_at timestamp [not null]
   created_at timestamp [not null]
 }

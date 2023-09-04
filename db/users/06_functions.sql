@@ -4,7 +4,6 @@ RETURNS TABLE (
   user_id INTEGER,
   email VARCHAR,
   token VARCHAR,
-  revoked BOOLEAN,
   expires_at TIMESTAMP,
   created_at TIMESTAMP
 )
@@ -21,7 +20,6 @@ BEGIN
       art.admin_id AS user_id,
       ae.email AS email,
       art.token AS token,
-      art.revoked AS revoked,
       art.expires_at AS expires_at,
       art.created_at AS created_at
     FROM users.admin_refresh_tokens art
@@ -37,7 +35,6 @@ BEGIN
       crt.customer_id AS user_id,
       ce.email AS email,
       crt.token AS token,
-      crt.revoked AS revoked,
       crt.expires_at AS expires_at,
       crt.created_at AS created_at
     FROM users.customer_refresh_tokens crt

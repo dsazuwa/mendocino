@@ -20,8 +20,6 @@ class AdminRefreshToken extends Model<
 
   declare token: string;
 
-  declare revoked: boolean;
-
   declare expiresAt: Date;
 
   declare createdAt: CreationOptional<Date>;
@@ -43,10 +41,6 @@ AdminRefreshToken.init(
       type: DataTypes.STRING,
       allowNull: false,
       unique: 'compositeIndex',
-    },
-    revoked: {
-      type: DataTypes.BOOLEAN,
-      allowNull: false,
     },
     expiresAt: {
       type: DataTypes.DATE,
