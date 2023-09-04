@@ -39,7 +39,7 @@ describe(`PATCH ${BASE_URL}/name`, () => {
     );
 
     adminId = admin.adminId;
-    jwt = authService.generateJWT(email.email, 'email');
+    jwt = authService.generateJwt(email.email, 'email');
   });
 
   const testUpdatecustomer = async (
@@ -114,7 +114,7 @@ describe(`PATCH ${BASE_URL}/password`, () => {
     );
 
     adminId = admin.adminId;
-    jwt = authService.generateJWT(email.email, 'email');
+    jwt = authService.generateJwt(email.email, 'email');
   });
 
   it('should update password', async () => {

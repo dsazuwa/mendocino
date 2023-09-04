@@ -27,13 +27,13 @@ beforeAll(async () => {
   await createRoles();
 });
 
-describe('generate JWT token', () => {
+describe('generate Jwt token', () => {
   const email = 'janicedoe@gmail.com';
 
   it('should generate a token for email', async () => {
     const provider = 'email';
 
-    const token = authService.generateJWT(email, provider);
+    const token = authService.generateJwt(email, provider);
 
     const decoded = verify(token, process.env.JWT_SECRET) as JwtPayload;
     expect(decoded.email).toBe(email);
@@ -43,7 +43,7 @@ describe('generate JWT token', () => {
   it('should generate a token for google', async () => {
     const provider = 'google';
 
-    const token = authService.generateJWT(email, provider);
+    const token = authService.generateJwt(email, provider);
 
     const decoded = verify(token, process.env.JWT_SECRET) as JwtPayload;
     expect(decoded.email).toBe(email);
@@ -53,7 +53,7 @@ describe('generate JWT token', () => {
   it('should generate a token for facebook', async () => {
     const provider = 'facebook';
 
-    const token = authService.generateJWT(email, provider);
+    const token = authService.generateJwt(email, provider);
 
     const decoded = verify(token, process.env.JWT_SECRET) as JwtPayload;
     expect(decoded.email).toBe(email);

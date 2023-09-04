@@ -121,7 +121,7 @@ export const login = async (
 
     if (status === 'deactivated')
       return res.status(401).json({
-        accessToken: authService.generateJWT(email, 'email'),
+        accessToken: authService.generateJwt(email, 'email'),
         user: userData,
         message: messages.ERR_DEACTIVATED_ACCOUNT,
       });
@@ -435,7 +435,7 @@ export const setCookieAfterCallBack = async (
   }
 };
 
-export const refreshJWT = async (
+export const refreshJwt = async (
   req: Request,
   res: Response,
   next: NextFunction,
@@ -455,7 +455,7 @@ export const refreshJWT = async (
 
     const { email, provider } = result;
 
-    setJwtCookie(res, authService.generateJWT(email, provider));
+    setJwtCookie(res, authService.generateJwt(email, provider));
 
     res.status(200).json({ message: messages.REFRESH_JWT_SUCCESS });
   } catch (e) {

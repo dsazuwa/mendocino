@@ -16,7 +16,7 @@ describe('Inative Authentication Middleware', () => {
       'jessD0ePa$$',
       'deactivated',
     );
-    const token = authService.generateJWT(email.email, 'email');
+    const token = authService.generateJwt(email.email, 'email');
 
     await request.get(URL).auth(token, { type: 'bearer' }).expect(200);
   });
@@ -35,7 +35,7 @@ describe('Inative Authentication Middleware', () => {
       'jessD0ePa$$',
       'active',
     );
-    const token = authService.generateJWT(email.email, 'email');
+    const token = authService.generateJwt(email.email, 'email');
 
     await request.get(URL).auth(token, { type: 'bearer' }).expect(401);
   });
@@ -48,7 +48,7 @@ describe('Inative Authentication Middleware', () => {
       'jazzD0ePs$$',
       'pending',
     );
-    const token = authService.generateJWT(email.email, 'email');
+    const token = authService.generateJwt(email.email, 'email');
 
     await request.get(URL).auth(token, { type: 'bearer' }).expect(401);
   });

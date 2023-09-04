@@ -15,9 +15,9 @@ import 'tests/db-setup';
 
 const BASE_URL = '/api/menu/items';
 
-let superJWT: string;
-let managerJWT: string;
-let customerJWT: string;
+let superJwt: string;
+let managerJwt: string;
+let customerJwt: string;
 
 beforeAll(async () => {
   await createMenu();
@@ -25,21 +25,21 @@ beforeAll(async () => {
   await createRoles();
 
   let email = 'joedoe@gmail.com';
-  superJWT = authService.generateJWT(email, 'email');
+  superJwt = authService.generateJwt(email, 'email');
 
   await createAdmin('Joe', 'Doe', email, 'joeD0ePa$$', 'active', [
     ROLES.SUPER_ADMIN.roleId,
   ]);
 
   email = 'jaydoe@gmail.com';
-  managerJWT = authService.generateJWT(email, 'email');
+  managerJwt = authService.generateJwt(email, 'email');
 
   await createAdmin('Jay', 'Doe', email, 'jayD0ePa$$', 'active', [
     ROLES.MANAGER.roleId,
   ]);
 
   email = 'jessdoe@gmail.com';
-  customerJWT = authService.generateJWT(email, 'email');
+  customerJwt = authService.generateJwt(email, 'email');
 
   await createCustomer('Jess', 'Doe', email, 'jessD0ePa$$', 'active');
 });
@@ -49,17 +49,17 @@ describe(`GET ${BASE_URL}`, () => {
     await request.get(BASE_URL).expect(401);
     await request
       .get(BASE_URL)
-      .auth(customerJWT, { type: 'bearer' })
+      .auth(customerJwt, { type: 'bearer' })
       .expect(401);
 
     let response = await request
       .get(BASE_URL)
-      .auth(superJWT, { type: 'bearer' });
+      .auth(superJwt, { type: 'bearer' });
 
     expect(response.status).toBe(200);
     expect(response.body.menu.length).toBe(6);
 
-    response = await request.get(BASE_URL).auth(managerJWT, { type: 'bearer' });
+    response = await request.get(BASE_URL).auth(managerJwt, { type: 'bearer' });
 
     expect(response.status).toBe(200);
     expect(response.body.menu.length).toBe(6);
@@ -86,7 +86,7 @@ describe(`POST ${BASE_URL}`, () => {
     const response = await request
       .post(BASE_URL)
       .send(data)
-      .auth(superJWT, { type: 'bearer' });
+      .auth(superJwt, { type: 'bearer' });
 
     expect(response.status).toBe(200);
   });
@@ -109,7 +109,7 @@ describe(`POST ${BASE_URL}`, () => {
     await request
       .post(BASE_URL)
       .send(data)
-      .auth(superJWT, { type: 'bearer' })
+      .auth(superJwt, { type: 'bearer' })
       .expect(400);
   });
 });
@@ -144,7 +144,7 @@ describe(`PATCH ${BASE_URL}/:id`, () => {
     const response = await request
       .patch(`${BASE_URL}/${itemId}`)
       .send({ name })
-      .auth(superJWT, { type: 'bearer' });
+      .auth(superJwt, { type: 'bearer' });
 
     expect(response.status).toBe(200);
 
@@ -158,7 +158,7 @@ describe(`PATCH ${BASE_URL}/:id`, () => {
     const response = await request
       .patch(`${BASE_URL}/${itemId}`)
       .send({ category })
-      .auth(superJWT, { type: 'bearer' });
+      .auth(superJwt, { type: 'bearer' });
 
     expect(response.status).toBe(200);
 
@@ -180,7 +180,7 @@ describe(`PATCH ${BASE_URL}/:id`, () => {
     await request
       .patch(`${BASE_URL}/${itemId}`)
       .send({ name: 'Prosciutto & Chicken', category: 'foodies' })
-      .auth(superJWT, { type: 'bearer' })
+      .auth(superJwt, { type: 'bearer' })
       .expect(400);
   });
 
@@ -188,7 +188,7 @@ describe(`PATCH ${BASE_URL}/:id`, () => {
     await request
       .patch(`${BASE_URL}/${itemId}`)
       .send({ status: 'foodies' })
-      .auth(superJWT, { type: 'bearer' })
+      .auth(superJwt, { type: 'bearer' })
       .expect(400);
   });
 });
@@ -224,7 +224,7 @@ describe(`PATCH ${BASE_URL}/:id/status`, () => {
     await request
       .patch(`${BASE_URL}/${itemId}/status`)
       .send({ status })
-      .auth(managerJWT, { type: 'bearer' })
+      .auth(managerJwt, { type: 'bearer' })
       .expect(200);
 
     const item = await Item.findOne({ where: { itemId, status }, raw: true });
@@ -247,7 +247,7 @@ describe(`PATCH ${BASE_URL}/:id/status`, () => {
     await request
       .patch(`${BASE_URL}/${itemId}/status`)
       .send({ status })
-      .auth(managerJWT, { type: 'bearer' })
+      .auth(managerJwt, { type: 'bearer' })
       .expect(200);
 
     const item = await Item.findOne({ where: { itemId, status }, raw: true });
@@ -270,7 +270,7 @@ describe(`PATCH ${BASE_URL}/:id/status`, () => {
     await request
       .patch(`${BASE_URL}/${itemId}/status`)
       .send({ status })
-      .auth(managerJWT, { type: 'bearer' })
+      .auth(managerJwt, { type: 'bearer' })
       .expect(400);
   });
 
@@ -288,7 +288,7 @@ describe(`PATCH ${BASE_URL}/:id/status`, () => {
     await request
       .patch(`${BASE_URL}/${itemId}/status`)
       .send({ status: 'active' })
-      .auth(managerJWT, { type: 'bearer' })
+      .auth(managerJwt, { type: 'bearer' })
       .expect(400);
   });
 });
@@ -319,7 +319,7 @@ describe(`DELETE ${BASE_URL}/:id`, () => {
 
     await request
       .delete(`${BASE_URL}/${itemId}`)
-      .auth(superJWT, { type: 'bearer' })
+      .auth(superJwt, { type: 'bearer' })
       .expect(200);
 
     const item = await Item.findOne({ where: { itemId }, raw: true });
@@ -329,7 +329,7 @@ describe(`DELETE ${BASE_URL}/:id`, () => {
   it('should fail to delete if item does not exist', async () => {
     await request
       .delete(`${BASE_URL}/-1`)
-      .auth(superJWT, { type: 'bearer' })
+      .auth(superJwt, { type: 'bearer' })
       .expect(400);
   });
 });

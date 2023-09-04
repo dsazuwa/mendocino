@@ -26,7 +26,7 @@ it('should authenticate the request for an active admin', async () => {
     'active',
     [ROLES.ROOT.roleId],
   );
-  const token = authService.generateJWT(email.email, 'email');
+  const token = authService.generateJwt(email.email, 'email');
 
   await request.get(URL).auth(token, { type: 'bearer' }).expect(200);
 });
@@ -39,7 +39,7 @@ it('should authenticate the request for an active customer', async () => {
     'jessD0ePa$$',
     'active',
   );
-  const token = authService.generateJWT(email.email, 'email');
+  const token = authService.generateJwt(email.email, 'email');
 
   await request.get(URL).auth(token, { type: 'bearer' }).expect(200);
 });
@@ -53,7 +53,7 @@ it('should authenticate the request for an active customer using third party aut
     'active',
     [{ identityId: '234w756532435674', provider: 'google' }],
   );
-  const token = authService.generateJWT(email.email, 'email');
+  const token = authService.generateJwt(email.email, 'email');
 
   await request.get(URL).auth(token, { type: 'bearer' }).expect(200);
 });
@@ -66,7 +66,7 @@ it('should authenticate the request for a pending account', async () => {
     'jessieD0ePa$$',
     'active',
   );
-  const token = authService.generateJWT(email.email, 'email');
+  const token = authService.generateJwt(email.email, 'email');
 
   await request.get(URL).auth(token, { type: 'bearer' }).expect(200);
 });
@@ -85,7 +85,7 @@ it('should return 401 Unauthorized for a deactivated customer', async () => {
     'jessD0ePa$$',
     'deactivated',
   );
-  const token = authService.generateJWT(email.email, 'email');
+  const token = authService.generateJwt(email.email, 'email');
 
   await request.get(URL).auth(token, { type: 'bearer' }).expect(401);
 });

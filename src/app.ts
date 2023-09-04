@@ -15,8 +15,8 @@ import logger from './utils/logger';
 import { menuRouter } from './modules/menu';
 import {
   configureGoogleStrategy,
-  configureJWTStrategy,
-  extractJWTFromCookie,
+  configureJwtStrategy,
+  extractJwtFromCookie,
   jwtErrorHandler,
   userRouter,
 } from './modules/user';
@@ -47,11 +47,11 @@ const createApp = () => {
     }),
   );
 
-  app.use(extractJWTFromCookie);
+  app.use(extractJwtFromCookie);
 
   app.use(passport.initialize());
 
-  configureJWTStrategy(passport);
+  configureJwtStrategy(passport);
   configureGoogleStrategy(passport);
 
   app.get('/api', (req: Request, res: Response) => {

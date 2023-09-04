@@ -26,7 +26,7 @@ describe('Phone number management', () => {
     );
 
     customerId = customer.customerId;
-    jwt = authService.generateJWT(email.email, 'email');
+    jwt = authService.generateJwt(email.email, 'email');
   });
 
   it(`POST ${BASE_URL} should register a new phone number`, async () => {

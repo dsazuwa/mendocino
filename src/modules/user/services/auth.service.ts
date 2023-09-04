@@ -21,7 +21,7 @@ import {
 import { JwtProviderType } from '@user/types';
 import userService from './user.service';
 
-const generateJWT = (email: string, provider: JwtProviderType) =>
+const generateJwt = (email: string, provider: JwtProviderType) =>
   sign({ email, provider }, process.env.JWT_SECRET, {
     expiresIn: '5m',
   });
@@ -58,7 +58,7 @@ const generateRefreshToken = async (
 };
 
 const authService = {
-  generateJWT,
+  generateJwt,
 
   generateRefreshToken,
 
@@ -68,7 +68,7 @@ const authService = {
     email: string,
     provider: JwtProviderType,
   ) => {
-    const jwt = generateJWT(email, provider);
+    const jwt = generateJwt(email, provider);
     const refreshToken = await generateRefreshToken(isAdmin, userId, provider);
 
     return { jwt, refreshToken };

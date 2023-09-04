@@ -30,7 +30,7 @@ describe('Phone number management', () => {
     );
 
     adminId = admin.adminId;
-    jwt = authService.generateJWT(email.email, 'email');
+    jwt = authService.generateJwt(email.email, 'email');
   });
 
   it(`POST ${BASE_URL} should register a new phone number`, async () => {

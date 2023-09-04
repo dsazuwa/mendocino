@@ -5,7 +5,7 @@ import userService from '@user/services/user.service';
 
 const { JWT_SECRET } = process.env;
 
-export const configureJWTStrategy = (passportStatic: PassportStatic) => {
+export const configureJwtStrategy = (passportStatic: PassportStatic) => {
   passportStatic.use(
     new Strategy(
       {

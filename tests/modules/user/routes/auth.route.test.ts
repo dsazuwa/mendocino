@@ -57,7 +57,7 @@ describe('Google Login', () => {
     const res = { redirect: jest.fn() } as unknown as Response;
     const next = jest.fn();
 
-    const token = authService.generateJWT(email.email, provider);
+    const token = authService.generateJwt(email.email, provider);
 
     const userData = await userService.getUserData(customerId, 'customer');
     expect(userData).toBeDefined();
@@ -98,7 +98,7 @@ describe('Facebook Login', () => {
     const res = { redirect: jest.fn() } as unknown as Response;
     const next = jest.fn();
 
-    const token = authService.generateJWT(email.email, provider);
+    const token = authService.generateJwt(email.email, provider);
 
     const userData = await userService.getUserData(customerId, 'customer');
     expect(userData).toBeDefined();
@@ -682,7 +682,7 @@ describe(`PATCH ${BASE_URL}/reactivate`, () => {
       status,
     );
 
-    const token = authService.generateJWT(email.email, 'email');
+    const token = authService.generateJwt(email.email, 'email');
 
     let a = await CustomerAccount.findOne({
       where: { customerId, status },
@@ -713,7 +713,7 @@ describe(`PATCH ${BASE_URL}/reactivate`, () => {
       status,
     );
 
-    const token = authService.generateJWT(email.email, 'email');
+    const token = authService.generateJwt(email.email, 'email');
 
     let a = CustomerAccount.findOne({ where: { customerId, status }, raw });
     expect(a).resolves.not.toBeNull();
@@ -738,7 +738,7 @@ describe(`PATCH ${BASE_URL}/reactivate`, () => {
       status,
     );
 
-    const token = authService.generateJWT(email.email, 'email');
+    const token = authService.generateJwt(email.email, 'email');
 
     let a = CustomerAccount.findOne({ where: { customerId, status }, raw });
     expect(a).resolves.not.toBeNull();

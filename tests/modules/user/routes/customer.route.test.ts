@@ -32,7 +32,7 @@ describe(`GET ${BASE_URL}/profile`, () => {
 
     await createCustomer(firstName, lastName, email, password, status);
 
-    const jwt = authService.generateJWT(email, 'email');
+    const jwt = authService.generateJwt(email, 'email');
 
     const response = await request
       .get(`${BASE_URL}/profile`)
@@ -66,7 +66,7 @@ describe(`POST ${BASE_URL}/verify`, () => {
     );
 
     customerId = customer.customerId;
-    jwt = authService.generateJWT(email.email, 'email');
+    jwt = authService.generateJwt(email.email, 'email');
   });
 
   it('should create a new email verification token', async () => {
@@ -116,7 +116,7 @@ describe(`POST ${BASE_URL}/verify`, () => {
 
     await createCustomer('Jeff', 'Doe', email, 'jeffD0ePa$$', 'active');
 
-    const token = authService.generateJWT(email, 'email');
+    const token = authService.generateJwt(email, 'email');
 
     await request
       .post(`${BASE_URL}/verify`)
@@ -141,7 +141,7 @@ describe(`PATCH ${BASE_URL}/verify/:otp`, () => {
     );
 
     customerId = customer.customerId;
-    jwt = authService.generateJWT(email.email, 'email');
+    jwt = authService.generateJwt(email.email, 'email');
   });
 
   it('should fail for active customer', async () => {
@@ -153,7 +153,7 @@ describe(`PATCH ${BASE_URL}/verify/:otp`, () => {
       'active',
     );
 
-    const token = authService.generateJWT(email.email, 'email');
+    const token = authService.generateJwt(email.email, 'email');
 
     await request
       .post(`${BASE_URL}/verify`)
@@ -234,7 +234,7 @@ describe(`PATCH ${BASE_URL}/name`, () => {
     );
 
     customerId = customer.customerId;
-    jwt = authService.generateJWT(email.email, 'email');
+    jwt = authService.generateJwt(email.email, 'email');
   });
 
   const testUpdatecustomer = async (
@@ -303,7 +303,7 @@ describe(`POST ${BASE_URL}/password`, () => {
       [{ identityId: '24598392689426802632', provider: 'google' }],
     );
 
-    const jwt = authService.generateJWT(email.email, 'email');
+    const jwt = authService.generateJwt(email.email, 'email');
 
     let password = await CustomerPassword.findByPk(customerId, { raw: true });
     expect(password).toBeNull();
@@ -327,7 +327,7 @@ describe(`POST ${BASE_URL}/password`, () => {
       'active',
     );
 
-    const jwt = authService.generateJWT(email.email, 'email');
+    const jwt = authService.generateJwt(email.email, 'email');
 
     let password = await CustomerPassword.findByPk(customerId, { raw: true });
     expect(password).not.toBeNull();
@@ -362,7 +362,7 @@ describe(`PATCH ${BASE_URL}/password`, () => {
     );
 
     customerId = customer.customerId;
-    jwt = authService.generateJWT(email.email, 'email');
+    jwt = authService.generateJwt(email.email, 'email');
   });
 
   it('should update password', async () => {
@@ -426,7 +426,7 @@ describe(`PATCH ${BASE_URL}/revoke-social-auth`, () => {
       [{ identityId: '3654755345356474363', provider }],
     );
 
-    const jwt = authService.generateJWT(email.email, provider);
+    const jwt = authService.generateJwt(email.email, provider);
 
     const response = await request
       .patch(`${BASE_URL}/revoke-social-auth`)
@@ -465,7 +465,7 @@ describe(`PATCH ${BASE_URL}/revoke-social-auth`, () => {
       ],
     );
 
-    const jwt = authService.generateJWT(email.email, 'google');
+    const jwt = authService.generateJwt(email.email, 'google');
 
     const response = await request
       .patch(`${BASE_URL}/revoke-social-auth`)
@@ -507,7 +507,7 @@ describe(`PATCH ${BASE_URL}/revoke-social-auth`, () => {
       [{ identityId: '7934872657237824972478', provider: 'google' }],
     );
 
-    const jwt = authService.generateJWT(email.email, 'google');
+    const jwt = authService.generateJwt(email.email, 'google');
 
     await request
       .patch(`${BASE_URL}/revoke-social-auth`)
@@ -531,7 +531,7 @@ describe(`PATCH ${BASE_URL}/close`, () => {
       [{ identityId: '493285792423287429704372084', provider: 'google' }],
     );
 
-    const jwt = authService.generateJWT(email.email, 'google');
+    const jwt = authService.generateJwt(email.email, 'google');
 
     const response = await request
       .patch(`${BASE_URL}/close`)
@@ -564,7 +564,7 @@ describe(`PATCH ${BASE_URL}/close`, () => {
       [{ identityId: '84537482657274892684232', provider: 'google' }],
     );
 
-    const jwt = authService.generateJWT(email.email, 'google');
+    const jwt = authService.generateJwt(email.email, 'google');
 
     const response = await request
       .patch(`${BASE_URL}/close`)

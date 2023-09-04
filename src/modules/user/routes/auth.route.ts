@@ -11,7 +11,7 @@ import {
   logout,
   reactivate,
   recoverPassword,
-  refreshJWT,
+  refreshJwt,
   register,
   requestPasswordRecovery,
   setCookieAfterCallBack,
@@ -93,6 +93,6 @@ authRouter.get(
   setCookieAfterCallBack,
 );
 
-authRouter.get('/refresh', refreshJWT);
+authRouter.get('/refresh', refreshJwt);
 
 export default authRouter;

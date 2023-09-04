@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 
-const extractJWTFromCookie = (
+const extractJwtFromCookie = (
   req: Request,
   res: Response,
   next: NextFunction,
@@ -12,4 +12,4 @@ const extractJWTFromCookie = (
   next();
 };
 
-export default extractJWTFromCookie;
+export default extractJwtFromCookie;

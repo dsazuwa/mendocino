@@ -23,7 +23,7 @@ describe('Address management', () => {
     );
 
     customerId = customer.customerId;
-    jwt = authService.generateJWT(email.email, 'email');
+    jwt = authService.generateJwt(email.email, 'email');
   });
 
   beforeEach(async () => {

@@ -26,7 +26,7 @@ describe(`GET ${BASE_URL}/me`, () => {
 
     await createCustomer(firstName, lastName, email, password, status);
 
-    const jwt = authService.generateJWT(email, 'email');
+    const jwt = authService.generateJwt(email, 'email');
 
     const response = await request
       .get(`${BASE_URL}/me`)
@@ -56,7 +56,7 @@ describe(`GET ${BASE_URL}/me`, () => {
       MANAGER.roleId,
     ]);
 
-    const jwt = authService.generateJWT(email, 'email');
+    const jwt = authService.generateJwt(email, 'email');
 
     const response = await request
       .get(`${BASE_URL}/me`)
