@@ -86,7 +86,9 @@ const authService = {
     };
   },
 
-  verifyRefreshToken: async (refreshToken: string) => {
+  verifyRefreshToken: async (refreshToken: string | undefined) => {
+    if (!refreshToken) return null;
+
     const decoded = verify(
       refreshToken,
       process.env.REFRESH_TOKEN_SECRET,
@@ -104,8 +106,7 @@ const authService = {
           email,
           token,
           revoked,
-          expires_at AS "expiresAt",
-          created_at AS "createdAt"
+          expires_at AS "expiresAt"
         FROM users.get_refresh_token($userId, $token)`;
 
     const result = (await sequelize.query(query, {
@@ -118,7 +119,6 @@ const authService = {
       token: string;
       revoked: boolean;
       expiresAt: Date;
-      createdAt: Date;
     }[];
 
     if (result.length === 0) return null;
@@ -132,6 +132,17 @@ const authService = {
       token: string;
       provider: JwtProviderType;
     };
+  },
+
+  verifyTokens: async (jwt: string, refreshToken: string) => {
+    const accessT = authService.verifyJwt(jwt);
+    const refreshT = await authService.verifyRefreshToken(refreshToken);
+
+    return !!(
+      refreshT &&
+      refreshT.email === accessT.email &&
+      refreshT.provider === accessT.provider
+    );
   },
 
   createIdentityForCustomer: (

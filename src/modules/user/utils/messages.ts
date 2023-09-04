@@ -51,7 +51,7 @@ const messages = {
 
   REACTIVATE_SUCCESS: 'Account reactivated!',
 
-  SET_COOKIE_USER_NOT_FOUND: 'Invalid token',
+  SET_COOKIE_INVALID_TOKEN: 'Invalid token',
   SET_COOKIE_SUCCESS: 'Authentication cookies set',
 
   INVALID_REFRESH_TOKEN: 'Invalid refresh token',

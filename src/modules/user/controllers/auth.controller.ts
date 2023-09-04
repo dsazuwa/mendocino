@@ -367,14 +367,19 @@ export const socialLogin = async (
 
     if (!userId || !email) return res.status(401);
 
-    const token = authService.generateJWT(email, provider);
+    const { jwt, refreshToken } = await authService.generateTokens(
+      false,
+      userId,
+      email,
+      provider,
+    );
 
     const userData = await userService.getUserData(userId, 'customer');
 
     res.redirect(
       `${
         process.env.FRONTEND_BASE_URL
-      }/OAuthRedirecting?token=${token}&user=${encodeURIComponent(
+      }/OAuthRedirecting?jwt=${jwt}&refreshToken=${refreshToken}&user=${encodeURIComponent(
         JSON.stringify(userData),
       )}`,
     );
@@ -413,26 +418,18 @@ export const setCookieAfterCallBack = async (
   next: NextFunction,
 ) => {
   try {
-    const { token } = req.body;
+    const { jwt, refreshToken } = req.body;
 
-    const { email, provider } = authService.verifyJwt(token);
+    const result = await authService.verifyTokens(jwt, refreshToken);
 
-    const user = await userService.getUserFromPayload(email, provider);
-
-    if (!user)
+    if (!result)
       return res
         .status(401)
-        .json({ message: messages.SET_COOKIE_USER_NOT_FOUND });
+        .json({ message: messages.SET_COOKIE_INVALID_TOKEN });
 
-    const { jwt, refreshToken } = await authService.generateTokens(
-      false,
-      user.userId,
-      user.email,
-      'email',
-    );
     setAccessTokenCookie(res, jwt, refreshToken);
 
-    res.status(200).json({ message: messages.SET_COOKIE_SUCCESS, user });
+    res.status(200).json({ message: messages.SET_COOKIE_SUCCESS });
   } catch (e) {
     next(e);
   }
@@ -446,13 +443,15 @@ export const refreshJWT = async (
   try {
     const refreshToken = req.cookies['refresh-token'];
 
-    if (!refreshToken)
-      return res.status(401).json({ message: messages.INVALID_REFRESH_TOKEN });
-
     const result = await authService.verifyRefreshToken(refreshToken);
 
     if (!result)
-      return res.status(401).json({ message: messages.INVALID_REFRESH_TOKEN });
+      return res
+        .status(401)
+        .clearCookie('access-token')
+        .clearCookie('refresh-token')
+        .clearCookie('auth-flag')
+        .json({ message: messages.INVALID_REFRESH_TOKEN });
 
     const { email, provider } = result;
 
