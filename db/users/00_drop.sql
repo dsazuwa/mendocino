@@ -4,11 +4,14 @@ DROP TRIGGER IF EXISTS before_update_prevent_customer_id  ON users.customers;
 DROP TRIGGER IF EXISTS before_update_email ON users.emails;
 DROP TRIGGER IF EXISTS before_update_phone ON users.phones;
 
--- Drop functions
+-- Drop trigger functions
 DROP FUNCTION IF EXISTS users.prevent_admin_id_update();
 DROP FUNCTION IF EXISTS users.prevent_customer_id_update();
 DROP FUNCTION IF EXISTS users.prevent_update_email();
 DROP FUNCTION IF EXISTS users.prevent_update_phone();
+
+-- Drop functions
+DROP FUNCTION IF EXISTS users.get_refresh_token(INT, VARCHAR);
 
 -- Drop views
 DROP VIEW IF EXISTS users.user_type_view;

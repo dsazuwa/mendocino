@@ -156,21 +156,23 @@ CREATE TABLE users.addresses (
 CREATE TABLE users.admin_refresh_tokens (
   token_id SERIAL,
   admin_id INTEGER NOT NULL,
-  token VARCHAR(255) NOT NULL,
+  token UUID NOT NULL,
   revoked BOOLEAN NOT NULL,
   expires_at TIMESTAMP NOT NULL,
   created_at TIMESTAMP NOT NULL,
   PRIMARY KEY (token_id),
+  UNIQUE (admin_id, token),
   CONSTRAINT fk_admin_id FOREIGN KEY (admin_id) REFERENCES users.admins (admin_id) ON DELETE CASCADE ON UPDATE NO ACTION
 );
 
 CREATE TABLE users.customer_refresh_tokens (
   token_id SERIAL,
   customer_id INTEGER NOT NULL,
-  token VARCHAR(255) NOT NULL,
+  token UUID NOT NULL,
   revoked BOOLEAN NOT NULL,
   expires_at TIMESTAMP NOT NULL,
   created_at TIMESTAMP NOT NULL,
   PRIMARY KEY (token_id),
+  UNIQUE (customer_id, token),
   CONSTRAINT fk_customer_id FOREIGN KEY (customer_id) REFERENCES users.customers (customer_id) ON DELETE CASCADE ON UPDATE NO ACTION
 );
