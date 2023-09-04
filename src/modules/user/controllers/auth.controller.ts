@@ -58,12 +58,12 @@ export const register = async (
 
     const userData = await userService.getUserData(customerId, 'customer');
 
-    const jwt = authService.generateJWT(email, 'email');
-    const refreshToken = await authService.generateRefreshToken(
-      customerId,
+    const { jwt, refreshToken } = await authService.generateTokens(
       false,
+      customerId,
+      email,
+      'email',
     );
-
     setAccessTokenCookie(res, jwt, refreshToken);
 
     res.status(200).json({
@@ -122,9 +122,12 @@ export const login = async (
         message: messages.ERR_DEACTIVATED_ACCOUNT,
       });
 
-    const jwt = authService.generateJWT(email, 'email');
-    const refreshToken = await authService.generateRefreshToken(userId, false);
-
+    const { jwt, refreshToken } = await authService.generateTokens(
+      false,
+      userId,
+      email,
+      'email',
+    );
     setAccessTokenCookie(res, jwt, refreshToken);
 
     return res.status(200).json({
@@ -161,9 +164,12 @@ export const loginAdmin = async (
 
     const user = await userService.getUserData(userId, 'customer');
 
-    const jwt = authService.generateJWT(user?.email as string, 'email');
-    const refreshToken = await authService.generateRefreshToken(userId, true);
-
+    const { jwt, refreshToken } = await authService.generateTokens(
+      true,
+      userId,
+      user?.email as string,
+      'email',
+    );
     setAccessTokenCookie(res, jwt, refreshToken);
 
     res.status(200).json({ message: messages.LOGIN_ADMIN_2FA_SUCCESS, user });
@@ -295,10 +301,11 @@ export const recoverPassword = async (
 
     const userData = await userService.getUserData(userId, userType);
 
-    const jwt = authService.generateJWT(email, 'email');
-    const refreshToken = await authService.generateRefreshToken(
-      userId,
+    const { jwt, refreshToken } = await authService.generateTokens(
       isAdmin,
+      userId,
+      email,
+      'email',
     );
 
     setAccessTokenCookie(res, jwt, refreshToken);
@@ -327,8 +334,12 @@ export const reactivate = async (
 
     const userData = await userService.getUserData(userId, 'customer');
 
-    const jwt = authService.generateJWT(email, 'email');
-    const refreshToken = await authService.generateRefreshToken(userId, false);
+    const { jwt, refreshToken } = await authService.generateTokens(
+      false,
+      userId,
+      email,
+      'email',
+    );
     setAccessTokenCookie(res, jwt, refreshToken);
 
     res.status(200).json({
@@ -409,11 +420,13 @@ export const setCookieAfterCallBack = async (
         .status(401)
         .json({ message: messages.SET_COOKIE_USER_NOT_FOUND });
 
-    const refreshToken = await authService.generateRefreshToken(
-      user.userId,
+    const { jwt, refreshToken } = await authService.generateTokens(
       false,
+      user.userId,
+      user.email,
+      'email',
     );
-    setAccessTokenCookie(res, token, refreshToken);
+    setAccessTokenCookie(res, jwt, refreshToken);
 
     res.status(200).json({ message: messages.SET_COOKIE_SUCCESS, user });
   } catch (e) {

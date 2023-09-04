@@ -1,4 +1,3 @@
-import { randomUUID } from 'crypto';
 import { sign } from 'jsonwebtoken';
 
 import sequelize from '@App/db';
@@ -16,34 +15,57 @@ import {
   Email,
   ProviderType,
 } from '@user/models';
+import { JwtProviderType } from '@user/types';
 import userService from './user.service';
 
+const generateJWT = (email: string, provider: JwtProviderType) =>
+  sign({ email, provider }, process.env.JWT_SECRET, {
+    expiresIn: '5m',
+  });
+
+const generateRefreshToken = async (
+  isAdmin: boolean,
+  userId: number,
+  provider: JwtProviderType,
+) => {
+  const token = sign({ userId, provider }, process.env.REFRESH_TOKEN_SECRET, {
+    expiresIn: '7d',
+  });
+  const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+
+  if (isAdmin)
+    await AdminRefreshToken.create({
+      adminId: userId,
+      token,
+      revoked: false,
+      expiresAt,
+    });
+  else
+    await CustomerRefreshToken.create({
+      customerId: userId,
+      token,
+      revoked: false,
+      expiresAt,
+    });
+
+  return token;
+};
+
 const authService = {
-  generateJWT: (email: string, provider: ProviderType | 'email') =>
-    sign({ email, provider }, process.env.JWT_SECRET, {
-      expiresIn: '1 day',
-    }),
+  generateJWT,
 
-  generateRefreshToken: async (userId: number, isAdmin: boolean) => {
-    const token = randomUUID();
-    const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+  generateRefreshToken,
 
-    if (isAdmin)
-      await AdminRefreshToken.create({
-        adminId: userId,
-        token,
-        revoked: false,
-        expiresAt,
-      });
-    else
-      await CustomerRefreshToken.create({
-        customerId: userId,
-        token,
-        revoked: false,
-        expiresAt,
-      });
+  generateTokens: async (
+    isAdmin: boolean,
+    userId: number,
+    email: string,
+    provider: JwtProviderType,
+  ) => {
+    const jwt = generateJWT(email, provider);
+    const refreshToken = await generateRefreshToken(isAdmin, userId, provider);
 
-    return token;
+    return { jwt, refreshToken };
   },
 
   createIdentityForCustomer: (

@@ -15,6 +15,7 @@ import {
   Phone,
   ProviderType,
 } from '@user/models';
+import { JwtProviderType } from '@user/types';
 import { USER_SCHEMA } from '@user/utils/constants';
 
 const deleteIdentity = (customerId: number, provider: ProviderType) =>
@@ -179,8 +180,6 @@ const customerService = {
     customerId: number,
     provider: ProviderType,
   ) => {
-    type SwitchToType = ProviderType | 'email';
-
     const query = `
       SELECT
         e.email AS email,
@@ -218,7 +217,7 @@ const customerService = {
       await deleteIdentity(customerId, provider);
       return {
         result: true,
-        switchTo: 'email' as SwitchToType,
+        switchTo: 'email' as JwtProviderType,
         email,
       };
     }
@@ -229,7 +228,7 @@ const customerService = {
 
     return {
       result: true,
-      switchTo: otherIdentities[0] as SwitchToType,
+      switchTo: otherIdentities[0] as JwtProviderType,
       email,
     };
   },

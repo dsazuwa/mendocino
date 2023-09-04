@@ -145,20 +145,19 @@ export const revokeSocialAuthentication = async (
     if (!result || switchTo === undefined)
       return res.status(400).json({ message: messages.REVOKE_SOCIAL_FAIL });
 
-    const refreshToken = await authService.generateRefreshToken(userId, false);
+    const { jwt, refreshToken } = await authService.generateTokens(
+      false,
+      userId,
+      email,
+      switchTo,
+    );
+    setAccessTokenCookie(res, jwt, refreshToken);
 
-    if (switchTo === 'email') {
-      const jwt = authService.generateJWT(email, 'email');
-      setAccessTokenCookie(res, jwt, refreshToken);
-
+    if (switchTo === 'email')
       return res.status(200).json({
         message: REVOKE_SOCIAL_SUCCESS(provider),
         effect: 'Switched to email login',
       });
-    }
-
-    const jwt = authService.generateJWT(email, switchTo);
-    setAccessTokenCookie(res, jwt, refreshToken);
 
     res.status(200).json({
       message: REVOKE_SOCIAL_SUCCESS(provider),
