@@ -54,6 +54,9 @@ const messages = {
   SET_COOKIE_USER_NOT_FOUND: 'Invalid token',
   SET_COOKIE_SUCCESS: 'Authentication cookies set',
 
+  INVALID_REFRESH_TOKEN: 'Invalid refresh token',
+  REFRESH_JWT_SUCCESS: 'New access token created',
+
   // USERS ROUTER
 
   GET_USER_FAIL: 'Failed to get user',

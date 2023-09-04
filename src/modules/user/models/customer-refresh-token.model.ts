@@ -37,11 +37,12 @@ CustomerRefreshToken.init(
     customerId: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      unique: true,
+      unique: 'compositeIndex',
     },
     token: {
       type: DataTypes.STRING,
       allowNull: false,
+      unique: 'compositeIndex',
     },
     revoked: {
       type: DataTypes.BOOLEAN,

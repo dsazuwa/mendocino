@@ -37,10 +37,12 @@ AdminRefreshToken.init(
     adminId: {
       type: DataTypes.INTEGER,
       allowNull: false,
+      unique: 'compositeIndex',
     },
     token: {
       type: DataTypes.STRING,
       allowNull: false,
+      unique: 'compositeIndex',
     },
     revoked: {
       type: DataTypes.BOOLEAN,

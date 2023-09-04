@@ -1,5 +1,4 @@
 import { NextFunction, Request, Response } from 'express';
-import { JwtPayload, verify } from 'jsonwebtoken';
 
 import { ProviderType } from '@user/models';
 import authService from '@user/services/auth.service';
@@ -7,12 +6,7 @@ import otpService from '@user/services/otp.service';
 import userService from '@user/services/user.service';
 import messages from '@user/utils/messages';
 
-export const setAccessTokenCookie = (
-  res: Response,
-  jwt: string,
-  refreshToken: string,
-) => {
-  const inSevenDays = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+export const setJwtCookie = (res: Response, jwt: string) => {
   const inFiveMins = new Date(Date.now() + 5 * 60 * 1000);
 
   res.cookie('access-token', jwt, {
@@ -20,6 +14,16 @@ export const setAccessTokenCookie = (
     httpOnly: true,
     expires: inFiveMins,
   });
+};
+
+export const setAccessTokenCookie = (
+  res: Response,
+  jwt: string,
+  refreshToken: string,
+) => {
+  const inSevenDays = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+
+  setJwtCookie(res, jwt);
 
   res.cookie('refresh-token', refreshToken, {
     secure: true,
@@ -411,9 +415,9 @@ export const setCookieAfterCallBack = async (
   try {
     const { token } = req.body;
 
-    const decoded = verify(token, process.env.JWT_SECRET) as JwtPayload;
+    const { email, provider } = authService.verifyJwt(token);
 
-    const user = await userService.getUserFromPayload(decoded.email, 'email');
+    const user = await userService.getUserFromPayload(email, provider);
 
     if (!user)
       return res
@@ -429,6 +433,32 @@ export const setCookieAfterCallBack = async (
     setAccessTokenCookie(res, jwt, refreshToken);
 
     res.status(200).json({ message: messages.SET_COOKIE_SUCCESS, user });
+  } catch (e) {
+    next(e);
+  }
+};
+
+export const refreshJWT = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const refreshToken = req.cookies['refresh-token'];
+
+    if (!refreshToken)
+      return res.status(401).json({ message: messages.INVALID_REFRESH_TOKEN });
+
+    const result = await authService.verifyRefreshToken(refreshToken);
+
+    if (!result)
+      return res.status(401).json({ message: messages.INVALID_REFRESH_TOKEN });
+
+    const { email, provider } = result;
+
+    setJwtCookie(res, authService.generateJWT(email, provider));
+
+    res.status(200).json({ message: messages.REFRESH_JWT_SUCCESS });
   } catch (e) {
     next(e);
   }

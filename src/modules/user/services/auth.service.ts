@@ -1,6 +1,9 @@
-import { sign } from 'jsonwebtoken';
+import { JwtPayload, sign, verify } from 'jsonwebtoken';
+import { QueryTypes } from 'sequelize';
+import { v4 as uuidv4 } from 'uuid';
 
 import sequelize from '@App/db';
+import { ApiError } from '@App/utils';
 
 import {
   AdminAccount,
@@ -28,9 +31,12 @@ const generateRefreshToken = async (
   userId: number,
   provider: JwtProviderType,
 ) => {
-  const token = sign({ userId, provider }, process.env.REFRESH_TOKEN_SECRET, {
-    expiresIn: '7d',
-  });
+  const token = uuidv4();
+  const refreshToken = sign(
+    { userId, token, provider },
+    process.env.REFRESH_TOKEN_SECRET,
+    { expiresIn: '7d' },
+  );
   const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
 
   if (isAdmin)
@@ -48,7 +54,7 @@ const generateRefreshToken = async (
       expiresAt,
     });
 
-  return token;
+  return refreshToken;
 };
 
 const authService = {
@@ -66,6 +72,66 @@ const authService = {
     const refreshToken = await generateRefreshToken(isAdmin, userId, provider);
 
     return { jwt, refreshToken };
+  },
+
+  verifyJwt: (jwt: string) => {
+    const decoded = verify(jwt, process.env.JWT_SECRET) as JwtPayload;
+
+    if (!decoded.exp || decoded.exp < Math.floor(Date.now() / 1000))
+      throw ApiError.unauthorized('JWT Expired');
+
+    return { email: decoded.email, provider: decoded.provider } as {
+      email: string;
+      provider: JwtProviderType;
+    };
+  },
+
+  verifyRefreshToken: async (refreshToken: string) => {
+    const decoded = verify(
+      refreshToken,
+      process.env.REFRESH_TOKEN_SECRET,
+    ) as JwtPayload;
+
+    if (!decoded.exp || decoded.exp < Math.floor(Date.now() / 1000))
+      throw ApiError.unauthorized('JWT Expired');
+
+    const { userId, token, provider } = decoded;
+
+    const query = `
+        SELECT
+          is_admin AS "isAdmin",
+          user_id AS "userId",
+          email,
+          token,
+          revoked,
+          expires_at AS "expiresAt",
+          created_at AS "createdAt"
+        FROM users.get_refresh_token($userId, $token)`;
+
+    const result = (await sequelize.query(query, {
+      type: QueryTypes.SELECT,
+      bind: { userId, token },
+    })) as {
+      isAdmin: boolean;
+      userId: number;
+      email: string;
+      token: string;
+      revoked: boolean;
+      expiresAt: Date;
+      createdAt: Date;
+    }[];
+
+    if (result.length === 0) return null;
+
+    const { revoked, expiresAt } = result[0];
+    if (revoked || expiresAt < new Date()) return null;
+
+    return { userId, token, provider } as {
+      userId: number;
+      email: string;
+      token: string;
+      provider: JwtProviderType;
+    };
   },
 
   createIdentityForCustomer: (
