@@ -99,54 +99,25 @@ const userService = {
     email: string,
     provider: ProviderType | 'email',
   ) => {
-    const query =
+    const table =
       provider === 'email'
-        ? `
-          WITH u AS (
-            SELECT user_id, is_admin, email
-            FROM ${USER_SCHEMA}.${VIEWS.USER_TYPE}
-            WHERE email = '${email}'
-          )
-          SELECT
-            CASE WHEN u.is_admin THEN a.admin_id ELSE c.customer_id END AS "userId",
-            CASE WHEN u.is_admin THEN a.first_name ELSE c.first_name END AS "firstName",
-            CASE WHEN u.is_admin THEN a.last_name ELSE c.last_name END AS "lastName",
-            u.email AS email,
-            CASE WHEN u.is_admin THEN aa.status::text ELSE ca.status::text END AS status,
-            CASE WHEN u.is_admin THEN array_agg(DISTINCT r.name) ELSE ARRAY['customer'] END AS roles
-          FROM u
-          LEFT JOIN
-            ${USER_SCHEMA}.${Admin.tableName} a ON a.admin_id = u.user_id
-          LEFT JOIN
-            ${USER_SCHEMA}.${AdminAccount.tableName} aa ON aa.admin_id = a.admin_id
-          LEFT JOIN
-            ${USER_SCHEMA}.${AdminRole.tableName} ar ON ar.admin_id = a.admin_id
-          LEFT JOIN
-            ${USER_SCHEMA}.${Role.tableName} r ON r.role_id = ar.role_id
-          LEFT JOIN
-            ${USER_SCHEMA}.${Customer.tableName} c ON c.customer_id = u.user_id
-          LEFT JOIN
-            ${USER_SCHEMA}.${CustomerAccount.tableName} ca ON ca.customer_id = c.customer_id
-          GROUP BY
-            u.is_admin, u.email, a.admin_id, c.customer_id, aa.status, ca.status;`
-        : `
-          SELECT
-            c.customer_id AS "userId",
-            c.first_name AS "firstName",
-            c.last_name AS "lastName",
-            e.email AS email,
-            ca.status AS status,
-            ARRAY['customer'] AS roles
-          FROM
-            ${USER_SCHEMA}.${Email.tableName} e
-          JOIN
-            ${USER_SCHEMA}.${CustomerAccount.tableName} ca ON ca.email_id = e.email_id AND e.email = '${email}'
-          JOIN
-            ${USER_SCHEMA}.${Customer.tableName} c ON c.customer_id = ca.customer_id
-          JOIN
-            ${USER_SCHEMA}.${CustomerIdentity.tableName} ci ON ci.customer_id = c.customer_id AND ci.provider = '${provider}';`;
+        ? 'users.get_user_by_email($email)'
+        : 'users.get_customer_from_payload($email, $provider)';
 
-    const result = await sequelize.query(query, { type: QueryTypes.SELECT });
+    const query = `
+      SELECT
+        user_id AS "userId",
+        first_name AS "firstName",
+        last_name AS "lastName",
+        email,
+        status,
+        roles
+      FROM ${table};`;
+
+    const result = await sequelize.query(query, {
+      type: QueryTypes.SELECT,
+      bind: { email, provider },
+    });
 
     return result.length === 0 ? undefined : (result[0] as Express.User);
   },
