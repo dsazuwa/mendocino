@@ -61,6 +61,7 @@ export const getRefreshToken = async (userId: number, token: string) => {
       is_admin AS "isAdmin",
       user_id AS "userId",
       email,
+      status,
       token,
       expires_at AS "expiresAt"
     FROM users.get_refresh_token($userId, $token)`;
@@ -72,6 +73,7 @@ export const getRefreshToken = async (userId: number, token: string) => {
     isAdmin: boolean;
     userId: number;
     email: string;
+    status: string;
     token: string;
     expiresAt: Date;
   }[];
@@ -109,7 +111,7 @@ const authService = {
   },
 
   verifyRefreshToken: async (refreshToken: string | undefined) => {
-    if (!refreshToken) return null;
+    if (!refreshToken) return { error: 'Invalid Refresh Token' };
 
     const decoded = verify(
       refreshToken,
@@ -123,13 +125,25 @@ const authService = {
 
     const result = await getRefreshToken(userId, token);
 
-    if (!result || result.expiresAt < new Date()) return null;
+    if (!result) return { error: 'Invalid Refresh Token' };
 
-    return { userId, email: result.email, token, provider } as {
+    if (result.expiresAt < new Date())
+      return { error: 'Expired Refresh Token' };
+
+    const { email, status } = result;
+    if (
+      status === 'disabled' ||
+      status === 'suspended' ||
+      status === 'deactivated'
+    )
+      return { error: `Account ${status}` };
+
+    return { userId, email, token, provider } as {
       userId: number;
       email: string;
       token: string;
       provider: JwtProviderType;
+      error: null;
     };
   },
 
@@ -137,8 +151,8 @@ const authService = {
     const accessT = authService.verifyJwt(jwt);
     const refreshT = await authService.verifyRefreshToken(refreshToken);
 
-    return !!(
-      refreshT &&
+    return (
+      refreshT.error === null &&
       refreshT.email === accessT.email &&
       refreshT.provider === accessT.provider
     );

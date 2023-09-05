@@ -3,11 +3,11 @@ RETURNS TABLE (
   is_admin BOOLEAN,
   user_id INTEGER,
   email VARCHAR,
+  status VARCHAR,
   token VARCHAR,
   expires_at TIMESTAMP,
   created_at TIMESTAMP
-)
-AS $$
+) AS $$
 BEGIN
   ASSERT p_user_id IS NOT NULL, 'p_user_id cannot be null';
   ASSERT LENGTH(p_token) > 0, 'p_token cannot be empty';
@@ -19,6 +19,7 @@ BEGIN
       true AS is_admin,
       art.admin_id AS user_id,
       ae.email AS email,
+      aa.status::VARCHAR AS status,
       art.token AS token,
       art.expires_at AS expires_at,
       art.created_at AS created_at
@@ -34,6 +35,7 @@ BEGIN
       false AS is_admin,
       crt.customer_id AS user_id,
       ce.email AS email,
+      ca.status::VARCHAR AS status,
       crt.token AS token,
       crt.expires_at AS expires_at,
       crt.created_at AS created_at

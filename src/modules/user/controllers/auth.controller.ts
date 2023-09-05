@@ -442,7 +442,7 @@ export const refreshJwt = async (
 
     const result = await authService.verifyRefreshToken(refreshToken);
 
-    if (!result)
+    if (result.error !== null)
       return res
         .status(401)
         .clearCookie('access-token')
