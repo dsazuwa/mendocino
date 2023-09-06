@@ -29,15 +29,35 @@ const generateJwt = (email: string, provider: JwtProviderType) =>
 const generateRefreshToken = async (
   isAdmin: boolean,
   userId: number,
+  email: string,
   provider: JwtProviderType,
 ) => {
   const token = uuidv4();
   const refreshToken = sign(
-    { userId, token, provider },
+    { email, token, provider },
     process.env.REFRESH_TOKEN_SECRET,
     { expiresIn: '7d' },
   );
   const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+
+  const account = isAdmin
+    ? await AdminAccount.findByPk(userId, { raw: true })
+    : await CustomerAccount.findByPk(userId, { raw: true });
+
+  if (!account)
+    throw ApiError.unauthorized(
+      'Failed to create refresh token: Account does not exist',
+    );
+
+  const { status } = account;
+  if (
+    status === 'deactivated' ||
+    status === 'disabled' ||
+    status === 'suspended'
+  )
+    throw ApiError.unauthorized(
+      `Failed to create refresh token: Account ${status}`,
+    );
 
   if (isAdmin)
     await AdminRefreshToken.create({
@@ -55,7 +75,7 @@ const generateRefreshToken = async (
   return refreshToken;
 };
 
-export const getRefreshToken = async (userId: number, token: string) => {
+export const getRefreshToken = async (email: string, token: string) => {
   const query = `
     SELECT
       is_admin AS "isAdmin",
@@ -64,11 +84,11 @@ export const getRefreshToken = async (userId: number, token: string) => {
       status,
       token,
       expires_at AS "expiresAt"
-    FROM users.get_refresh_token($userId, $token)`;
+    FROM users.get_refresh_token($email, $token)`;
 
   const result = (await sequelize.query(query, {
     type: QueryTypes.SELECT,
-    bind: { userId, token },
+    bind: { email, token },
   })) as {
     isAdmin: boolean;
     userId: number;
@@ -93,7 +113,12 @@ const authService = {
     provider: JwtProviderType,
   ) => {
     const jwt = generateJwt(email, provider);
-    const refreshToken = await generateRefreshToken(isAdmin, userId, provider);
+    const refreshToken = await generateRefreshToken(
+      isAdmin,
+      userId,
+      email,
+      provider,
+    );
 
     return { jwt, refreshToken };
   },
@@ -121,16 +146,16 @@ const authService = {
     if (!decoded.exp || decoded.exp < Math.floor(Date.now() / 1000))
       throw ApiError.unauthorized('JWT Expired');
 
-    const { userId, token, provider } = decoded;
+    const { email, provider, token } = decoded;
 
-    const result = await getRefreshToken(userId, token);
+    const result = await getRefreshToken(email, token);
 
     if (!result) return { error: 'Invalid Refresh Token' };
 
     if (result.expiresAt < new Date())
       return { error: 'Expired Refresh Token' };
 
-    const { email, status } = result;
+    const { userId, status } = result;
     if (
       status === 'disabled' ||
       status === 'suspended' ||
