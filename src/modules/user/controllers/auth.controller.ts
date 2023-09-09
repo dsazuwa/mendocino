@@ -87,42 +87,35 @@ export const login = async (
   try {
     const { email, password } = req.body;
 
-    const user = await authService.loginUser(email, password);
+    const result = await authService.loginUser(email, password);
 
-    if (!user) return res.status(401).json({ message: messages.LOGIN_FAIL });
+    if (!result) return res.status(401).json({ message: messages.LOGIN_FAIL });
 
-    const { userId, isAdmin, status } = user;
+    const { isAdmin, userId, user } = result;
 
-    if (status === 'suspended')
+    if (user.status === 'suspended')
       return res.status(401).json({
         message: messages.ERR_SUSPENDED_ACCOUNT,
       });
 
-    if (status === 'disabled')
+    if (user.status === 'disabled')
       return res.status(401).json({
         message: messages.ERR_DEACTIVATED_ACCOUNT,
       });
 
     if (isAdmin) {
-      const userData = await userService.getUserData(userId, true);
-
-      await otpService.createOTP(userId, {
-        isAdmin: true,
-        otpType: 'login',
-      });
+      await otpService.createOTP(userId, { isAdmin: true, otpType: 'login' });
 
       return res.status(200).json({
         message: messages.LOGIN_ADMIN_2FA,
-        user: userData,
+        user,
       });
     }
 
-    const userData = await userService.getUserData(userId, false);
-
-    if (status === 'deactivated')
+    if (user.status === 'deactivated')
       return res.status(401).json({
         accessToken: authService.generateJwt(email, 'email'),
-        user: userData,
+        user,
         message: messages.ERR_DEACTIVATED_ACCOUNT,
       });
 
@@ -136,7 +129,7 @@ export const login = async (
 
     return res.status(200).json({
       message: messages.LOGIN_SUCCESS,
-      user: userData,
+      user,
     });
   } catch (e) {
     next(e);

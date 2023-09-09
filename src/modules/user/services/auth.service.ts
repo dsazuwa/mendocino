@@ -302,9 +302,12 @@ const authService = {
       SELECT
         is_admin AS "isAdmin",
         user_id AS "userId",
+        first_name AS "firstName",
+        last_name AS "lastName",
         email,
         password AS hashed,
-        status
+        status,
+        roles
       FROM users.get_user_with_password($email);`;
 
     const result = (await sequelize.query(query, {
@@ -312,21 +315,27 @@ const authService = {
       bind: { email },
     })) as {
       isAdmin: boolean;
-      userId: boolean;
+      userId: number;
+      firstName: string;
+      lastName: string;
       email: string;
       hashed: string;
       status: string;
+      roles: string[];
     }[];
 
     if (result.length === 0) return null;
 
-    const { isAdmin, userId, hashed, status } = result[0];
+    const { isAdmin, userId, firstName, lastName, hashed, status, roles } =
+      result[0];
 
     const isValid = isAdmin
       ? AdminAccount.comparePasswords(password, hashed)
       : CustomerPassword.comparePasswords(password, hashed);
 
-    return isValid ? { isAdmin, userId, status } : null;
+    return isValid
+      ? { isAdmin, userId, user: { firstName, lastName, email, status, roles } }
+      : null;
   },
 
   recoverPassword: (isAdmin: boolean, userId: number, password: string) =>

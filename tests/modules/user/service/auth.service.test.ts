@@ -195,43 +195,63 @@ describe('create customer', () => {
 
 describe('login', () => {
   it('should login admin on valid data', async () => {
+    const firstName = 'Jan';
+    const lastName = 'Doe';
     const email = 'january@gmail.com';
     const password = 'janD0epas$$';
+    const status = 'active';
+
+    const { CUSTOMER_SUPPORT } = ROLES;
 
     const { adminId } = await createAdmin(
-      'Jan',
-      'Doe',
+      firstName,
+      lastName,
       email,
       password,
-      'active',
-      [ROLES.CUSTOMER_SUPPORT.roleId],
+      status,
+      [CUSTOMER_SUPPORT.roleId],
     );
 
     const result = await authService.loginUser(email, password);
     expect(result).toMatchObject({
       isAdmin: true,
       userId: adminId,
-      status: 'active',
+      user: {
+        firstName,
+        lastName,
+        email,
+        status,
+        roles: [CUSTOMER_SUPPORT.name],
+      },
     });
   });
 
   it('should login customer on valid data', async () => {
+    const firstName = 'Jan';
+    const lastName = 'Doe';
     const email = 'jandoe@gmail.com';
     const password = 'janD0epas$$';
+    const status = 'active';
 
     const { customerId } = await createCustomer(
-      'Jan',
-      'Doe',
+      firstName,
+      lastName,
       email,
       password,
-      'active',
+      status,
     );
 
     const result = await authService.loginUser(email, password);
     expect(result).toMatchObject({
       isAdmin: false,
       userId: customerId,
-      status: 'active',
+      user: {
+        firstName,
+        lastName,
+        email,
+        status,
+        roles: ['customer'],
+      },
     });
   });
 

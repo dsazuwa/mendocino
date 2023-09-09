@@ -114,9 +114,12 @@ CREATE OR REPLACE FUNCTION users.get_user_with_password(p_email VARCHAR)
 RETURNS TABLE (
   is_admin BOOLEAN,
   user_id INTEGER,
+  first_name VARCHAR,
+  last_name VARCHAR,
   email VARCHAR,
   password VARCHAR,
-  status VARCHAR
+  status VARCHAR,
+  roles VARCHAR[]
 ) AS $$
 BEGIN
   IF p_email IS NULL THEN
@@ -132,21 +135,30 @@ BEGIN
     SELECT 
       true AS is_admin,
       a.admin_id AS user_id,
+      a.first_name AS first_name,
+      a.last_name AS last_name,
       e.email AS email,
       aa.password AS password,
-      a.status::VARCHAR AS status
+      a.status::VARCHAR AS status,
+      array_agg(DISTINCT r.name) AS roles
     FROM users.emails e
     JOIN users.admin_accounts aa ON aa.email_id = e.email_id AND e.email = p_email
-    JOIN users.admins a ON a.admin_id = aa.admin_id;
+    JOIN users.admins a ON a.admin_id = aa.admin_id
+    JOIN users.admins_roles AS ar ON ar.admin_id = a.admin_id
+    JOIN users.roles r ON r.role_id = ar.role_id
+    GROUP BY a.admin_id, a.first_name, a.last_name, e.email, aa.password, a.status;
 
   ELSE
     RETURN QUERY
     SELECT
       false AS is_admin,
       c.customer_id AS user_id,
+      c.first_name AS first_name,
+      c.last_name AS last_name,
       e.email AS email,
       cp.password AS password,
-      c.status::VARCHAR AS status
+      c.status::VARCHAR AS status,
+      ARRAY['customer']::VARCHAR[] AS roles
     FROM users.emails e
     JOIN users.customer_emails ce ON ce.email_id = e.email_id AND e.email = p_email
     JOIN users.customers c ON c.customer_id = ce.customer_id
