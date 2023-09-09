@@ -156,7 +156,7 @@ describe('get user data', () => {
   });
 });
 
-describe('get user data from req', () => {
+describe('get user from req', () => {
   it('pending user account', async () => {
     const firstName = 'Joan';
     const lastName = 'Doe';
@@ -169,7 +169,7 @@ describe('get user data from req', () => {
       user: { firstName, lastName, email, password, status, roles },
     } as unknown as Request;
 
-    const data = await userService.getUserDataFromReq(req);
+    const data = await userService.getUserFromReq(req);
     expect(data).toMatchObject({ firstName, lastName, email, status, roles });
   });
 
@@ -185,7 +185,7 @@ describe('get user data from req', () => {
       user: { firstName, lastName, email, password, status, roles },
     } as unknown as Request;
 
-    const data = await userService.getUserDataFromReq(req);
+    const data = await userService.getUserFromReq(req);
     expect(data).toMatchObject({ firstName, lastName, email, status, roles });
   });
 });

@@ -85,7 +85,7 @@ const userService = {
     return result.length === 0 ? undefined : (result[0] as UserType);
   },
 
-  getUserDataFromReq: async (req: Request) => {
+  getUserFromReq: async (req: Request) => {
     const u = req.user;
 
     return u

@@ -9,7 +9,7 @@ export const getUserData = async (
   next: NextFunction,
 ) => {
   try {
-    const user = await userService.getUserDataFromReq(req);
+    const user = await userService.getUserFromReq(req);
 
     if (!user) return res.status(401).json({ message: messages.GET_USER_FAIL });
 
