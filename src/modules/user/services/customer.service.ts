@@ -65,7 +65,7 @@ const customerService = {
         c.last_name as "lastName",
         jsonb_build_object(
           'address', email.email,
-          'isVerified', CASE WHEN c.status = 'active' THEN true ELSE false END
+          'isVerified', CASE WHEN c.status = 'pending' THEN false ELSE true END
         ) AS "email",
         CASE WHEN c_password.password IS NOT NULL 
           THEN true 
@@ -164,7 +164,10 @@ const customerService = {
 
     if (
       !existingPassword ||
-      !existingPassword.comparePasswords(currentPassword)
+      !CustomerPassword.comparePasswords(
+        currentPassword,
+        existingPassword.password,
+      )
     )
       return false;
 

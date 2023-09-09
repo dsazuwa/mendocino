@@ -162,7 +162,9 @@ describe('AdminAccount Model', () => {
     );
 
     const updatedAccount = await AdminAccount.findByPk(adminId);
-    expect(updatedAccount?.comparePasswords(password)).toBe(true);
+    expect(
+      AdminAccount.comparePasswords(password, updatedAccount?.password ?? ''),
+    ).toBe(true);
   });
 
   it('should delete admin account', async () => {
@@ -204,7 +206,9 @@ describe('AdminAccount Model', () => {
 
       const account = await AdminAccount.create(data);
       expect(account.password).not.toEqual(data.password);
-      expect(account.comparePasswords(data.password)).toBeTruthy();
+      expect(
+        AdminAccount.comparePasswords(data.password, account.password),
+      ).toBeTruthy();
     });
 
     it('should hash the password on update', async () => {
@@ -223,11 +227,22 @@ describe('AdminAccount Model', () => {
       };
       const newPassword = 'newJulesPa$$';
 
-      const account = await AdminAccount.create(data);
-      await account.update({ password: newPassword });
+      await AdminAccount.create(data);
+      await AdminAccount.update(
+        { password: newPassword },
+        { where: { adminId }, individualHooks: true },
+      );
 
-      expect(account.comparePasswords(data.password)).toBeFalsy();
-      expect(account.comparePasswords(newPassword)).toBeTruthy();
+      const account = (await AdminAccount.findByPk(adminId, {
+        raw: true,
+      })) as AdminAccount;
+
+      expect(
+        AdminAccount.comparePasswords(data.password, account.password),
+      ).toBeFalsy();
+      expect(
+        AdminAccount.comparePasswords(newPassword, account.password),
+      ).toBeTruthy();
 
       const a = await AdminAccount.findByPk(adminId, { raw });
       expect(a?.password).not.toBe(newPassword);
@@ -235,9 +250,8 @@ describe('AdminAccount Model', () => {
   });
 
   describe('compare password', () => {
-    let a: AdminAccount;
-
     const password = 'jeromeD0e@gmail.com';
+    let hashed: string;
 
     beforeAll(async () => {
       const { adminId } = await Admin.create({
@@ -248,19 +262,23 @@ describe('AdminAccount Model', () => {
 
       const { emailId } = await Email.create({ email: 'jeromedoe@gmail.com' });
 
-      a = await AdminAccount.create({
+      const a = await AdminAccount.create({
         adminId,
         emailId,
         password,
       });
+
+      hashed = a.password;
     });
 
     it('should return true for equal passwords', () => {
-      expect(a.comparePasswords(password)).toBe(true);
+      expect(AdminAccount.comparePasswords(password, hashed)).toBe(true);
     });
 
     it('should return false for non equal passwords', () => {
-      expect(a.comparePasswords('falsePassword')).toBe(false);
+      expect(AdminAccount.comparePasswords('falsePassword', hashed)).toBe(
+        false,
+      );
     });
   });
 });

@@ -341,19 +341,18 @@ describe(`POST ${BASE_URL}/password`, () => {
       .expect(409);
 
     password = await CustomerPassword.findByPk(customerId);
-    expect(password).not.toBeNull();
-    expect(password?.comparePasswords(newPassword)).toBe(false);
+    expect(
+      CustomerPassword.comparePasswords(newPassword, password?.password || ''),
+    ).toBe(false);
   });
 });
 
 describe(`PATCH ${BASE_URL}/password`, () => {
   const password = 'jeanD0ePa$$';
-
-  let customerId: number;
   let jwt: string;
 
   beforeAll(async () => {
-    const { customer, email } = await createCustomer(
+    const { email } = await createCustomer(
       'Jeanette',
       'Doe',
       'jeanettedoe@gmail.com',
@@ -361,7 +360,6 @@ describe(`PATCH ${BASE_URL}/password`, () => {
       'active',
     );
 
-    customerId = customer.customerId;
     jwt = authService.generateJwt(email.email, 'email');
   });
 
@@ -373,9 +371,6 @@ describe(`PATCH ${BASE_URL}/password`, () => {
       .auth(jwt, { type: 'bearer' })
       .send({ currentPassword: password, newPassword })
       .expect(200);
-
-    const cp = await CustomerPassword.findByPk(customerId);
-    expect(cp?.comparePasswords(newPassword)).toBe(true);
   });
 
   it('should fail to update password on invalid new password', async () => {

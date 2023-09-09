@@ -24,7 +24,9 @@ describe('CustomerPassword Model', () => {
         password,
       });
       expect(customerPassword.customerId).toBe(customerId);
-      expect(customerPassword.comparePasswords(password)).toBe(true);
+      expect(
+        CustomerPassword.comparePasswords(password, customerPassword.password),
+      ).toBe(true);
     });
 
     it('should fail on duplicate customerId', async () => {
@@ -109,7 +111,12 @@ describe('CustomerPassword Model', () => {
     );
 
     const updatedPassword = await CustomerPassword.findByPk(customerId);
-    expect(updatedPassword?.comparePasswords(newPassword)).toBe(true);
+    expect(
+      CustomerPassword.comparePasswords(
+        newPassword,
+        updatedPassword?.password || '',
+      ),
+    ).toBe(true);
   });
 
   it('should delete customer pasword', async () => {
@@ -152,7 +159,9 @@ describe('CustomerPassword Model', () => {
         password,
       });
       expect(customerPassword.password).not.toEqual(password);
-      expect(customerPassword.comparePasswords(password)).toBeTruthy();
+      expect(
+        CustomerPassword.comparePasswords(password, customerPassword.password),
+      ).toBeTruthy();
     });
 
     it('should hash the password on update', async () => {
@@ -169,15 +178,26 @@ describe('CustomerPassword Model', () => {
       const oldPassword = 'julesD0ePa$$';
       const newPassword = 'newJulesPa$$';
 
-      const customerPassword = await CustomerPassword.create({
+      await CustomerPassword.create({
         customerId,
         password: oldPassword,
       });
 
-      await customerPassword.update({ password: newPassword });
+      await CustomerPassword.update(
+        { password: newPassword },
+        { where: { customerId }, individualHooks: true },
+      );
 
-      expect(customerPassword.comparePasswords(oldPassword)).toBeFalsy();
-      expect(customerPassword.comparePasswords(newPassword)).toBeTruthy();
+      const { password } = (await CustomerPassword.findByPk(customerId, {
+        raw: true,
+      })) as CustomerPassword;
+
+      expect(
+        CustomerPassword.comparePasswords(oldPassword, password),
+      ).toBeFalsy();
+      expect(
+        CustomerPassword.comparePasswords(newPassword, password),
+      ).toBeTruthy();
 
       const retrievedCustomerPassword = await CustomerPassword.findByPk(
         customerId,
@@ -188,7 +208,7 @@ describe('CustomerPassword Model', () => {
   });
 
   describe('compare password', () => {
-    let customerPassword: CustomerPassword;
+    let hashed: string;
 
     const password = 'jeromeD0e@gmail.com';
 
@@ -203,18 +223,21 @@ describe('CustomerPassword Model', () => {
 
       await CustomerEmail.create({ customerId, emailId });
 
-      customerPassword = await CustomerPassword.create({
+      const cp = await CustomerPassword.create({
         customerId,
         password,
       });
+      hashed = cp.password;
     });
 
     it('should return true for equal passwords', () => {
-      expect(customerPassword.comparePasswords(password)).toBe(true);
+      expect(CustomerPassword.comparePasswords(password, hashed)).toBe(true);
     });
 
     it('should return false for non equal passwords', () => {
-      expect(customerPassword.comparePasswords('falsePassword')).toBe(false);
+      expect(CustomerPassword.comparePasswords('falsePassword', hashed)).toBe(
+        false,
+      );
     });
   });
 });

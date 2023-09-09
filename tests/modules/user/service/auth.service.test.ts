@@ -172,14 +172,17 @@ describe('create customer', () => {
       jacquePassword,
     );
 
-    const customer = await Customer.findByPk(customerId, { raw });
-    const account = await CustomerEmail.findByPk(customerId, { raw });
-    const password = await CustomerPassword.findByPk(customerId);
+    const c = await Customer.findByPk(customerId, { raw });
+    const e = await CustomerEmail.findByPk(customerId, { raw });
+    const p = await CustomerPassword.findByPk(customerId);
 
-    expect(customer).not.toBeNull();
-    expect(account).not.toBeNull();
-    expect(password).not.toBeNull();
-    expect(password?.comparePasswords(jacquePassword)).toBe(true);
+    expect(c).not.toBeNull();
+    expect(e).not.toBeNull();
+    expect(p).not.toBeNull();
+
+    expect(
+      CustomerPassword.comparePasswords(jacquePassword, p?.password || ''),
+    ).toBe(true);
 
     const emailOTP = await CustomerOTP.findOne({
       where: { customerId, type: 'email' },
@@ -281,7 +284,9 @@ describe('recover password', () => {
     await authService.recoverPassword(false, customerId, newPassword);
 
     const password = await CustomerPassword.findOne({ where: { customerId } });
-    expect(password?.comparePasswords(newPassword)).toBe(true);
+    expect(
+      CustomerPassword.comparePasswords(newPassword, password?.password || ''),
+    ).toBe(true);
   });
 
   it('should recover the admin password', async () => {
@@ -299,7 +304,9 @@ describe('recover password', () => {
     await authService.recoverPassword(true, adminId, newPassword);
 
     const account = await AdminAccount.findOne({ where: { adminId } });
-    expect(account?.comparePasswords(newPassword)).toBe(true);
+    expect(
+      AdminAccount.comparePasswords(newPassword, account?.password || ''),
+    ).toBe(true);
   });
 });
 

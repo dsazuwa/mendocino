@@ -37,8 +37,8 @@ class CustomerPassword extends Model<
     }
   }
 
-  comparePasswords(password: string) {
-    return compareSync(password, this.password);
+  public static comparePasswords(password: string, hashed: string) {
+    return compareSync(password, hashed);
   }
 }
 

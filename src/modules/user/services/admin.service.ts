@@ -27,7 +27,7 @@ const adminService = {
 
     if (
       !existingPassword ||
-      !existingPassword.comparePasswords(currentPassword)
+      !AdminAccount.comparePasswords(currentPassword, existingPassword.password)
     )
       return false;
 

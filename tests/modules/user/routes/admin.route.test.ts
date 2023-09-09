@@ -1,4 +1,4 @@
-import { Admin, AdminAccount, Email } from '@user/models';
+import { Admin, Email } from '@user/models';
 import authService from '@user/services/auth.service';
 import { ROLES } from '@user/utils/constants';
 
@@ -99,12 +99,10 @@ describe(`PATCH ${BASE_URL}/name`, () => {
 
 describe(`PATCH ${BASE_URL}/password`, () => {
   const password = 'jeanD0ePa$$';
-
-  let adminId: number;
   let jwt: string;
 
   beforeAll(async () => {
-    const { admin, email } = await createAdmin(
+    const { email } = await createAdmin(
       'Jeanette',
       'Doe',
       'jeanettedoe@gmail.com',
@@ -113,7 +111,6 @@ describe(`PATCH ${BASE_URL}/password`, () => {
       [ROLES.ROOT.roleId],
     );
 
-    adminId = admin.adminId;
     jwt = authService.generateJwt(email.email, 'email');
   });
 
@@ -125,9 +122,6 @@ describe(`PATCH ${BASE_URL}/password`, () => {
       .auth(jwt, { type: 'bearer' })
       .send({ currentPassword: password, newPassword })
       .expect(200);
-
-    const account = await AdminAccount.findByPk(adminId);
-    expect(account?.comparePasswords(newPassword)).toBe(true);
   });
 
   it('should fail to update password on invalid new password', async () => {

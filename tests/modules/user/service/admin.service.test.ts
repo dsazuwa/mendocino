@@ -110,7 +110,12 @@ describe('change password', () => {
     const retrievedAccount = await AdminAccount.findOne({
       where: { adminId },
     });
-    expect(retrievedAccount?.comparePasswords(newPassword)).toBe(true);
+    expect(
+      AdminAccount?.comparePasswords(
+        newPassword,
+        retrievedAccount?.password || '',
+      ),
+    ).toBe(true);
   });
 
   it('should return false for wrong current password', async () => {
@@ -137,8 +142,9 @@ describe('change password', () => {
     const retrievedAccount = await AdminAccount.findOne({
       where: { adminId },
     });
-    expect(retrievedAccount?.comparePasswords(newPassword)).toBe(false);
-    expect(retrievedAccount?.comparePasswords(password)).toBe(true);
+    const hashed = retrievedAccount?.password || '';
+    expect(AdminAccount.comparePasswords(newPassword, hashed)).toBe(false);
+    expect(AdminAccount.comparePasswords(password, hashed)).toBe(true);
   });
 
   it('should return false for invalid adminId', async () => {

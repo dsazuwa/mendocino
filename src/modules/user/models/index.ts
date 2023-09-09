@@ -12,7 +12,7 @@ import CustomerPhone, { CustomerPhoneStatusType } from './customer-phone.model';
 import CustomerRefreshToken from './customer-refresh-token.model';
 import Customer, { CustomerStatusType } from './customer.model';
 import Email from './email.model';
-import CustomerPassword from './nustomer-password.model';
+import CustomerPassword from './customer-password.model';
 import Phone from './phone.model';
 import Role from './role.model';
 

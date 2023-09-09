@@ -311,7 +311,7 @@ const authService = {
         const isUser =
           admin !== null &&
           account !== null &&
-          account.comparePasswords(password);
+          AdminAccount.comparePasswords(password, account.password);
 
         return isUser
           ? {
@@ -343,7 +343,7 @@ const authService = {
         customer !== null &&
         account !== null &&
         customerPassword !== null &&
-        customerPassword.comparePasswords(password);
+        CustomerPassword.comparePasswords(password, customerPassword.password);
 
       return isUser
         ? {

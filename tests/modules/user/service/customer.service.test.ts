@@ -301,7 +301,12 @@ describe('create password', () => {
     expect(result).toBe(true);
 
     const retrievedPassword = await CustomerPassword.findByPk(customerId);
-    expect(retrievedPassword?.comparePasswords(password)).toBe(true);
+    expect(
+      CustomerPassword.comparePasswords(
+        password,
+        retrievedPassword?.password || '',
+      ),
+    ).toBe(true);
   });
 
   it('should not create password if user password is not null', async () => {
@@ -321,7 +326,12 @@ describe('create password', () => {
     expect(result).toBe(false);
 
     const retrievedPassword = await CustomerPassword.findByPk(customerId);
-    expect(retrievedPassword?.comparePasswords(newPassword)).toBe(false);
+    expect(
+      CustomerPassword.comparePasswords(
+        newPassword,
+        retrievedPassword?.password || '',
+      ),
+    ).toBe(false);
   });
 });
 
@@ -348,7 +358,12 @@ describe('change password', () => {
     const retrievedPassword = await CustomerPassword.findOne({
       where: { customerId },
     });
-    expect(retrievedPassword?.comparePasswords(newPassword)).toBe(true);
+    expect(
+      CustomerPassword.comparePasswords(
+        newPassword,
+        retrievedPassword?.password || '',
+      ),
+    ).toBe(true);
   });
 
   it('should return false for wrong current password', async () => {
@@ -374,8 +389,10 @@ describe('change password', () => {
     const retrievedPassword = await CustomerPassword.findOne({
       where: { customerId },
     });
-    expect(retrievedPassword?.comparePasswords(newPassword)).toBe(false);
-    expect(retrievedPassword?.comparePasswords(password)).toBe(true);
+    const hashed = retrievedPassword?.password || '';
+
+    expect(CustomerPassword.comparePasswords(newPassword, hashed)).toBe(false);
+    expect(CustomerPassword.comparePasswords(password, hashed)).toBe(true);
   });
 
   it('should return false if user_account password is null', async () => {
