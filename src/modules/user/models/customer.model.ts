@@ -11,6 +11,12 @@ import sequelize from '@App/db';
 
 import { TABLENAMES, USER_SCHEMA } from '@user/utils/constants';
 
+export type CustomerStatusType =
+  | 'active'
+  | 'pending'
+  | 'suspended'
+  | 'deactivated';
+
 class Customer extends Model<
   InferAttributes<Customer>,
   InferCreationAttributes<Customer>
@@ -20,6 +26,8 @@ class Customer extends Model<
   declare firstName: string;
 
   declare lastName: string;
+
+  declare status: CustomerStatusType;
 
   declare createdAt: CreationOptional<Date>;
 
@@ -39,6 +47,10 @@ Customer.init(
     },
     lastName: {
       type: DataTypes.STRING,
+      allowNull: false,
+    },
+    status: {
+      type: DataTypes.ENUM('active', 'pending', 'suspended', 'deactivated'),
       allowNull: false,
     },
     createdAt: {

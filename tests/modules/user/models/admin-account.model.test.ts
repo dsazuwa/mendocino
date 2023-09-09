@@ -1,9 +1,4 @@
-import {
-  Admin,
-  AdminAccount,
-  AdminAccountStatusType,
-  Email,
-} from '@user/models';
+import { Admin, AdminAccount, Email } from '@user/models';
 
 import 'tests/db-setup';
 
@@ -15,6 +10,7 @@ describe('AdminAccount Model', () => {
       const { adminId } = await Admin.create({
         firstName: 'John',
         lastName: 'Doe',
+        status: 'active',
       });
 
       const { emailId } = await Email.create({ email: 'johndoe@gmail.com' });
@@ -23,24 +19,24 @@ describe('AdminAccount Model', () => {
         adminId,
         emailId,
         password: 'johnD0ePa$$',
-        status: 'active' as AdminAccountStatusType,
       };
 
       const account = await AdminAccount.create(data);
       expect(account.adminId).toBe(adminId);
       expect(account.emailId).toBe(emailId);
-      expect(account.status).toBe(data.status);
     });
 
     it('should fail on duplicate adminId', async () => {
       const { adminId } = await Admin.create({
         firstName: 'Jae',
         lastName: 'Doe',
+        status: 'active',
       });
 
       await Admin.create({
         firstName: 'Julius',
         lastName: 'Doe',
+        status: 'active',
       });
 
       const { emailId: id1 } = await Email.create({
@@ -54,7 +50,6 @@ describe('AdminAccount Model', () => {
         adminId,
         emailId: id1,
         password: 'jaeD0ePa$$',
-        status: 'active',
       });
 
       expect(
@@ -62,7 +57,6 @@ describe('AdminAccount Model', () => {
           adminId,
           emailId: id2,
           password: 'juliusD0ePa$$',
-          status: 'active',
         }),
       ).rejects.toThrow();
     });
@@ -71,11 +65,13 @@ describe('AdminAccount Model', () => {
       const admin1 = await Admin.create({
         firstName: 'Jake',
         lastName: 'Doe',
+        status: 'active',
       });
 
       const admin2 = await Admin.create({
         firstName: 'Jac',
         lastName: 'Doe',
+        status: 'active',
       });
 
       const { emailId } = await Email.create({ email: 'jakedoe@gmail.com' });
@@ -83,7 +79,6 @@ describe('AdminAccount Model', () => {
       const data = {
         emailId,
         password: 'jakeD0ePa$$',
-        status: 'active' as AdminAccountStatusType,
       };
 
       await AdminAccount.create({ adminId: admin1.adminId, ...data });
@@ -100,7 +95,6 @@ describe('AdminAccount Model', () => {
         adminId: 1000,
         emailId,
         password: 'jayD0ePa$$',
-        status: 'active' as AdminAccountStatusType,
       };
 
       expect(AdminAccount.create(data)).rejects.toThrow();
@@ -110,13 +104,13 @@ describe('AdminAccount Model', () => {
       const { adminId } = await Admin.create({
         firstName: 'Jay',
         lastName: 'Doe',
+        status: 'active',
       });
 
       const data = {
         adminId,
         emailId: 12324535,
         password: 'jayD0ePa$$',
-        status: 'active' as AdminAccountStatusType,
       };
 
       expect(AdminAccount.create(data)).rejects.toThrow();
@@ -127,6 +121,7 @@ describe('AdminAccount Model', () => {
     const { adminId } = await Admin.create({
       firstName: 'Jane',
       lastName: 'Doe',
+      status: 'active',
     });
 
     const { emailId } = await Email.create({ email: 'janedoe@gmail.com' });
@@ -135,7 +130,6 @@ describe('AdminAccount Model', () => {
       adminId,
       emailId,
       password: 'janeD0ePa$$',
-      status: 'active' as AdminAccountStatusType,
     });
 
     let retrievedAccount = await AdminAccount.findByPk(adminId, { raw });
@@ -149,6 +143,7 @@ describe('AdminAccount Model', () => {
     const { adminId } = await Admin.create({
       firstName: 'Joy',
       lastName: 'Doe',
+      status: 'active',
     });
 
     const { emailId } = await Email.create({ email: 'joydoe@gmail.com' });
@@ -157,7 +152,6 @@ describe('AdminAccount Model', () => {
       adminId,
       emailId,
       password: 'joyD0ePa$$',
-      status: 'active' as AdminAccountStatusType,
     });
 
     const password = 'joyousDoe@gmail.com';
@@ -175,6 +169,7 @@ describe('AdminAccount Model', () => {
     const { adminId } = await Admin.create({
       firstName: 'Joel',
       lastName: 'Doe',
+      status: 'active',
     });
 
     const { emailId } = await Email.create({ email: 'joeldoe@gmail.com' });
@@ -183,7 +178,6 @@ describe('AdminAccount Model', () => {
       adminId,
       emailId,
       password: 'joelD0ePa$$',
-      status: 'active' as AdminAccountStatusType,
     });
 
     await AdminAccount.destroy({ where: { adminId } });
@@ -197,6 +191,7 @@ describe('AdminAccount Model', () => {
       const { adminId } = await Admin.create({
         firstName: 'Jen',
         lastName: 'Doe',
+        status: 'active',
       });
 
       const { emailId } = await Email.create({ email: 'jendoe@gmail.com' });
@@ -205,7 +200,6 @@ describe('AdminAccount Model', () => {
         adminId,
         emailId,
         password: 'janeD0ePa$$',
-        status: 'active' as AdminAccountStatusType,
       };
 
       const account = await AdminAccount.create(data);
@@ -217,6 +211,7 @@ describe('AdminAccount Model', () => {
       const { adminId } = await Admin.create({
         firstName: 'Jules',
         lastName: 'Doe',
+        status: 'active',
       });
 
       const { emailId } = await Email.create({ email: 'julesdoe@gmail.com' });
@@ -225,7 +220,6 @@ describe('AdminAccount Model', () => {
         adminId,
         emailId,
         password: 'julesD0ePa$$',
-        status: 'active' as AdminAccountStatusType,
       };
       const newPassword = 'newJulesPa$$';
 
@@ -249,6 +243,7 @@ describe('AdminAccount Model', () => {
       const { adminId } = await Admin.create({
         firstName: 'Jerome',
         lastName: 'Doe',
+        status: 'active',
       });
 
       const { emailId } = await Email.create({ email: 'jeromedoe@gmail.com' });
@@ -257,7 +252,6 @@ describe('AdminAccount Model', () => {
         adminId,
         emailId,
         password,
-        status: 'active' as AdminAccountStatusType,
       });
     });
 
@@ -276,6 +270,7 @@ describe('AdminAccount and Admin Relationship', () => {
     const { adminId } = await Admin.create({
       firstName: 'Jun',
       lastName: 'Doe',
+      status: 'active',
     });
 
     const { emailId } = await Email.create({ email: 'jundoe@gmail.com' });
@@ -284,7 +279,6 @@ describe('AdminAccount and Admin Relationship', () => {
       adminId,
       emailId,
       password: 'JuneD0ePa$$',
-      status: 'active' as AdminAccountStatusType,
     });
 
     await AdminAccount.destroy({ where: { adminId } });
@@ -300,6 +294,7 @@ describe('AdminAccount and Admin Relationship', () => {
     const { adminId } = await Admin.create({
       firstName: 'Jenni',
       lastName: 'Doe',
+      status: 'active',
     });
 
     const { emailId } = await Email.create({ email: 'jennidoe@gmail.com' });
@@ -308,7 +303,6 @@ describe('AdminAccount and Admin Relationship', () => {
       adminId,
       emailId,
       password: 'JenD0ePa$$',
-      status: 'active' as AdminAccountStatusType,
     });
 
     await Admin.destroy({ where: { adminId } });

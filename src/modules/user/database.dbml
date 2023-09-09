@@ -8,6 +8,7 @@ Table admins {
   admin_id integer pk
   first_name varchar [not null]
   last_name varchar [not null]
+  status enum_admin_status [not null]
   created_at timestamp [not null]
   updated_at timestamp [not null]
 }
@@ -16,6 +17,7 @@ Table customers {
   customer_id integer pk
   first_name varchar [not null]
   last_name varchar [not null]
+  status enum_customer_status [not null]
   created_at timestamp [not null]
   updated_at timestamp [not null]
 }
@@ -24,7 +26,6 @@ Table admin_accounts {
   admin_id integer pk
   email_id varchar [not null]
   password varchar [not null]
-  status enum_admin_accounts_status [not null]
   created_at timestamp [not null]
   updated_at timestamp [not null]
 }
@@ -32,16 +33,15 @@ Table admin_accounts {
 ref: admin_accounts.admin_id - admins.admin_id
 ref: admin_accounts.email_id - emails.email_id
 
-Table customer_accounts {
+Table customer_emails {
   customer_id integer pk
   email_id varchar [not null]
-  status enum_customer_accounts_status [not null]
   created_at timestamp [not null]
   updated_at timestamp [not null]
 }
 
-ref: customer_accounts.customer_id - customers.customer_id
-ref: customer_accounts.email_id - emails.email_id
+ref: customer_emails.customer_id - customers.customer_id
+ref: customer_emails.email_id - emails.email_id
 
 Table customer_passwords {
   customer_id integer pk
@@ -50,7 +50,7 @@ Table customer_passwords {
   updated_at timestamp [not null]
 }
 
-ref: customer_passwords.customer_id - customer_accounts.customer_id
+ref: customer_passwords.customer_id - customers.customer_id
 
 Table admin_otps {
   otp_id integer pk
@@ -171,13 +171,13 @@ Table customer_refresh_tokens {
 
 ref: customer_refresh_tokens.customer_id > customers.customer_id
 
-Enum enum_admin_accounts_status {
+Enum enum_admin_status {
   active
   pending
   disabled
 }
 
-Enum enum_customer_accounts_status {
+Enum enum_customer_status {
   active
   pending
   suspended

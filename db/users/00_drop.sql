@@ -26,8 +26,8 @@ DROP INDEX IF EXISTS users.idx_role_lower_unique;
 -- Drop constrants
 ALTER TABLE IF EXISTS users.admin_accounts DROP CONSTRAINT fk_admin_id;
 ALTER TABLE IF EXISTS users.admin_accounts DROP CONSTRAINT fk_email_id;
-ALTER TABLE IF EXISTS users.customer_accounts DROP CONSTRAINT fk_customer_id;
-ALTER TABLE IF EXISTS users.customer_accounts DROP CONSTRAINT fk_email_id;
+ALTER TABLE IF EXISTS users.customer_emails DROP CONSTRAINT fk_customer_id;
+ALTER TABLE IF EXISTS users.customer_emails DROP CONSTRAINT fk_email_id;
 ALTER TABLE IF EXISTS users.customer_passwords DROP CONSTRAINT fk_customer_id;
 ALTER TABLE IF EXISTS users.admin_otps DROP CONSTRAINT fk_admin_id;
 ALTER TABLE IF EXISTS users.customer_otps DROP CONSTRAINT fk_customer_id;
@@ -55,12 +55,11 @@ DROP TABLE IF EXISTS users.customer_identities;
 DROP TABLE IF EXISTS users.customer_otps;
 DROP TABLE IF EXISTS users.admin_otps;
 DROP TABLE IF EXISTS users.customer_passwords;
-DROP TABLE IF EXISTS users.customer_accounts;
+DROP TABLE IF EXISTS users.customer_emails;
 DROP TABLE IF EXISTS users.admin_accounts;
 DROP TABLE IF EXISTS users.customers;
 DROP TABLE IF EXISTS users.admins;
 DROP TABLE IF EXISTS users.emails;
-
 
 -- Drop sequences
 DROP SEQUENCE IF EXISTS users.admin_id_seq;
@@ -72,8 +71,8 @@ DROP TYPE IF EXISTS users.enum_admin_phones_status;
 DROP TYPE IF EXISTS users.enum_customer_identities_provider;
 DROP TYPE IF EXISTS users.enum_customer_otps_type;
 DROP TYPE IF EXISTS users.enum_admin_otps_type;
-DROP TYPE IF EXISTS users.enum_customer_accounts_status;
-DROP TYPE IF EXISTS users.enum_admin_accounts_status;
+DROP TYPE IF EXISTS users.enum_customer_status;
+DROP TYPE IF EXISTS users.enum_admin_status;
 
 -- Drop schema
 DROP SCHEMA IF EXISTS users;

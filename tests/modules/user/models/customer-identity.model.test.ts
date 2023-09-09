@@ -1,7 +1,7 @@
 import {
   ProviderType,
   Customer,
-  CustomerAccount,
+  CustomerEmail,
   CustomerIdentity,
   Email,
 } from '@user/models';
@@ -15,6 +15,7 @@ describe('Customer Identity', () => {
     const { customerId } = await Customer.create({
       firstName: 'Jefe',
       lastName: 'Doe',
+      status: 'active',
     });
 
     const data = {
@@ -32,6 +33,7 @@ describe('Customer Identity', () => {
     const { customerId } = await Customer.create({
       firstName: 'Jorge',
       lastName: 'Doe',
+      status: 'active',
     });
 
     const { identityId, provider } = await CustomerIdentity.create({
@@ -52,6 +54,7 @@ describe('Customer Identity', () => {
     const { customerId } = await Customer.create({
       firstName: 'Jaime',
       lastName: 'Doe',
+      status: 'active',
     });
 
     const { identityId, provider } = await CustomerIdentity.create({
@@ -78,6 +81,7 @@ describe('Customer Identity', () => {
     const { customerId } = await Customer.create({
       firstName: 'Julio',
       lastName: 'Doe',
+      status: 'active',
     });
 
     const { identityId, provider } = await CustomerIdentity.create({
@@ -102,15 +106,12 @@ describe('Customer Identity and Customer Relationship', () => {
     const { customerId } = await Customer.create({
       firstName: 'Jacobo',
       lastName: 'Doe',
+      status: 'active',
     });
 
     const { emailId } = await Email.create({ email: 'jacobodoe@gmail.com' });
 
-    await CustomerAccount.create({
-      customerId,
-      emailId,
-      status: 'active',
-    });
+    await CustomerEmail.create({ customerId, emailId });
 
     await CustomerIdentity.create({
       customerId,
@@ -134,15 +135,12 @@ describe('Customer Identity and Customer Relationship', () => {
     const { customerId } = await Customer.create({
       firstName: 'Jairo',
       lastName: 'Doe',
+      status: 'active',
     });
 
     const { emailId } = await Email.create({ email: 'jairodoe@gmail.com' });
 
-    await CustomerAccount.create({
-      customerId,
-      emailId,
-      status: 'active',
-    });
+    await CustomerEmail.create({ customerId, emailId });
 
     await CustomerIdentity.create({
       customerId,

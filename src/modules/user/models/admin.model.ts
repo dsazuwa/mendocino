@@ -11,6 +11,8 @@ import sequelize from '@App/db';
 
 import { TABLENAMES, USER_SCHEMA } from '@user/utils/constants';
 
+export type AdminStatusType = 'active' | 'pending' | 'disabled';
+
 class Admin extends Model<
   InferAttributes<Admin>,
   InferCreationAttributes<Admin>
@@ -20,6 +22,8 @@ class Admin extends Model<
   declare firstName: string;
 
   declare lastName: string;
+
+  declare status: AdminStatusType;
 
   declare createdAt: CreationOptional<Date>;
 
@@ -39,6 +43,10 @@ Admin.init(
     },
     lastName: {
       type: DataTypes.STRING,
+      allowNull: false,
+    },
+    status: {
+      type: DataTypes.ENUM('active', 'pending', 'disabled'),
       allowNull: false,
     },
     createdAt: {

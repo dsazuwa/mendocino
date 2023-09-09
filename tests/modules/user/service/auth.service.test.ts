@@ -3,7 +3,7 @@ import { JwtPayload, verify } from 'jsonwebtoken';
 import {
   AdminAccount,
   Customer,
-  CustomerAccount,
+  CustomerEmail,
   CustomerIdentity,
   CustomerOTP,
   CustomerPassword,
@@ -90,7 +90,7 @@ describe('create identity for customer', () => {
     });
     expect(i).not.toBeNull();
 
-    const a = await CustomerAccount.findOne({
+    const a = await Customer.findOne({
       where: { customerId, status: 'active' },
       raw,
     });
@@ -130,7 +130,7 @@ describe('create customer and identity', () => {
     expect(result.identityId).toBe(identityId);
 
     const createdCustomer = await Customer.findOne({
-      where: { firstName, lastName },
+      where: { firstName, lastName, status: 'active' },
       raw,
     });
     expect(createdCustomer).not.toBeNull();
@@ -138,15 +138,20 @@ describe('create customer and identity', () => {
     const createdEmail = await Email.findOne({ where: { email } });
     expect(createdEmail).not.toBeNull();
 
-    const createdAccount = await CustomerAccount.findOne({
+    const createdCustomerEmail = await CustomerEmail.findOne({
       where: {
         customerId: createdCustomer?.customerId,
         emailId: createdEmail?.emailId,
-        status: 'active',
       },
       raw,
     });
-    expect(createdAccount).not.toBeNull();
+    expect(createdCustomerEmail).not.toBeNull();
+
+    const createdPassword = await CustomerPassword.findOne({
+      where: { customerId: createdCustomer?.customerId },
+      raw: true,
+    });
+    expect(createdPassword).toBeNull();
 
     const createdIdentity = await CustomerIdentity.findOne({
       where: { identityId },
@@ -168,7 +173,7 @@ describe('create customer', () => {
     );
 
     const customer = await Customer.findByPk(customerId, { raw });
-    const account = await CustomerAccount.findByPk(customerId, { raw });
+    const account = await CustomerEmail.findByPk(customerId, { raw });
     const password = await CustomerPassword.findByPk(customerId);
 
     expect(customer).not.toBeNull();
@@ -311,8 +316,8 @@ describe('reactivate customer', () => {
     const result = await authService.reactivateCustomer(customerId);
     expect(result).toBe(true);
 
-    const account = await CustomerAccount.findByPk(customerId, { raw });
-    expect(account?.status).toBe('active');
+    const customer = await Customer.findByPk(customerId, { raw });
+    expect(customer?.status).toBe('active');
   });
 
   it('should fail to update status if user is not deactivated', async () => {
@@ -327,7 +332,7 @@ describe('reactivate customer', () => {
     const result = await authService.reactivateCustomer(customerId);
     expect(result).toBe(false);
 
-    const account = await CustomerAccount.findByPk(customerId, { raw });
-    expect(account?.status).toBe('suspended');
+    const customer = await Customer.findByPk(customerId, { raw });
+    expect(customer?.status).toBe('suspended');
   });
 });

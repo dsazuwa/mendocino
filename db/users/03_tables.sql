@@ -14,6 +14,7 @@ CREATE TABLE users.admins (
   admin_id INTEGER DEFAULT nextval('users.admin_id_seq'),
   first_name VARCHAR(50) NOT NULL,
   last_name VARCHAR(50) NOT NULL,
+  status users.enum_admin_status NOT NULL,
   created_at TIMESTAMP NOT NULL,
   updated_at TIMESTAMP NOT NULL,
   CHECK (admin_id % 2 = 0),
@@ -24,6 +25,7 @@ CREATE TABLE users.customers (
   customer_id INTEGER DEFAULT nextval('users.customer_id_seq'),
   first_name VARCHAR(50) NOT NULL,
   last_name VARCHAR(50) NOT NULL,
+  status users.enum_customer_status NOT NULL,
   created_at TIMESTAMP NOT NULL,
   updated_at TIMESTAMP NOT NULL,
   CHECK (customer_id % 2 = 1),
@@ -34,7 +36,6 @@ CREATE TABLE users.admin_accounts (
   admin_id INTEGER NOT NULL,
   email_id INTEGER NOT NULL UNIQUE,
   password VARCHAR(255) NOT NULL,
-  status users.enum_admin_accounts_status NOT NULL,
   created_at TIMESTAMP NOT NULL,
   updated_at TIMESTAMP NOT NULL,
   PRIMARY KEY (admin_id),
@@ -42,10 +43,9 @@ CREATE TABLE users.admin_accounts (
   CONSTRAINT fk_email_id FOREIGN KEY (email_id) REFERENCES users.emails (email_id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
-CREATE TABLE users.customer_accounts (
+CREATE TABLE users.customer_emails (
   customer_id INTEGER NOT NULL,
   email_id INTEGER NOT NULL UNIQUE,
-  status users.enum_customer_accounts_status NOT NULL,
   created_at TIMESTAMP NOT NULL,
   updated_at TIMESTAMP NOT NULL,
   PRIMARY KEY (customer_id),
@@ -59,7 +59,7 @@ CREATE TABLE users.customer_passwords (
   created_at TIMESTAMP NOT NULL,
   updated_at TIMESTAMP NOT NULL,
   PRIMARY KEY (customer_id),
-  CONSTRAINT fk_customer_id FOREIGN KEY (customer_id) REFERENCES users.customer_accounts (customer_id) ON DELETE CASCADE ON UPDATE NO ACTION
+  CONSTRAINT fk_customer_id FOREIGN KEY (customer_id) REFERENCES users.customers (customer_id) ON DELETE CASCADE ON UPDATE NO ACTION
 );
 
 CREATE TABLE users.admin_otps (

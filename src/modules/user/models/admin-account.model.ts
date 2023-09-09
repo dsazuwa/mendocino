@@ -14,8 +14,6 @@ import { ApiError } from '@App/utils';
 
 import { TABLENAMES, USER_SCHEMA } from '@user/utils/constants';
 
-export type AdminAccountStatusType = 'active' | 'pending' | 'disabled';
-
 class AdminAccount extends Model<
   InferAttributes<AdminAccount>,
   InferCreationAttributes<AdminAccount>
@@ -25,8 +23,6 @@ class AdminAccount extends Model<
   declare emailId: number;
 
   declare password: string;
-
-  declare status: AdminAccountStatusType;
 
   declare createdAt: CreationOptional<Date>;
 
@@ -61,10 +57,6 @@ AdminAccount.init(
     },
     password: {
       type: DataTypes.STRING,
-      allowNull: false,
-    },
-    status: {
-      type: DataTypes.ENUM('active', 'pending', 'disabled'),
       allowNull: false,
     },
     createdAt: {

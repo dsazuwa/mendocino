@@ -3,13 +3,7 @@ import { Profile } from 'passport';
 import ApiError from '@utils/api-error';
 
 import verifyFunction from '@user/middleware/strategies/verify-function';
-import {
-  ProviderType,
-  Customer,
-  CustomerAccount,
-  CustomerIdentity,
-  Email,
-} from '@user/models';
+import { Customer, CustomerIdentity, Email, ProviderType } from '@user/models';
 import authService from '@user/services/auth.service';
 import { ROLES } from '@user/utils/constants';
 import messages from '@user/utils/messages';
@@ -76,7 +70,7 @@ it('should create customer if they do not exist', async () => {
   expect(i).not.toBeNull();
 });
 
-it('should create new identity if CustomerAccount exists (active) but CustomerIdentity does not', async () => {
+it('should create new identity if CustomerEmail exists (active) but CustomerIdentity does not', async () => {
   const identityId = '242739758613728489';
   const firstName = 'Jacquelin';
   const lastName = 'Doe';
@@ -107,7 +101,7 @@ it('should create new identity if CustomerAccount exists (active) but CustomerId
   expect(i).not.toBeNull();
 });
 
-it('should create new identity if CustomerAccount exists (pending) but CustomerIdentity does not', async () => {
+it('should create new identity if Customer exists (pending) but CustomerIdentity does not', async () => {
   const identityId = '53849274264293027498';
   const provider = 'facebook';
   const firstName = 'Jean';
@@ -123,7 +117,7 @@ it('should create new identity if CustomerAccount exists (pending) but CustomerI
     'pending',
   );
 
-  let a = await CustomerAccount.findOne({
+  let c = await Customer.findOne({
     where: { customerId, status: 'pending' },
     raw,
   });
@@ -132,12 +126,12 @@ it('should create new identity if CustomerAccount exists (pending) but CustomerI
     raw,
   });
 
-  expect(a).not.toBeNull();
+  expect(c).not.toBeNull();
   expect(i).toBeNull();
 
   await callVerify(identityId, firstName, lastName, email, provider);
 
-  a = await CustomerAccount.findOne({
+  c = await Customer.findOne({
     where: { customerId, status: 'active' },
     raw,
   });
@@ -146,11 +140,11 @@ it('should create new identity if CustomerAccount exists (pending) but CustomerI
     raw,
   });
 
-  expect(a).not.toBeNull();
+  expect(c).not.toBeNull();
   expect(i).not.toBeNull();
 });
 
-it('should "login" user if both CustomerAccount and CustomerIdentity exists', async () => {
+it('should "login" user if both CustomerEmail and CustomerIdentity exists', async () => {
   const identityId = '583683462429535730';
   const firstName = 'Jules';
   const lastName = 'Doe';

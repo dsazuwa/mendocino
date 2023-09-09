@@ -3,7 +3,7 @@ import {
   Admin,
   AdminAccount,
   Customer,
-  CustomerAccount,
+  CustomerEmail,
 } from '@user/models';
 
 import 'tests/db-setup';
@@ -81,25 +81,25 @@ describe('Email Model', () => {
   });
 });
 
-describe('Email and CustomerAccount Assciation', () => {
+describe('Email and CustomerEmail Assciation', () => {
   const email = 'johndoe@gmail.com';
 
   beforeEach(async () => {
     await Email.destroy({ where: {} });
-    await CustomerAccount.destroy({ where: {} });
+    await CustomerEmail.destroy({ where: {} });
     await Customer.destroy({ where: {} });
   });
 
-  it('should delete CustomerAccount on Email delete', async () => {
+  it('should delete CustomerEmail on Email delete', async () => {
     const { emailId } = await Email.create({ email });
     const { customerId } = await Customer.create({
       firstName: 'John',
       lastName: 'Doe',
+      status: 'active',
     });
-    await CustomerAccount.create({
+    await CustomerEmail.create({
       customerId,
       emailId,
-      status: 'active',
     });
 
     await Email.destroy({ where: { email } });
@@ -108,7 +108,7 @@ describe('Email and CustomerAccount Assciation', () => {
       where: { email },
       raw: true,
     });
-    const retrievedAccount = await CustomerAccount.findByPk(customerId, {
+    const retrievedAccount = await CustomerEmail.findByPk(customerId, {
       raw: true,
     });
 
@@ -116,21 +116,22 @@ describe('Email and CustomerAccount Assciation', () => {
     expect(retrievedAccount).toBeNull();
   });
 
-  it('should not delete Email on CustomerAccount delete', async () => {
+  it('should not delete Email on CustomerEmail delete', async () => {
     const { emailId } = await Email.create({ email });
     const { customerId } = await Customer.create({
       firstName: 'Johns',
       lastName: 'Doe',
-    });
-    await CustomerAccount.create({
-      customerId,
-      emailId,
       status: 'active',
     });
 
-    await CustomerAccount.destroy({ where: { customerId } });
+    await CustomerEmail.create({
+      customerId,
+      emailId,
+    });
 
-    const retrievedAccount = await CustomerAccount.findByPk(customerId, {
+    await CustomerEmail.destroy({ where: { customerId } });
+
+    const retrievedAccount = await CustomerEmail.findByPk(customerId, {
       raw: true,
     });
     const retrievedCustomer = await Customer.findByPk(customerId, {
@@ -158,12 +159,12 @@ describe('Email and AdminAccount Assciation', () => {
     const { adminId } = await Admin.create({
       firstName: 'John',
       lastName: 'Doe',
+      status: 'active',
     });
     await AdminAccount.create({
       adminId,
       emailId,
       password: 'johnD0ePa$$',
-      status: 'active',
     });
 
     await Email.destroy({ where: { email } });
@@ -185,12 +186,12 @@ describe('Email and AdminAccount Assciation', () => {
     const { adminId } = await Admin.create({
       firstName: 'Johns',
       lastName: 'Doe',
+      status: 'active',
     });
     await AdminAccount.create({
       adminId,
       emailId,
       password: 'johnD0ePa$$',
-      status: 'active',
     });
 
     await AdminAccount.destroy({ where: { adminId } });

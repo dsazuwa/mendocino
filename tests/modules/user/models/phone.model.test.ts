@@ -97,6 +97,7 @@ describe('Phone and CustomerPhone Assciation', () => {
     const { customerId } = await Customer.create({
       firstName: 'John',
       lastName: 'Doe',
+      status: 'active',
     });
     await CustomerPhone.create({
       customerId,
@@ -118,11 +119,12 @@ describe('Phone and CustomerPhone Assciation', () => {
     expect(retrievedCustomerPhone).toBeNull();
   });
 
-  it('should not delete Customer and Phone on CustomerAccount delete', async () => {
+  it('should not delete Customer and Phone on CustomerPhone delete', async () => {
     const { phoneId } = await Phone.create({ phoneNumber });
     const { customerId } = await Customer.create({
       firstName: 'Johns',
       lastName: 'Doe',
+      status: 'active',
     });
     await CustomerPhone.create({
       customerId,
@@ -158,6 +160,7 @@ describe('Phone and AdminPhone Assciation', () => {
     const { adminId } = await Admin.create({
       firstName: 'John',
       lastName: 'Doe',
+      status: 'active',
     });
     await AdminPhone.create({ adminId, phoneId, status: 'active' });
 
@@ -180,6 +183,7 @@ describe('Phone and AdminPhone Assciation', () => {
     const { adminId } = await Admin.create({
       firstName: 'Johns',
       lastName: 'Doe',
+      status: 'active',
     });
     await AdminPhone.create({ adminId, phoneId, status: 'active' });
 

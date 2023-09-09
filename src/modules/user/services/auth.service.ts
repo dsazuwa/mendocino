@@ -6,11 +6,12 @@ import sequelize from '@App/db';
 import { ApiError } from '@App/utils';
 
 import {
+  Admin,
   AdminAccount,
   AdminOTP,
   AdminRefreshToken,
   Customer,
-  CustomerAccount,
+  CustomerEmail,
   CustomerIdentity,
   CustomerOTP,
   CustomerPassword,
@@ -40,16 +41,16 @@ const generateRefreshToken = async (
   );
   const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
 
-  const account = isAdmin
-    ? await AdminAccount.findByPk(userId, { raw: true })
-    : await CustomerAccount.findByPk(userId, { raw: true });
+  const user = isAdmin
+    ? await Admin.findByPk(userId, { raw: true })
+    : await Customer.findByPk(userId, { raw: true });
 
-  if (!account)
+  if (!user)
     throw ApiError.unauthorized(
       'Failed to create refresh token: Account does not exist',
     );
 
-  const { status } = account;
+  const { status } = user;
   if (
     status === 'deactivated' ||
     status === 'disabled' ||
@@ -191,10 +192,11 @@ const authService = {
       process.env.REFRESH_TOKEN_SECRET,
     ) as JwtPayload;
 
-    const result = await getRefreshToken(userId, token);
+    const retrievedRefreshToken = await getRefreshToken(userId, token);
 
-    if (!result) return;
-    if (result.isAdmin)
+    if (!retrievedRefreshToken) return;
+
+    if (retrievedRefreshToken.isAdmin)
       await AdminRefreshToken.destroy({ where: { adminId: userId, token } });
     else
       await CustomerRefreshToken.destroy({
@@ -210,7 +212,7 @@ const authService = {
   ) =>
     sequelize.transaction(async (transaction) => {
       if (status === 'pending') {
-        await CustomerAccount.update(
+        await Customer.update(
           { status: 'active' },
           { where: { customerId }, transaction },
         );
@@ -233,16 +235,13 @@ const authService = {
   ) =>
     sequelize.transaction(async (transaction) => {
       const { customerId } = await Customer.create(
-        { firstName, lastName },
+        { firstName, lastName, status: 'active' },
         { transaction },
       );
 
       const { emailId } = await Email.create({ email }, { transaction });
 
-      await CustomerAccount.create(
-        { customerId, emailId, status: 'active' },
-        { transaction },
-      );
+      await CustomerEmail.create({ customerId, emailId }, { transaction });
 
       const identity = await CustomerIdentity.create(
         { identityId, customerId, provider },
@@ -260,16 +259,13 @@ const authService = {
   ) =>
     sequelize.transaction(async (transaction) => {
       const { customerId } = await Customer.create(
-        { firstName, lastName },
+        { firstName, lastName, status: 'pending' },
         { transaction },
       );
 
       const { emailId } = await Email.create({ email }, { transaction });
 
-      await CustomerAccount.create(
-        { customerId, emailId, status: 'pending' },
-        { transaction },
-      );
+      await CustomerEmail.create({ customerId, emailId }, { transaction });
 
       await CustomerPassword.create({ customerId, password }, { transaction });
 
@@ -302,23 +298,37 @@ const authService = {
       const { isAdmin, userId } = result;
 
       if (isAdmin) {
+        const admin = await Admin.findOne({
+          where: { adminId: userId },
+          transaction,
+        });
+
         const account = await AdminAccount.findOne({
           where: { adminId: userId },
           transaction,
         });
 
-        const isUser = account !== null && account.comparePasswords(password);
+        const isUser =
+          admin !== null &&
+          account !== null &&
+          account.comparePasswords(password);
 
         return isUser
           ? {
               isAdmin,
               userId,
-              status: account.status,
+              status: admin.status,
             }
           : null;
       }
 
-      const account = await CustomerAccount.findOne({
+      const customer = await Customer.findOne({
+        where: { customerId: userId },
+        raw: true,
+        transaction,
+      });
+
+      const account = await CustomerEmail.findOne({
         where: { customerId: userId },
         raw: true,
         transaction,
@@ -330,6 +340,7 @@ const authService = {
       });
 
       const isUser =
+        customer !== null &&
         account !== null &&
         customerPassword !== null &&
         customerPassword.comparePasswords(password);
@@ -338,7 +349,7 @@ const authService = {
         ? {
             isAdmin,
             userId,
-            status: account.status,
+            status: customer.status,
           }
         : null;
     }),
@@ -381,7 +392,7 @@ const authService = {
         }),
 
   reactivateCustomer: async (customerId: number) => {
-    const result = await CustomerAccount.update(
+    const result = await Customer.update(
       { status: 'active' },
       { where: { customerId, status: 'deactivated' } },
     );

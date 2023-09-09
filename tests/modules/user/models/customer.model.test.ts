@@ -1,4 +1,4 @@
-import { Customer } from '@user/models';
+import { Customer, CustomerStatusType } from '@user/models';
 
 import 'tests/db-setup';
 
@@ -9,6 +9,7 @@ describe('Customer Model', () => {
     const data = {
       firstName: 'Jolene',
       lastName: 'Doe',
+      status: 'active' as CustomerStatusType,
     };
     const customer = await Customer.create(data);
 
@@ -16,7 +17,12 @@ describe('Customer Model', () => {
   });
 
   it('should retrieve customer', async () => {
-    const data = { firstName: 'Janice', lastName: 'Doe' };
+    const data = {
+      firstName: 'Janice',
+      lastName: 'Doe',
+      status: 'active' as CustomerStatusType,
+    };
+
     const { customerId } = await Customer.create(data);
 
     const retrievedCustomer = await Customer.findByPk(customerId, { raw });
@@ -27,6 +33,7 @@ describe('Customer Model', () => {
     const customer = await Customer.create({
       firstName: 'Joy',
       lastName: 'Doe',
+      status: 'active',
     });
     const firstName = 'Joyous';
 
@@ -42,6 +49,7 @@ describe('Customer Model', () => {
     const { customerId } = await Customer.create({
       firstName: 'Joel',
       lastName: 'Doe',
+      status: 'active',
     });
 
     await Customer.destroy({ where: { customerId } });

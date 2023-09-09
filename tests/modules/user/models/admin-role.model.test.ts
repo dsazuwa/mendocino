@@ -9,7 +9,11 @@ describe('User Role Model', () => {
   let roleId: number;
 
   beforeAll(async () => {
-    const admin = await Admin.create({ firstName: 'J', lastName: 'Doe' });
+    const admin = await Admin.create({
+      firstName: 'J',
+      lastName: 'Doe',
+      status: 'active',
+    });
     adminId = admin.adminId;
 
     const { emailId } = await Email.create({ email: 'jdoe@gmail.com' });
@@ -18,7 +22,6 @@ describe('User Role Model', () => {
       adminId,
       emailId,
       password: 'JD0ePa$$',
-      status: 'active',
     });
 
     const role = await Role.create({ name: 'client' });

@@ -1,45 +1,38 @@
-import {
-  Customer,
-  CustomerAccount,
-  CustomerAccountStatusType,
-  Email,
-} from '@user/models';
+import { Customer, CustomerEmail, Email } from '@user/models';
 
 import 'tests/db-setup';
 
 const raw = true;
 
-describe('CustomerAccount Model', () => {
+describe('CustomerEmail Model', () => {
   describe('create', () => {
     it('should create customer account with provided values', async () => {
       const { customerId } = await Customer.create({
         firstName: 'John',
         lastName: 'Doe',
+        status: 'active',
       });
 
       const { emailId } = await Email.create({ email: 'johndoe@gmail.com' });
 
-      const data = {
-        customerId,
-        emailId,
-        status: 'active' as CustomerAccountStatusType,
-      };
+      const data = { customerId, emailId };
 
-      const account = await CustomerAccount.create(data);
+      const account = await CustomerEmail.create(data);
       expect(account.customerId).toBe(customerId);
       expect(account.emailId).toBe(emailId);
-      expect(account.status).toBe(data.status);
     });
 
     it('should fail on duplicate customerId', async () => {
       const { customerId } = await Customer.create({
         firstName: 'Jae',
         lastName: 'Doe',
+        status: 'active',
       });
 
       await Customer.create({
         firstName: 'Julius',
         lastName: 'Doe',
+        status: 'active',
       });
 
       const { emailId: id1 } = await Email.create({
@@ -49,17 +42,12 @@ describe('CustomerAccount Model', () => {
         email: 'jaedoe@gmail.com',
       });
 
-      await CustomerAccount.create({
-        customerId,
-        emailId: id1,
-        status: 'active',
-      });
+      await CustomerEmail.create({ customerId, emailId: id1 });
 
       expect(
-        CustomerAccount.create({
+        CustomerEmail.create({
           customerId,
           emailId: id2,
-          status: 'active',
         }),
       ).rejects.toThrow();
     });
@@ -68,26 +56,26 @@ describe('CustomerAccount Model', () => {
       const customer1 = await Customer.create({
         firstName: 'Jake',
         lastName: 'Doe',
+        status: 'active',
       });
 
       const customer2 = await Customer.create({
         firstName: 'Jac',
         lastName: 'Doe',
+        status: 'active',
       });
 
       const { emailId } = await Email.create({ email: 'jakedoe@gmail.com' });
 
-      await CustomerAccount.create({
+      await CustomerEmail.create({
         customerId: customer1.customerId,
         emailId,
-        status: 'active',
       });
 
       expect(
-        CustomerAccount.create({
+        CustomerEmail.create({
           customerId: customer2.customerId,
           emailId,
-          status: 'active',
         }),
       ).rejects.toThrow();
     });
@@ -95,28 +83,21 @@ describe('CustomerAccount Model', () => {
     it('should fail on invalid customerId', async () => {
       const { emailId } = await Email.create({ email: 'janicedoe@gmail.com' });
 
-      const data = {
-        customerId: 1000,
-        emailId,
-        status: 'active' as CustomerAccountStatusType,
-      };
+      const data = { customerId: 1000, emailId };
 
-      expect(CustomerAccount.create(data)).rejects.toThrow();
+      expect(CustomerEmail.create(data)).rejects.toThrow();
     });
 
     it('should fail on invalid emailId', async () => {
       const { customerId } = await Customer.create({
         firstName: 'Jay',
         lastName: 'Doe',
+        status: 'active',
       });
 
-      const data = {
-        customerId,
-        emailId: 12324535,
-        status: 'active' as CustomerAccountStatusType,
-      };
+      const data = { customerId, emailId: 12324535 };
 
-      expect(CustomerAccount.create(data)).rejects.toThrow();
+      expect(CustomerEmail.create(data)).rejects.toThrow();
     });
   });
 
@@ -124,20 +105,17 @@ describe('CustomerAccount Model', () => {
     const { customerId } = await Customer.create({
       firstName: 'Jane',
       lastName: 'Doe',
+      status: 'active',
     });
 
     const { emailId } = await Email.create({ email: 'janedoe@gmail.com' });
 
-    await CustomerAccount.create({
-      customerId,
-      emailId,
-      status: 'active',
-    });
+    await CustomerEmail.create({ customerId, emailId });
 
-    let retrievedAccount = await CustomerAccount.findByPk(customerId, { raw });
+    let retrievedAccount = await CustomerEmail.findByPk(customerId, { raw });
     expect(retrievedAccount).not.toBeNull();
 
-    retrievedAccount = await CustomerAccount.findOne({
+    retrievedAccount = await CustomerEmail.findOne({
       where: { emailId },
       raw,
     });
@@ -148,6 +126,7 @@ describe('CustomerAccount Model', () => {
     const { customerId } = await Customer.create({
       firstName: 'Joy',
       lastName: 'Doe',
+      status: 'active',
     });
 
     const { emailId } = await Email.create({ email: 'joydoe@gmail.com' });
@@ -156,18 +135,14 @@ describe('CustomerAccount Model', () => {
       email: 'notjoydoe@gmail.com',
     });
 
-    await CustomerAccount.create({
-      customerId,
-      emailId,
-      status: 'active',
-    });
+    await CustomerEmail.create({ customerId, emailId });
 
-    await CustomerAccount.update(
+    await CustomerEmail.update(
       { emailId: newEmailId },
       { where: { customerId }, individualHooks: true },
     );
 
-    const updatedAccount = await CustomerAccount.findOne({
+    const updatedAccount = await CustomerEmail.findOne({
       where: {
         customerId,
         emailId: newEmailId,
@@ -180,69 +155,60 @@ describe('CustomerAccount Model', () => {
     const { customerId } = await Customer.create({
       firstName: 'Joel',
       lastName: 'Doe',
+      status: 'active',
     });
 
     const { emailId } = await Email.create({ email: 'joeldoe@gmail.com' });
 
-    await CustomerAccount.create({
-      customerId,
-      emailId,
-      status: 'active',
-    });
+    await CustomerEmail.create({ customerId, emailId });
 
-    await CustomerAccount.destroy({ where: { customerId } });
+    await CustomerEmail.destroy({ where: { customerId } });
 
-    const deletedAccount = await CustomerAccount.findByPk(customerId, { raw });
+    const deletedAccount = await CustomerEmail.findByPk(customerId, { raw });
     expect(deletedAccount).toBeNull();
   });
 });
 
-describe('CustomerAccount and Customer Relationship', () => {
-  it('deleting CustomerAccount should not delete Customer', async () => {
+describe('CustomerEmail and Customer Relationship', () => {
+  it('deleting CustomerEmail should not delete Customer', async () => {
     const { customerId } = await Customer.create({
       firstName: 'Jun',
       lastName: 'Doe',
+      status: 'active',
     });
 
     const { emailId } = await Email.create({ email: 'jundoe@gmail.com' });
 
-    await CustomerAccount.create({
-      customerId,
-      emailId,
-      status: 'active',
-    });
+    await CustomerEmail.create({ customerId, emailId });
 
-    await CustomerAccount.destroy({ where: { customerId } });
+    await CustomerEmail.destroy({ where: { customerId } });
 
     const retrievedCustomer = await Customer.findByPk(customerId, { raw });
     expect(retrievedCustomer).not.toBeNull();
 
-    const retrievedAccount = await CustomerAccount.findByPk(customerId, {
+    const retrievedAccount = await CustomerEmail.findByPk(customerId, {
       raw,
     });
     expect(retrievedAccount).toBeNull();
   });
 
-  it('deleting Customer should delete CustomerAccount', async () => {
+  it('deleting Customer should delete CustomerEmail', async () => {
     const { customerId } = await Customer.create({
       firstName: 'Jenni',
       lastName: 'Doe',
+      status: 'active',
     });
 
     const { emailId } = await Email.create({ email: 'jennidoe@gmail.com' });
 
-    await CustomerAccount.create({
-      customerId,
-      emailId,
-      status: 'active',
-    });
+    await CustomerEmail.create({ customerId, emailId });
 
     await Customer.destroy({ where: { customerId } });
 
     const retrievedCustomer = await Customer.findByPk(customerId, { raw });
     expect(retrievedCustomer).toBeNull();
 
-    const retrievedAccount = await CustomerAccount.findByPk(customerId, {
+    const retrievedAccount = await CustomerEmail.findByPk(customerId, {
       raw,
     });
     expect(retrievedAccount).toBeNull();

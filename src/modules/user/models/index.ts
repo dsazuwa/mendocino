@@ -1,18 +1,16 @@
 import Address from './address.model';
-import AdminAccount, { AdminAccountStatusType } from './admin-account.model';
+import AdminAccount from './admin-account.model';
 import AdminOTP, { AdminOTPType } from './admin-otp.model';
 import AdminPhone, { AdminPhoneStatusType } from './admin-phone.model';
 import AdminRefreshToken from './admin-refresh-token.model';
 import AdminRole from './admin-role.model';
-import Admin from './admin.model';
-import CustomerAccount, {
-  CustomerAccountStatusType,
-} from './customer-account.model';
+import Admin, { AdminStatusType } from './admin.model';
+import CustomerEmail from './customer-email.model';
 import CustomerIdentity, { ProviderType } from './customer-identity.model';
 import CustomerOTP, { CustomerOTPType } from './customer-otp.model';
 import CustomerPhone, { CustomerPhoneStatusType } from './customer-phone.model';
 import CustomerRefreshToken from './customer-refresh-token.model';
-import Customer from './customer.model';
+import Customer, { CustomerStatusType } from './customer.model';
 import Email from './email.model';
 import CustomerPassword from './nustomer-password.model';
 import Phone from './phone.model';
@@ -21,11 +19,11 @@ import Role from './role.model';
 Admin.hasOne(AdminAccount, { foreignKey: 'adminId', onDelete: 'CASCADE' });
 AdminAccount.belongsTo(Admin, { foreignKey: 'adminId', onDelete: 'CASCADE' });
 
-Customer.hasOne(CustomerAccount, {
+Customer.hasOne(CustomerEmail, {
   foreignKey: 'customerId',
   onDelete: 'CASCADE',
 });
-CustomerAccount.belongsTo(Customer, {
+CustomerEmail.belongsTo(Customer, {
   foreignKey: 'customerId',
   onDelete: 'CASCADE',
 });
@@ -39,20 +37,20 @@ AdminAccount.belongsTo(Email, {
   onDelete: 'CASCADE',
 });
 
-Email.hasOne(CustomerAccount, {
+Email.hasOne(CustomerEmail, {
   foreignKey: 'emailId',
   onDelete: 'CASCADE',
 });
-CustomerAccount.belongsTo(Email, {
+CustomerEmail.belongsTo(Email, {
   foreignKey: 'emailId',
   onDelete: 'CASCADE',
 });
 
-CustomerPassword.belongsTo(CustomerAccount, {
+CustomerPassword.belongsTo(Customer, {
   foreignKey: 'customerId',
   onDelete: 'CASCADE',
 });
-CustomerAccount.hasOne(CustomerPassword, {
+Customer.hasOne(CustomerPassword, {
   foreignKey: 'customerId',
   onDelete: 'CASCADE',
 });
@@ -153,16 +151,15 @@ export {
   Address,
   Admin,
   AdminAccount,
-  AdminAccountStatusType,
   AdminOTP,
   AdminOTPType,
   AdminPhone,
   AdminPhoneStatusType,
   AdminRefreshToken,
   AdminRole,
+  AdminStatusType,
   Customer,
-  CustomerAccount,
-  CustomerAccountStatusType,
+  CustomerEmail,
   CustomerIdentity,
   CustomerOTP,
   CustomerOTPType,
@@ -170,6 +167,7 @@ export {
   CustomerPhone,
   CustomerPhoneStatusType,
   CustomerRefreshToken,
+  CustomerStatusType,
   Email,
   Phone,
   ProviderType,

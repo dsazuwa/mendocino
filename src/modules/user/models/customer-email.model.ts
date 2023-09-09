@@ -10,28 +10,20 @@ import sequelize from '@App/db';
 
 import { TABLENAMES, USER_SCHEMA } from '@user/utils/constants';
 
-export type CustomerAccountStatusType =
-  | 'active'
-  | 'pending'
-  | 'suspended'
-  | 'deactivated';
-
-class CustomerAccount extends Model<
-  InferAttributes<CustomerAccount>,
-  InferCreationAttributes<CustomerAccount>
+class CustomerEmail extends Model<
+  InferAttributes<CustomerEmail>,
+  InferCreationAttributes<CustomerEmail>
 > {
   declare customerId: number;
 
   declare emailId: number;
-
-  declare status: CustomerAccountStatusType;
 
   declare createdAt: CreationOptional<Date>;
 
   declare updatedAt: CreationOptional<Date>;
 }
 
-CustomerAccount.init(
+CustomerEmail.init(
   {
     customerId: {
       type: DataTypes.INTEGER,
@@ -41,10 +33,6 @@ CustomerAccount.init(
       type: DataTypes.INTEGER,
       allowNull: false,
       unique: true,
-    },
-    status: {
-      type: DataTypes.ENUM('active', 'pending', 'suspended', 'deactivated'),
-      allowNull: false,
     },
     createdAt: {
       type: DataTypes.DATE,
@@ -59,8 +47,8 @@ CustomerAccount.init(
     sequelize,
     underscored: true,
     schema: USER_SCHEMA,
-    tableName: TABLENAMES.CUSTOMER_ACCOUNT,
+    tableName: TABLENAMES.CUSTOMER_EMAIL,
   },
 );
 
-export default CustomerAccount;
+export default CustomerEmail;

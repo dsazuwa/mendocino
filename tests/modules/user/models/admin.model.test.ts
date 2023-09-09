@@ -1,4 +1,4 @@
-import { Admin } from '@user/models';
+import { Admin, AdminStatusType } from '@user/models';
 
 import 'tests/db-setup';
 
@@ -13,6 +13,7 @@ describe('Admin Model', () => {
     const data = {
       firstName: 'Jolene',
       lastName: 'Doe',
+      status: 'active' as AdminStatusType,
     };
     const admin = await Admin.create(data);
 
@@ -20,7 +21,11 @@ describe('Admin Model', () => {
   });
 
   it('should retrieve admin', async () => {
-    const data = { firstName: 'Janice', lastName: 'Doe' };
+    const data = {
+      firstName: 'Janice',
+      lastName: 'Doe',
+      status: 'active' as AdminStatusType,
+    };
     const { adminId } = await Admin.create(data);
 
     const retrievedAdmin = await Admin.findByPk(adminId, { raw });
@@ -28,7 +33,12 @@ describe('Admin Model', () => {
   });
 
   it('should update admin', async () => {
-    const admin = await Admin.create({ firstName: 'Joy', lastName: 'Doe' });
+    const admin = await Admin.create({
+      firstName: 'Joy',
+      lastName: 'Doe',
+      status: 'active',
+    });
+
     const firstName = 'Joyous';
 
     await admin.update({ firstName });
@@ -41,6 +51,7 @@ describe('Admin Model', () => {
     const { adminId } = await Admin.create({
       firstName: 'Joel',
       lastName: 'Doe',
+      status: 'active',
     });
 
     await Admin.destroy({ where: { adminId } });

@@ -14,7 +14,7 @@ export const TABLENAMES = {
   ADMIN_PHONE: 'admin_phones',
 
   CUSTOMER: 'customers',
-  CUSTOMER_ACCOUNT: 'customer_accounts',
+  CUSTOMER_EMAIL: 'customer_emails',
   CUSTOMER_PASSWORD: 'customer_passwords',
   CUSTOMER_IDENTITY: 'customer_identities',
   CUSTOMER_OTP: 'customer_otps',

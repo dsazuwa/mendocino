@@ -64,7 +64,7 @@ describe('get userId for user', () => {
 
 describe('get user data', () => {
   it('should return user data for customer', async () => {
-    const { customerId, customer, email, account } = await createCustomer(
+    const { customerId, customer, email } = await createCustomer(
       'Jacinto',
       'Doe',
       'jacintodoe@gmail.com',
@@ -79,21 +79,20 @@ describe('get user data', () => {
       firstName: customer.firstName,
       lastName: customer.lastName,
       email: email.email,
-      status: account.status,
+      status: customer.status,
       roles: ['customer'],
     });
   });
 
   it('should return user data when for customer with identity', async () => {
-    const { customerId, customer, email, account } =
-      await createCustomerAndIdentity(
-        'Juana',
-        'Doe',
-        'juanadoe@gmail.com',
-        null,
-        'active',
-        [{ identityId: '9043859372838624', provider: 'google' }],
-      );
+    const { customerId, customer, email } = await createCustomerAndIdentity(
+      'Juana',
+      'Doe',
+      'juanadoe@gmail.com',
+      null,
+      'active',
+      [{ identityId: '9043859372838624', provider: 'google' }],
+    );
 
     const result = await userService.getUserData(customerId, false);
 
@@ -102,7 +101,7 @@ describe('get user data', () => {
       firstName: customer.firstName,
       lastName: customer.lastName,
       email: email.email,
-      status: account.status,
+      status: customer.status,
       roles: ['customer'],
     });
   });
@@ -110,7 +109,7 @@ describe('get user data', () => {
   it('should return user data for admin', async () => {
     const { CUSTOMER_SUPPORT, MANAGER } = ROLES;
 
-    const { adminId, admin, email, account } = await createAdmin(
+    const { adminId, admin, email } = await createAdmin(
       'Jamie',
       'Doe',
       'jaime@gmail.com',
@@ -126,7 +125,7 @@ describe('get user data', () => {
       firstName: admin.firstName,
       lastName: admin.lastName,
       email: email.email,
-      status: account.status,
+      status: admin.status,
       roles: [CUSTOMER_SUPPORT.name, MANAGER.name],
     });
   });
@@ -178,7 +177,7 @@ describe('get user from payload', () => {
   it('should return data for admin', async () => {
     const { ROOT } = ROLES;
 
-    const { adminId, admin, account, email } = await createAdmin(
+    const { adminId, admin, email } = await createAdmin(
       'Jess',
       'Doe',
       'jessdoe@gmail.com',
@@ -193,13 +192,13 @@ describe('get user from payload', () => {
       firstName: admin.firstName,
       lastName: admin.lastName,
       email: email.email,
-      status: account.status,
+      status: admin.status,
       roles: [ROOT.name],
     });
   });
 
   it('should return data for customer', async () => {
-    const { customerId, customer, account, email } = await createCustomer(
+    const { customerId, customer, email } = await createCustomer(
       'Jess',
       'Doe',
       'not.jessdoe@gmail.com',
@@ -213,7 +212,7 @@ describe('get user from payload', () => {
       firstName: customer.firstName,
       lastName: customer.lastName,
       email: email.email,
-      status: account.status,
+      status: customer.status,
       roles: ['customer'],
     });
   });
@@ -221,15 +220,14 @@ describe('get user from payload', () => {
   it('should return data for active customer using third party auth', async () => {
     const provider = 'google';
 
-    const { customerId, customer, account, email } =
-      await createCustomerAndIdentity(
-        'Jessica',
-        'Doe',
-        'notjessicadoe@gmail.com',
-        'jessD0ePa$$',
-        'active',
-        [{ identityId: '234w756532435674', provider }],
-      );
+    const { customerId, customer, email } = await createCustomerAndIdentity(
+      'Jessica',
+      'Doe',
+      'notjessicadoe@gmail.com',
+      'jessD0ePa$$',
+      'active',
+      [{ identityId: '234w756532435674', provider }],
+    );
 
     const result = await userService.getUserFromPayload(email.email, provider);
     expect(result).toMatchObject({
@@ -237,7 +235,7 @@ describe('get user from payload', () => {
       firstName: customer.firstName,
       lastName: customer.lastName,
       email: email.email,
-      status: account.status,
+      status: customer.status,
       roles: ['customer'],
     });
   });
@@ -248,15 +246,14 @@ describe('get user data for social authentication', () => {
     const identityId = '97427987429868742642';
     const provider = 'facebook';
 
-    const { customerId, customer, email, account } =
-      await createCustomerAndIdentity(
-        'Juni',
-        'Doe',
-        'junidoe@gmail.com',
-        null,
-        'active',
-        [{ identityId, provider }],
-      );
+    const { customerId, customer, email } = await createCustomerAndIdentity(
+      'Juni',
+      'Doe',
+      'junidoe@gmail.com',
+      null,
+      'active',
+      [{ identityId, provider }],
+    );
 
     const { user, isAdmin, identityExists } =
       await userService.getUserForSocialAuthentication(
@@ -270,7 +267,7 @@ describe('get user data for social authentication', () => {
       firstName: customer.firstName,
       lastName: customer.lastName,
       email: email.email,
-      status: account.status,
+      status: customer.status,
       roles: ['customer'],
     });
     expect(isAdmin).toBe(false);
@@ -281,7 +278,7 @@ describe('get user data for social authentication', () => {
     const identityId = '85930847728963982469';
     const provider = 'facebook';
 
-    const { customerId, customer, email, account } = await createCustomer(
+    const { customerId, customer, email } = await createCustomer(
       'June',
       'Doe',
       'junedoe@gmail.com',
@@ -301,7 +298,7 @@ describe('get user data for social authentication', () => {
       firstName: customer.firstName,
       lastName: customer.lastName,
       email: email.email,
-      status: account.status,
+      status: customer.status,
       roles: ['customer'],
     });
     expect(isAdmin).toBe(false);
@@ -379,7 +376,7 @@ describe('get user data for social authentication', () => {
 
 describe('getUserForRecovery', () => {
   it('for admin with password', async () => {
-    const { adminId, admin, email, account } = await createAdmin(
+    const { adminId, admin, email } = await createAdmin(
       'Jim',
       'Doe',
       'jimdoe@gmail.com',
@@ -396,13 +393,13 @@ describe('getUserForRecovery', () => {
       lastName: admin.lastName,
       email: email.email,
       hasPassword: true,
-      status: account.status,
+      status: admin.status,
       roles: [ROLES.ROOT.name],
     });
   });
 
   it('for customer with password', async () => {
-    const { customerId, customer, email, account } = await createCustomer(
+    const { customerId, customer, email } = await createCustomer(
       'Jimmy',
       'Doe',
       'jimmydoe@gmail.com',
@@ -418,21 +415,20 @@ describe('getUserForRecovery', () => {
       lastName: customer.lastName,
       email: email.email,
       hasPassword: true,
-      status: account.status,
+      status: customer.status,
       roles: ['customer'],
     });
   });
 
-  it('for customer with not password', async () => {
-    const { customerId, customer, email, account } =
-      await createCustomerAndIdentity(
-        'Jim Bob',
-        'Doe',
-        'jimmbobdoe@gmail.com',
-        null,
-        'active',
-        [{ identityId: '0837418974832197432987432', provider: 'google' }],
-      );
+  it('for customer with out password', async () => {
+    const { customerId, customer, email } = await createCustomerAndIdentity(
+      'Jim Bob',
+      'Doe',
+      'jimmbobdoe@gmail.com',
+      null,
+      'active',
+      [{ identityId: '0837418974832197432987432', provider: 'google' }],
+    );
 
     const result = await userService.getUserForRecovery(email.email);
     expect(result).toMatchObject({
@@ -442,7 +438,7 @@ describe('getUserForRecovery', () => {
       lastName: customer.lastName,
       email: email.email,
       hasPassword: false,
-      status: account.status,
+      status: customer.status,
       roles: ['customer'],
     });
   });

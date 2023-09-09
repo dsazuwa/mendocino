@@ -1,7 +1,7 @@
 import {
   Address,
   Customer,
-  CustomerAccount,
+  CustomerEmail,
   CustomerIdentity,
   CustomerOTP,
   CustomerPassword,
@@ -202,11 +202,11 @@ describe('verify email', () => {
     });
     expect(otp).toBeNull();
 
-    const account = await CustomerAccount.findOne({
+    const customer = await Customer.findOne({
       where: { customerId, status: 'active' },
       raw: true,
     });
-    expect(account).not.toBeNull();
+    expect(customer).not.toBeNull();
   });
 });
 
@@ -440,7 +440,7 @@ describe('revoke social authentication', () => {
     });
     expect(i).toBeNull();
 
-    const a = await CustomerAccount.findByPk(customerId, { raw: true });
+    const a = await CustomerEmail.findByPk(customerId, { raw: true });
     expect(a).not.toBeNull();
 
     const c = await Customer.findByPk(customerId, { raw: true });
@@ -477,7 +477,7 @@ describe('revoke social authentication', () => {
     });
     expect(i).not.toBeNull();
 
-    const a = await CustomerAccount.findByPk(customerId, { raw: true });
+    const a = await CustomerEmail.findByPk(customerId, { raw: true });
     expect(a).not.toBeNull();
 
     const c = await Customer.findByPk(customerId, { raw: true });
@@ -508,7 +508,7 @@ describe('revoke social authentication', () => {
     });
     expect(i).not.toBeNull();
 
-    const a = await CustomerAccount.findByPk(customerId, { raw: true });
+    const a = await CustomerEmail.findByPk(customerId, { raw: true });
     expect(a).not.toBeNull();
 
     const c = await Customer.findByPk(customerId, { raw: true });
@@ -543,7 +543,7 @@ describe('close account', () => {
     });
     expect(i).toBeNull();
 
-    const a = await CustomerAccount.findByPk(customerId, { raw: true });
+    const a = await CustomerEmail.findByPk(customerId, { raw: true });
     expect(a).not.toBeNull();
 
     const u = await Customer.findByPk(customerId, { raw: true });
@@ -599,7 +599,7 @@ describe('close account', () => {
     });
     expect(i).toBeNull();
 
-    const a = await CustomerAccount.findByPk(customerId, { raw: true });
+    const a = await CustomerEmail.findByPk(customerId, { raw: true });
     expect(a).toBeNull();
 
     const c = await Customer.findByPk(customerId, { raw: true });

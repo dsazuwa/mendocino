@@ -3,7 +3,7 @@ import { JwtPayload, verify } from 'jsonwebtoken';
 import {
   CustomerOTP,
   Customer,
-  CustomerAccount,
+  CustomerEmail,
   CustomerIdentity,
   CustomerPassword,
   Email,
@@ -206,8 +206,8 @@ describe(`PATCH ${BASE_URL}/verify/:otp`, () => {
       .auth(jwt, { type: 'bearer' })
       .expect(200);
 
-    const retrievedAcct = await CustomerAccount.findByPk(customerId, { raw });
-    expect(retrievedAcct?.status).toEqual('active');
+    const customer = await Customer.findByPk(customerId, { raw });
+    expect(customer?.status).toEqual('active');
   });
 });
 
@@ -541,11 +541,7 @@ describe(`PATCH ${BASE_URL}/close`, () => {
     expect(response.status).toBe(200);
 
     const c = await Customer.findByPk(customerId, { raw });
-    expect(c).not.toBeNull();
-
-    const a = await CustomerAccount.findByPk(customerId, { raw });
-    expect(a).not.toBeNull();
-    expect(a?.status).toBe('deactivated');
+    expect(c?.status).toBe('deactivated');
 
     const identities = await CustomerIdentity.findAll({
       where: { customerId },
@@ -576,7 +572,7 @@ describe(`PATCH ${BASE_URL}/close`, () => {
     const c = await Customer.findByPk(customerId, { raw });
     expect(c).not.toBeNull();
 
-    const a = await CustomerAccount.findByPk(customerId, { raw });
+    const a = await CustomerEmail.findByPk(customerId, { raw });
     expect(a).toBeNull();
 
     const identities = await CustomerIdentity.findAll({

@@ -8,7 +8,7 @@ import {
   AdminAccount,
   AdminRole,
   Customer,
-  CustomerAccount,
+  CustomerEmail,
   CustomerIdentity,
   CustomerPassword,
   Email,
@@ -47,7 +47,7 @@ const userService = {
           u.first_name AS "firstName",
           u.last_name AS "lastName",
           e.email AS email,
-          a.status AS status,
+          u.status AS status,
           array_agg(DISTINCT r.name) AS roles
         FROM
           ${USER_SCHEMA}.${Admin.tableName} u
@@ -60,19 +60,19 @@ const userService = {
         JOIN
           ${USER_SCHEMA}.${Role.tableName} r ON r.role_id = ur.role_id
         GROUP BY
-          u.admin_id, u.first_name, u.last_name, a.status, e.email;`
+          u.admin_id, u.first_name, u.last_name, u.status, e.email;`
       : `
         SELECT
           u.customer_id AS "userId",
           u.first_name AS "firstName",
           u.last_name AS "lastName",
           e.email AS email,
-          a.status AS status,
+          u.status AS status,
           ARRAY['customer'] AS roles
         FROM
           ${USER_SCHEMA}.${Customer.tableName} u
         JOIN
-          ${USER_SCHEMA}.${CustomerAccount.tableName} a ON a.customer_id = u.customer_id AND a.customer_id = ${userId}
+          ${USER_SCHEMA}.${CustomerEmail.tableName} a ON a.customer_id = u.customer_id AND a.customer_id = ${userId}
         JOIN
           ${USER_SCHEMA}.${Email.tableName} e ON a.email_id = e.email_id;`;
 
@@ -153,13 +153,13 @@ const userService = {
           u.first_name AS first_name,
           u.last_name AS last_name,
           e.email AS email,
-          a.status AS status,
+          u.status AS status,
           CASE WHEN i.identity_id IS NOT NULL THEN TRUE ELSE FALSE END AS identity_exists,
           ARRAY['customer'] AS roles
         FROM
           ${USER_SCHEMA}.${Customer.tableName} u
         JOIN
-          ${USER_SCHEMA}.${CustomerAccount.tableName} a ON u.customer_id = a.customer_id
+          ${USER_SCHEMA}.${CustomerEmail.tableName} a ON u.customer_id = a.customer_id
         JOIN
           ${USER_SCHEMA}.${Email.tableName} e ON a.email_id = e.email_id
         LEFT JOIN
@@ -208,7 +208,7 @@ const userService = {
           WHEN u.is_admin THEN TRUE
           ELSE CASE WHEN cp.password IS NULL THEN FALSE ELSE TRUE END
         END AS "hasPassword",
-        CASE WHEN u.is_admin THEN aa.status::text ELSE ca.status::text END AS status,
+        CASE WHEN u.is_admin THEN a.status::text ELSE c.status::text END AS status,
         CASE WHEN u.is_admin THEN array_agg(DISTINCT r.name) ELSE ARRAY['customer'] END AS roles
       FROM
         u
@@ -223,11 +223,11 @@ const userService = {
       LEFT JOIN
         ${USER_SCHEMA}.${Customer.tableName} c ON c.customer_id = u.user_id
       LEFT JOIN
-        ${USER_SCHEMA}.${CustomerAccount.tableName} ca ON ca.customer_id = c.customer_id
+        ${USER_SCHEMA}.${CustomerEmail.tableName} ca ON ca.customer_id = c.customer_id
       LEFT JOIN
         ${USER_SCHEMA}.${CustomerPassword.tableName} cp ON cp.customer_id = c.customer_id
       GROUP BY
-        u.is_admin, u.email, a.admin_id, c.customer_id, cp.password, aa.status, ca.status;`;
+        u.is_admin, u.email, a.admin_id, c.customer_id, cp.password, a.status, c.status;`;
 
     const result = await sequelize.query(query, { type: QueryTypes.SELECT });
 

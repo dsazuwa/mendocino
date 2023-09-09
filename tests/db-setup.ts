@@ -22,7 +22,7 @@ import {
   AdminRefreshToken,
   AdminRole,
   Customer,
-  CustomerAccount,
+  CustomerEmail,
   CustomerIdentity,
   CustomerOTP,
   CustomerPhone,
@@ -63,7 +63,7 @@ beforeAll(async () => {
   await CustomerOTP.destroy({ where: {} });
   await CustomerIdentity.destroy({ where: {} });
   await CustomerPassword.destroy({ where: {} });
-  await CustomerAccount.destroy({ where: {} });
+  await CustomerEmail.destroy({ where: {} });
   await Customer.destroy({ where: {} });
 
   await Email.destroy({ where: {} });

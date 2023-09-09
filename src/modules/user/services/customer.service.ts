@@ -5,8 +5,8 @@ import sequelize from '@App/db';
 import {
   Address,
   Customer,
-  CustomerAccount,
-  CustomerAccountStatusType,
+  CustomerEmail,
+  CustomerStatusType,
   CustomerIdentity,
   CustomerOTP,
   CustomerPassword,
@@ -23,8 +23,8 @@ const deleteIdentity = (customerId: number, provider: ProviderType) =>
 
 const deactivate = (customerId: number) =>
   sequelize.transaction(async (transaction) => {
-    await CustomerAccount.update(
-      { status: 'deactivated' as CustomerAccountStatusType },
+    await Customer.update(
+      { status: 'deactivated' as CustomerStatusType },
       { where: { customerId }, transaction },
     );
 
@@ -50,7 +50,7 @@ const deleteCustomer = async (customerId: number) =>
 
     await CustomerIdentity.destroy({ where: { customerId }, transaction });
 
-    const account = await CustomerAccount.findOne({
+    const account = await CustomerEmail.findOne({
       where: { customerId },
       transaction,
     });
@@ -65,7 +65,7 @@ const customerService = {
         c.last_name as "lastName",
         jsonb_build_object(
           'address', email.email,
-          'isVerified', CASE WHEN account.status = 'active' THEN true ELSE false END
+          'isVerified', CASE WHEN c.status = 'active' THEN true ELSE false END
         ) AS "email",
         CASE WHEN c_password.password IS NOT NULL 
           THEN true 
@@ -96,9 +96,9 @@ const customerService = {
       FROM
         ${USER_SCHEMA}.${Customer.tableName} c
       JOIN 
-        ${USER_SCHEMA}.${CustomerAccount.tableName} account ON account.customer_id = c.customer_id
+        ${USER_SCHEMA}.${CustomerEmail.tableName} ce ON ce.customer_id = c.customer_id
       JOIN
-        ${USER_SCHEMA}.${Email.tableName} email ON email.email_id = account.email_id
+        ${USER_SCHEMA}.${Email.tableName} email ON email.email_id = ce.email_id
       LEFT JOIN
         ${USER_SCHEMA}.${CustomerPassword.tableName} c_password ON c_password.customer_id = c.customer_id
       LEFT JOIN
@@ -120,7 +120,7 @@ const customerService = {
         transaction,
       });
 
-      await CustomerAccount.update(
+      await Customer.update(
         { status: 'active' },
         { where: { customerId }, transaction },
       );
@@ -193,7 +193,7 @@ const customerService = {
       FROM
         ${USER_SCHEMA}.${Customer.tableName} c
       LEFT JOIN
-        ${USER_SCHEMA}.${CustomerAccount.tableName} ca ON ca.customer_id = c.customer_id
+        ${USER_SCHEMA}.${CustomerEmail.tableName} ca ON ca.customer_id = c.customer_id
       LEFT JOIN
         ${USER_SCHEMA}.${Email.tableName} e ON e.email_id = ca.email_id
       LEFT JOIN

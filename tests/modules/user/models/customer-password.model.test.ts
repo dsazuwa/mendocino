@@ -1,9 +1,4 @@
-import {
-  Customer,
-  CustomerAccount,
-  CustomerPassword,
-  Email,
-} from '@user/models';
+import { Customer, CustomerEmail, CustomerPassword, Email } from '@user/models';
 
 import 'tests/db-setup';
 
@@ -15,15 +10,12 @@ describe('CustomerPassword Model', () => {
       const { customerId } = await Customer.create({
         firstName: 'John',
         lastName: 'Doe',
+        status: 'active',
       });
 
       const { emailId } = await Email.create({ email: 'johndoe@gmail.com' });
 
-      await CustomerAccount.create({
-        customerId,
-        emailId,
-        status: 'active',
-      });
+      await CustomerEmail.create({ customerId, emailId });
 
       const password = 'johnD0ePa$$';
 
@@ -39,15 +31,12 @@ describe('CustomerPassword Model', () => {
       const { customerId } = await Customer.create({
         firstName: 'Jae',
         lastName: 'Doe',
+        status: 'active',
       });
 
       const { emailId } = await Email.create({ email: 'jaedoe@gmail.com' });
 
-      await CustomerAccount.create({
-        customerId,
-        emailId,
-        status: 'active',
-      });
+      await CustomerEmail.create({ customerId, emailId });
 
       const data = { customerId, password: 'juliusD0ePa$$' };
       await CustomerPassword.create(data);
@@ -58,15 +47,12 @@ describe('CustomerPassword Model', () => {
       const { customerId } = await Customer.create({
         firstName: 'Janice',
         lastName: 'Doe',
+        status: 'active',
       });
 
       const { emailId } = await Email.create({ email: 'janicedoe@gmail.com' });
 
-      await CustomerAccount.create({
-        customerId,
-        emailId,
-        status: 'active',
-      });
+      await CustomerEmail.create({ customerId, emailId });
 
       expect(
         CustomerPassword.create({
@@ -81,20 +67,14 @@ describe('CustomerPassword Model', () => {
     const { customerId } = await Customer.create({
       firstName: 'Jane',
       lastName: 'Doe',
+      status: 'active',
     });
 
     const { emailId } = await Email.create({ email: 'janedoe@gmail.com' });
 
-    await CustomerAccount.create({
-      customerId,
-      emailId,
-      status: 'active',
-    });
+    await CustomerEmail.create({ customerId, emailId });
 
-    await CustomerPassword.create({
-      customerId,
-      password: 'janeD0ePa$$',
-    });
+    await CustomerPassword.create({ customerId, password: 'janeD0ePa$$' });
 
     let retrievedPassword = await CustomerPassword.findByPk(customerId, {
       raw,
@@ -112,15 +92,12 @@ describe('CustomerPassword Model', () => {
     const { customerId } = await Customer.create({
       firstName: 'Joy',
       lastName: 'Doe',
+      status: 'active',
     });
 
     const { emailId } = await Email.create({ email: 'joydoe@gmail.com' });
 
-    await CustomerAccount.create({
-      customerId,
-      emailId,
-      status: 'active',
-    });
+    await CustomerEmail.create({ customerId, emailId });
 
     await CustomerPassword.create({ customerId, password: 'joyD0ePa$$' });
 
@@ -139,15 +116,12 @@ describe('CustomerPassword Model', () => {
     const { customerId } = await Customer.create({
       firstName: 'Joel',
       lastName: 'Doe',
+      status: 'active',
     });
 
     const { emailId } = await Email.create({ email: 'joeldoe@gmail.com' });
 
-    await CustomerAccount.create({
-      customerId,
-      emailId,
-      status: 'active',
-    });
+    await CustomerEmail.create({ customerId, emailId });
 
     await CustomerPassword.create({ customerId, password: 'joelD0ePa$$' });
 
@@ -164,15 +138,12 @@ describe('CustomerPassword Model', () => {
       const { customerId } = await Customer.create({
         firstName: 'Jen',
         lastName: 'Doe',
+        status: 'active',
       });
 
       const { emailId } = await Email.create({ email: 'jendoe@gmail.com' });
 
-      await CustomerAccount.create({
-        customerId,
-        emailId,
-        status: 'active',
-      });
+      await CustomerEmail.create({ customerId, emailId });
 
       const password = 'janeD0ePa$$';
 
@@ -188,15 +159,12 @@ describe('CustomerPassword Model', () => {
       const { customerId } = await Customer.create({
         firstName: 'Jules',
         lastName: 'Doe',
+        status: 'active',
       });
 
       const { emailId } = await Email.create({ email: 'julesdoe@gmail.com' });
 
-      await CustomerAccount.create({
-        customerId,
-        emailId,
-        status: 'active',
-      });
+      await CustomerEmail.create({ customerId, emailId });
 
       const oldPassword = 'julesD0ePa$$';
       const newPassword = 'newJulesPa$$';
@@ -228,15 +196,12 @@ describe('CustomerPassword Model', () => {
       const { customerId } = await Customer.create({
         firstName: 'Jerome',
         lastName: 'Doe',
+        status: 'active',
       });
 
       const { emailId } = await Email.create({ email: 'jeromedoe@gmail.com' });
 
-      await CustomerAccount.create({
-        customerId,
-        emailId,
-        status: 'active',
-      });
+      await CustomerEmail.create({ customerId, emailId });
 
       customerPassword = await CustomerPassword.create({
         customerId,
@@ -254,18 +219,11 @@ describe('CustomerPassword Model', () => {
   });
 });
 
-describe('CustomerAccount and CustomerPassword Relationship', () => {
-  it('deleting CustomerPassword should not delete CustomerAccount', async () => {
+describe('CustomerEmail and CustomerPassword Relationship', () => {
+  it('deleting CustomerPassword should not delete Customer', async () => {
     const { customerId } = await Customer.create({
       firstName: 'Jun',
       lastName: 'Doe',
-    });
-
-    const { emailId } = await Email.create({ email: 'jundoe@gmail.com' });
-
-    await CustomerAccount.create({
-      customerId,
-      emailId,
       status: 'active',
     });
 
@@ -281,34 +239,23 @@ describe('CustomerAccount and CustomerPassword Relationship', () => {
     });
     expect(retrievedPassword).toBeNull();
 
-    const retrievedAccount = await CustomerAccount.findByPk(customerId, {
-      raw,
-    });
-    expect(retrievedAccount).not.toBeNull();
+    const retrievedCustomer = await Customer.findByPk(customerId, { raw });
+    expect(retrievedCustomer).not.toBeNull();
   });
 
-  it('deleting CustomerAccount should delete CustomerPassword', async () => {
+  it('deleting Customer should delete CustomerPassword', async () => {
     const { customerId } = await Customer.create({
       firstName: 'Jenni',
       lastName: 'Doe',
-    });
-
-    const { emailId } = await Email.create({ email: 'jennidoe@gmail.com' });
-
-    await CustomerAccount.create({
-      customerId,
-      emailId,
       status: 'active',
     });
 
     await CustomerPassword.create({ customerId, password: 'JenD0ePa$$' });
 
-    await CustomerAccount.destroy({ where: { customerId } });
+    await Customer.destroy({ where: { customerId } });
 
-    const retrievedAccount = await CustomerAccount.findByPk(customerId, {
-      raw,
-    });
-    expect(retrievedAccount).toBeNull();
+    const retrievedCustomer = await Customer.findByPk(customerId, { raw });
+    expect(retrievedCustomer).toBeNull();
 
     const retrievedPassword = await CustomerPassword.findByPk(customerId, {
       raw,

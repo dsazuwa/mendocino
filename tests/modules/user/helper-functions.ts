@@ -2,13 +2,13 @@ import sequelize from '@App/db';
 import {
   Admin,
   AdminAccount,
-  AdminAccountStatusType,
   AdminRole,
+  AdminStatusType,
   Customer,
-  CustomerAccount,
-  CustomerAccountStatusType,
+  CustomerEmail,
   CustomerIdentity,
   CustomerPassword,
+  CustomerStatusType,
   Email,
   ProviderType,
   Role,
@@ -20,11 +20,11 @@ export const createCustomer = async (
   lastName: string,
   email: string,
   password: string,
-  status: CustomerAccountStatusType,
+  status: CustomerStatusType,
 ) =>
   sequelize.transaction(async (transaction) => {
     const customer = await Customer.create(
-      { firstName, lastName },
+      { firstName, lastName, status },
       { transaction },
     );
 
@@ -32,11 +32,10 @@ export const createCustomer = async (
 
     const customerEmail = await Email.create({ email }, { transaction });
 
-    const account = await CustomerAccount.create(
+    await CustomerEmail.create(
       {
         customerId,
         emailId: customerEmail.emailId,
-        status,
       },
       { transaction },
     );
@@ -46,7 +45,7 @@ export const createCustomer = async (
       { transaction },
     );
 
-    return { customerId, customer, email: customerEmail, account, password: p };
+    return { customerId, customer, email: customerEmail, password: p };
   });
 
 export const createCustomerAndIdentity = async (
@@ -54,12 +53,12 @@ export const createCustomerAndIdentity = async (
   lastName: string,
   email: string,
   password: string | null,
-  status: CustomerAccountStatusType,
+  status: CustomerStatusType,
   identities: { identityId: string; provider: ProviderType }[],
 ) =>
   sequelize.transaction(async (transaction) => {
     const customer = await Customer.create(
-      { firstName, lastName },
+      { firstName, lastName, status },
       { transaction },
     );
 
@@ -67,11 +66,10 @@ export const createCustomerAndIdentity = async (
 
     const adminEmail = await Email.create({ email }, { transaction });
 
-    const account = await CustomerAccount.create(
+    await CustomerEmail.create(
       {
         customerId,
         emailId: adminEmail.emailId,
-        status,
       },
       { transaction },
     );
@@ -94,7 +92,6 @@ export const createCustomerAndIdentity = async (
       customerId,
       customer,
       email: adminEmail,
-      account,
       password: p,
       createdIdentities,
     };
@@ -105,11 +102,14 @@ export const createAdmin = async (
   lastName: string,
   email: string,
   password: string,
-  status: AdminAccountStatusType,
+  status: AdminStatusType,
   roles: number[],
 ) =>
   sequelize.transaction(async (transaction) => {
-    const admin = await Admin.create({ firstName, lastName }, { transaction });
+    const admin = await Admin.create(
+      { firstName, lastName, status },
+      { transaction },
+    );
 
     const { adminId } = admin;
 
@@ -120,7 +120,6 @@ export const createAdmin = async (
         adminId,
         emailId: adminEmail.emailId,
         password,
-        status,
       },
       { transaction },
     );

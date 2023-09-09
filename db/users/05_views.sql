@@ -4,7 +4,7 @@ SELECT
     WHEN EXISTS (
       SELECT 1 FROM users.admins WHERE admin_id = aa.admin_id
     ) THEN aa.admin_id
-    ELSE ca.customer_id
+    ELSE ce.customer_id
   END AS user_id,
   EXISTS (
     SELECT 1 FROM users.admins WHERE admin_id = aa.admin_id
@@ -13,9 +13,9 @@ SELECT
 FROM
   users.admin_accounts aa
 FULL JOIN
-  users.customer_accounts ca ON ca.email_id = aa.email_id
+  users.customer_emails ce ON ce.email_id = aa.email_id
 JOIN
-  users.emails e ON e.email_id = aa.email_id OR e.email_id = ca.email_id;
+  users.emails e ON e.email_id = aa.email_id OR e.email_id = ce.email_id;
 
 CREATE VIEW users.all_refresh_tokens AS
 SELECT 
@@ -32,10 +32,10 @@ UNION ALL
 SELECT
   false AS is_admin,
   crt.customer_id AS user_id,
-  ce.email AS email,
+  e.email AS email,
   crt.token AS token,
   crt.expires_at AS expires_at,
   crt.created_at AS created_at
 FROM users.customer_refresh_tokens crt
-JOIN users.customer_accounts ca ON ca.customer_id = crt.customer_id
-JOIN users.emails ce ON ce.email_id = ca.email_id;
+JOIN users.customer_emails ce ON ce.customer_id = crt.customer_id
+JOIN users.emails e ON e.email_id = ce.email_id;
