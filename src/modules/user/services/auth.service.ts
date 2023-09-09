@@ -266,7 +266,7 @@ const authService = {
     password: string,
   ) =>
     sequelize.transaction(async (transaction) => {
-      const { customerId } = await Customer.create(
+      const { customerId, status } = await Customer.create(
         { firstName, lastName, status: 'pending' },
         { transaction },
       );
@@ -294,7 +294,11 @@ const authService = {
         { transaction },
       );
 
-      return { customerId, password: otp };
+      return {
+        customerId,
+        password: otp,
+        user: { firstName, lastName, email, status, roles: ['customer'] },
+      };
     }),
 
   loginUser: async (email: string, password: string) => {

@@ -53,14 +53,12 @@ export const register = async (
         .status(409)
         .json({ message: messages.REGISTER_ALREADY_EXISTS });
 
-    const { customerId } = await authService.createCustomer(
+    const { customerId, user } = await authService.createCustomer(
       firstName,
       lastName,
       email,
       password,
     );
-
-    const userData = await userService.getUserData(customerId, false);
 
     const { jwt, refreshToken } = await authService.generateTokens(
       false,
@@ -72,7 +70,7 @@ export const register = async (
 
     res.status(200).json({
       message: messages.REGISTER_SUCCESS,
-      user: userData,
+      user,
     });
   } catch (e) {
     next(e);
