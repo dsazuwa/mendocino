@@ -20,7 +20,6 @@ import {
   ProviderType,
 } from '@user/models';
 import { JwtProviderType } from '@user/types';
-import userService from './user.service';
 
 const generateJwt = (email: string, provider: JwtProviderType) =>
   sign({ email, provider }, process.env.JWT_SECRET, {
@@ -298,70 +297,37 @@ const authService = {
       return { customerId, password: otp };
     }),
 
-  loginUser: (email: string, password: string) =>
-    sequelize.transaction(async (transaction) => {
-      const result = await userService.getUserIdForUser(email, transaction);
+  loginUser: async (email: string, password: string) => {
+    const query = `
+      SELECT
+        is_admin AS "isAdmin",
+        user_id AS "userId",
+        email,
+        password AS hashed,
+        status
+      FROM users.get_user_with_password($email);`;
 
-      if (!result) return null;
+    const result = (await sequelize.query(query, {
+      type: QueryTypes.SELECT,
+      bind: { email },
+    })) as {
+      isAdmin: boolean;
+      userId: boolean;
+      email: string;
+      hashed: string;
+      status: string;
+    }[];
 
-      const { isAdmin, userId } = result;
+    if (result.length === 0) return null;
 
-      if (isAdmin) {
-        const admin = await Admin.findOne({
-          where: { adminId: userId },
-          transaction,
-        });
+    const { isAdmin, userId, hashed, status } = result[0];
 
-        const account = await AdminAccount.findOne({
-          where: { adminId: userId },
-          transaction,
-        });
+    const isValid = isAdmin
+      ? AdminAccount.comparePasswords(password, hashed)
+      : CustomerPassword.comparePasswords(password, hashed);
 
-        const isUser =
-          admin !== null &&
-          account !== null &&
-          AdminAccount.comparePasswords(password, account.password);
-
-        return isUser
-          ? {
-              isAdmin,
-              userId,
-              status: admin.status,
-            }
-          : null;
-      }
-
-      const customer = await Customer.findOne({
-        where: { customerId: userId },
-        raw: true,
-        transaction,
-      });
-
-      const account = await CustomerEmail.findOne({
-        where: { customerId: userId },
-        raw: true,
-        transaction,
-      });
-
-      const customerPassword = await CustomerPassword.findOne({
-        where: { customerId: userId },
-        transaction,
-      });
-
-      const isUser =
-        customer !== null &&
-        account !== null &&
-        customerPassword !== null &&
-        CustomerPassword.comparePasswords(password, customerPassword.password);
-
-      return isUser
-        ? {
-            isAdmin,
-            userId,
-            status: customer.status,
-          }
-        : null;
-    }),
+    return isValid ? { isAdmin, userId, status } : null;
+  },
 
   recoverPassword: (isAdmin: boolean, userId: number, password: string) =>
     isAdmin

@@ -13,6 +13,7 @@ DROP FUNCTION IF EXISTS users.prevent_update_phone();
 -- Drop functions
 DROP FUNCTION IF EXISTS users.get_refresh_token(VARCHAR, VARCHAR);
 DROP FUNCTION IF EXISTS users.get_user_by_email(VARCHAR);
+DROP FUNCTION IF EXISTS users.get_user_with_password(VARCHAR);
 DROP FUNCTION IF EXISTS users.get_customer_from_payload(VARCHAR, users.enum_customer_identities_provider);
 
 -- Drop views

@@ -20,8 +20,8 @@ BEGIN
     RETURN QUERY
     SELECT 
       true AS is_admin,
-      art.admin_id AS user_id,
-      ae.email AS email,
+      a.admin_id AS user_id,
+      e.email AS email,
       a.status::VARCHAR AS status,
       art.token AS token,
       art.expires_at AS expires_at,
@@ -36,8 +36,8 @@ BEGIN
     RETURN QUERY
     SELECT
       false AS is_admin,
-      crt.customer_id AS user_id,
-      ce.email AS email,
+      c.customer_id AS user_id,
+      e.email AS email,
       c.status::VARCHAR AS status,
       crt.token AS token,
       crt.expires_at AS expires_at,
@@ -106,6 +106,51 @@ BEGIN
     ) AS e
     JOIN users.customer_emails AS ce ON ce.email_id = e.email_id
     JOIN users.customers AS c ON c.customer_id = ce.customer_id;
+  END IF;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION users.get_user_with_password(p_email VARCHAR)
+RETURNS TABLE (
+  is_admin BOOLEAN,
+  user_id INTEGER,
+  email VARCHAR,
+  password VARCHAR,
+  status VARCHAR
+) AS $$
+BEGIN
+  IF p_email IS NULL THEN
+    RAISE EXCEPTION 'p_email cannot be null';
+  END IF;
+
+  IF EXISTS (
+    SELECT 1
+    FROM users.emails e
+    JOIN users.admin_accounts aa ON aa.email_id = e.email_id AND e.email = p_email
+  ) THEN
+    RETURN QUERY
+    SELECT 
+      true AS is_admin,
+      a.admin_id AS user_id,
+      e.email AS email,
+      aa.password AS password,
+      a.status::VARCHAR AS status
+    FROM users.emails e
+    JOIN users.admin_accounts aa ON aa.email_id = e.email_id AND e.email = p_email
+    JOIN users.admins a ON a.admin_id = aa.admin_id;
+
+  ELSE
+    RETURN QUERY
+    SELECT
+      false AS is_admin,
+      c.customer_id AS user_id,
+      e.email AS email,
+      cp.password AS password,
+      c.status::VARCHAR AS status
+    FROM users.emails e
+    JOIN users.customer_emails ce ON ce.email_id = e.email_id AND e.email = p_email
+    JOIN users.customers c ON c.customer_id = ce.customer_id
+    JOIN users.customer_passwords cp ON cp.customer_id = c.customer_id;
   END IF;
 END;
 $$ LANGUAGE plpgsql;
