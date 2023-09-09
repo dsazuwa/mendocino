@@ -46,7 +46,7 @@ export const register = async (
   try {
     const { firstName, lastName, email, password } = req.body;
 
-    const acct = await userService.getUserIdForUser(email);
+    const acct = await userService.getUserByEmail(email);
 
     if (acct)
       return res
@@ -241,7 +241,7 @@ export const verifyRecoveryOTP = async (
     const { otp } = req.params;
     const { email } = req.body;
 
-    const user = await userService.getUserIdForUser(email);
+    const user = await userService.getUserByEmail(email);
 
     if (!user)
       return res.status(401).json({ message: messages.INVALID_AUTH_OTP });
@@ -271,12 +271,12 @@ export const recoverPassword = async (
     const { otp } = req.params;
     const { email, password } = req.body;
 
-    const user = await userService.getUserIdForUser(email);
+    const user = await userService.getUserByEmail(email);
 
     if (!user)
       return res.status(401).json({ message: messages.INVALID_AUTH_OTP });
 
-    const { userId, isAdmin } = user;
+    const { userId, isAdmin, ...userWithNoId } = user;
 
     const { isValid } = await otpService.getOTP(userId, otp, {
       isAdmin,
@@ -291,8 +291,6 @@ export const recoverPassword = async (
     if (!result)
       return res.status(400).json({ message: messages.RECOVER_PASSWORD_FAIL });
 
-    const userData = await userService.getUserData(userId, isAdmin);
-
     const { jwt, refreshToken } = await authService.generateTokens(
       isAdmin,
       userId,
@@ -304,7 +302,7 @@ export const recoverPassword = async (
 
     res.status(200).json({
       message: messages.RECOVER_PASSWORD_SUCCESS,
-      user: userData,
+      user: userWithNoId,
     });
   } catch (e) {
     next(e);

@@ -1,5 +1,5 @@
 import { Request } from 'express';
-import { QueryTypes, Transaction } from 'sequelize';
+import { QueryTypes } from 'sequelize';
 
 import sequelize from '@App/db';
 
@@ -15,27 +15,29 @@ import {
   Role,
 } from '@user/models';
 import { USER_SCHEMA, VIEWS } from '@user/utils/constants';
+import { UserType } from '../types';
 
 const userService = {
-  getUserIdForUser: async (email: string, transaction?: Transaction) => {
+  getUserByEmail: async (email: string) => {
     const query = `
-    SELECT
-      user_id AS "userId",
-      is_admin AS "isAdmin",
-      email AS email
-    FROM
-      ${USER_SCHEMA}.${VIEWS.USER_TYPE}
-    WHERE
-      email = '${email}';`;
+      SELECT
+        is_admin AS "isAdmin",
+        user_id AS "userId",
+        first_name AS "firstName",
+        last_name AS "lastName",
+        email,
+        status,
+        roles
+      FROM users.get_user_by_email($email);`;
 
     const result = await sequelize.query(query, {
       type: QueryTypes.SELECT,
-      transaction,
+      bind: { email },
     });
 
     return result.length === 0
       ? null
-      : (result[0] as { userId: number; isAdmin: boolean; email: string });
+      : (result[0] as UserType & { isAdmin: boolean });
   },
 
   getUserData: async (userId: number, isAdmin: boolean) => {
@@ -80,7 +82,7 @@ const userService = {
       bind: { userId },
     });
 
-    return result.length === 0 ? undefined : (result[0] as Express.User);
+    return result.length === 0 ? undefined : (result[0] as UserType);
   },
 
   getUserDataFromReq: async (req: Request) => {
@@ -121,7 +123,7 @@ const userService = {
       bind: { email, provider },
     });
 
-    return result.length === 0 ? undefined : (result[0] as Express.User);
+    return result.length === 0 ? undefined : (result[0] as UserType);
   },
 
   getUserForSocialAuthentication: async (
@@ -160,7 +162,7 @@ const userService = {
         identityExists: true,
       };
 
-    const { isAdmin, identityExists, ...user } = result[0] as Express.User & {
+    const { isAdmin, identityExists, ...user } = result[0] as UserType & {
       isAdmin: boolean;
       identityExists: boolean;
     };
@@ -214,10 +216,7 @@ const userService = {
 
     return result.length === 0
       ? undefined
-      : (result[0] as Express.User & {
-          isAdmin: boolean;
-          hasPassword: boolean;
-        });
+      : (result[0] as UserType & { isAdmin: boolean; hasPassword: boolean });
   },
 };
 

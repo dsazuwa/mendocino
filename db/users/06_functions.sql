@@ -54,6 +54,7 @@ $$ LANGUAGE plpgsql;
 
 CREATE OR REPLACE FUNCTION users.get_user_by_email(p_email VARCHAR)
 RETURNS TABLE (
+  is_admin BOOLEAN,
   user_id INTEGER,
   first_name VARCHAR,
   last_name VARCHAR,
@@ -73,6 +74,7 @@ BEGIN
   ) THEN
     RETURN QUERY
     SELECT
+      true AS is_admin,
       a.admin_id AS user_id,
       a.first_name AS first_name,
       a.last_name AS last_name,
@@ -93,6 +95,7 @@ BEGIN
   ELSE
     RETURN QUERY
     SELECT
+      false AS is_admin,
       c.customer_id AS user_id,
       c.first_name AS first_name,
       c.last_name AS last_name,
