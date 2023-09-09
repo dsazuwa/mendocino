@@ -33,12 +33,6 @@ const generateRefreshToken = async (
   email: string,
   provider: JwtProviderType,
 ) => {
-  const token = uuidv4();
-  const refreshToken = sign(
-    { email, token, provider },
-    process.env.REFRESH_TOKEN_SECRET,
-    { expiresIn: '7d' },
-  );
   const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
 
   const user = isAdmin
@@ -60,6 +54,8 @@ const generateRefreshToken = async (
       `Failed to create refresh token: Account ${status}`,
     );
 
+  const token = uuidv4();
+
   if (isAdmin)
     await AdminRefreshToken.create({
       adminId: userId,
@@ -72,6 +68,12 @@ const generateRefreshToken = async (
       token,
       expiresAt,
     });
+
+  const refreshToken = sign(
+    { email, token, provider },
+    process.env.REFRESH_TOKEN_SECRET,
+    { expiresIn: '7d' },
+  );
 
   return refreshToken;
 };
@@ -153,6 +155,12 @@ const authService = {
 
     if (!result) return { error: 'Invalid Refresh Token' };
 
+    const isValid = result.isAdmin
+      ? AdminRefreshToken.compareTokens(token, result.token)
+      : CustomerRefreshToken.compareTokens(token, result.token);
+
+    if (!isValid) return { error: 'Invalid Refresh Token' };
+
     if (result.expiresAt < new Date())
       return { error: 'Expired Refresh Token' };
 
@@ -185,7 +193,7 @@ const authService = {
   },
 
   revokeRefreshToken: async (refreshToken: string | undefined) => {
-    if (!refreshToken) return;
+    if (!refreshToken) return false;
 
     const { userId, token } = verify(
       refreshToken,
@@ -194,14 +202,15 @@ const authService = {
 
     const retrievedRefreshToken = await getRefreshToken(userId, token);
 
-    if (!retrievedRefreshToken) return;
+    if (!retrievedRefreshToken) return false;
 
-    if (retrievedRefreshToken.isAdmin)
-      await AdminRefreshToken.destroy({ where: { adminId: userId, token } });
-    else
-      await CustomerRefreshToken.destroy({
-        where: { customerId: userId, token },
-      });
+    const result = retrievedRefreshToken.isAdmin
+      ? await AdminRefreshToken.destroy({ where: { adminId: userId, token } })
+      : await CustomerRefreshToken.destroy({
+          where: { customerId: userId, token },
+        });
+
+    return result === 1;
   },
 
   createIdentityForCustomer: (

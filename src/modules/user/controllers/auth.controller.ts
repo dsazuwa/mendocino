@@ -448,7 +448,7 @@ export const refreshJwt = async (
         .clearCookie('access-token')
         .clearCookie('refresh-token')
         .clearCookie('auth-flag')
-        .json({ message: messages.INVALID_REFRESH_TOKEN });
+        .json({ message: result.error });
 
     const { email, provider } = result;
 

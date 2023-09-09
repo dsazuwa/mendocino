@@ -1,3 +1,6 @@
+/* eslint-disable no-param-reassign */
+
+import { compareSync, hash } from 'bcryptjs';
 import {
   CreationOptional,
   DataTypes,
@@ -7,6 +10,7 @@ import {
 } from 'sequelize';
 
 import sequelize from '@App/db';
+import { ApiError } from '@App/utils';
 
 import { TABLENAMES, USER_SCHEMA } from '@user/utils/constants';
 
@@ -23,6 +27,21 @@ class AdminRefreshToken extends Model<
   declare expiresAt: Date;
 
   declare createdAt: CreationOptional<Date>;
+
+  public static async hashToken(data: AdminRefreshToken) {
+    if (!data.changed('token')) return;
+
+    try {
+      const hashed = await hash(data.token, 10);
+      data.token = hashed;
+    } catch (err) {
+      throw ApiError.internal('Failed to hash token');
+    }
+  }
+
+  public static compareTokens(token: string, hashed: string) {
+    return compareSync(token, hashed);
+  }
 }
 
 AdminRefreshToken.init(
@@ -58,6 +77,9 @@ AdminRefreshToken.init(
     updatedAt: false,
     schema: USER_SCHEMA,
     tableName: TABLENAMES.ADMIN_REFRESH_TOKEN,
+    hooks: {
+      beforeSave: AdminRefreshToken.hashToken,
+    },
   },
 );
 

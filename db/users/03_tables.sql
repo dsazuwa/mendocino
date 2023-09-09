@@ -156,7 +156,7 @@ CREATE TABLE users.addresses (
 CREATE TABLE users.admin_refresh_tokens (
   token_id SERIAL,
   admin_id INTEGER NOT NULL,
-  token UUID NOT NULL,
+  token VARCHAR(255) NOT NULL,
   expires_at TIMESTAMP NOT NULL,
   created_at TIMESTAMP NOT NULL,
   PRIMARY KEY (token_id),
@@ -167,7 +167,7 @@ CREATE TABLE users.admin_refresh_tokens (
 CREATE TABLE users.customer_refresh_tokens (
   token_id SERIAL,
   customer_id INTEGER NOT NULL,
-  token UUID NOT NULL,
+  token VARCHAR(255) NOT NULL,
   expires_at TIMESTAMP NOT NULL,
   created_at TIMESTAMP NOT NULL,
   PRIMARY KEY (token_id),
