@@ -199,3 +199,61 @@ BEGIN
       users.customer_identities ci ON ci.customer_id = c.customer_id AND ci.provider = p_provider;
 END;
 $$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION users.get_user_for_social_authentication(p_email VARCHAR, p_identity_id VARCHAR, p_provider users.enum_customer_identities_provider)
+RETURNS TABLE (
+  is_admin BOOLEAN,
+  identity_exists BOOLEAN,
+  user_id INTEGER,
+  first_name VARCHAR,
+  last_name VARCHAR,
+  email VARCHAR,
+  status VARCHAR,
+  roles VARCHAR[]
+) AS $$
+BEGIN
+  ASSERT p_email IS NOT NULL, 'p_email cannot be null';
+  ASSERT p_identity_id IS NOT NULL, 'p_identity_id cannot be null';
+  ASSERT p_provider IS NOT NULL, 'p_provider cannot be null';
+
+  IF EXISTS (
+    SELECT 1
+    FROM users.emails e
+    JOIN users.admin_accounts aa ON aa.email_id = e.email_id AND e.email = p_email
+  ) THEN
+    RETURN QUERY
+    SELECT 
+      true AS is_admin,
+      false AS identity_exists,
+      a.admin_id AS user_id,
+      a.first_name AS first_name,
+      a.last_name AS last_name,
+      e.email AS email,
+      a.status::VARCHAR AS status,
+      array_agg(DISTINCT r.name) AS roles
+    FROM users.emails e
+    JOIN users.admin_accounts aa ON aa.email_id = e.email_id AND e.email = p_email
+    JOIN users.admins a ON a.admin_id = aa.admin_id
+    JOIN users.admins_roles ar ON ar.admin_id = a.admin_id
+    JOIN users.roles r ON r.role_id = ar.role_id
+    GROUP BY a.admin_id, a.first_name, a.last_name, e.email, a.status;
+
+  ELSE
+    RETURN QUERY
+    SELECT
+      false AS is_admin,
+      CASE WHEN ci.identity_id IS NOT NULL THEN TRUE ELSE FALSE END AS identity_exists,
+      c.customer_id AS user_id,
+      c.first_name AS first_name,
+      c.last_name AS last_name,
+      e.email AS email,
+      c.status::VARCHAR AS status,
+      ARRAY['customer']::VARCHAR[] AS roles
+    FROM users.emails e
+    JOIN users.customer_emails ce ON ce.email_id = e.email_id
+    JOIN users.customers c ON c.customer_id = ce.customer_id
+    LEFT JOIN users.customer_identities ci ON ci.customer_id = c.customer_id
+    WHERE e.email = p_email OR (ci.identity_id = p_identity_id AND ci.provider = p_provider);
+  END IF;
+END;
+$$ LANGUAGE plpgsql;

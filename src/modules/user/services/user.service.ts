@@ -9,7 +9,6 @@ import {
   AdminRole,
   Customer,
   CustomerEmail,
-  CustomerIdentity,
   CustomerPassword,
   Email,
   ProviderType,
@@ -52,7 +51,7 @@ const userService = {
         FROM
           ${USER_SCHEMA}.${Admin.tableName} u
         JOIN
-          ${USER_SCHEMA}.${AdminAccount.tableName} a ON u.admin_id = a.admin_id AND a.admin_id = ${userId}
+          ${USER_SCHEMA}.${AdminAccount.tableName} a ON u.admin_id = a.admin_id AND a.admin_id = $userId
         JOIN
           ${USER_SCHEMA}.${Email.tableName} e ON a.email_id = e.email_id
         JOIN
@@ -72,11 +71,14 @@ const userService = {
         FROM
           ${USER_SCHEMA}.${Customer.tableName} u
         JOIN
-          ${USER_SCHEMA}.${CustomerEmail.tableName} a ON a.customer_id = u.customer_id AND a.customer_id = ${userId}
+          ${USER_SCHEMA}.${CustomerEmail.tableName} a ON a.customer_id = u.customer_id AND a.customer_id = $userId
         JOIN
           ${USER_SCHEMA}.${Email.tableName} e ON a.email_id = e.email_id;`;
 
-    const result = await sequelize.query(query, { type: QueryTypes.SELECT });
+    const result = await sequelize.query(query, {
+      type: QueryTypes.SELECT,
+      bind: { userId },
+    });
 
     return result.length === 0 ? undefined : (result[0] as Express.User);
   },
@@ -128,47 +130,21 @@ const userService = {
     email: string,
   ) => {
     const query = `
-      WITH ut AS (
-        SELECT user_id, is_admin, email
-        FROM ${USER_SCHEMA}.${VIEWS.USER_TYPE}
-        WHERE email = '${email}'
-      )
       SELECT
-        ut.is_admin AS "isAdmin",
-        CASE WHEN ut.is_admin THEN FALSE ELSE u.identity_exists END AS "identityExists",
-        CASE WHEN ut.is_admin 
-          THEN NULL
-          ELSE json_build_object(
-            'userId', u.user_id,
-            'firstName', u.first_name,
-            'lastName', u.last_name,
-            'email', u.email,
-            'status', u.status,
-            'roles', u.roles)
-        END AS user
-      FROM ut
-      FULL JOIN (
-        SELECT
-          u.customer_id AS user_id,
-          u.first_name AS first_name,
-          u.last_name AS last_name,
-          e.email AS email,
-          u.status AS status,
-          CASE WHEN i.identity_id IS NOT NULL THEN TRUE ELSE FALSE END AS identity_exists,
-          ARRAY['customer'] AS roles
-        FROM
-          ${USER_SCHEMA}.${Customer.tableName} u
-        JOIN
-          ${USER_SCHEMA}.${CustomerEmail.tableName} a ON u.customer_id = a.customer_id
-        JOIN
-          ${USER_SCHEMA}.${Email.tableName} e ON a.email_id = e.email_id
-        LEFT JOIN
-          ${USER_SCHEMA}.${CustomerIdentity.tableName} i ON u.customer_id = i.customer_id
-        WHERE
-          e.email = '${email}' OR (i.identity_id = '${identityId}' AND i.provider = '${provider}')
-      ) u ON u.user_id = ut.user_id;`;
+        is_Admin AS "isAdmin",
+        identity_exists AS "identityExists",
+        user_id AS "userId",
+        first_name AS "firstName",
+        last_name AS "lastName",
+        email,
+        status,
+        roles
+      FROM users.get_user_for_social_authentication($email, $identityId, $provider);`;
 
-    const result = await sequelize.query(query, { type: QueryTypes.SELECT });
+    const result = await sequelize.query(query, {
+      type: QueryTypes.SELECT,
+      bind: { email, identityId, provider },
+    });
 
     if (result.length === 0)
       return {
@@ -184,10 +160,15 @@ const userService = {
         identityExists: true,
       };
 
-    return result[0] as {
-      user: Express.User;
+    const { isAdmin, identityExists, ...user } = result[0] as Express.User & {
       isAdmin: boolean;
       identityExists: boolean;
+    };
+
+    return {
+      isAdmin,
+      identityExists,
+      user: isAdmin ? null : user,
     };
   },
 
