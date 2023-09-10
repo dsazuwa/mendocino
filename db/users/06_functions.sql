@@ -274,9 +274,9 @@ RETURNS TABLE (
   roles VARCHAR[]
 ) AS $$
 BEGIN
-  ASSERT p_email IS NOT NULL, 'p_email cannot be null';
-  ASSERT p_identity_id IS NOT NULL, 'p_identity_id cannot be null';
-  ASSERT p_provider IS NOT NULL, 'p_provider cannot be null';
+  IF p_email IS NULL OR p_identity_id IS NULL OR p_provider IS NULL THEN
+    RAISE EXCEPTION 'p_email and p_identity_id and p_provider cannot be null';
+  END IF;
 
   IF EXISTS (
     SELECT 1
@@ -316,6 +316,48 @@ BEGIN
     JOIN users.customers c ON c.customer_id = ce.customer_id
     LEFT JOIN users.customer_identities ci ON ci.customer_id = c.customer_id
     WHERE e.email = p_email OR (ci.identity_id = p_identity_id AND ci.provider = p_provider);
+  END IF;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION users.get_user_for_recovery(p_email VARCHAR)
+RETURNS TABLE (
+  is_admin BOOLEAN,
+  has_password BOOLEAN,
+  user_id INTEGER,
+  status VARCHAR
+) AS $$
+BEGIN
+  IF p_email IS NULL THEN
+    RAISE EXCEPTION 'p_email cannot be null';
+  END IF;
+
+  IF EXISTS (
+    SELECT 1
+    FROM users.emails e
+    JOIN users.admin_accounts aa ON aa.email_id = e.email_id AND e.email = p_email
+  ) THEN
+    RETURN QUERY
+    SELECT 
+      true AS is_admin,
+      true AS has_password,
+      a.admin_id AS user_id,
+      a.status::VARCHAR AS status
+    FROM users.emails e
+    JOIN users.admin_accounts aa ON aa.email_id = e.email_id AND e.email = p_email
+    JOIN users.admins a ON a.admin_id = aa.admin_id;
+
+  ELSE
+    RETURN QUERY
+    SELECT
+      false AS is_admin,
+      CASE WHEN cp.password IS NOT NULL THEN TRUE ELSE FALSE END AS has_password,
+      c.customer_id AS user_id,
+      c.status::VARCHAR AS status
+    FROM users.emails e
+    JOIN users.customer_emails ce ON ce.email_id = e.email_id AND e.email = p_email
+    JOIN users.customers c ON c.customer_id = ce.customer_id
+    LEFT JOIN users.customer_passwords cp ON cp.customer_id = c.customer_id;
   END IF;
 END;
 $$ LANGUAGE plpgsql;

@@ -405,13 +405,9 @@ describe('getUserForRecovery', () => {
     const result = await userService.getUserForRecovery(email.email);
     expect(result).toMatchObject({
       isAdmin: true,
-      userId: adminId,
-      firstName: admin.firstName,
-      lastName: admin.lastName,
-      email: email.email,
       hasPassword: true,
+      userId: adminId,
       status: admin.status,
-      roles: [ROLES.ROOT.name],
     });
   });
 
@@ -427,13 +423,9 @@ describe('getUserForRecovery', () => {
     const result = await userService.getUserForRecovery(email.email);
     expect(result).toMatchObject({
       isAdmin: false,
-      userId: customerId,
-      firstName: customer.firstName,
-      lastName: customer.lastName,
-      email: email.email,
       hasPassword: true,
+      userId: customerId,
       status: customer.status,
-      roles: ['customer'],
     });
   });
 
@@ -450,13 +442,9 @@ describe('getUserForRecovery', () => {
     const result = await userService.getUserForRecovery(email.email);
     expect(result).toMatchObject({
       isAdmin: false,
-      userId: customerId,
-      firstName: customer.firstName,
-      lastName: customer.lastName,
-      email: email.email,
       hasPassword: false,
+      userId: customerId,
       status: customer.status,
-      roles: ['customer'],
     });
   });
 });
