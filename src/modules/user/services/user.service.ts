@@ -10,12 +10,11 @@ import {
   Customer,
   CustomerEmail,
   CustomerPassword,
-  Email,
   ProviderType,
   Role,
 } from '@user/models';
+import { UserType } from '@user/types';
 import { USER_SCHEMA, VIEWS } from '@user/utils/constants';
-import { UserType } from '../types';
 
 const userService = {
   getUserByEmail: async (email: string) => {
@@ -40,42 +39,20 @@ const userService = {
       : (result[0] as UserType & { isAdmin: boolean });
   },
 
-  getUserData: async (userId: number, isAdmin: boolean) => {
-    const query = isAdmin
-      ? `
-        SELECT
-          u.admin_id AS "userId",
-          u.first_name AS "firstName",
-          u.last_name AS "lastName",
-          e.email AS email,
-          u.status AS status,
-          array_agg(DISTINCT r.name) AS roles
-        FROM
-          ${USER_SCHEMA}.${Admin.tableName} u
-        JOIN
-          ${USER_SCHEMA}.${AdminAccount.tableName} a ON u.admin_id = a.admin_id AND a.admin_id = $userId
-        JOIN
-          ${USER_SCHEMA}.${Email.tableName} e ON a.email_id = e.email_id
-        JOIN
-          ${USER_SCHEMA}.${AdminRole.tableName} ur ON u.admin_id = ur.admin_id
-        JOIN
-          ${USER_SCHEMA}.${Role.tableName} r ON r.role_id = ur.role_id
-        GROUP BY
-          u.admin_id, u.first_name, u.last_name, u.status, e.email;`
-      : `
-        SELECT
-          u.customer_id AS "userId",
-          u.first_name AS "firstName",
-          u.last_name AS "lastName",
-          e.email AS email,
-          u.status AS status,
-          ARRAY['customer'] AS roles
-        FROM
-          ${USER_SCHEMA}.${Customer.tableName} u
-        JOIN
-          ${USER_SCHEMA}.${CustomerEmail.tableName} a ON a.customer_id = u.customer_id AND a.customer_id = $userId
-        JOIN
-          ${USER_SCHEMA}.${Email.tableName} e ON a.email_id = e.email_id;`;
+  getUserById: async (userId: number, isAdmin: boolean) => {
+    const table = isAdmin
+      ? 'users.get_admin($userId)'
+      : 'users.get_customer($userId)';
+
+    const query = `
+      SELECT
+        user_id AS "userId",
+        first_name AS "firstName",
+        last_name AS "lastName",
+        email,
+        status,
+        roles
+      FROM ${table}`;
 
     const result = await sequelize.query(query, {
       type: QueryTypes.SELECT,

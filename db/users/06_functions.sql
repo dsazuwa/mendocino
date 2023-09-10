@@ -52,6 +52,65 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+CREATE OR REPLACE FUNCTION users.get_admin(p_admin_id INTEGER)
+RETURNS TABLE (
+  user_id INTEGER,
+  first_name VARCHAR,
+  last_name VARCHAR,
+  email VARCHAR,
+  status users.enum_admin_status,
+  roles VARCHAR[]
+) AS $$
+BEGIN
+  IF p_admin_id IS NULL THEN
+    RAISE EXCEPTION 'p_admin_id cannot be null';
+  END IF;
+
+  RETURN QUERY
+    SELECT
+      a.admin_id AS user_id,
+      a.first_name AS first_name,
+      a.last_name AS last_name,
+      e.email AS email,
+      a.status AS status,
+      array_agg(DISTINCT r.name) AS roles
+    FROM users.admins a
+    JOIN users.admin_accounts aa ON aa.admin_id = a.admin_id AND a.admin_id = p_admin_id
+    JOIN users.emails e ON e.email_id = aa.email_id
+    JOIN users.admins_roles ar ON ar.admin_id = a.admin_id
+    JOIN users.roles r ON r.role_id = ar.role_id
+    GROUP BY a.admin_id, a.first_name, a.last_name, e.email, a.status;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION users.get_customer(p_customer_id INTEGER)
+RETURNS TABLE (
+  user_id INTEGER,
+  first_name VARCHAR,
+  last_name VARCHAR,
+  email VARCHAR,
+  status users.enum_customer_status,
+  roles TEXT[]
+) AS $$
+BEGIN
+  IF p_customer_id IS NULL THEN
+    RAISE EXCEPTION 'p_customer_id cannot be null';
+  END IF;
+
+  RETURN QUERY
+    SELECT
+      c.customer_id AS user_id,
+      c.first_name AS first_name,
+      c.last_name AS last_name,
+      e.email AS email,
+      c.status AS status,
+      ARRAY['customer'] AS roles
+    FROM users.customers c
+    JOIN users.customer_emails ce ON ce.customer_id = c.customer_id AND ce.customer_id = p_customer_id
+    JOIN users.emails e on e.email_id = ce.email_id;
+END;
+$$ LANGUAGE plpgsql;
+
 CREATE OR REPLACE FUNCTION users.get_user_by_email(p_email VARCHAR)
 RETURNS TABLE (
   is_admin BOOLEAN,

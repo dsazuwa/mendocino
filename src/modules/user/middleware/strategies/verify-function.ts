@@ -64,7 +64,7 @@ const verifyFunction = async (
           provider,
         );
 
-    const u = await userService.getUserData(customerId, false);
+    const u = await userService.getUserById(customerId, false);
     return done(null, u);
   } catch (err) {
     return done(err, undefined);

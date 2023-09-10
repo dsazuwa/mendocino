@@ -79,7 +79,7 @@ describe('get user by email', () => {
   });
 });
 
-describe('get user data', () => {
+describe('get user by id', () => {
   it('should return user data for customer', async () => {
     const { customerId, customer, email } = await createCustomer(
       'Jacinto',
@@ -89,7 +89,7 @@ describe('get user data', () => {
       'active',
     );
 
-    const result = await userService.getUserData(customerId, false);
+    const result = await userService.getUserById(customerId, false);
 
     expect(result).toMatchObject({
       userId: customerId,
@@ -101,7 +101,7 @@ describe('get user data', () => {
     });
   });
 
-  it('should return user data when for customer with identity', async () => {
+  it('should return user data for customer with identity', async () => {
     const { customerId, customer, email } = await createCustomerAndIdentity(
       'Juana',
       'Doe',
@@ -111,7 +111,7 @@ describe('get user data', () => {
       [{ identityId: '9043859372838624', provider: 'google' }],
     );
 
-    const result = await userService.getUserData(customerId, false);
+    const result = await userService.getUserById(customerId, false);
 
     expect(result).toMatchObject({
       userId: customerId,
@@ -135,7 +135,7 @@ describe('get user data', () => {
       [CUSTOMER_SUPPORT.roleId, MANAGER.roleId],
     );
 
-    const result = await userService.getUserData(adminId, true);
+    const result = await userService.getUserById(adminId, true);
 
     expect(result).toMatchObject({
       userId: adminId,
@@ -148,10 +148,10 @@ describe('get user data', () => {
   });
 
   it('should return undefined if user does not exist', async () => {
-    let result = await userService.getUserData(0, false);
+    let result = await userService.getUserById(0, false);
     expect(result).not.toBeDefined();
 
-    result = await userService.getUserData(1, true);
+    result = await userService.getUserById(1, true);
     expect(result).not.toBeDefined();
   });
 });

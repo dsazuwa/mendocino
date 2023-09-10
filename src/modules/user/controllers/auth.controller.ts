@@ -157,7 +157,7 @@ export const loginAdmin = async (
     if (!isValid)
       return res.status(401).json({ message: messages.INVALID_AUTH_OTP });
 
-    const user = await userService.getUserData(userId, false);
+    const user = await userService.getUserById(userId, false);
 
     const { jwt, refreshToken } = await authService.generateTokens(
       true,
@@ -322,7 +322,7 @@ export const reactivate = async (
 
     await authService.reactivateCustomer(userId);
 
-    const userData = await userService.getUserData(userId, false);
+    const userData = await userService.getUserById(userId, false);
 
     const { jwt, refreshToken } = await authService.generateTokens(
       false,
@@ -360,7 +360,7 @@ export const socialLogin = async (
       provider,
     );
 
-    const userData = await userService.getUserData(userId, false);
+    const userData = await userService.getUserById(userId, false);
 
     res.redirect(
       `${
