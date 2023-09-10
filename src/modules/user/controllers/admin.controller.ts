@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 
 import adminService from '@user/services/admin.service';
+import userService from '@user/services/user.service';
 import messages from '@user/utils/messages';
 
 export const updateUserName = async (
@@ -14,7 +15,9 @@ export const updateUserName = async (
 
     await adminService.updateName(userId, firstName, lastName);
 
-    res.status(200).json({ message: messages.UPDATE_USER_NAME });
+    const user = await userService.getUserWithoutId(userId, true);
+
+    res.status(200).json({ user, message: messages.UPDATE_USER_NAME });
   } catch (e) {
     next(e);
   }

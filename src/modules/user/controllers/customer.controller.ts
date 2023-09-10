@@ -3,6 +3,7 @@ import { NextFunction, Request, Response } from 'express';
 import authService from '@user/services/auth.service';
 import customerService from '@user/services/customer.service';
 import otpService from '@user/services/otp.service';
+import userService from '@user/services/user.service';
 import messages from '@user/utils/messages';
 import { setAccessTokenCookie } from './auth.controller';
 
@@ -60,7 +61,9 @@ export const verifyEmail = async (
 
     await customerService.verifyEmail(userId);
 
-    res.status(200).json({ message: messages.VERIFY_EMAIL_SUCCESS });
+    const user = await userService.getUserWithoutId(userId, false);
+
+    res.status(200).json({ user, message: messages.VERIFY_EMAIL_SUCCESS });
   } catch (e) {
     next(e);
   }
@@ -77,7 +80,9 @@ export const updateUserName = async (
 
     await customerService.updateName(userId, firstName, lastName);
 
-    res.status(200).json({ message: messages.UPDATE_USER_NAME });
+    const user = await userService.getUserWithoutId(userId, false);
+
+    res.status(200).json({ user, message: messages.UPDATE_USER_NAME });
   } catch (e) {
     next(e);
   }

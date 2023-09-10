@@ -25,6 +25,7 @@ const messages = {
 
   // COMMON MESSAGES
 
+  USER_NOT_FOUND: 'User not found',
   INVALID_AUTH_OTP: 'Invalid OTP',
 
   // AUTH ROUTER MESSAGES

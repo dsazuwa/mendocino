@@ -157,12 +157,12 @@ export const loginAdmin = async (
     if (!isValid)
       return res.status(401).json({ message: messages.INVALID_AUTH_OTP });
 
-    const user = await userService.getUserById(userId, false);
+    const user = await userService.getUserWithoutId(userId, true);
 
     const { jwt, refreshToken } = await authService.generateTokens(
       true,
       userId,
-      user?.email as string,
+      user.email as string,
       'email',
     );
     setAccessTokenCookie(res, jwt, refreshToken);
@@ -322,7 +322,7 @@ export const reactivate = async (
 
     await authService.reactivateCustomer(userId);
 
-    const userData = await userService.getUserById(userId, false);
+    const user = await userService.getUserWithoutId(userId, false);
 
     const { jwt, refreshToken } = await authService.generateTokens(
       false,
@@ -334,7 +334,7 @@ export const reactivate = async (
 
     res.status(200).json({
       message: messages.REACTIVATE_SUCCESS,
-      user: userData,
+      user,
     });
   } catch (e) {
     next(e);
@@ -360,13 +360,13 @@ export const socialLogin = async (
       provider,
     );
 
-    const userData = await userService.getUserById(userId, false);
+    const user = await userService.getUserWithoutId(userId, false);
 
     res.redirect(
       `${
         process.env.FRONTEND_BASE_URL
       }/OAuthRedirecting?jwt=${jwt}&refreshToken=${refreshToken}&user=${encodeURIComponent(
-        JSON.stringify(userData),
+        JSON.stringify(user),
       )}`,
     );
   } catch (e) {

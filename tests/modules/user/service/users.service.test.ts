@@ -16,66 +16,37 @@ beforeAll(async () => {
   await createRoles();
 });
 
-describe('get user by email', () => {
-  it('should return customerId', async () => {
-    const firstName = 'Jazz';
+describe('get user from req', () => {
+  it('pending user account', async () => {
+    const firstName = 'Joan';
     const lastName = 'Doe';
-    const email = 'jazzdoe@gmail.com';
-    const status = 'active';
+    const email = 'joandoe@gmail.com';
+    const password = 'joanD0epa$$';
+    const status = 'pending';
+    const roles = ['customer'];
 
-    const { customerId } = await createCustomer(
-      firstName,
-      lastName,
-      email,
-      'jazzD0ePa$$',
-      status,
-    );
+    const req = {
+      user: { firstName, lastName, email, password, status, roles },
+    } as unknown as Request;
 
-    const result = await userService.getUserByEmail(email);
-
-    expect(result).toMatchObject({
-      isAdmin: false,
-      userId: customerId,
-      firstName,
-      lastName,
-      email,
-      status,
-      roles: ['customer'],
-    });
+    const data = await userService.getUserFromReq(req);
+    expect(data).toMatchObject({ firstName, lastName, email, status, roles });
   });
 
-  it('should return adminId', async () => {
-    const firstName = 'Jak';
+  it('active user account', async () => {
+    const firstName = 'Jeronimo';
     const lastName = 'Doe';
-    const email = 'jakdoe@gmail.com';
+    const email = 'jeronimodoe@gmail.com';
+    const password = 'jeroD0ePa$$';
     const status = 'active';
-    const { roleId, name } = ROLES.MANAGER;
+    const roles = ['ceo', 'manager'];
 
-    const { adminId } = await createAdmin(
-      firstName,
-      lastName,
-      email,
-      'jakD0ePa$$',
-      status,
-      [roleId],
-    );
+    const req = {
+      user: { firstName, lastName, email, password, status, roles },
+    } as unknown as Request;
 
-    const result = await userService.getUserByEmail(email);
-
-    expect(result).toMatchObject({
-      isAdmin: true,
-      userId: adminId,
-      firstName,
-      lastName,
-      email,
-      status,
-      roles: [name],
-    });
-  });
-
-  it('should return null for non-existent user', async () => {
-    const result = await userService.getUserByEmail('false@gmail.com');
-    expect(result).toBeNull();
+    const data = await userService.getUserFromReq(req);
+    expect(data).toMatchObject({ firstName, lastName, email, status, roles });
   });
 });
 
@@ -156,37 +127,66 @@ describe('get user by id', () => {
   });
 });
 
-describe('get user from req', () => {
-  it('pending user account', async () => {
-    const firstName = 'Joan';
+describe('get user by email', () => {
+  it('should return customerId', async () => {
+    const firstName = 'Jazz';
     const lastName = 'Doe';
-    const email = 'joandoe@gmail.com';
-    const password = 'joanD0epa$$';
-    const status = 'pending';
-    const roles = ['customer'];
+    const email = 'jazzdoe@gmail.com';
+    const status = 'active';
 
-    const req = {
-      user: { firstName, lastName, email, password, status, roles },
-    } as unknown as Request;
+    const { customerId } = await createCustomer(
+      firstName,
+      lastName,
+      email,
+      'jazzD0ePa$$',
+      status,
+    );
 
-    const data = await userService.getUserFromReq(req);
-    expect(data).toMatchObject({ firstName, lastName, email, status, roles });
+    const result = await userService.getUserByEmail(email);
+
+    expect(result).toMatchObject({
+      isAdmin: false,
+      userId: customerId,
+      firstName,
+      lastName,
+      email,
+      status,
+      roles: ['customer'],
+    });
   });
 
-  it('active user account', async () => {
-    const firstName = 'Jeronimo';
+  it('should return adminId', async () => {
+    const firstName = 'Jak';
     const lastName = 'Doe';
-    const email = 'jeronimodoe@gmail.com';
-    const password = 'jeroD0ePa$$';
+    const email = 'jakdoe@gmail.com';
     const status = 'active';
-    const roles = ['ceo', 'manager'];
+    const { roleId, name } = ROLES.MANAGER;
 
-    const req = {
-      user: { firstName, lastName, email, password, status, roles },
-    } as unknown as Request;
+    const { adminId } = await createAdmin(
+      firstName,
+      lastName,
+      email,
+      'jakD0ePa$$',
+      status,
+      [roleId],
+    );
 
-    const data = await userService.getUserFromReq(req);
-    expect(data).toMatchObject({ firstName, lastName, email, status, roles });
+    const result = await userService.getUserByEmail(email);
+
+    expect(result).toMatchObject({
+      isAdmin: true,
+      userId: adminId,
+      firstName,
+      lastName,
+      email,
+      status,
+      roles: [name],
+    });
+  });
+
+  it('should return null for non-existent user', async () => {
+    const result = await userService.getUserByEmail('false@gmail.com');
+    expect(result).toBeNull();
   });
 });
 
