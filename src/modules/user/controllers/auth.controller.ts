@@ -3,37 +3,33 @@ import { NextFunction, Request, Response } from 'express';
 import { ProviderType } from '@user/models';
 import authService from '@user/services/auth.service';
 import otpService from '@user/services/otp.service';
+import tokenService from '@user/services/token.service';
 import userService from '@user/services/user.service';
 import messages from '@user/utils/messages';
 
-export const setJwtCookie = (res: Response, jwt: string) => {
+export const setAuthCookies = (
+  res: Response,
+  accessToken: string,
+  refreshToken: string,
+) => {
   const inFiveMins = new Date(Date.now() + 5 * 60 * 1000);
+  const inSevenDays = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
 
-  res.cookie('access-token', jwt, {
+  res.cookie('access-token', accessToken, {
     secure: true,
     httpOnly: true,
     expires: inFiveMins,
-  });
-};
-
-export const setAccessTokenCookie = (
-  res: Response,
-  jwt: string,
-  refreshToken: string,
-) => {
-  const inSevenDays = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
-
-  setJwtCookie(res, jwt);
-
-  res.cookie('refresh-token', refreshToken, {
-    secure: true,
-    httpOnly: true,
-    expires: inSevenDays,
   });
 
   res.cookie('auth-flag', true, {
     secure: true,
     httpOnly: false,
+    expires: inFiveMins,
+  });
+
+  res.cookie('refresh-token', refreshToken, {
+    secure: true,
+    httpOnly: true,
     expires: inSevenDays,
   });
 };
@@ -60,13 +56,14 @@ export const register = async (
       password,
     );
 
-    const { jwt, refreshToken } = await authService.generateTokens(
+    const { accessToken, refreshToken } = await tokenService.generateTokens(
       false,
       customerId,
       email,
       'email',
     );
-    setAccessTokenCookie(res, jwt, refreshToken);
+
+    setAuthCookies(res, accessToken, refreshToken);
 
     res.status(200).json({
       message: messages.REGISTER_SUCCESS,
@@ -112,18 +109,19 @@ export const login = async (
 
     if (user.status === 'deactivated')
       return res.status(401).json({
-        accessToken: authService.generateJwt(email, 'email'),
+        accessToken: tokenService.generateShortLivedAccessToken(email, 'email'),
         user,
         message: messages.ERR_DEACTIVATED_ACCOUNT,
       });
 
-    const { jwt, refreshToken } = await authService.generateTokens(
+    const { accessToken, refreshToken } = await tokenService.generateTokens(
       false,
       userId,
       email,
       'email',
     );
-    setAccessTokenCookie(res, jwt, refreshToken);
+
+    setAuthCookies(res, accessToken, refreshToken);
 
     return res.status(200).json({
       message: messages.LOGIN_SUCCESS,
@@ -159,13 +157,20 @@ export const loginAdmin = async (
 
     const user = await userService.getUserWithoutId(userId, true);
 
-    const { jwt, refreshToken } = await authService.generateTokens(
+    if (user.status === 'disabled')
+      return res
+        .status(401)
+        .clearCookie('access-token')
+        .json({ message: messages.LOGIN_ADMIN_2FA_DISABLED });
+
+    const { accessToken, refreshToken } = await tokenService.generateTokens(
       true,
       userId,
-      user.email as string,
+      user.email,
       'email',
     );
-    setAccessTokenCookie(res, jwt, refreshToken);
+
+    setAuthCookies(res, accessToken, refreshToken);
 
     res.status(200).json({ message: messages.LOGIN_ADMIN_2FA_SUCCESS, user });
   } catch (e) {
@@ -179,7 +184,7 @@ export const logout = async (
   next: NextFunction,
 ) => {
   try {
-    await authService.revokeRefreshToken(req.cookies['refresh-token']);
+    await tokenService.revokeRefreshToken(req.cookies['refresh-token']);
 
     res.clearCookie('access-token');
     res.clearCookie('refresh-token');
@@ -206,15 +211,8 @@ export const requestPasswordRecovery = async (
 
     const { isAdmin, userId, status, hasPassword } = user;
 
-    if (status === 'deactivated' || status === 'disabled')
-      return res.status(401).json({
-        message: messages.ERR_DEACTIVATED_ACCOUNT,
-      });
-
-    if (status === 'suspended')
-      return res.status(401).json({
-        message: messages.ERR_SUSPENDED_ACCOUNT,
-      });
+    if (['disabled', 'suspended', 'deactivated'].includes(status))
+      res.status(401).json({ message: `User account ${status}` });
 
     if (!hasPassword)
       return res
@@ -276,6 +274,9 @@ export const recoverPassword = async (
     if (!user)
       return res.status(401).json({ message: messages.INVALID_AUTH_OTP });
 
+    if (['disabled', 'suspended', 'deactivated'].includes(user.status))
+      res.status(401).json({ message: `User account ${user.status}` });
+
     const { userId, isAdmin, ...userWithNoId } = user;
 
     const { isValid } = await otpService.getOTP(userId, otp, {
@@ -291,14 +292,14 @@ export const recoverPassword = async (
     if (!result)
       return res.status(400).json({ message: messages.RECOVER_PASSWORD_FAIL });
 
-    const { jwt, refreshToken } = await authService.generateTokens(
+    const { accessToken, refreshToken } = await tokenService.generateTokens(
       isAdmin,
       userId,
       email,
       'email',
     );
 
-    setAccessTokenCookie(res, jwt, refreshToken);
+    setAuthCookies(res, accessToken, refreshToken);
 
     res.status(200).json({
       message: messages.RECOVER_PASSWORD_SUCCESS,
@@ -324,13 +325,14 @@ export const reactivate = async (
 
     const user = await userService.getUserWithoutId(userId, false);
 
-    const { jwt, refreshToken } = await authService.generateTokens(
+    const { accessToken, refreshToken } = await tokenService.generateTokens(
       false,
       userId,
       email,
       'email',
     );
-    setAccessTokenCookie(res, jwt, refreshToken);
+
+    setAuthCookies(res, accessToken, refreshToken);
 
     res.status(200).json({
       message: messages.REACTIVATE_SUCCESS,
@@ -350,10 +352,16 @@ export const socialLogin = async (
   try {
     const userId = req.user?.userId;
     const email = req.user?.email;
+    const status = req.user?.status;
 
-    if (!userId || !email) return res.status(401);
+    if (!userId || !email || !status) return res.status(401);
 
-    const { jwt, refreshToken } = await authService.generateTokens(
+    if (status === 'deactivated' || status === 'suspended')
+      return res.redirect(
+        `${process.env.FRONTEND_BASE_URL}/OAuthRedirecting?accessToken=undefined&refreshToken=undefined&user=undefined`,
+      );
+
+    const { accessToken, refreshToken } = await tokenService.generateTokens(
       false,
       userId,
       email,
@@ -365,7 +373,7 @@ export const socialLogin = async (
     res.redirect(
       `${
         process.env.FRONTEND_BASE_URL
-      }/OAuthRedirecting?jwt=${jwt}&refreshToken=${refreshToken}&user=${encodeURIComponent(
+      }/OAuthRedirecting?accessToken=${accessToken}&refreshToken=${refreshToken}&user=${encodeURIComponent(
         JSON.stringify(user),
       )}`,
     );
@@ -406,14 +414,18 @@ export const setCookieAfterCallBack = async (
   try {
     const { jwt, refreshToken } = req.body;
 
-    const result = await authService.verifyTokens(jwt, refreshToken);
+    const result = await tokenService.verifyTokens(jwt, refreshToken);
 
-    if (!result)
+    if (!result.isValid)
       return res
         .status(401)
         .json({ message: messages.SET_COOKIE_INVALID_TOKEN });
 
-    setAccessTokenCookie(res, jwt, refreshToken);
+    setAuthCookies(
+      res,
+      tokenService.generateAccessToken(result.email, result.provider),
+      refreshToken,
+    );
 
     res.status(200).json({ message: messages.SET_COOKIE_SUCCESS });
   } catch (e) {
@@ -429,7 +441,7 @@ export const refreshJwt = async (
   try {
     const refreshToken = req.cookies['refresh-token'];
 
-    const result = await authService.verifyRefreshToken(refreshToken);
+    const result = await tokenService.rotateTokens(refreshToken);
 
     if (result.error !== null)
       return res
@@ -439,9 +451,7 @@ export const refreshJwt = async (
         .clearCookie('auth-flag')
         .json({ message: result.error });
 
-    const { email, provider } = result;
-
-    setJwtCookie(res, authService.generateJwt(email, provider));
+    setAuthCookies(res, result.accessToken, result.refreshToken);
 
     res.status(200).json({ message: messages.REFRESH_JWT_SUCCESS });
   } catch (e) {

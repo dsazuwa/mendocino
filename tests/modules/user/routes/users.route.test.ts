@@ -1,4 +1,4 @@
-import authService from '@user/services/auth.service';
+import tokenService from '@user/services/token.service';
 import { ROLES } from '@user/utils/constants';
 
 import {
@@ -26,7 +26,7 @@ describe(`GET ${BASE_URL}/me`, () => {
 
     await createCustomer(firstName, lastName, email, password, status);
 
-    const jwt = authService.generateJwt(email, 'email');
+    const jwt = tokenService.generateAccessToken(email, 'email');
 
     const response = await request
       .get(`${BASE_URL}/me`)
@@ -56,7 +56,7 @@ describe(`GET ${BASE_URL}/me`, () => {
       MANAGER.roleId,
     ]);
 
-    const jwt = authService.generateJwt(email, 'email');
+    const jwt = tokenService.generateAccessToken(email, 'email');
 
     const response = await request
       .get(`${BASE_URL}/me`)

@@ -1,6 +1,6 @@
 import { Address } from '@user/models';
 import addressService from '@user/services/address.service';
-import authService from '@user/services/auth.service';
+import tokenService from '@user/services/token.service';
 
 import { createCustomer } from 'tests/modules/user/helper-functions';
 import { request } from 'tests/supertest.helper';
@@ -23,7 +23,7 @@ describe('Address management', () => {
     );
 
     customerId = customer.customerId;
-    jwt = authService.generateJwt(email.email, 'email');
+    jwt = tokenService.generateAccessToken(email.email, 'email');
   });
 
   beforeEach(async () => {

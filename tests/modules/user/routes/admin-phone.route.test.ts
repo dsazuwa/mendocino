@@ -1,5 +1,5 @@
 import { AdminOTP, AdminPhone, Phone } from '@user/models';
-import authService from '@user/services/auth.service';
+import tokenService from '@user/services/token.service';
 import { ROLES } from '@user/utils/constants';
 
 import { createAdmin, createRoles } from 'tests/modules/user/helper-functions';
@@ -30,7 +30,7 @@ describe('Phone number management', () => {
     );
 
     adminId = admin.adminId;
-    jwt = authService.generateJwt(email.email, 'email');
+    jwt = tokenService.generateAccessToken(email.email, 'email');
   });
 
   it(`POST ${BASE_URL} should register a new phone number`, async () => {

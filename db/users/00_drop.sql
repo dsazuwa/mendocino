@@ -11,7 +11,7 @@ DROP FUNCTION IF EXISTS users.prevent_update_email();
 DROP FUNCTION IF EXISTS users.prevent_update_phone();
 
 -- Drop functions
-DROP FUNCTION IF EXISTS users.get_refresh_token(VARCHAR, VARCHAR);
+DROP FUNCTION IF EXISTS users.get_refresh_token(VARCHAR, INTEGER);
 DROP FUNCTION IF EXISTS users.get_admin(INTEGER);
 DROP FUNCTION IF EXISTS users.get_customer(INTEGER);
 DROP FUNCTION IF EXISTS users.get_user_by_email(VARCHAR);

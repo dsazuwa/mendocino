@@ -1,5 +1,5 @@
 import { Admin, Email } from '@user/models';
-import authService from '@user/services/auth.service';
+import tokenService from '@user/services/token.service';
 import { ROLES } from '@user/utils/constants';
 
 import { createAdmin, createRoles } from 'tests/modules/user/helper-functions';
@@ -39,7 +39,7 @@ describe(`PATCH ${BASE_URL}/name`, () => {
     );
 
     adminId = admin.adminId;
-    jwt = authService.generateJwt(email.email, 'email');
+    jwt = tokenService.generateAccessToken(email.email, 'email');
   });
 
   const testUpdatecustomer = async (
@@ -111,7 +111,7 @@ describe(`PATCH ${BASE_URL}/password`, () => {
       [ROLES.ROOT.roleId],
     );
 
-    jwt = authService.generateJwt(email.email, 'email');
+    jwt = tokenService.generateAccessToken(email.email, 'email');
   });
 
   it('should update password', async () => {

@@ -1,16 +1,17 @@
-CREATE OR REPLACE FUNCTION users.get_refresh_token(p_email VARCHAR, p_token VARCHAR)
+CREATE OR REPLACE FUNCTION users.get_refresh_token(p_email VARCHAR, p_token_id INTEGER)
 RETURNS TABLE (
   is_admin BOOLEAN,
   user_id INTEGER,
   email VARCHAR,
   status VARCHAR,
+  token_id INTEGER,
   token VARCHAR,
   expires_at TIMESTAMP,
   created_at TIMESTAMP
 ) AS $$
 BEGIN
   ASSERT p_email IS NOT NULL, 'p_email cannot be null';
-  ASSERT LENGTH(p_token) > 0, 'p_token cannot be empty';
+  ASSERT LENGTH(p_token_id) > 0, 'p_token_id cannot be empty';
 
   IF EXISTS (
     SELECT 1
@@ -23,6 +24,7 @@ BEGIN
       a.admin_id AS user_id,
       e.email AS email,
       a.status::VARCHAR AS status,
+      art.token_id AS token_id,
       art.token AS token,
       art.expires_at AS expires_at,
       art.created_at AS created_at
@@ -30,7 +32,7 @@ BEGIN
     JOIN users.admin_accounts aa ON aa.email_id = e.email_id AND e.email = p_email
     JOIN users.admins a ON a.admin_id = aa.admin_id
     JOIN users.admin_refresh_tokens art ON art.admin_id = aa.admin_id
-    WHERE art.token = p_token;
+    WHERE art.token_id = p_token_id;
 
   ELSE
     RETURN QUERY
@@ -39,6 +41,7 @@ BEGIN
       c.customer_id AS user_id,
       e.email AS email,
       c.status::VARCHAR AS status,
+      crt.token_id AS token_id,
       crt.token AS token,
       crt.expires_at AS expires_at,
       crt.created_at AS created_at
@@ -46,8 +49,7 @@ BEGIN
     JOIN users.customer_emails ce ON ce.email_id = e.email_id AND e.email = p_email
     JOIN users.customers c ON c.customer_id = ce.customer_id
     JOIN users.customer_refresh_tokens crt ON crt.customer_id = ce.customer_id
-    WHERE crt.token = p_token;
-
+    WHERE crt.token_id = p_token_id;
   END IF;
 END;
 $$ LANGUAGE plpgsql;

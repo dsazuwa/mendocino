@@ -7,7 +7,7 @@ import {
   CustomerPassword,
   Email,
 } from '@user/models';
-import authService from '@user/services/auth.service';
+import tokenService from '@user/services/token.service';
 import { ROLES } from '@user/utils/constants';
 
 import { getTokenFrom, request } from 'tests/supertest.helper';
@@ -596,7 +596,7 @@ describe(`PATCH ${BASE_URL}/reactivate`, () => {
       status,
     );
 
-    const token = authService.generateJwt(email.email, 'email');
+    const token = tokenService.generateAccessToken(email.email, 'email');
 
     let c = Customer.findOne({ where: { customerId, status }, raw });
     expect(c).resolves.not.toBeNull();
@@ -621,7 +621,7 @@ describe(`PATCH ${BASE_URL}/reactivate`, () => {
       status,
     );
 
-    const token = authService.generateJwt(email.email, 'email');
+    const token = tokenService.generateAccessToken(email.email, 'email');
 
     let c = Customer.findOne({ where: { customerId, status }, raw });
     expect(c).resolves.not.toBeNull();
@@ -646,7 +646,7 @@ describe(`PATCH ${BASE_URL}/reactivate`, () => {
       status,
     );
 
-    const token = authService.generateJwt(email.email, 'email');
+    const token = tokenService.generateAccessToken(email.email, 'email');
 
     let c = Customer.findOne({ where: { customerId, status }, raw });
     expect(c).resolves.not.toBeNull();

@@ -38,6 +38,7 @@ const messages = {
   LOGIN_ADMIN_2FA: '2FA OTP sent to your email',
 
   LOGIN_ADMIN_2FA_INVALID: 'Invalid request',
+  LOGIN_ADMIN_2FA_DISABLED: 'Login failed: Account disabled',
   LOGIN_ADMIN_2FA_SUCCESS: 'Logged in!',
 
   LOGOUT: 'Logged out!',

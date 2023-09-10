@@ -1,5 +1,3 @@
-import { JwtPayload, verify } from 'jsonwebtoken';
-
 import {
   AdminAccount,
   Customer,
@@ -25,40 +23,6 @@ const raw = true;
 
 beforeAll(async () => {
   await createRoles();
-});
-
-describe('generate Jwt token', () => {
-  const email = 'janicedoe@gmail.com';
-
-  it('should generate a token for email', async () => {
-    const provider = 'email';
-
-    const token = authService.generateJwt(email, provider);
-
-    const decoded = verify(token, process.env.JWT_SECRET) as JwtPayload;
-    expect(decoded.email).toBe(email);
-    expect(decoded.provider).toBe(provider);
-  });
-
-  it('should generate a token for google', async () => {
-    const provider = 'google';
-
-    const token = authService.generateJwt(email, provider);
-
-    const decoded = verify(token, process.env.JWT_SECRET) as JwtPayload;
-    expect(decoded.email).toBe(email);
-    expect(decoded.provider).toBe(provider);
-  });
-
-  it('should generate a token for facebook', async () => {
-    const provider = 'facebook';
-
-    const token = authService.generateJwt(email, provider);
-
-    const decoded = verify(token, process.env.JWT_SECRET) as JwtPayload;
-    expect(decoded.email).toBe(email);
-    expect(decoded.provider).toBe(provider);
-  });
 });
 
 describe('create identity for customer', () => {

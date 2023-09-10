@@ -1,5 +1,5 @@
 import { CustomerOTP, CustomerPhone, Phone } from '@user/models';
-import authService from '@user/services/auth.service';
+import tokenService from '@user/services/token.service';
 
 import { createCustomer } from 'tests/modules/user/helper-functions';
 import { request } from 'tests/supertest.helper';
@@ -26,7 +26,7 @@ describe('Phone number management', () => {
     );
 
     customerId = customer.customerId;
-    jwt = authService.generateJwt(email.email, 'email');
+    jwt = tokenService.generateAccessToken(email.email, 'email');
   });
 
   it(`POST ${BASE_URL} should register a new phone number`, async () => {
