@@ -137,7 +137,7 @@ Table customer_phones {
 ref: customer_phones.customer_id - customers.customer_id
 ref: customer_phones.phone_id - phones.phone_id
 
-Table addresses {
+Table customer_addresses {
   address_id integer pk
   customer_id integer [not null]
   address_line_1 varchar [not null]
@@ -149,7 +149,7 @@ Table addresses {
   updated_at timestamp [not null]
 }
 
-ref: addresses.customer_id > customers.customer_id
+ref: customer_addresses.customer_id > customers.customer_id
 
 Table admin_refresh_tokens {
   token_id integer pk

@@ -139,7 +139,7 @@ CREATE TABLE users.customer_phones (
   CONSTRAINT fk_phone_id FOREIGN KEY (phone_id) REFERENCES users.phones (phone_id) ON DELETE CASCADE ON UPDATE NO ACTION
 );
 
-CREATE TABLE users.addresses (
+CREATE TABLE users.customer_addresses (
   address_id SERIAL,
   customer_id INTEGER NOT NULL,
   address_line1 VARCHAR(255) NOT NULL,

@@ -1,7 +1,6 @@
 export const USER_SCHEMA = 'users';
 
 export const TABLENAMES = {
-  ADDRESS: 'addresses',
   EMAIL: 'emails',
   PHONE: 'phones',
 
@@ -11,6 +10,7 @@ export const TABLENAMES = {
   ADMIN: 'admins',
   ADMIN_ACCOUNT: 'admin_accounts',
   ADMIN_OTP: 'admin_otps',
+  ADMIN_REFRESH_TOKEN: 'admin_refresh_tokens',
   ADMIN_PHONE: 'admin_phones',
 
   CUSTOMER: 'customers',
@@ -18,14 +18,9 @@ export const TABLENAMES = {
   CUSTOMER_PASSWORD: 'customer_passwords',
   CUSTOMER_IDENTITY: 'customer_identities',
   CUSTOMER_OTP: 'customer_otps',
-  CUSTOMER_PHONE: 'customer_phones',
-
-  ADMIN_REFRESH_TOKEN: 'admin_refresh_tokens',
   CUSTOMER_REFRESH_TOKEN: 'customer_refresh_tokens',
-};
-
-export const VIEWS = {
-  USER_TYPE: 'user_type_view',
+  CUSTOMER_PHONE: 'customer_phones',
+  ADDRESS: 'customer_addresses',
 };
 
 export const ROLES = {

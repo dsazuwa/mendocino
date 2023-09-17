@@ -28,7 +28,7 @@ DROP VIEW IF EXISTS users.all_refresh_tokens;
 DROP INDEX IF EXISTS users.idx_email_lower_unique;
 DROP INDEX IF EXISTS users.idx_role_lower_unique;
 
--- Drop constrants
+-- Drop constraints
 ALTER TABLE IF EXISTS users.admin_accounts DROP CONSTRAINT fk_admin_id;
 ALTER TABLE IF EXISTS users.admin_accounts DROP CONSTRAINT fk_email_id;
 ALTER TABLE IF EXISTS users.customer_emails DROP CONSTRAINT fk_customer_id;
@@ -39,7 +39,7 @@ ALTER TABLE IF EXISTS users.customer_otps DROP CONSTRAINT fk_customer_id;
 ALTER TABLE IF EXISTS users.customer_identities DROP CONSTRAINT fk_customer_id;
 ALTER TABLE IF EXISTS users.admins_roles DROP CONSTRAINT fk_admin_id;
 ALTER TABLE IF EXISTS users.admins_roles DROP CONSTRAINT fk_role_id;
-ALTER TABLE IF EXISTS users.addresses DROP CONSTRAINT fk_customer_id;
+ALTER TABLE IF EXISTS users.customer_addresses DROP CONSTRAINT fk_customer_id;
 ALTER TABLE IF EXISTS users.admin_phones DROP CONSTRAINT fk_admin_id;
 ALTER TABLE IF EXISTS users.admin_phones DROP CONSTRAINT fk_phone_id;
 ALTER TABLE IF EXISTS users.customer_phones DROP CONSTRAINT fk_customer_id;
@@ -50,7 +50,7 @@ ALTER TABLE IF EXISTS users.customer_refresh_tokens DROP CONSTRAINT fk_customer_
 -- Drop tables
 DROP TABLE IF EXISTS users.customer_refresh_tokens;
 DROP TABLE IF EXISTS users.admin_refresh_tokens;
-DROP TABLE IF EXISTS users.addresses;
+DROP TABLE IF EXISTS users.customer_addresses;
 DROP TABLE IF EXISTS users.customer_phones;
 DROP TABLE IF EXISTS users.admin_phones;
 DROP TABLE IF EXISTS users.phones;
