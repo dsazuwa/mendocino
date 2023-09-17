@@ -1,5 +1,5 @@
 import { ROLES } from '@App/modules/user';
-import authService from '@user/services/auth.service';
+import tokenService from '@user/services/token.service';
 
 import { Category, Item, ItemCategory } from '@menu/models';
 
@@ -25,21 +25,21 @@ beforeAll(async () => {
   await createRoles();
 
   let email = 'joedoe@gmail.com';
-  superJwt = authService.generateJwt(email, 'email');
+  superJwt = tokenService.generateAccessToken(email, 'email');
 
   await createAdmin('Joe', 'Doe', email, 'joeD0ePa$$', 'active', [
     ROLES.SUPER_ADMIN.roleId,
   ]);
 
   email = 'jaydoe@gmail.com';
-  managerJwt = authService.generateJwt(email, 'email');
+  managerJwt = tokenService.generateAccessToken(email, 'email');
 
   await createAdmin('Jay', 'Doe', email, 'jayD0ePa$$', 'active', [
     ROLES.MANAGER.roleId,
   ]);
 
   email = 'jessdoe@gmail.com';
-  customerJwt = authService.generateJwt(email, 'email');
+  customerJwt = tokenService.generateAccessToken(email, 'email');
 
   await createCustomer('Jess', 'Doe', email, 'jessD0ePa$$', 'active');
 });

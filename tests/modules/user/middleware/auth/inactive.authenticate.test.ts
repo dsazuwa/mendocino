@@ -1,4 +1,4 @@
-import authService from '@user/services/auth.service';
+import tokenService from '@user/services/token.service';
 
 import { createCustomer } from 'tests/modules/user/helper-functions';
 import { request } from 'tests/supertest.helper';
@@ -16,9 +16,9 @@ describe('Inative Authentication Middleware', () => {
       'jessD0ePa$$',
       'deactivated',
     );
-    const token = authService.generateJwt(email.email, 'email');
+    const accessToken = tokenService.generateAccessToken(email.email, 'email');
 
-    await request.get(URL).auth(token, { type: 'bearer' }).expect(200);
+    await request.get(URL).auth(accessToken, { type: 'bearer' }).expect(200);
   });
 
   it('should return 401 Unauthorized for an invalid/undefined access token', async () => {
@@ -35,9 +35,9 @@ describe('Inative Authentication Middleware', () => {
       'jessD0ePa$$',
       'active',
     );
-    const token = authService.generateJwt(email.email, 'email');
+    const accessToken = tokenService.generateAccessToken(email.email, 'email');
 
-    await request.get(URL).auth(token, { type: 'bearer' }).expect(401);
+    await request.get(URL).auth(accessToken, { type: 'bearer' }).expect(401);
   });
 
   it('should return 401 Unauthorized for a pending account', async () => {
@@ -48,8 +48,8 @@ describe('Inative Authentication Middleware', () => {
       'jazzD0ePs$$',
       'pending',
     );
-    const token = authService.generateJwt(email.email, 'email');
+    const accessToken = tokenService.generateAccessToken(email.email, 'email');
 
-    await request.get(URL).auth(token, { type: 'bearer' }).expect(401);
+    await request.get(URL).auth(accessToken, { type: 'bearer' }).expect(401);
   });
 });
