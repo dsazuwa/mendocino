@@ -412,9 +412,9 @@ export const setCookieAfterCallBack = async (
   next: NextFunction,
 ) => {
   try {
-    const { jwt, refreshToken } = req.body;
+    const { accessToken, refreshToken } = req.body;
 
-    const result = await tokenService.verifyTokens(jwt, refreshToken);
+    const result = await tokenService.verifyTokens(accessToken, refreshToken);
 
     if (!result.isValid)
       return res

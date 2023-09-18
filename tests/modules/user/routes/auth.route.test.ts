@@ -1,3 +1,6 @@
+import { promisify } from 'util';
+import { JwtPayload, sign, verify } from 'jsonwebtoken';
+
 import {
   Admin,
   AdminOTP,
@@ -310,7 +313,7 @@ describe('Email Authentication', () => {
   });
 });
 
-describe('Recover Account', () => {
+describe('Recover Password', () => {
   const mockOTP = '123456';
 
   describe(`POST ${BASE_URL}/recover`, () => {
@@ -658,5 +661,187 @@ describe(`PATCH ${BASE_URL}/reactivate`, () => {
 
     c = Customer.findOne({ where: { customerId, status }, raw });
     expect(c).not.toBeNull();
+  });
+});
+
+describe(`POST ${BASE_URL}/set-cookie`, () => {
+  beforeEach(async () => {
+    await Customer.destroy({ where: {} });
+    await Email.destroy({ where: {} });
+  });
+
+  it('should successfully set cookies', async () => {
+    const email = 'johndoe@gmail.com';
+
+    const { customerId } = await createCustomer(
+      'John',
+      'Doe',
+      email,
+      'johnD0ePa$$',
+      'active',
+    );
+
+    const { accessToken, refreshToken } = await tokenService.generateTokens(
+      false,
+      customerId,
+      email,
+      'email',
+    );
+
+    const response = await request
+      .post(`${BASE_URL}/set-cookie`)
+      .send({ accessToken, refreshToken });
+
+    expect(response.status).toBe(200);
+
+    const accessT = getTokenFrom(
+      response.headers['set-cookie'],
+      'access-token',
+    );
+    expect(accessT).not.toEqual('');
+
+    const refreshT = getTokenFrom(
+      response.headers['set-cookie'],
+      'refresh-token',
+    );
+    expect(refreshT).toEqual(refreshToken);
+  });
+
+  it('should fail to set cookies on expired access-token', async () => {
+    const email = 'johndoe@gmail.com';
+
+    const accessToken = sign(
+      { email, provider: 'email' },
+      process.env.JWT_SECRET,
+      { expiresIn: '1s' },
+    );
+
+    const setTimeoutPromise = promisify(setTimeout);
+    await setTimeoutPromise(1000);
+
+    const { customerId } = await createCustomer(
+      'John',
+      'Doe',
+      email,
+      'johnD0ePa$$',
+      'active',
+    );
+
+    const { refreshToken } = await tokenService.generateTokens(
+      false,
+      customerId,
+      email,
+      'email',
+    );
+
+    const response = await request
+      .post(`${BASE_URL}/set-cookie`)
+      .send({ accessToken, refreshToken });
+
+    expect(response.status).toBe(401);
+
+    const accessT = getTokenFrom(
+      response.headers['set-cookie'],
+      'access-token',
+    );
+    const refreshT = getTokenFrom(
+      response.headers['set-cookie'],
+      'refresh-token',
+    );
+
+    expect(accessT).toEqual('');
+    expect(refreshT).toEqual('');
+  });
+
+  it('should fail to set cookies on invalid refresh-token', async () => {
+    const email = 'johndoe@gmail.com';
+
+    const refreshToken = sign(
+      { tokenId: 1, token: '21331', email, provider: 'email' },
+      process.env.JWT_SECRET,
+      { expiresIn: '1s' },
+    );
+
+    const { customerId } = await createCustomer(
+      'John',
+      'Doe',
+      email,
+      'johnD0ePa$$',
+      'active',
+    );
+
+    const { accessToken } = await tokenService.generateTokens(
+      false,
+      customerId,
+      email,
+      'email',
+    );
+
+    const response = await request
+      .post(`${BASE_URL}/set-cookie`)
+      .send({ accessToken, refreshToken });
+
+    expect(response.status).toBe(401);
+
+    const accessT = getTokenFrom(
+      response.headers['set-cookie'],
+      'access-token',
+    );
+    const refreshT = getTokenFrom(
+      response.headers['set-cookie'],
+      'refresh-token',
+    );
+
+    expect(accessT).toEqual('');
+    expect(refreshT).toEqual('');
+  });
+});
+
+describe(`POST ${BASE_URL}/refresh`, () => {
+  beforeEach(async () => {
+    await Customer.destroy({ where: {} });
+    await Email.destroy({ where: {} });
+  });
+
+  it('should successfully refresh cookies', async () => {
+    const email = 'johndoe@gmail.com';
+
+    const { customerId } = await createCustomer(
+      'John',
+      'Doe',
+      email,
+      'johnD0ePa$$',
+      'active',
+    );
+
+    const { refreshToken } = await tokenService.generateTokens(
+      false,
+      customerId,
+      email,
+      'email',
+    );
+
+    const { tokenId: id1, token: token1 } = verify(
+      refreshToken,
+      process.env.REFRESH_TOKEN_SECRET,
+    ) as JwtPayload;
+
+    const response = await request
+      .post(`${BASE_URL}/refresh`)
+      .set('Cookie', [`refresh-token=${refreshToken}`]);
+
+    expect(response.status).toBe(200);
+
+    const { tokenId: id2, token: token2 } = verify(
+      getTokenFrom(response.headers['set-cookie'], 'refresh-token'),
+      process.env.REFRESH_TOKEN_SECRET,
+    ) as JwtPayload;
+
+    expect(id1).not.toBe(id2);
+    expect(token1).not.toBe(token2);
+  });
+
+  it('should fail on undefined refresh-token cookie', async () => {
+    await request.post(`${BASE_URL}/refresh`).expect(401);
   });
 });

@@ -239,6 +239,49 @@ describe('verify tokens', () => {
     expect(result.provider).not.toBeDefined();
   });
 
+  it('should fail on different user access-token and refresh-token', async () => {
+    const provider = 'email';
+
+    const email1 = 'jasminedoe@gmail.com';
+    const { adminId: id1 } = await createAdmin(
+      'Jasmine',
+      'Doe',
+      email1,
+      'JassD0ePa$$',
+      'active',
+      [ROLES.DELIVERY_DRIVER.roleId],
+    );
+
+    const email2 = 'jazzdoe@gmail.com';
+    const { adminId: id2 } = await createAdmin(
+      'Jazz',
+      'Doe',
+      email2,
+      'JassD0ePa$$',
+      'active',
+      [ROLES.DELIVERY_DRIVER.roleId],
+    );
+
+    const { accessToken } = await tokenService.generateTokens(
+      true,
+      id1,
+      email1,
+      provider,
+    );
+
+    const { refreshToken } = await tokenService.generateTokens(
+      true,
+      id2,
+      email2,
+      provider,
+    );
+
+    const result = await tokenService.verifyTokens(accessToken, refreshToken);
+    expect(result.isValid).toBe(false);
+    expect(result.email).not.toBeDefined();
+    expect(result.provider).not.toBeDefined();
+  });
+
   it('should successfully verify tokens for active/pending customer', async () => {
     const email = 'jasminedoe@gmail.com';
     const provider = 'email';

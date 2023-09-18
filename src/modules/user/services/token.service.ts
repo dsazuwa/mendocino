@@ -3,7 +3,6 @@ import { QueryTypes, Transaction } from 'sequelize';
 import { v4 as uuidv4 } from 'uuid';
 
 import sequelize from '@App/db';
-import { ApiError } from '@App/utils';
 
 import { AdminRefreshToken, CustomerRefreshToken } from '@user/models';
 import { JwtProviderType } from '@user/types';
@@ -23,7 +22,7 @@ const accessTokenService = {
       const decoded = verify(jwt, process.env.JWT_SECRET) as JwtPayload;
 
       if (!decoded.exp || decoded.exp < Math.floor(Date.now() / 1000))
-        throw ApiError.unauthorized('JWT Expired');
+        return { error: 'JWT Expired' };
 
       return { email: decoded.email, provider: decoded.provider } as {
         email: string;

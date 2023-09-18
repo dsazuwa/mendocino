@@ -45,7 +45,6 @@ describe(`GET ${BASE_URL}/profile`, () => {
       email: { address: email, isVerified: false },
       hasPassword: true,
       authProviders: [],
-      roles: ['customer'],
       phoneNumber: { phone: null, isVerified: false },
       addresses: null,
     });

@@ -47,7 +47,7 @@ export const recoverPasswordSchema = object({
 
 export const setCookieSchema = object({
   body: object({
-    jwt: string().trim().nonempty(),
+    accessToken: string().trim().nonempty(),
     refreshToken: string().trim().nonempty(),
   }),
 });
