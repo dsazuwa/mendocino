@@ -1,3 +1,4 @@
+-- #region get_refresh_token
 CREATE OR REPLACE FUNCTION users.get_refresh_token(p_email VARCHAR, p_token_id INTEGER)
 RETURNS TABLE (
   is_admin BOOLEAN,
@@ -54,7 +55,9 @@ BEGIN
   END IF;
 END;
 $$ LANGUAGE plpgsql;
+-- #endregion
 
+-- #region get_admin
 CREATE OR REPLACE FUNCTION users.get_admin(p_admin_id INTEGER)
 RETURNS TABLE (
   user_id INTEGER,
@@ -85,7 +88,9 @@ BEGIN
     GROUP BY a.admin_id, a.first_name, a.last_name, e.email, a.status;
 END;
 $$ LANGUAGE plpgsql;
+-- #endregion
 
+-- #region get_customer
 CREATE OR REPLACE FUNCTION users.get_customer(p_customer_id INTEGER)
 RETURNS TABLE (
   user_id INTEGER,
@@ -113,7 +118,9 @@ BEGIN
     JOIN users.emails e on e.email_id = ce.email_id;
 END;
 $$ LANGUAGE plpgsql;
+-- #endregion
 
+-- #region get_user_by_email
 CREATE OR REPLACE FUNCTION users.get_user_by_email(p_email VARCHAR)
 RETURNS TABLE (
   is_admin BOOLEAN,
@@ -174,7 +181,9 @@ BEGIN
   END IF;
 END;
 $$ LANGUAGE plpgsql;
+-- #endregion
 
+-- #region get_user_with_password
 CREATE OR REPLACE FUNCTION users.get_user_with_password(p_email VARCHAR)
 RETURNS TABLE (
   is_admin BOOLEAN,
@@ -231,7 +240,9 @@ BEGIN
   END IF;
 END;
 $$ LANGUAGE plpgsql;
+-- #endregion
 
+-- #region get_customer_from_payload
 CREATE OR REPLACE FUNCTION users.get_customer_from_payload(p_email VARCHAR, p_provider users.enum_customer_identities_provider)
 RETURNS TABLE (
   user_id INTEGER,
@@ -264,7 +275,9 @@ BEGIN
       users.customer_identities ci ON ci.customer_id = c.customer_id AND ci.provider = p_provider;
 END;
 $$ LANGUAGE plpgsql;
+-- #endregion
 
+-- #region get_user_for_social_authentication
 CREATE OR REPLACE FUNCTION users.get_user_for_social_authentication(p_email VARCHAR, p_identity_id VARCHAR, p_provider users.enum_customer_identities_provider)
 RETURNS TABLE (
   is_admin BOOLEAN,
@@ -322,7 +335,9 @@ BEGIN
   END IF;
 END;
 $$ LANGUAGE plpgsql;
+-- #endregion
 
+-- #region get_user_for_recovery
 CREATE OR REPLACE FUNCTION users.get_user_for_recovery(p_email VARCHAR)
 RETURNS TABLE (
   is_admin BOOLEAN,
@@ -364,3 +379,102 @@ BEGIN
   END IF;
 END;
 $$ LANGUAGE plpgsql;
+-- #endregion
+
+-- #region get_customer_profile
+CREATE OR REPLACE FUNCTION users.get_customer_profile(p_customer_id INTEGER)
+RETURNS TABLE (
+  "firstName" VARCHAR,
+  "lastName" VARCHAR,
+  "phoneNumber" JSONB,
+  email JSONB,
+  "hasPassword" BOOLEAN,
+  "authProviders" users.enum_customer_identities_provider[],
+  addresses JSONB
+) AS $$
+BEGIN
+  IF p_customer_id IS NULL THEN
+    RAISE EXCEPTION 'p_customer_id cannot be null';
+  END IF;
+
+  RETURN QUERY
+  SELECT
+    c.first_name as "firstName",
+    c.last_name as "lastName",
+    jsonb_build_object(
+      'phone', phone.phone_number,
+      'isVerified', CASE WHEN c_phone.status = 'active' THEN true ELSE false END
+    ) AS "phoneNumber",
+    jsonb_build_object(
+      'address', email.email,
+      'isVerified', CASE WHEN c.status = 'pending' THEN false ELSE true END
+    ) AS "email",
+    CASE WHEN c_password.password IS NOT NULL 
+      THEN true 
+      ELSE false 
+    END AS "hasPassword",
+    ARRAY(
+      SELECT provider
+      FROM users.customer_identities i
+      WHERE i.customer_id = p_customer_id
+    ) AS "authProviders",
+    (
+      SELECT 
+        jsonb_agg(jsonb_build_object(
+          'addressLine1', a.address_line1,
+          'addressLine2', COALESCE(a.address_line2, ''),
+          'city', a.city,
+          'state', a.state,
+          'postalCode', a.postal_code
+        ))
+      FROM users.customer_addresses a
+      WHERE a.customer_id = p_customer_id
+    ) AS addresses
+  FROM
+    users.customers c
+  JOIN 
+    users.customer_emails ce ON ce.customer_id = c.customer_id AND c.customer_id = p_customer_id
+  JOIN
+    users.emails email ON email.email_id = ce.email_id
+  LEFT JOIN
+    users.customer_passwords c_password ON c_password.customer_id = c.customer_id
+  LEFT JOIN
+    users.customer_phones c_phone ON c_phone.customer_id = c.customer_id
+  LEFT JOIN
+    users.phones phone ON phone.phone_id = c_phone.phone_id;
+END;
+$$ LANGUAGE plpgsql;
+-- #endregion
+
+-- #region get_customer_profile
+CREATE OR REPLACE FUNCTION users.get_customer_for_revoke_social_auth(p_customer_id INTEGER, p_provider users.enum_customer_identities_provider)
+RETURNS TABLE (
+  email VARCHAR,
+  "passwordExists" BOOLEAN,
+  "otherIdentities" users.enum_customer_identities_provider[]
+) AS $$
+BEGIN
+  IF p_customer_id IS NULL OR p_provider IS NULL THEN
+    RAISE EXCEPTION 'p_customer_id and p_provider cannot be null';
+  END IF;
+
+  RETURN QUERY
+  SELECT
+    e.email AS email,
+    CASE WHEN cp.customer_id IS NOT NULL THEN TRUE ELSE FALSE END AS "passwordExists",
+    ARRAY(
+      SELECT provider
+      FROM users.customer_identities i
+      WHERE i.customer_id = c.customer_id AND i.provider <> p_provider
+    ) AS "otherIdentities"
+  FROM
+    users.customers c
+  JOIN 
+    users.customer_emails ce ON ce.customer_id = c.customer_id AND c.customer_id = p_customer_id
+  JOIN
+    users.emails e ON e.email_id = ce.email_id
+  LEFT JOIN
+    users.customer_passwords cp ON cp.customer_id = c.customer_id;
+END;
+$$ LANGUAGE plpgsql;
+-- #endregion

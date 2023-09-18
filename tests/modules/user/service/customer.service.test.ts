@@ -534,7 +534,7 @@ describe('revoke social authentication', () => {
 
   it('should return false if user does not exist', async () => {
     const { result, switchTo } =
-      await customerService.revokeSocialAuthentication(8930274824282, 'google');
+      await customerService.revokeSocialAuthentication(-1, 'google');
 
     expect(result).toBe(false);
     expect(switchTo).toBeUndefined();

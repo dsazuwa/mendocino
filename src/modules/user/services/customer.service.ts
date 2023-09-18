@@ -59,58 +59,30 @@ const deleteCustomer = async (customerId: number) =>
 
 const customerService = {
   getProfile: async (customerId: number) => {
-    const query = `
-      SELECT
-        c.first_name as "firstName",
-        c.last_name as "lastName",
-        jsonb_build_object(
-          'address', email.email,
-          'isVerified', CASE WHEN c.status = 'pending' THEN false ELSE true END
-        ) AS "email",
-        CASE WHEN c_password.password IS NOT NULL 
-          THEN true 
-          ELSE false 
-        END AS "hasPassword",
-        ARRAY(
-          SELECT provider
-          FROM ${USER_SCHEMA}.${CustomerIdentity.tableName} i
-          WHERE i.customer_id = c.customer_id
-        ) AS "authProviders",
-        ARRAY['customer'] AS "roles",
-        jsonb_build_object(
-          'phone', phone.phone_number,
-          'isVerified', CASE WHEN c_phone.status = 'active' THEN true ELSE false END
-        ) AS "phoneNumber",
-        (
-          SELECT 
-            jsonb_agg(jsonb_build_object(
-              'addressLine1', a.address_line1,
-              'addressLine2', COALESCE(a.address_line2, ''),
-              'city', a.city,
-              'state', a.state,
-              'postalCode', a.postal_code
-            ))
-          FROM ${USER_SCHEMA}.${Address.tableName} a
-          WHERE a.customer_id = c.customer_id
-        ) AS "addresses"
-      FROM
-        ${USER_SCHEMA}.${Customer.tableName} c
-      JOIN 
-        ${USER_SCHEMA}.${CustomerEmail.tableName} ce ON ce.customer_id = c.customer_id
-      JOIN
-        ${USER_SCHEMA}.${Email.tableName} email ON email.email_id = ce.email_id
-      LEFT JOIN
-        ${USER_SCHEMA}.${CustomerPassword.tableName} c_password ON c_password.customer_id = c.customer_id
-      LEFT JOIN
-        ${USER_SCHEMA}.${CustomerPhone.tableName} c_phone ON c_phone.customer_id = c.customer_id
-      LEFT JOIN
-        ${USER_SCHEMA}.${Phone.tableName} phone ON phone.phone_id = c_phone.phone_id
-      WHERE
-        c.customer_id = ${customerId};`;
+    const query = `SELECT * FROM ${USER_SCHEMA}.get_customer_profile($customerId);`;
 
-    const result = await sequelize.query(query, { type: QueryTypes.SELECT });
+    const result = await sequelize.query(query, {
+      type: QueryTypes.SELECT,
+      bind: { customerId },
+    });
 
-    return result.length === 0 ? null : result[0];
+    return result.length === 0
+      ? null
+      : (result[0] as {
+          firstName: string;
+          lastName: string;
+          phoneNumber: { phone: string; isVerified: boolean };
+          email: { address: string; isVerified: boolean };
+          hasPassword: boolean;
+          authProviders: ProviderType[];
+          addresses: {
+            addressLine1: string;
+            addressLine2: string;
+            city: string;
+            state: string;
+            postalCode: string;
+          }[];
+        });
   },
 
   verifyEmail: async (customerId: number) =>
@@ -183,30 +155,12 @@ const customerService = {
     customerId: number,
     provider: ProviderType,
   ) => {
-    const query = `
-      SELECT
-        e.email AS email,
-        c.customer_id AS customerId,
-        CASE WHEN cp.customer_id IS NOT NULL THEN TRUE ELSE FALSE END AS "passwordExists",
-        ARRAY(
-          SELECT provider
-          FROM ${USER_SCHEMA}.${CustomerIdentity.tableName} i
-          WHERE i.customer_id = c.customer_id AND i.provider <> '${provider}'
-        ) AS "otherIdentities"
-      FROM
-        ${USER_SCHEMA}.${Customer.tableName} c
-      LEFT JOIN
-        ${USER_SCHEMA}.${CustomerEmail.tableName} ca ON ca.customer_id = c.customer_id
-      LEFT JOIN
-        ${USER_SCHEMA}.${Email.tableName} e ON e.email_id = ca.email_id
-      LEFT JOIN
-        ${USER_SCHEMA}.${CustomerPassword.tableName} cp ON cp.customer_id = c.customer_id
-      LEFT JOIN
-        ${USER_SCHEMA}.${CustomerIdentity.tableName} ci ON ci.customer_id = c.customer_id AND ci.provider = '${provider}'
-      WHERE
-        c.customer_id = ${customerId};`;
+    const query = `SELECT * FROM ${USER_SCHEMA}.get_customer_for_revoke_social_auth($customerId, $provider)`;
 
-    const result = await sequelize.query(query, { type: QueryTypes.SELECT });
+    const result = await sequelize.query(query, {
+      type: QueryTypes.SELECT,
+      bind: { customerId, provider },
+    });
 
     if (result.length === 0) return { result: false };
 
