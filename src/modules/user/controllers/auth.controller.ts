@@ -443,7 +443,7 @@ export const refreshJwt = async (
 
     const result = await tokenService.rotateTokens(refreshToken);
 
-    if (result.error !== null)
+    if (result.error !== undefined)
       return res
         .status(401)
         .clearCookie('access-token')

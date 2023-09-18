@@ -10,8 +10,9 @@ RETURNS TABLE (
   created_at TIMESTAMP
 ) AS $$
 BEGIN
-  ASSERT p_email IS NOT NULL, 'p_email cannot be null';
-  ASSERT LENGTH(p_token_id) > 0, 'p_token_id cannot be empty';
+  IF p_email IS NULL OR p_token_id IS NULL THEN
+    RAISE EXCEPTION 'p_email AND p_token_id cannot be null';
+  END IF;
 
   IF EXISTS (
     SELECT 1

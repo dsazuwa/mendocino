@@ -9,7 +9,7 @@ import { AdminRefreshToken, CustomerRefreshToken } from '@user/models';
 import { JwtProviderType } from '@user/types';
 
 const accessTokenService = {
-  generate: (
+  create: (
     email: string,
     provider: JwtProviderType,
     expiresIn: string | number,
@@ -28,7 +28,7 @@ const accessTokenService = {
       return { email: decoded.email, provider: decoded.provider } as {
         email: string;
         provider: JwtProviderType;
-        error: null;
+        error: undefined;
       };
     } catch (e) {
       return { error: 'Invalid Access Token' };
@@ -90,7 +90,12 @@ const refreshTokenService = {
       if (!decoded.exp || decoded.exp < Math.floor(Date.now() / 1000))
         return expiredError;
 
-      const { tokenId, token, email, provider } = decoded;
+      const { tokenId, token, email, provider } = decoded as {
+        tokenId: number;
+        token: string;
+        email: string;
+        provider: JwtProviderType;
+      };
 
       const result = await refreshTokenService.get(email, tokenId);
 
@@ -107,7 +112,7 @@ const refreshTokenService = {
       if (['disabled', 'suspended', 'deactivated'].includes(status))
         return { error: `Account ${status}` };
 
-      return { ...result, provider, error: null };
+      return { ...result, provider, error: undefined };
     } catch (e) {
       return invalidError;
     }
@@ -120,7 +125,7 @@ const refreshTokenService = {
         user_id AS "userId",
         email,
         status,
-        tokenId,
+        token_id AS "tokenId",
         token,
         expires_at AS "expiresAt"
       FROM users.get_refresh_token($email, $tokenId)`;
@@ -162,10 +167,10 @@ const refreshTokenService = {
 
 const tokenService = {
   generateAccessToken: (email: string, provider: JwtProviderType) =>
-    accessTokenService.generate(email, provider, '5m'),
+    accessTokenService.create(email, provider, '5m'),
 
   generateShortLivedAccessToken: (email: string, provider: JwtProviderType) =>
-    accessTokenService.generate(email, provider, '1m'),
+    accessTokenService.create(email, provider, '1m'),
 
   generateTokens: async (
     isAdmin: boolean,
@@ -189,25 +194,25 @@ const tokenService = {
     const refresh = await refreshTokenService.verify(refreshToken);
 
     const isValid =
-      refresh.error === null &&
-      access.error === null &&
+      refresh.error === undefined &&
+      access.error === undefined &&
       refresh.email === access.email &&
       refresh.provider === access.provider;
 
     return isValid
       ? { isValid, email: access.email, provider: access.provider }
-      : { isValid };
+      : { isValid, error: refresh.error ?? access.error };
   },
 
   revokeRefreshToken: async (refreshToken: string | undefined) => {
     if (!refreshToken) return;
 
-    const { userId, tokenId } = verify(
+    const { tokenId, email } = verify(
       refreshToken,
       process.env.REFRESH_TOKEN_SECRET,
     ) as JwtPayload;
 
-    const retrievedToken = await refreshTokenService.get(userId, tokenId);
+    const retrievedToken = await refreshTokenService.get(email, tokenId);
 
     if (!retrievedToken) return;
 
@@ -217,7 +222,7 @@ const tokenService = {
   rotateTokens: async (refreshToken: string | undefined) => {
     const result = await refreshTokenService.verify(refreshToken);
 
-    if (result.error !== null) return result;
+    if (result.error !== undefined) return result;
 
     const { isAdmin, userId, email, status, provider, tokenId } = result;
 
@@ -237,7 +242,11 @@ const tokenService = {
 
       const accessToken = tokenService.generateAccessToken(email, provider);
 
-      return { refreshToken: createdRefreshToken, accessToken, error: null };
+      return {
+        refreshToken: createdRefreshToken,
+        accessToken,
+        error: undefined,
+      };
     });
   },
 };
