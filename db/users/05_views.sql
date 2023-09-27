@@ -1,21 +1,28 @@
-CREATE VIEW users.user_type_view AS
+CREATE VIEW users.basic_user_details AS
 SELECT
-  CASE
-    WHEN EXISTS (
-      SELECT 1 FROM users.admins WHERE admin_id = aa.admin_id
-    ) THEN aa.admin_id
-    ELSE ce.customer_id
-  END AS user_id,
-  EXISTS (
-    SELECT 1 FROM users.admins WHERE admin_id = aa.admin_id
-  ) AS is_admin,
-  e.email AS email
-FROM
-  users.admin_accounts aa
-FULL JOIN
-  users.customer_emails ce ON ce.email_id = aa.email_id
-JOIN
-  users.emails e ON e.email_id = aa.email_id OR e.email_id = ce.email_id;
+  a.admin_id AS user_id,
+  a.first_name,
+  a.last_name,
+  e.email AS email,
+  a.status::VARCHAR,
+  array_agg(DISTINCT r.name) AS roles
+FROM users.admins a
+JOIN users.admin_accounts aa ON aa.admin_id = a.admin_id
+JOIN users.emails e ON e.email_id = aa.email_id
+JOIN users.admins_roles ar ON ar.admin_id = a.admin_id
+JOIN users.roles r ON r.role_id = ar.role_id
+GROUP BY a.admin_id, a.first_name, a.last_name, e.email, a.status
+UNION ALL
+SELECT
+  c.customer_id AS user_id,
+  c.first_name,
+  c.last_name,
+  e.email,
+  c.status::VARCHAR,
+  ARRAY['customer'] AS roles
+FROM users.customers c
+JOIN users.customer_emails AS ce ON c.customer_id = ce.customer_id
+JOIN users.emails e ON e.email_id = ce.email_id;
 
 CREATE VIEW users.all_refresh_tokens AS
 SELECT 

@@ -1,3 +1,6 @@
+-- Drop data json_populators
+DROP FUNCTION IF EXISTS users.populate_users;
+
 -- Drop triggers
 DROP TRIGGER IF EXISTS before_update_prevent_admin_id  ON users.admins;
 DROP TRIGGER IF EXISTS before_update_prevent_customer_id  ON users.customers;
@@ -23,7 +26,7 @@ DROP FUNCTION IF EXISTS users.get_customer_profile(INTEGER);
 DROP FUNCTION IF EXISTS users.get_customer_for_revoke_social_auth(INTEGER, users.enum_customer_identities_provider);
 
 -- Drop views
-DROP VIEW IF EXISTS users.user_type_view;
+DROP VIEW IF EXISTS users.basic_user_details;
 DROP VIEW IF EXISTS users.all_refresh_tokens;
 
 -- Drop indexes
