@@ -3,19 +3,20 @@ INSERT INTO
   (
     "category_id",
     "name",
+    "notes",
     "created_at",
     "updated_at"
   ) 
 VALUES
-  (DEFAULT, 'chef''s creations', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-  (DEFAULT, 'foodie favorites', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-  (DEFAULT, 'craveable classics', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-  (DEFAULT, 'soulful salads', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-  (DEFAULT, '1/2 sandwich combos', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-  (DEFAULT, 'bowls', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-  (DEFAULT, 'kids', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-  (DEFAULT, 'deli sides', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-  (DEFAULT, 'soups', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+  (DEFAULT, 'chef''s creations', '{"We''re committed to continuously evolving our menu so that we''re always WOW-ing our guests with new unexpected flavor combinations. Be sure to check back to discover our Chef''s latest innovations."}', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+  (DEFAULT, 'foodie favorites', '{"Sandwiches with the “RGF” symbol can be requested Gluten Free by substituting GF bread for $1.95."}', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+  (DEFAULT, 'craveable classics', '{"Sandwiches with the “RGF” symbol can be requested Gluten Free by substituting GF bread for $1.95."}', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+  (DEFAULT, 'soulful salads', null, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+  (DEFAULT, '1/2 sandwich combos', '{"Half sandwich paired with a deli side or cup of soup.", "Pick from two sizes: NEW Small Deli Side | Medium Deli Side or Soup.", "Items with the “RGF” symbol can be requested Gluten Free by substituting GF bread."}', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+  (DEFAULT, 'bowls', null, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+  (DEFAULT, 'kids', '{"RECOMMENDED FOR KIDS 8 & UNDER.", "Served with a kids beverage and sliced apples (organic milk add 2.45)."}', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+  (DEFAULT, 'deli sides', null, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+  (DEFAULT, 'soups', null, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 INSERT INTO
   menu.tags
@@ -58,6 +59,7 @@ INSERT INTO
     "description",
     "status",
     "photo_url",
+    "notes",
     "created_at",
     "updated_at"
   )
@@ -68,6 +70,7 @@ VALUES
     'italian prosciutto & sliced peaches with fresh mozzarella, crushed honey roasted almonds, Calabrian chili aioli, hot peach honey, arugula on a toasted sesame roll',
     'active',
     'PeachProsciutto.jpg',
+    null,
     CURRENT_TIMESTAMP,
     CURRENT_TIMESTAMP
   ),
@@ -77,6 +80,7 @@ VALUES
     'shaved, roasted chicken breast, strawberries, watermelon radish, shaved fennel, fresh mint, red onions, goat gouda, toasted pistachios, mixed greens, romaine with greek yogurt poppyseed dressing',
     'active',
     'StrawberryFields.jpg',
+    null,
     CURRENT_TIMESTAMP,
     CURRENT_TIMESTAMP
   ),
@@ -86,6 +90,7 @@ VALUES
     'shaved, roasted chicken breast topped with Mendo''s krispies, herb aioli, mustard pickle slaw, tomatoes, pickled red onions on toasted ciabatta with a side of tangy mustard barbeque sauce or mustard pickle remoulade',
     'active',
     'NotSoFriedChicken.jpg',
+    null,
     CURRENT_TIMESTAMP,
     CURRENT_TIMESTAMP
   ),
@@ -95,6 +100,7 @@ VALUES
     'air-fried crispy chicken tenders, Thai basil slaw, pickled daikon & carrots, sweet chili sauce, sriracha mayo, and fried shallots on a toasted sesame brioche bun',
     'active',
     'ThaiChickenSandwich.jpg',
+    '*available at select locations*',
     CURRENT_TIMESTAMP,
     CURRENT_TIMESTAMP
   ),
@@ -104,6 +110,7 @@ VALUES
     'spicy aji amarillo marinated steak with Oaxacan cheese, herb aioli, red onions, tomatoes, shredded romaine on a toasted potato roll',
     'active',
     'PeruvianSteak.jpg',
+    'Add avocado (80 cal) +$2+',
     CURRENT_TIMESTAMP,
     CURRENT_TIMESTAMP
   ),
@@ -113,6 +120,7 @@ VALUES
     'italian prosciutto & shaved, roasted chicken breast with fresh mozzarella, crushed honey roasted almonds, basil pesto, balsamic glaze drizzle, tomatoes on panini-pressed ciabatta',
     'active',
     'ProsciuttoChicken.jpg',
+    null,
     CURRENT_TIMESTAMP,
     CURRENT_TIMESTAMP
   ),
@@ -122,6 +130,7 @@ VALUES
     'roasted, carved steak and applewood smoked bacon topped with marinated red peppers, caramelized onion jam, chimichurri, shredded romaine, herb aioli on a toasted sesame roll',
     'active',
     'ChimichurriSteakSandwich.jpg',
+    null,
     CURRENT_TIMESTAMP,
     CURRENT_TIMESTAMP
   ),
@@ -130,6 +139,7 @@ VALUES
     'Mendo''s Original Pork Belly Banh Mi', 'our Chef''s playful take on the popular Vietnamese sandwich with braised, caramelized pork belly, pickled daikon & carrots, cilantro, cucumbers, jalapeños, Thai basil, sriracha mayo on panini-pressed ciabatta',
     'active',
     'BanhMi.jpg',
+    null,
     CURRENT_TIMESTAMP,
     CURRENT_TIMESTAMP
   ),
@@ -139,6 +149,7 @@ VALUES
     'organic marinated, baked tofu with vegan aioli, sweet chili sauce, pickled daikon & carrots, cucumbers, jalapeños, Thai basil, cilantro on panini-pressed ciabatta',
     'active',
     'VeganBahnMi.jpg',
+    null,
     CURRENT_TIMESTAMP,
     CURRENT_TIMESTAMP
   ),
@@ -148,6 +159,7 @@ VALUES
     'shaved, roasted chicken breast, Mendo''s krispies, melted mozzarella and Grana Padano cheeses, pomodoro sauce, Italian basil, Calabrian chili aioli on a toasted sesame roll served with an extra side of pomodoro sauce for dipping',
     'active',
     'ChickenParmDip.jpg',
+    null,
     CURRENT_TIMESTAMP,
     CURRENT_TIMESTAMP
   ),
@@ -157,6 +169,7 @@ VALUES
     'shaved roast beef, mozzarella, Chicago-style mild giardiniera, tomatoes, Vidalia onion, shredded romaine, Italian herb & cheese aioli on a toasted sesame roll',
     'active',
     'ItalianRoastBeef.jpg',
+    null,
     CURRENT_TIMESTAMP,
     CURRENT_TIMESTAMP
   ),
@@ -166,6 +179,7 @@ VALUES
     'shaved, roasted turkey breast, smashed avocado, applewood smoked bacon, herb aioli, tomatoes, mixed greens, pickled red onions on Mom''s seeded whole wheat',
     'active',
     'FarmClub.jpg',
+    null,
     CURRENT_TIMESTAMP,
     CURRENT_TIMESTAMP
   ),
@@ -175,6 +189,7 @@ VALUES
     'shaved, roasted chicken breast, fresh mozzarella, marinated red peppers, basil pesto, mixed greens, balsamic glaze drizzle on panini-pressed ciabatta',
     'active',
     'ChickenPestoCaprese.jpg',
+    'Want to make it vegetarian? Swap the chicken for extra mozzarella',
     CURRENT_TIMESTAMP,
     CURRENT_TIMESTAMP
   ),
@@ -184,6 +199,7 @@ VALUES
     'shaved, roasted turkey breast, smashed avocado, smoked gouda, cotija cheese, Mama Lil''s sweet hot peppers, jalapeño salsa aioli, tomatoes, shredded romaine, red onions on toasted ciabatta served with a side of jalapeño salsa verde',
     'active',
     'TurkeyAvoSalsaVerde.jpg',
+    null,
     CURRENT_TIMESTAMP,
     CURRENT_TIMESTAMP
   ),
@@ -193,6 +209,7 @@ VALUES
     'shaved, roasted chicken breast, ramen noodles, napa cabbage & kale slaw with carrots & bean sprouts, baby spinach, sliced mango, honey roasted almonds, pickled daikon & carrots, Thai basil mint, cilantro, lime, and fried shallots with Thai almond dressing',
     'active',
     'ThaiMango.jpg',
+    null,
     CURRENT_TIMESTAMP,
     CURRENT_TIMESTAMP
   ),
@@ -202,6 +219,7 @@ VALUES
     'chopped romaine, curly kale, quinoa & millet, housemade superfood krunchies, succotash with roasted corn, black beans & jicama, red onions, cilantro, cotija cheese, grape tomatoes, avocado with chipotle vinaigrette',
     'active',
     'AvoQuinoa.jpg',
+    'Add shaved, roasted chicken breast (110 cal) +$3.75+',
     CURRENT_TIMESTAMP,
     CURRENT_TIMESTAMP
   ),
@@ -211,6 +229,7 @@ VALUES
     'plant-based Impossible chorizo, housemade superfood krunchies, chopped romaine, curly kale, succotash with roasted corn, black beans & jicama, red onions, cilantro, grape tomatoes, avocado with house vegan chipotle ranch',
     'active',
     'ImpossibleTaco.jpg',
+    null,
     CURRENT_TIMESTAMP,
     CURRENT_TIMESTAMP
   ),
@@ -220,6 +239,7 @@ VALUES
     'shaved, roasted chicken breast, honey and herb marinated goat cheese, pink lady beets, green apples, dried cranberries, crushed honey roasted almonds, red onions, mixed greens, chopped romaine with citrus vinaigrette',
     'active',
     'PinkLady.jpg',
+    null,
     CURRENT_TIMESTAMP,
     CURRENT_TIMESTAMP
   ),
@@ -229,6 +249,7 @@ VALUES
     'curly kale, chopped romaine, housemade superfood krunchies, shaved Grana Padano cheese, red onions, grape tomatoes, avocado, lemon squeeze with classic Caesar dressing',
     'active',
     'ModernCesear.jpg',
+    'Add shaved, roasted chicken breast (110 cal) +$3.75',
     CURRENT_TIMESTAMP,
     CURRENT_TIMESTAMP
   ),
@@ -238,6 +259,7 @@ VALUES
     'shaved, roasted chicken breast, napa cabbage & kale slaw, carrots, bean sprouts, baby spinach, chopped romaine, scallions, cilantro, toasted cashews, crispy wontons with miso mustard sesame dressing',
     'active',
     'MamaChensChicken.jpg',
+    'Want to make it vegan? Swap the chicken for marinated, baked tofu',
     CURRENT_TIMESTAMP,
     CURRENT_TIMESTAMP
   ),
@@ -247,6 +269,7 @@ VALUES
     'shaved, roasted chicken breast topped with Mendo''s krispies, herb aioli, mustard pickle slaw, tomatoes, pickled red onions on toasted ciabatta with a side of tangy mustard barbecue sauce or mustard pickle remoulade',
     'active',
     'BPNotSoFriedChicken.jpg',
+    null,
     CURRENT_TIMESTAMP,
     CURRENT_TIMESTAMP
   ),
@@ -256,6 +279,7 @@ VALUES
     'organic marinated, baked tofu with vegan aioli, sweet chili sauce, pickled daikon & carrots, cucumbers, jalapeños, Thai basil, cilantro on panini-pressed ciabatta',
     'active',
     'BPVeganBanhMi.jpg',
+    null,
     CURRENT_TIMESTAMP,
     CURRENT_TIMESTAMP
   ),
@@ -265,6 +289,7 @@ VALUES
     'shaved roast beef, mozzarella, Chicago-style mild giardiniera, tomatoes, Vidalia onion, shredded romaine, Italian herb & cheese aioli on a toasted sesame roll',
     'active',
     'BPItalianRoastBeef.jpg',
+    null,
     CURRENT_TIMESTAMP,
     CURRENT_TIMESTAMP
   ),
@@ -274,6 +299,7 @@ VALUES
     'shaved, roasted turkey breast, smashed avocado, applewood smoked bacon, herb aioli, tomatoes, mixed greens, pickled red onions on Mom''s seeded whole wheat',
     'active',
     'BPFarmClub.jpg',
+    null,
     CURRENT_TIMESTAMP,
     CURRENT_TIMESTAMP
   ),
@@ -283,6 +309,7 @@ VALUES
     'shaved, roasted chicken breast, fresh mozzarella, marinated red peppers, basil pesto, mixed greens, balsamic glaze drizzle on panini-pressed ciabatta',
     'active',
     'BPChickenPestoCaprese.jpg',
+    'Want to make it vegetarian? Swap the chicken for extra mozzarella',
     CURRENT_TIMESTAMP,
     CURRENT_TIMESTAMP
   ),
@@ -292,6 +319,7 @@ VALUES
     'shaved, roasted turkey breast, smashed avocado, smoked gouda, cotija cheese, Mama Lil''s sweet hot peppers, jalapeño salsa aioli, tomatoes, shredded romaine, red onions on toasted ciabatta',
     'active',
     'BPTurkeyAvo.jpg',
+    null,
     CURRENT_TIMESTAMP,
     CURRENT_TIMESTAMP
   ),
@@ -301,6 +329,7 @@ VALUES
     'roasted carved steak over ancient grains tossed with caramelized onion jam & chimichurri, baby spinach, roasted shishito peppers with broccolini, tomatoes & red onions, grilled lemon',
     'active',
     'ChimichurriSteakBowl.jpg',
+    null,
     CURRENT_TIMESTAMP,
     CURRENT_TIMESTAMP
   ),
@@ -310,6 +339,7 @@ VALUES
     'al pastor chicken smoky corn & guajilo broth, zucchini, ancient grains, shredded cabbage, topped with tortilla strips, crema, cotija, pico de gailo, cilantro, and fresh lime',
     'active',
     'SmokyChickenEloteBowl.jpg',
+    null,
     CURRENT_TIMESTAMP,
     CURRENT_TIMESTAMP
   ),
@@ -319,6 +349,7 @@ VALUES
     'sliced, roasted chicken over cracked whole-grain bulgar tossed with lemon-dill vinaigrette & tahini yogurt sauce, baby spinach, romanesco brocolli, tomatoes, yellow peppers & red onions, topped with pickled golden raisins and sumac',
     'active',
     'MediterraneanChickenBowl.jpg',
+    null,
     CURRENT_TIMESTAMP,
     CURRENT_TIMESTAMP
   ),
@@ -328,6 +359,7 @@ VALUES
     'with a side of ketchup or vegan ranch',
     'active',
     'CrispyChickenTenders.jpg',
+    '*available at select locations*',
     CURRENT_TIMESTAMP,
     CURRENT_TIMESTAMP
   ),
@@ -337,6 +369,7 @@ VALUES
     'add herb mayo, yellow mustard, or tomato by request',
     'active',
     'TurkeyCheddar.jpg',
+    null,
     CURRENT_TIMESTAMP,
     CURRENT_TIMESTAMP
   ),
@@ -346,6 +379,7 @@ VALUES
     'add tomato by request',
     'active',
     'GrilledCheese.jpg',
+    null,
     CURRENT_TIMESTAMP,
     CURRENT_TIMESTAMP
   ),
@@ -355,6 +389,7 @@ VALUES
     'creamy, natural peanut butter & strawberry jam',
     'active',
     'PBJ.jpg',
+    null,
     CURRENT_TIMESTAMP,
     CURRENT_TIMESTAMP
   ),
@@ -364,6 +399,7 @@ VALUES
     'melted cheddar cheese on a whole wheat tortilla',
     'active',
     'Quesadilla.jpg',
+    null,
     CURRENT_TIMESTAMP,
     CURRENT_TIMESTAMP
   ),
@@ -373,6 +409,7 @@ VALUES
     'watermelon, cucumber, jicama, fresh mint, green onion, chile-lime vinaigrette',
     'active',
     'WatermelonStreetCart.jpg',
+    null,
     CURRENT_TIMESTAMP,
     CURRENT_TIMESTAMP
   ),
@@ -382,6 +419,7 @@ VALUES
     'creamy potato salad with roasted corn, cotija cheese, cilantro, green onion, and a hint of jalapeño',
     'active',
     'OaxacanPotatoSalad.jpg',
+    null,
     CURRENT_TIMESTAMP,
     CURRENT_TIMESTAMP
   ),
@@ -391,6 +429,7 @@ VALUES
     'creamy macaroni with pickled peppadew peppers, roasted red peppers, smoked gouda, spinach, celery, green onion, with a little kick of sriracha',
     'active',
     'SouthernMacSalad.jpg',
+    null,
     CURRENT_TIMESTAMP,
     CURRENT_TIMESTAMP
   ),
@@ -400,6 +439,7 @@ VALUES
     'with roasted cauliflower & carrots with Mendo''s signature spice mix',
     'active',
     'Couscous.jpg',
+    null,
     CURRENT_TIMESTAMP,
     CURRENT_TIMESTAMP
   ),
@@ -409,6 +449,7 @@ VALUES
     'kale, granny smith apples, rainbow carrots, candied pecans, dried cranberries, toasted coconut, Thai basil vinaigrette',
     'active',
     'KaleAppleRainbow.jpg',
+    null,
     CURRENT_TIMESTAMP,
     CURRENT_TIMESTAMP
   ),
@@ -418,6 +459,7 @@ VALUES
     'smooth puree of roasted tomato, tomatillo, poblano, jalapeño, garlic, cumin, and corn tortillas, with shredded chicken',
     'active',
     'ChickenTortilla.jpg',
+    null,
     CURRENT_TIMESTAMP,
     CURRENT_TIMESTAMP
   ),
@@ -427,6 +469,7 @@ VALUES
     'french lentils, kale, carrot, celery, onion, herbs, and garlic in a savory vegetable broth',
     'active',
     'FrenchLentilKale.jpg',
+    null,
     CURRENT_TIMESTAMP,
     CURRENT_TIMESTAMP
   );

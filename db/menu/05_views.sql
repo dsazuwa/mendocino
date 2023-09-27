@@ -38,7 +38,8 @@ SELECT
       p.item_id = m.item_id
   ) AS prices,
   m.status AS status,
-  m.photo_url AS "photoUrl"
+  m.photo_url AS "photoUrl",
+  m.notes AS notes
 FROM
   menu.items m
 JOIN

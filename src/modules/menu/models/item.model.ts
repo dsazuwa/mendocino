@@ -28,6 +28,8 @@ class Item extends Model<InferAttributes<Item>, InferCreationAttributes<Item>> {
 
   declare photoUrl: string;
 
+  declare notes: CreationOptional<string | null>;
+
   declare createdAt: CreationOptional<Date>;
 
   declare updatedAt: CreationOptional<Date>;
@@ -62,6 +64,11 @@ Item.init(
     photoUrl: {
       type: DataTypes.STRING,
       allowNull: false,
+    },
+    notes: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      defaultValue: null,
     },
     createdAt: {
       type: DataTypes.DATE,

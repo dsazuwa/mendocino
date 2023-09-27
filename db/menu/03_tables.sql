@@ -4,6 +4,7 @@ CREATE TABLE menu.items (
   description VARCHAR(255) NOT NULL,
   status menu.enum_items_status NOT NULL,
   photo_url VARCHAR(100) NOT NULL,
+  notes VARCHAR(255),
   created_at TIMESTAMP NOT NULL,
   updated_at TIMESTAMP NOT NULL,
   PRIMARY KEY (item_id)
@@ -12,6 +13,7 @@ CREATE TABLE menu.items (
 CREATE TABLE menu.categories (
   category_id SERIAL,
   name VARCHAR(50) NOT NULL,
+  notes TEXT[],
   created_at TIMESTAMP NOT NULL,
   updated_at TIMESTAMP NOT NULL,
   PRIMARY KEY (category_id)

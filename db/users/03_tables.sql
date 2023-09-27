@@ -47,7 +47,6 @@ CREATE TABLE users.customer_emails (
   customer_id INTEGER NOT NULL,
   email_id INTEGER NOT NULL UNIQUE,
   created_at TIMESTAMP NOT NULL,
-  updated_at TIMESTAMP NOT NULL,
   PRIMARY KEY (customer_id),
   CONSTRAINT fk_customer_id FOREIGN KEY (customer_id) REFERENCES users.customers (customer_id) ON DELETE CASCADE ON UPDATE NO ACTION,
   CONSTRAINT fk_email_id FOREIGN KEY (email_id) REFERENCES users.emails (email_id) ON DELETE CASCADE ON UPDATE CASCADE

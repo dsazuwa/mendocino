@@ -18,6 +18,8 @@ class Category extends Model<
 
   declare name: string;
 
+  declare notes: CreationOptional<string | null>;
+
   declare createdAt: CreationOptional<Date>;
 
   declare updatedAt: CreationOptional<Date>;
@@ -34,6 +36,11 @@ Category.init(
       type: DataTypes.STRING,
       unique: true,
       allowNull: false,
+    },
+    notes: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      defaultValue: null,
     },
     createdAt: {
       type: DataTypes.DATE,
