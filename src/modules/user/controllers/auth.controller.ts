@@ -24,7 +24,7 @@ export const setAuthCookies = (
   res.cookie('auth-flag', true, {
     secure: true,
     httpOnly: false,
-    expires: inFiveMins,
+    expires: inSevenDays,
   });
 
   res.cookie('refresh-token', refreshToken, {
