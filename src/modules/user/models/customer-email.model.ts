@@ -19,8 +19,6 @@ class CustomerEmail extends Model<
   declare emailId: number;
 
   declare createdAt: CreationOptional<Date>;
-
-  declare updatedAt: CreationOptional<Date>;
 }
 
 CustomerEmail.init(
@@ -38,16 +36,14 @@ CustomerEmail.init(
       type: DataTypes.DATE,
       allowNull: false,
     },
-    updatedAt: {
-      type: DataTypes.DATE,
-      allowNull: false,
-    },
   },
   {
     sequelize,
     underscored: true,
     schema: USER_SCHEMA,
     tableName: TABLENAMES.CUSTOMER_EMAIL,
+    timestamps: true,
+    updatedAt: false,
   },
 );
 
