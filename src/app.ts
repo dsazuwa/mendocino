@@ -8,6 +8,7 @@ import passport from 'passport';
 import {
   errorHandler,
   notFoundHandler,
+  redirectToApiOnRootGet,
   syntaxErrorHandlier,
 } from './middleware';
 import logger from './utils/logger';
@@ -61,6 +62,7 @@ const createApp = () => {
   app.use('/api', userRouter);
   app.use('/api/menu', menuRouter);
 
+  app.use(redirectToApiOnRootGet);
   app.use(notFoundHandler);
   app.use(jwtErrorHandler);
   app.use(syntaxErrorHandlier);
