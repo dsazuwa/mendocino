@@ -2,8 +2,6 @@ import { QueryTypes } from 'sequelize';
 
 import sequelize from '@App/db';
 
-import { MenuItem } from '@menu/types';
-
 const menuService = {
   getMenu: async () => {
     const query = `
@@ -21,26 +19,74 @@ const menuService = {
     const query = `
       SELECT
         category,
+        (SELECT notes FROM menu.categories WHERE name = category) AS notes,
         json_agg(
           json_build_object(
-            'itemId', "itemId",
             'name', name,
             'description', description,
             'tags', tags,
-            'prices', prices,
-            'status', status,
-            'photoUrl', "photoUrl"
-          )
+            'photoUrl', "photoUrl",
+            'notes', "notes"
+          ) ORDER BY "itemId"
         ) AS items
       FROM menu.menu_view
       WHERE status IN ('active', 'sold out')
       GROUP BY category;`;
 
-    const result = await sequelize.query(query, { type: QueryTypes.SELECT });
+    const result = (await sequelize.query(query, {
+      type: QueryTypes.SELECT,
+    })) as CategoryItems[];
 
-    return result.length === 0
-      ? null
-      : (result as { category: string; items: MenuItem[] }[]);
+    const categorizedItems: Record<string, CategoryItems> = {};
+
+    result.forEach(({ category, notes, items }) => {
+      let categoryName = category;
+
+      switch (category) {
+        case "chef's creations":
+          categoryName = 'creations';
+          break;
+        case 'soulful salads':
+          categoryName = 'salads';
+          break;
+        case 'bowls':
+          categoryName = 'bowls';
+          break;
+        case 'foodie favorites':
+          categoryName = 'foodie';
+          break;
+        case 'craveable classics':
+          categoryName = 'classics';
+          break;
+        case '1/2 sandwich combos':
+          categoryName = 'combos';
+          break;
+        case 'kids':
+          categoryName = 'kids';
+          break;
+        case 'deli sides':
+        case 'soups':
+          categoryName = 'sides';
+          break;
+        default:
+          break;
+      }
+
+      if (!categorizedItems[categoryName]) {
+        categorizedItems[categoryName] = {
+          category,
+          notes: '',
+          items: [],
+        };
+      }
+
+      categorizedItems[categoryName].notes = notes;
+      categorizedItems[categoryName].items.push(...items);
+    });
+
+    categorizedItems.sides.category = 'deli sides & soups';
+
+    return result === null ? null : categorizedItems;
   },
 } as const;
 

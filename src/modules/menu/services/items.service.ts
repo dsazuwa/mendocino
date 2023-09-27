@@ -13,7 +13,6 @@ import {
   Size,
   Tag,
 } from '@menu/models';
-import { MenuItem, PriceType } from '@menu/types';
 
 const getCategoryId = async (name: string, transaction?: Transaction) => {
   const retrievedCategory = await Category.findOne({

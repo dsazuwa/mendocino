@@ -12,7 +12,6 @@ import {
   Size,
   Tag,
 } from '@menu/models';
-import { MenuItem } from '@menu/types';
 
 export const getItem = async (itemId: number) => {
   const query = `
