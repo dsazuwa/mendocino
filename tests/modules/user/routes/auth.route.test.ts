@@ -839,6 +839,15 @@ describe(`POST ${BASE_URL}/refresh`, () => {
 
     expect(id1).not.toBe(id2);
     expect(token1).not.toBe(token2);
+
+    const accessToken = getTokenFrom(
+      response.headers['set-cookie'],
+      'access-token',
+    );
+    await request
+      .get('/api/users/me')
+      .auth(accessToken, { type: 'bearer' })
+      .expect(200);
   });
 
   it('should fail on undefined refresh-token cookie', async () => {
