@@ -75,6 +75,7 @@ const menuService = {
         (SELECT notes FROM menu.categories WHERE name = category) AS notes,
         json_agg(
           json_build_object(
+            'itemId', "itemId",
             'name', name,
             'description', description,
             'prices', prices,
