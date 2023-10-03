@@ -17,12 +17,13 @@ type PublicMenuItem = {
   name: string;
   description: string;
   tags: string[];
+  prices: PriceType[];
   photoUrl: string;
   notes: string | undefined;
 };
 
-type CategoryItems = {
+type CategoryItems<T> = {
   category: string;
   notes: string;
-  items: PublicMenuItem[];
+  items: T[];
 };

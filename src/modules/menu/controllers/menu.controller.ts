@@ -23,7 +23,7 @@ export const getMenuGrouped = async (
   next: NextFunction,
 ) => {
   try {
-    const menu = await menuService.getMenuGroupedByCategory();
+    const menu = await menuService.getGroupedMenu();
 
     res.status(200).json({ menu, message: messages.GET_MENU });
   } catch (e) {

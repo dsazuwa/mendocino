@@ -2,6 +2,59 @@ import { QueryTypes } from 'sequelize';
 
 import sequelize from '@App/db';
 
+const formatMenu = (result: CategoryItems<PublicMenuItem>[]) => {
+  const categorizedItems: Record<string, CategoryItems<PublicMenuItem>> = {};
+
+  result.forEach(({ category, notes, items }) => {
+    let categoryName = category;
+
+    switch (category) {
+      case "chef's creations":
+        categoryName = 'creations';
+        break;
+      case 'soulful salads':
+        categoryName = 'salads';
+        break;
+      case 'bowls':
+        categoryName = 'bowls';
+        break;
+      case 'foodie favorites':
+        categoryName = 'foodie';
+        break;
+      case 'craveable classics':
+        categoryName = 'classics';
+        break;
+      case '1/2 sandwich combos':
+        categoryName = 'combos';
+        break;
+      case 'kids':
+        categoryName = 'kids';
+        break;
+      case 'deli sides':
+      case 'soups':
+        categoryName = 'sides';
+        break;
+      default:
+        break;
+    }
+
+    if (!categorizedItems[categoryName]) {
+      categorizedItems[categoryName] = {
+        category,
+        notes: '',
+        items: [],
+      };
+    }
+
+    categorizedItems[categoryName].notes = notes;
+    categorizedItems[categoryName].items.push(...items);
+  });
+
+  categorizedItems.sides.category = 'deli sides & soups';
+
+  return categorizedItems;
+};
+
 const menuService = {
   getMenu: async () => {
     const query = `
@@ -15,7 +68,7 @@ const menuService = {
     return result.length === 0 ? null : (result as MenuItem[]);
   },
 
-  getMenuGroupedByCategory: async () => {
+  getGroupedMenu: async () => {
     const query = `
       SELECT
         category,
@@ -24,6 +77,7 @@ const menuService = {
           json_build_object(
             'name', name,
             'description', description,
+            'prices', prices,
             'tags', tags,
             'photoUrl', "photoUrl",
             'notes', "notes"
@@ -35,58 +89,9 @@ const menuService = {
 
     const result = (await sequelize.query(query, {
       type: QueryTypes.SELECT,
-    })) as CategoryItems[];
+    })) as CategoryItems<PublicMenuItem>[];
 
-    const categorizedItems: Record<string, CategoryItems> = {};
-
-    result.forEach(({ category, notes, items }) => {
-      let categoryName = category;
-
-      switch (category) {
-        case "chef's creations":
-          categoryName = 'creations';
-          break;
-        case 'soulful salads':
-          categoryName = 'salads';
-          break;
-        case 'bowls':
-          categoryName = 'bowls';
-          break;
-        case 'foodie favorites':
-          categoryName = 'foodie';
-          break;
-        case 'craveable classics':
-          categoryName = 'classics';
-          break;
-        case '1/2 sandwich combos':
-          categoryName = 'combos';
-          break;
-        case 'kids':
-          categoryName = 'kids';
-          break;
-        case 'deli sides':
-        case 'soups':
-          categoryName = 'sides';
-          break;
-        default:
-          break;
-      }
-
-      if (!categorizedItems[categoryName]) {
-        categorizedItems[categoryName] = {
-          category,
-          notes: '',
-          items: [],
-        };
-      }
-
-      categorizedItems[categoryName].notes = notes;
-      categorizedItems[categoryName].items.push(...items);
-    });
-
-    categorizedItems.sides.category = 'deli sides & soups';
-
-    return result === null ? null : categorizedItems;
+    return result === null ? null : formatMenu(result);
   },
 } as const;
 

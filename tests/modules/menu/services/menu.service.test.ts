@@ -19,16 +19,16 @@ describe('get menu', () => {
 
 describe('get menu grouped', () => {
   it('should return menu items that are either active or sold out grouped by category', async () => {
-    const menu = await menuService.getMenuGroupedByCategory();
+    const menu = await menuService.getGroupedMenu();
 
     if (menu) {
       expect(menu.length).toBe(2);
 
-      const bowls = menu.filter((i) => i.category === 'bowls');
-      expect(bowls[0].items.length).toBe(2);
+      const { bowls } = menu;
+      expect(bowls.items.length).toBe(2);
 
-      const kids = menu.filter((i) => i.category === 'kids');
-      expect(kids[0].items.length).toBe(1);
+      const { kids } = menu;
+      expect(kids.items.length).toBe(1);
     } else expect(true).toBe(false);
   });
 });

@@ -20,7 +20,7 @@ SELECT
         CASE
           WHEN p.size_id IS NULL THEN
             jsonb_build_object(
-              'size', 'default',
+              'size', 'base',
               'price', p.base_price
             )
           ELSE
