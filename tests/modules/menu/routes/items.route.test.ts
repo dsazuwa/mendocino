@@ -78,7 +78,7 @@ describe(`POST ${BASE_URL}`, () => {
         'italian prosciutto & shaved, roasted chicken breast with fresh mozzarella, crushed honey roasted almonds, basil pesto, balsamic glaze drizzle, tomatoes on panini-pressed ciabatta',
       category: 'foodie favorites',
       tags: ['N', 'RGF'],
-      prices: [{ size: 'default', price: '12.65' }],
+      prices: [{ size: 'base', price: '12.65' }],
       photoUrl: 'ProsciuttoChicken.jpg',
       status: 'active',
     };
@@ -100,7 +100,7 @@ describe(`POST ${BASE_URL}`, () => {
       tags: ['N', 'RGF'],
       prices: [
         { size: 'small', price: '6.65' },
-        { size: 'default', price: '12.65' },
+        { size: 'base', price: '12.65' },
       ],
       photoUrl: 'ProsciuttoChicken.jpg',
       status: 'active',

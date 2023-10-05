@@ -32,7 +32,7 @@ describe('create menu item', () => {
     const description =
       'italian prosciutto & sliced peaches with fresh mozzarella, crushed honey roasted almonds, Calabrian chili aioli, hot peach honey, arugula on a toasted sesame roll';
     const category = "chef's creations";
-    const prices = [{ size: 'default', price: 13.25 }];
+    const prices = [{ size: 'base', price: 13.25 }];
     const photoUrl = 'PeachProsciutto.jpg';
     const status = 'active';
 
@@ -65,7 +65,7 @@ describe('create menu item', () => {
       'italian prosciutto & shaved, roasted chicken breast with fresh mozzarella, crushed honey roasted almonds, basil pesto, balsamic glaze drizzle, tomatoes on panini-pressed ciabatta';
     const category = 'foodie favorites';
     const tags = ['N', 'RGF'];
-    const prices = [{ size: 'default', price: 12.65 }];
+    const prices = [{ size: 'base', price: 12.65 }];
     const photoUrl = 'ProsciuttoChicken.jpg';
     const status = 'active';
 
@@ -133,7 +133,7 @@ describe('create menu item', () => {
     const description =
       'italian prosciutto & sliced peaches with fresh mozzarella, crushed honey roasted almonds, Calabrian chili aioli, hot peach honey, arugula on a toasted sesame roll';
     const category = "chef's creations";
-    const prices = [{ size: 'default', price: 13.25 }];
+    const prices = [{ size: 'base', price: 13.25 }];
     const photoUrl = 'PeachProsciutto.jpg';
     const status = 'active';
 

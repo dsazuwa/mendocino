@@ -2,60 +2,61 @@ import { QueryTypes } from 'sequelize';
 
 import sequelize from '@App/db';
 
-const formatMenu = (result: CategoryItems<PublicMenuItem>[]) => {
-  const categorizedItems: Record<string, CategoryItems<PublicMenuItem>> = {};
-
-  result.forEach(({ category, notes, items }) => {
-    let categoryName = category;
-
-    switch (category) {
-      case "chef's creations":
-        categoryName = 'creations';
-        break;
-      case 'soulful salads':
-        categoryName = 'salads';
-        break;
-      case 'bowls':
-        categoryName = 'bowls';
-        break;
-      case 'foodie favorites':
-        categoryName = 'foodie';
-        break;
-      case 'craveable classics':
-        categoryName = 'classics';
-        break;
-      case '1/2 sandwich combos':
-        categoryName = 'combos';
-        break;
-      case 'kids':
-        categoryName = 'kids';
-        break;
-      case 'deli sides':
-      case 'soups':
-        categoryName = 'sides';
-        break;
-      default:
-        break;
-    }
-
-    if (!categorizedItems[categoryName]) {
-      categorizedItems[categoryName] = {
-        category,
-        notes: '',
-        items: [],
-      };
-    }
-
-    categorizedItems[categoryName].notes = notes;
-    categorizedItems[categoryName].items.push(...items);
-  });
-
-  categorizedItems.sides.category = 'deli sides & soups';
-
-  return categorizedItems;
-};
-
 const menuService = {
+  formatMenu: (result: CategoryItems<PublicMenuItem>[]) => {
+    const categorizedItems: Record<string, CategoryItems<PublicMenuItem>> = {};
+
+    result.forEach(({ category, notes, items }) => {
+      let categoryName = category;
+
+      switch (category) {
+        case "chef's creations":
+          categoryName = 'creations';
+          break;
+        case 'soulful salads':
+          categoryName = 'salads';
+          break;
+        case 'bowls':
+          categoryName = 'bowls';
+          break;
+        case 'foodie favorites':
+          categoryName = 'foodie';
+          break;
+        case 'craveable classics':
+          categoryName = 'classics';
+          break;
+        case '1/2 sandwich combos':
+          categoryName = 'combos';
+          break;
+        case 'kids':
+          categoryName = 'kids';
+          break;
+        case 'deli sides':
+        case 'soups':
+          categoryName = 'sides';
+          break;
+        default:
+          break;
+      }
+
+      if (!categorizedItems[categoryName]) {
+        categorizedItems[categoryName] = {
+          category,
+          notes: '',
+          items: [],
+        };
+      }
+
+      categorizedItems[categoryName].notes = notes;
+      categorizedItems[categoryName].items.push(...items);
+    });
+
+    if (categorizedItems.sides)
+      categorizedItems.sides.category = 'deli sides & soups';
+
+    return categorizedItems;
+  },
+
   getMenu: async () => {
     const query = `
       SELECT 
@@ -92,7 +93,7 @@ const menuService = {
       type: QueryTypes.SELECT,
     })) as CategoryItems<PublicMenuItem>[];
 
-    return result === null ? null : formatMenu(result);
+    return result.length === 0 ? null : menuService.formatMenu(result);
   },
 } as const;
 

@@ -22,8 +22,6 @@ describe('get menu grouped', () => {
     const menu = await menuService.getGroupedMenu();
 
     if (menu) {
-      expect(menu.length).toBe(2);
-
       const { bowls } = menu;
       expect(bowls.items.length).toBe(2);
 

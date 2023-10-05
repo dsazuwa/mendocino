@@ -23,13 +23,10 @@ it(`GET ${BASE_URL}/grouped should return current menu grouped by category`, asy
   expect(response.status).toBe(200);
 
   const { menu } = response.body;
-  expect(menu.length).toBe(2);
 
-  const bowls = menu.filter(
-    (i: { category: string }) => i.category === 'bowls',
-  );
-  expect(bowls[0].items.length).toBe(2);
+  const { bowls } = menu;
+  expect(bowls.items.length).toBe(2);
 
-  const kids = menu.filter((i: { category: string }) => i.category === 'kids');
-  expect(kids[0].items.length).toBe(1);
+  const { kids } = menu;
+  expect(kids.items.length).toBe(1);
 });
