@@ -18,7 +18,7 @@ BEGIN
       "is_on_public_menu",
       "name",
       "description",
-      "status",
+      "menu_status",
       "order_status",
       "photo_url",
       "notes",

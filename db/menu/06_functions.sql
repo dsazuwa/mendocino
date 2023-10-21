@@ -24,7 +24,7 @@ BEGIN
     ) AS items
   FROM menu.menu_view v
   JOIN menu.categories c ON c.name = v.category
-  WHERE is_public IS TRUE AND status = 'active'
+  WHERE is_public IS TRUE AND menu_status = 'active'
   GROUP BY c.name, c.category_id
   ORDER BY c.sort_order;
 END;
@@ -57,7 +57,7 @@ BEGIN
     ) AS items
   FROM menu.menu_view v
   JOIN menu.categories c ON c.name = v.category
-  WHERE status = 'active' AND order_status = 'available'
+  WHERE menu_status = 'active' AND order_status = 'available'
   GROUP BY c.name, c.category_id
   ORDER BY c.sort_order;
 END;

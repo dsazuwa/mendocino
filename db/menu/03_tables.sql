@@ -4,7 +4,7 @@ CREATE TABLE menu.items (
   is_on_public_menu BOOLEAN NOT NULL,
   name VARCHAR(100) NOT NULL,
   description VARCHAR(355),
-  status menu.enum_menu_status NOT NULL,
+  menu_status menu.enum_menu_status NOT NULL,
   order_status menu.enum_order_status NOT NULL,
   photo_url VARCHAR(100) NOT NULL,
   notes VARCHAR(255),
@@ -79,8 +79,8 @@ CREATE TABLE menu.modifier_groups (
 );
 
 CREATE TABLE menu.modifier_group_parents (
-  parent_group_id INTEGER,
-  child_group_id INTEGER,
+  parent_group_id INTEGER NOT NULL,
+  child_group_id INTEGER NOT NULL,
   price DECIMAL(10, 4),
   created_at TIMESTAMP NOT NULL,
   updated_at TIMESTAMP NOT NULL,
