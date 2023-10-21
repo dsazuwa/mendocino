@@ -1,8 +1,11 @@
 CREATE TABLE menu.items (
   item_id SERIAL,
+  sort_order INTEGER,
+  is_on_public_menu BOOLEAN NOT NULL,
   name VARCHAR(100) NOT NULL,
-  description VARCHAR(255) NOT NULL,
-  status menu.enum_items_status NOT NULL,
+  description VARCHAR(355),
+  status menu.enum_menu_status NOT NULL,
+  order_status menu.enum_order_status NOT NULL,
   photo_url VARCHAR(100) NOT NULL,
   notes VARCHAR(255),
   created_at TIMESTAMP NOT NULL,
@@ -12,8 +15,10 @@ CREATE TABLE menu.items (
 
 CREATE TABLE menu.categories (
   category_id SERIAL,
+  sort_order INTEGER NOT NULL,
   name VARCHAR(50) NOT NULL,
-  notes TEXT[],
+  menu_description TEXT[],
+  order_description TEXT[],
   created_at TIMESTAMP NOT NULL,
   updated_at TIMESTAMP NOT NULL,
   PRIMARY KEY (category_id)
@@ -22,6 +27,7 @@ CREATE TABLE menu.categories (
 CREATE TABLE menu.items_categories (
   item_id INTEGER NOT NULL,
   category_id INTEGER NOT NULL,
+  sub_category VARCHAR(50),
   created_at TIMESTAMP NOT NULL,
   updated_at TIMESTAMP NOT NULL,
   UNIQUE (item_id),
@@ -48,25 +54,62 @@ CREATE TABLE menu.items_tags (
   CONSTRAINT fk_tag_id FOREIGN KEY (tag_id) REFERENCES menu.tags (tag_id) ON DELETE CASCADE ON UPDATE NO ACTION
 );
 
-CREATE TABLE menu.sizes (
-  size_id SERIAL,
-  name VARCHAR(20) NOT NULL,
-  created_at TIMESTAMP NOT NULL,
-  updated_at TIMESTAMP NOT NULL,
-  PRIMARY KEY (size_id)
-);
-
 CREATE TABLE menu.items_prices (
   price_id SERIAL,
   item_id INTEGER NOT NULL,
-  size_id INTEGER,
   base_price DECIMAL(10, 4) NOT NULL,
   created_at TIMESTAMP NOT NULL,
   updated_at TIMESTAMP NOT NULL,
   PRIMARY KEY (price_id),
-  UNIQUE (item_id, size_id),
+  UNIQUE (item_id),
+  CONSTRAINT fk_item_id FOREIGN KEY (item_id) REFERENCES menu.items (item_id) ON DELETE CASCADE ON UPDATE NO ACTION
+);
+
+CREATE TABLE menu.modifier_groups (
+  group_id SERIAL,
+  name VARCHAR(100) NOT NULL,
+  is_required BOOLEAN NOT NULL,
+  allow_multiple_selections BOOLEAN NOT NULL,
+  min_selection INTEGER,
+  max_selection INTEGER,
+  max_free_selection INTEGER,
+  created_at TIMESTAMP NOT NULL,
+  updated_at TIMESTAMP NOT NULL,
+  PRIMARY KEY (group_id)
+);
+
+CREATE TABLE menu.modifier_group_parents (
+  parent_group_id INTEGER,
+  child_group_id INTEGER,
+  price DECIMAL(10, 4),
+  created_at TIMESTAMP NOT NULL,
+  updated_at TIMESTAMP NOT NULL,
+  PRIMARY KEY (parent_group_id, child_group_id),
+  CONSTRAINT fk_parent_group_id FOREIGN KEY (parent_group_id) REFERENCES menu.modifier_groups (group_id) ON DELETE CASCADE ON UPDATE NO ACTION,
+  CONSTRAINT fk_child_group_id FOREIGN KEY (child_group_id) REFERENCES menu.modifier_groups (group_id) ON DELETE CASCADE ON UPDATE NO ACTION
+);
+
+CREATE TABLE menu.modifier_options (
+  option_id SERIAL,
+  group_id INTEGER NOT NULL,
+  name VARCHAR(75) NOT NULL,
+  price DECIMAL(10, 4),
+  status menu.enum_modifier_status NOT NULL,
+  created_at TIMESTAMP NOT NULL,
+  updated_at TIMESTAMP NOT NULL,
+  PRIMARY KEY (option_id),
+  CONSTRAINT fk_group_id FOREIGN KEY (group_id) REFERENCES menu.modifier_groups (group_id) ON DELETE CASCADE ON UPDATE NO ACTION
+);
+
+CREATE TABLE menu.items_modifier_groups (
+  item_id INTEGER NOT NULL,
+  group_id INTEGER NOT NULL,
+  sort_order INTEGER,
+  created_at TIMESTAMP NOT NULL,
+  updated_at TIMESTAMP NOT NULL,
+  UNIQUE (item_id, group_id),
   CONSTRAINT fk_item_id FOREIGN KEY (item_id) REFERENCES menu.items (item_id) ON DELETE CASCADE ON UPDATE NO ACTION,
-  CONSTRAINT fk_size_id FOREIGN KEY (size_id) REFERENCES menu.sizes (size_id) ON DELETE CASCADE ON UPDATE NO ACTION
+  CONSTRAINT fk_group_id FOREIGN KEY (group_id) REFERENCES menu.modifier_groups (group_id) ON DELETE CASCADE ON UPDATE NO ACTION
 );
 
 CREATE TABLE menu.discounts (

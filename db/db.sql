@@ -17,3 +17,6 @@
 \i db/menu/03_tables.sql
 \i db/menu/04_indexes.sql
 \i db/menu/05_views.sql
+\i db/menu/06_functions.sql
+\i db/menu/07_triggers.sql
+\i db/menu/08_data_functions.sql
