@@ -1,6 +1,3 @@
--- Drop data json_populators
-DROP FUNCTION IF EXISTS users.populate_users;
-
 -- Drop triggers
 DROP TRIGGER IF EXISTS before_update_prevent_admin_id  ON users.admins;
 DROP TRIGGER IF EXISTS before_update_prevent_customer_id  ON users.customers;
