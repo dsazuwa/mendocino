@@ -25,7 +25,21 @@ export const getMenuGrouped = async (
   try {
     const menu = await menuService.getGroupedMenu();
 
-    res.status(200).json({ menu, message: messages.GET_MENU });
+    res.status(200).json({ ...menu, message: messages.GET_MENU });
+  } catch (e) {
+    next(e);
+  }
+};
+
+export const getOrderMenu = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const menu = await menuService.getOrderMenu();
+
+    res.status(200).json({ ...menu, message: messages.GET_MENU });
   } catch (e) {
     next(e);
   }

@@ -2,18 +2,6 @@ import { object, array, string } from 'zod';
 
 import { idRules, isItemStatusType } from './common.validator';
 
-const pricesSchema = object({
-  size: string().trim().nonempty(),
-  price: string()
-    .trim()
-    .nonempty()
-    .refine((value) => !Number.isNaN(Number(value)), {
-      message: 'Invalid price',
-      path: ['price'],
-    })
-    .transform((value) => Number(value)),
-});
-
 export const createItemSchema = object({
   body: object({
     name: string()
@@ -32,13 +20,14 @@ export const createItemSchema = object({
 
     tags: array(string()).optional(),
 
-    prices: array(pricesSchema).refine(
-      (prices) => {
-        const hasDefaultSize = prices.some((item) => item.size === 'default');
-        return !hasDefaultSize || (hasDefaultSize && prices.length === 1);
-      },
-      { message: "Can't have multiple prices, if there is a default price" },
-    ),
+    price: string()
+      .trim()
+      .nonempty()
+      .refine((value) => !Number.isNaN(Number(value)), {
+        message: 'Invalid price',
+        path: ['price'],
+      })
+      .transform((value) => Number(value)),
 
     status: string()
       .trim()

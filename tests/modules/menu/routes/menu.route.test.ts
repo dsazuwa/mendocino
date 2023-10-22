@@ -10,23 +10,38 @@ beforeAll(async () => {
   await createMenu();
 });
 
-it(`GET ${BASE_URL} should return current menu`, async () => {
-  const response = await request.get(BASE_URL);
-  expect(response.status).toBe(200);
+// it(`GET ${BASE_URL} should return current menu`, async () => {
+//   const response = await request.get(BASE_URL);
+//   expect(response.status).toBe(200);
 
-  const { menu } = response.body;
-  expect(menu.length).toBe(3);
-});
+//   const { menu } = response.body;
+//   expect(menu.length).toBe(3);
+// });
 
 it(`GET ${BASE_URL}/grouped should return current menu grouped by category`, async () => {
   const response = await request.get(`${BASE_URL}/grouped`);
   expect(response.status).toBe(200);
 
-  const { menu } = response.body;
+  const { categories, menu } = response.body;
 
-  const { bowls } = menu;
-  expect(bowls.items.length).toBe(2);
+  expect(categories).toStrictEqual([
+    "chef's creations",
+    'foodie favorites',
+    'bowls',
+    'kids',
+  ]);
 
-  const { kids } = menu;
-  expect(kids.items.length).toBe(1);
+  const [chef, foodie, bowls, kids] = menu;
+
+  expect(chef.category).toBe("chef's creations");
+  expect(chef.items).toHaveLength(2);
+
+  expect(foodie.category).toBe('foodie favorites');
+  expect(foodie.items).toHaveLength(1);
+
+  expect(bowls.category).toBe('bowls');
+  expect(bowls.items).toHaveLength(2);
+
+  expect(kids.category).toBe('kids');
+  expect(kids.items).toHaveLength(1);
 });

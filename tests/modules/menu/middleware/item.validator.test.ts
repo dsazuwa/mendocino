@@ -16,10 +16,7 @@ describe('create item schema', () => {
           "shaved, roasted chicken breast, Mendo's krispies, melted mozzarella and Grana Padano cheeses, pomodoro sauce, Italian basil, Calabrian chili aioli on a toasted sesame roll served with an extra side of pomodoro sauce for dipping",
         category: 'craveable classics',
         tags: ['A'],
-        prices: [
-          { size: 'small', price: '4' },
-          { size: 'large', price: '6' },
-        ],
+        price: '4',
         status: 'active',
         photoUrl: 'ChickenParmDip.jpg',
       },
@@ -34,7 +31,7 @@ describe('create item schema', () => {
           'italian prosciutto & sliced peaches with fresh mozzarella, crushed honey roasted almonds, Calabrian chili aioli, hot peach honey, arugula on a toasted sesame roll',
         category: "chef's creations",
         tags: [],
-        prices: [{ size: 'default', price: '12' }],
+        price: '12',
         status: 'active',
         photoUrl: 'PeachProsciutto.jpg',
       },
@@ -43,7 +40,7 @@ describe('create item schema', () => {
     expect(() => createItemSchema.parse(data)).not.toThrow();
   });
 
-  it('should throw error for invalid prices', () => {
+  it('should throw error for invalid price', () => {
     const data = {
       body: {
         name: 'Hot Honey Peach & Prosciutto',
@@ -51,27 +48,7 @@ describe('create item schema', () => {
           'italian prosciutto & sliced peaches with fresh mozzarella, crushed honey roasted almonds, Calabrian chili aioli, hot peach honey, arugula on a toasted sesame roll',
         category: "chef's creations",
         tags: [],
-        prices: [{ size: 'default', price: '12624e' }],
-        status: 'active',
-        photoUrl: 'PeachProsciutto.jpg',
-      },
-    };
-
-    expect(() => createItemSchema.parse(data)).toThrow();
-  });
-
-  it('should throw error if data has multiple prices with default', () => {
-    const data = {
-      body: {
-        name: 'Hot Honey Peach & Prosciutto',
-        description:
-          'italian prosciutto & sliced peaches with fresh mozzarella, crushed honey roasted almonds, Calabrian chili aioli, hot peach honey, arugula on a toasted sesame roll',
-        category: "chef's creations",
-        tags: [],
-        prices: [
-          { size: 'default', price: '12' },
-          { size: 'small', price: '5' },
-        ],
+        price: '12624e',
         status: 'active',
         photoUrl: 'PeachProsciutto.jpg',
       },
@@ -88,10 +65,7 @@ describe('create item schema', () => {
           'italian prosciutto & sliced peaches with fresh mozzarella, crushed honey roasted almonds, Calabrian chili aioli, hot peach honey, arugula on a toasted sesame roll',
         category: "chef's creations",
         tags: [],
-        prices: [
-          { size: 'default', price: '12' },
-          { size: 'small', price: '5' },
-        ],
+        price: '12',
         status: 'actively',
         photoUrl: 'PeachProsciutto.jpg',
       },
@@ -123,7 +97,7 @@ describe('update item schema', () => {
     description: 'creamy, natural peanut butter & strawberry jam',
     category: 'kids',
     tags: ['GF', 'VG'],
-    prices: [{ size: 'base', price: '6.1' }],
+    price: '12',
     status: 'active',
     photoUrl: 'PBJ.jpg',
   };

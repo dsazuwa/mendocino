@@ -1,6 +1,6 @@
 import { string } from 'zod';
 
-import { ItemStatusType } from '@menu/models';
+import { ItemMenuStatusType } from '@menu/models';
 
 export const idRules = string()
   .trim()
@@ -11,7 +11,7 @@ export const idRules = string()
   })
   .transform((value) => Number(value));
 
-export const isItemStatusType = (value: string): value is ItemStatusType =>
+export const isItemStatusType = (value: string): value is ItemMenuStatusType =>
   value === 'active' ||
   value === 'sold out' ||
   value === 'coming soon' ||

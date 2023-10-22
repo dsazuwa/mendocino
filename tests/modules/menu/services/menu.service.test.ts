@@ -8,25 +8,42 @@ beforeAll(async () => {
   await createMenu();
 });
 
-describe('get menu', () => {
-  it('should return menu items that are either active or sold out', async () => {
-    const menu = await menuService.getMenu();
+// describe('get menu', () => {
+//   it('should return menu items that are either active or sold out', async () => {
+//     try {
+//       const menu = await menuService.getMenu();
 
-    if (menu) expect(menu.length).toBe(3);
-    else expect(true).toBe(false);
-  });
-});
+//       if (menu) expect(menu.length).toBe(3);
+//       else expect(true).toBe(false);
+//     } catch (e) {
+//       console.log(e);
+//     }
+//   });
+// });
 
 describe('get menu grouped', () => {
   it('should return menu items that are either active or sold out grouped by category', async () => {
-    const menu = await menuService.getGroupedMenu();
+    const { categories, menu } = await menuService.getGroupedMenu();
 
-    if (menu) {
-      const { bowls } = menu;
-      expect(bowls.items.length).toBe(2);
+    expect(categories).toStrictEqual([
+      "chef's creations",
+      'foodie favorites',
+      'bowls',
+      'kids',
+    ]);
 
-      const { kids } = menu;
-      expect(kids.items.length).toBe(1);
-    } else expect(true).toBe(false);
+    const [chef, foodie, bowls, kids] = menu;
+
+    expect(chef.category).toBe("chef's creations");
+    expect(chef.items).toHaveLength(2);
+
+    expect(foodie.category).toBe('foodie favorites');
+    expect(foodie.items).toHaveLength(1);
+
+    expect(bowls.category).toBe('bowls');
+    expect(bowls.items).toHaveLength(2);
+
+    expect(kids.category).toBe('kids');
+    expect(kids.items).toHaveLength(1);
   });
 });

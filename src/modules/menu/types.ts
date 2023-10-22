@@ -1,29 +1,42 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-type PriceType = { size: string; price: number };
-
 type MenuItem = {
   itemId: number;
   name: string;
   description: string;
   category: string;
+  subCategory: string | null;
   tags: string[] | null;
-  prices: PriceType[];
+  price: number;
   status: string;
   photoUrl: string;
 };
 
-type PublicMenuItem = {
-  name: string;
-  description: string;
-  tags: string[];
-  prices: PriceType[];
-  photoUrl: string;
-  notes: string | undefined;
-};
-
 type CategoryItems<T> = {
   category: string;
-  notes: string;
+  notes: string[];
   items: T[];
 };
+
+interface ModifierOption {
+  optionId: number;
+  name: string;
+  price: number;
+}
+
+interface NestedOption {
+  groupId: number;
+  name: string;
+  price: number;
+}
+
+interface Modifier {
+  group_id: number;
+  isRequired: boolean;
+  allowMultipleSelections: boolean;
+  minSelection: number;
+  maxSelection: number;
+  maxFree: number;
+  name: string;
+  options: (ModifierOption | NestedOption)[] | null;
+}
