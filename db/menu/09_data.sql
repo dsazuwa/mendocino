@@ -1299,6 +1299,7 @@ BEGIN
 
   PERFORM menu.insert_items_categories(item_id, salad_id, NULL);
 
+  PERFORM menu.insert_item_modifier(item_id, protein_id, 0);
   PERFORM menu.insert_item_modifier(item_id, salad_style_id, 1);
   PERFORM menu.insert_item_modifier(item_id, cheese_id, 2);
   PERFORM menu.insert_item_modifier(item_id, accent_id, 3);
