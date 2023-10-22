@@ -1,124 +1,168 @@
-Table menu.menu_items {
-  menu_item_id integer pk
-  name string [not null, unique]
-  description string [not null]
-  status enum_menu_items_status [not null]
-  photo_url string [not null]
-  created_at timestamp [not null]
-  updated_at timestamp [not null]
+Table menu.items {
+  item_id INTEGER pk
+  sort_order INTEGER [not null]
+  is_on_public_menu BOOLEAN [not null]
+  name VARCHAR(100) [not null, unique]
+  description VARCHAR(355) [not null]
+  menu_status menu.enum_menu_status [not null]
+  order_status menu.enum_order_status [not null]
+  photo_url VARCHAR(100) [not null]
+  notes VARCHAR(255)
+  created_at TIMESTAMP [not null]
+  updated_at TIMESTAMP [not null]
 }
 
-Table menu.menu_categories {
-  category_id integer pk
-  name string [not null, unique]
-  created_at timestamp [not null]
-  updated_at timestamp [not null]
+Table menu.categories {
+  category_id INTEGER pk
+  sort_order INTEGER [not null]
+  name VARCHAR(50) [not null, unique]
+  menu_description TEXT[]
+  order_description TEXT[]
+  created_at TIMESTAMP [not null]
+  updated_at TIMESTAMP [not null]
 }
 
-Table menu.menu_items_menu_categories {
-  menu_item_id integer [not null]
-  category_id integer [not null]
-  created_at timestamp [not null]
-  updated_at timestamp [not null]
+Table menu.items_categories {
+  item_id INTEGER [not null]
+  category_id INTEGER [not null]
+  sub_category VARCHAR(50)
+  created_at TIMESTAMP [not null]
+  updated_at TIMESTAMP [not null]
 }
 
-Ref: menu.menu_items_menu_categories.menu_item_id - menu.menu_items.menu_item_id
-Ref: menu.menu_items_menu_categories.category_id > menu.menu_categories.category_id
+Ref: menu.items_categories.item_id - menu.items.item_id
+Ref: menu.items_categories.category_id > menu.categories.category_id
 
-Table menu.menu_tags {
-  tag_id integer pk
-  name string [not null, unique]
-  description string [not null]
-  created_at timestamp [not null]
-  updated_at timestamp [not null]
+Table menu.tags {
+  tag_id INTEGER pk
+  name VARCHAR(5) [not null, unique]
+  description VARCHAR(50) [not null]
+  created_at TIMESTAMP [not null]
+  updated_at TIMESTAMP [not null]
 }
 
-Table menu.menu_items_menu_tags {
-  menu_item_id integer [not null]
-  tag_id integer [not null]
-  created_at timestamp [not null]
-  updated_at timestamp [not null]
+Table menu.items_tags {
+  item_id INTEGER [not null]
+  tag_id INTEGER [not null]
+  created_at TIMESTAMP [not null]
+  updated_at TIMESTAMP [not null]
 
   Indexes {
-    (menu_item_id, tag_id) [unique]
+    (item_id, tag_id) [unique]
   }
 }
 
-Ref: menu.menu_items_menu_tags.menu_item_id > menu.menu_items.menu_item_id
-Ref: menu.menu_items_menu_tags.tag_id > menu.menu_tags.tag_id
+Ref: menu.items_tags.item_id > menu.items.item_id
+Ref: menu.items_tags.tag_id > menu.tags.tag_id
 
-Table menu.menu_sizes {
-  size_id integer pk
-  name varchar [not null, unique]
-  created_at timestamp [not null]
-  updated_at timestamp [not null]
+Table menu.item_prices {
+  price_id INTEGER pk
+  item_id INTEGER [unique, not null]
+  base_price DECIMAL(10, 4) [not null]
+  created_at TIMESTAMP [not null]
+  updated_at TIMESTAMP [not null]
 }
 
-Table menu.menu_item_prices {
-  price_id integer pk
-  menu_item_id integer [not null]
-  size_id integer [not null]
-  base_price decimal [not null]
-  created_at timestamp [not null]
-  updated_at timestamp [not null]
+Ref: menu.item_prices.item_id > menu.items.item_id
 
-  Indexes {
-    (menu_item_id) [unique]          // [where "size_id IS NULL"]
-    (menu_item_id, size_id) [unique] // [where "size_id IS NOT NULL"]
-  }
+Table menu.modifier_groups {
+  group_id INTEGER pk
+  name VARCHAR(100) [unique, not null]
+  is_required BOOLEAN [not null]
+  allow_multiple_selections BOOLEAN [not null]
+  min_selection INTEGER
+  max_selection INTEGER
+  max_free_selection INTEGER
+  created_at TIMESTAMP [not null]
+  updated_at TIMESTAMP [not null]
 }
 
-Ref: menu.menu_item_prices.menu_item_id > menu.menu_items.menu_item_id
-Ref: menu.menu_item_prices.size_id > menu.menu_sizes.size_id
+Table menu.modifier_group_parents {
+  parent_group_id INTEGER [not null]
+  child_group_id INTEGER [not null]
+  price DECIMAL(10, 4)
+  created_at TIMESTAMP [not null]
+  updated_at TIMESTAMP [not null]
+}
+
+Ref: menu.modifier_group_parents.parent_group_id > menu.modifier_groups.group_id
+Ref: menu.modifier_group_parents.child_group_id > menu.modifier_groups.group_id
+
+Table menu.modifier_options {
+  option_id INTEGER [not null]
+  group_id INTEGER [not null]
+  name VARCHAR(75) [not null]
+  price DECIMAL(10, 4)
+  status menu.enum_order_status [not null]
+  created_at TIMESTAMP [not null]
+  updated_at TIMESTAMP [not null]
+}
+
+Ref: menu.modifier_options.group_id > menu.modifier_groups.group_id
+
+Table menu.items_modifier_groups {
+  item_id INTEGER [not null]
+  group_id INTEGER [not null]
+  sort_order INTEGER
+  created_at TIMESTAMP [not null]
+  updated_at TIMESTAMP [not null]
+}
+
+Ref: menu.items_modifier_groups.item_id > menu.items.item_id
+Ref: menu.items_modifier_groups.group_id > menu.modifier_groups.group_id
 
 Table menu.discounts {
-  discount_id integer pk
-  menu_item_id integer [not null]
-  discount_value decimal [not null]
-  discount_unit enum_discount_unit [not null]
-  min_order_value decimal [not null]
-  max_discount_amount decimal [not null]
-  valid_from timestamp [not null]
-  valid_until timestamp [not null]
-  created_at timestamp [not null]
-  updated_at timestamp [not null] 
+  discount_id INTEGER pk
+  item_id INTEGER [not null]
+  discount_value DECIMAL(10, 4) [not null]
+  discount_unit menu.enum_discount_unit [not null]
+  min_order_value DECIMAL(10, 4) [not null]
+  max_discount_amount DECIMAL(10, 4) [not null]
+  valid_from TIMESTAMP [not null]
+  valid_until TIMESTAMP [not null]
+  created_at TIMESTAMP [not null]
+  updated_at TIMESTAMP [not null] 
 }
 
-Table menu.menu_item_discounts {
-  menu_item_id integer [not null]
-  discount_id integer [not null]
-  created_at timestamp [not null]
+Table menu.item_discounts {
+  item_id INTEGER [not null]
+  discount_id INTEGER [not null]
+  created_at TIMESTAMP [not null]
 
   Indexes {
-    (menu_item_id, discount_id) [unique]
+    (item_id, discount_id) [unique]
   }
 }
 
-Ref: menu.menu_item_discounts.discount_id > menu.discounts.discount_id
-Ref: menu.menu_item_discounts.menu_item_id > menu.menu_items.menu_item_id
+Ref: menu.item_discounts.discount_id > menu.discounts.discount_id
+Ref: menu.item_discounts.item_id > menu.items.item_id
 
-Table menu.menu_category_discounts {
-  category_id integer [not null]
-  discount_id integer [not null]
-  created_at timestamp [not null]
+Table menu.category_discounts {
+  category_id INTEGER [not null]
+  discount_id INTEGER [not null]
+  created_at TIMESTAMP [not null]
 
   Indexes {
     (category_id, discount_id) [unique]
   }
 }
 
-Ref: menu.menu_category_discounts.discount_id > menu.discounts.discount_id
-Ref: menu.menu_category_discounts.category_id > menu.menu_categories.category_id
+Ref: menu.category_discounts.discount_id > menu.discounts.discount_id
+Ref: menu.category_discounts.category_id > menu.categories.category_id
 
-Enum enum_menu_items_status {
+Enum menu.enum_menu_status {
   active
-  sold_out
-  coming_soon
+  "coming soon"
   inactive
-  discountinued
 }
 
-Enum enum_discount_unit {
+Enum menu.enum_order_status {
+  "available"
+  "unavailable for today"
+  "unavailable indefinitely"
+}
+
+Enum menu.enum_discount_unit {
   percentage
   amount
 }

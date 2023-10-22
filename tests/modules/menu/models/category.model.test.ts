@@ -4,14 +4,14 @@ import 'tests/db-setup';
 
 describe('Category Model', () => {
   it('should create category', async () => {
-    const data = { name: "chef's creations" };
+    const data = { name: "chef's creations", sortOrder: 0 };
 
     const category = await Category.create(data);
     expect(category).toMatchObject(data);
   });
 
   it('should fail to create on duplicate name', async () => {
-    const data = { name: 'foodie favorites' };
+    const data = { name: 'foodie favorites', sortOrder: 0 };
 
     await Category.create(data);
     expect(Category.create(data)).rejects.toThrow();
@@ -20,6 +20,7 @@ describe('Category Model', () => {
   it('should retrieve category', async () => {
     const { categoryId } = await Category.create({
       name: 'soulful salads',
+      sortOrder: 0,
     });
 
     let retrievedCategory = await Category.findByPk(categoryId, {
@@ -38,7 +39,7 @@ describe('Category Model', () => {
     const oldName = 'childrens';
     const newName = 'kids';
 
-    const category = await Category.create({ name: oldName });
+    const category = await Category.create({ name: oldName, sortOrder: 0 });
 
     await category.update({ name: newName });
 
@@ -61,7 +62,7 @@ describe('Category Model', () => {
   });
 
   it('should delete category', async () => {
-    const data = { name: 'bowls' };
+    const data = { name: 'bowls', sortOrder: 0 };
 
     let category = await Category.create(data);
 

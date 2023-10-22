@@ -9,10 +9,13 @@ describe('Item tag Model', () => {
 
   beforeAll(async () => {
     const item = await Item.create({
+      sortOrder: 0,
+      isOnPublicMenu: true,
       name: 'Chimichurri Steak & Shishito Bowl',
       description:
         'roasted carved steak over ancient grains tossed with caramelized onion jam & chimichurri, baby spinach, roasted shishito peppers with broccolini, tomatoes & red onions, grilled lemon',
-      status: 'active',
+      menuStatus: 'active',
+      orderStatus: 'available',
       photoUrl: 'ChimichurriSteakBowl.jpg',
     });
     itemId = item.itemId;
@@ -61,9 +64,12 @@ describe('Item tag Model', () => {
 
   it('deleting a tag should delete item-tag', async () => {
     const item = await Item.create({
+      sortOrder: 0,
+      isOnPublicMenu: true,
       name: 'Grilled Turkey & Cheddar Sandwich',
       description: 'add herb mayo, yellow mustard, or tomato by request',
-      status: 'active',
+      menuStatus: 'active',
+      orderStatus: 'available',
       photoUrl: 'TurkeyCheddar.jpg',
     });
 
@@ -85,10 +91,13 @@ describe('Item tag Model', () => {
 
   it('deleting a item should delete item-tag', async () => {
     const item = await Item.create({
+      sortOrder: 0,
+      isOnPublicMenu: true,
       name: 'Spicy Curried Couscous',
       description:
         "with roasted cauliflower & carrots with Mendo's signature spice mix",
-      status: 'active',
+      menuStatus: 'active',
+      orderStatus: 'available',
       photoUrl: 'Couscous.jpg',
     });
 

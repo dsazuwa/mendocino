@@ -18,8 +18,6 @@ class ItemPrice extends Model<
 
   declare itemId: number;
 
-  declare sizeId: number | null;
-
   declare basePrice: string;
 
   declare createdAt: CreationOptional<Date>;
@@ -37,10 +35,6 @@ ItemPrice.init(
     itemId: {
       type: DataTypes.INTEGER,
       allowNull: false,
-    },
-    sizeId: {
-      type: DataTypes.INTEGER,
-      allowNull: true,
     },
     basePrice: {
       type: DataTypes.DECIMAL(10, 4),

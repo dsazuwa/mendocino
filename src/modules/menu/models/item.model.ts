@@ -10,21 +10,27 @@ import sequelize from '@App/db';
 
 import { MENU_SCHEMA, TABLENAMES } from '@menu/utils.ts/constants';
 
-export type ItemStatusType =
-  | 'active'
-  | 'sold out'
-  | 'coming soon'
-  | 'inactive'
-  | 'discountinued';
+export type ItemMenuStatusType = 'active' | 'coming soon' | 'inactive';
+
+export type ItemOrderStatusType =
+  | 'available'
+  | 'unavailable for today'
+  | 'unavailable indefinitely';
 
 class Item extends Model<InferAttributes<Item>, InferCreationAttributes<Item>> {
   declare itemId: CreationOptional<number>;
+
+  declare sortOrder: number;
+
+  declare isOnPublicMenu: boolean;
 
   declare name: string;
 
   declare description: string;
 
-  declare status: ItemStatusType;
+  declare menuStatus: ItemMenuStatusType;
+
+  declare orderStatus: ItemOrderStatusType;
 
   declare photoUrl: string;
 
@@ -42,6 +48,16 @@ Item.init(
       primaryKey: true,
       autoIncrement: true,
     },
+    sortOrder: {
+      type: DataTypes.NUMBER,
+      unique: true,
+      allowNull: false,
+    },
+    isOnPublicMenu: {
+      type: DataTypes.BOOLEAN,
+      unique: true,
+      allowNull: false,
+    },
     name: {
       type: DataTypes.STRING,
       unique: true,
@@ -51,13 +67,15 @@ Item.init(
       type: DataTypes.STRING,
       allowNull: false,
     },
-    status: {
+    menuStatus: {
+      type: DataTypes.ENUM('active', 'coming soon', 'inactive'),
+      allowNull: false,
+    },
+    orderStatus: {
       type: DataTypes.ENUM(
-        'active',
-        'sold out',
-        'coming soon',
-        'inactive',
-        'discountinued',
+        'available',
+        'unavailable for today',
+        'unavailable indefinitely',
       ),
       allowNull: false,
     },

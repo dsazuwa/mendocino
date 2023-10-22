@@ -1,12 +1,11 @@
 import Category from './category.model';
 import CategoryDiscount from './category_discount.model';
 import Discount, { DiscountUnitType } from './discount.model';
-import Item, { ItemStatusType } from './item.model';
+import Item, { ItemOrderStatusType, ItemMenuStatusType } from './item.model';
 import ItemCategory from './item_category.model';
 import ItemDiscount from './item_discount.model';
 import ItemPrice from './item_price.model';
 import ItemTag from './item_tag.model';
-import Size from './size.model';
 import Tag from './tag.model';
 
 Item.belongsToMany(Category, {
@@ -30,9 +29,6 @@ Tag.belongsToMany(Item, {
 Item.hasMany(ItemPrice, { foreignKey: 'itemId' });
 ItemPrice.belongsTo(Item, { foreignKey: 'itemId' });
 
-ItemPrice.belongsTo(Size, { foreignKey: 'sizeId' });
-Size.hasMany(ItemPrice, { foreignKey: 'sizeId' });
-
 Discount.hasMany(ItemDiscount, { foreignKey: 'discountId' });
 ItemDiscount.belongsTo(Discount, { foreignKey: 'discountId' });
 
@@ -53,9 +49,9 @@ export {
   Item,
   ItemCategory,
   ItemDiscount,
+  ItemOrderStatusType,
   ItemPrice,
-  ItemStatusType,
+  ItemMenuStatusType,
   ItemTag,
-  Size,
   Tag,
 };

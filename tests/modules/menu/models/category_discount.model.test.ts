@@ -17,7 +17,7 @@ describe('Category Discount Model', () => {
     });
     discountId = discount.discountId;
 
-    const category = await Category.create({ name: 'bowls' });
+    const category = await Category.create({ name: 'bowls', sortOrder: 0 });
     categoryId = category.categoryId;
   });
 
@@ -62,7 +62,7 @@ describe('Category Discount Model', () => {
       validUntil: new Date(),
     });
 
-    const category = await Category.create({ name: 'kids' });
+    const category = await Category.create({ name: 'kids', sortOrder: 0 });
 
     const data = {
       discountId: discount.discountId,
@@ -90,7 +90,10 @@ describe('Category Discount Model', () => {
       validUntil: new Date(),
     });
 
-    const category = await Category.create({ name: 'deli sides' });
+    const category = await Category.create({
+      name: 'deli sides',
+      sortOrder: 0,
+    });
 
     const data = {
       discountId: discount.discountId,

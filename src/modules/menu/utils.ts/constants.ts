@@ -4,7 +4,6 @@ export const TABLENAMES = {
   MENU_ITEM: 'items',
   MENU_CATEGORY: 'categories',
   MENU_TAG: 'tags',
-  MENU_SIZE: 'sizes',
   MENU_DISCOUNT: 'discounts',
 
   MENU_ITEM_CATEGORY: 'items_categories',

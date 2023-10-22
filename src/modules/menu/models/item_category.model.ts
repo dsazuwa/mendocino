@@ -18,6 +18,8 @@ class ItemCategory extends Model<
 
   declare categoryId: number;
 
+  declare subCategory: CreationOptional<string | null>;
+
   declare createdAt: CreationOptional<Date>;
 
   declare updatedAt: CreationOptional<Date>;
@@ -33,6 +35,11 @@ ItemCategory.init(
     categoryId: {
       type: DataTypes.INTEGER,
       allowNull: false,
+    },
+    subCategory: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      defaultValue: null,
     },
     createdAt: {
       type: DataTypes.DATE,

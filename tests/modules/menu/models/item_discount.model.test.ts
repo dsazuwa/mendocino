@@ -18,11 +18,14 @@ describe('Item Discount Model', () => {
     discountId = discount.discountId;
 
     const item = await Item.create({
-      name: '1/2 Italian Roast Beef',
+      sortOrder: 0,
+      isOnPublicMenu: true,
+      name: 'Chimichurri Steak & Shishito Bowl',
       description:
-        'shaved roast beef, mozzarella, Chicago-style mild giardiniera, tomatoes, Vidalia onion, shredded romaine, Italian herb & cheese aioli on a toasted sesame roll',
-      status: 'active',
-      photoUrl: 'BPItalianRoastBeef.jpg',
+        'roasted carved steak over ancient grains tossed with caramelized onion jam & chimichurri, baby spinach, roasted shishito peppers with broccolini, tomatoes & red onions, grilled lemon',
+      menuStatus: 'active',
+      orderStatus: 'available',
+      photoUrl: 'ChimichurriSteakBowl.jpg',
     });
     itemId = item.itemId;
   });
@@ -69,11 +72,13 @@ describe('Item Discount Model', () => {
     });
 
     const item = await Item.create({
-      name: 'French Lentil & Kale Soup',
-      description:
-        'french lentils, kale, carrot, celery, onion, herbs, and garlic in a savory vegetable broth',
-      status: 'active',
-      photoUrl: 'FrenchLentilKale.jpg',
+      sortOrder: 0,
+      isOnPublicMenu: true,
+      name: 'Grilled Turkey & Cheddar Sandwich',
+      description: 'add herb mayo, yellow mustard, or tomato by request',
+      menuStatus: 'active',
+      orderStatus: 'available',
+      photoUrl: 'TurkeyCheddar.jpg',
     });
 
     const data = {
@@ -103,11 +108,14 @@ describe('Item Discount Model', () => {
     });
 
     const item = await Item.create({
-      name: 'Chicken Tortilla Soup',
+      sortOrder: 0,
+      isOnPublicMenu: true,
+      name: 'Spicy Curried Couscous',
       description:
-        'smooth puree of roasted tomato, tomatillo, poblano, jalapeño, garlic, cumin, and corn tortillas, with shredded chicken',
-      status: 'active',
-      photoUrl: 'ChickenTortilla.jpg',
+        "with roasted cauliflower & carrots with Mendo's signature spice mix",
+      menuStatus: 'active',
+      orderStatus: 'available',
+      photoUrl: 'Couscous.jpg',
     });
 
     const data = {

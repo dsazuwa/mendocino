@@ -1,14 +1,17 @@
-import { Item, ItemStatusType } from '@menu/models';
+import { Item, ItemMenuStatusType, ItemOrderStatusType } from '@menu/models';
 
 import 'tests/db-setup';
 
 describe('Item Model', () => {
   it('should create item', async () => {
     const data = {
+      sortOrder: 0,
+      isOnPublicMenu: true,
       name: '1/2 Italian Roast Beef',
       description:
         'shaved roast beef, mozzarella, Chicago-style mild giardiniera, tomatoes, Vidalia onion, shredded romaine, Italian herb & cheese aioli on a toasted sesame roll',
-      status: 'active' as ItemStatusType,
+      menuStatus: 'active' as ItemMenuStatusType,
+      orderStatus: 'available' as ItemOrderStatusType,
       photoUrl: 'BPItalianRoastBeef.jpg',
     };
 
@@ -18,10 +21,14 @@ describe('Item Model', () => {
 
   it('should fail to create on duplicate name', async () => {
     const data = {
+      sortOrder: 0,
+      isOnPublicMenu: true,
       name: '1/2 The Farm Club',
       description:
         "shaved, roasted turkey breast, smashed avocado, applewood smoked bacon, herb aioli, tomatoes, mixed greens, pickled red onions on Mom's seeded whole wheat",
-      status: 'active' as ItemStatusType,
+      status: 'active' as ItemMenuStatusType,
+      menuStatus: 'active' as ItemMenuStatusType,
+      orderStatus: 'available' as ItemOrderStatusType,
       photoUrl: 'BPFarmClub.jpg',
     };
 
@@ -31,10 +38,13 @@ describe('Item Model', () => {
 
   it('should retrieve item', async () => {
     const { itemId } = await Item.create({
+      sortOrder: 0,
+      isOnPublicMenu: true,
       name: 'Smoky Chicken Elote Bowl',
       description:
         'al pastor chicken smoky corn & guajilo broth, zucchini, ancient grains, shredded cabbage, topped with tortilla strips, crema, cotija, pico de gailo, cilantro, and fresh lime',
-      status: 'active',
+      menuStatus: 'active' as ItemMenuStatusType,
+      orderStatus: 'available' as ItemOrderStatusType,
       photoUrl: 'SmokyChickenEloteBowl.jpg',
     });
 
@@ -50,10 +60,13 @@ describe('Item Model', () => {
     const newName = 'Lentil & Kale Soup';
 
     const item = await Item.create({
+      sortOrder: 0,
+      isOnPublicMenu: true,
       name: oldName,
       description:
         'french lentils, kale, carrot, celery, onion, herbs, and garlic in a savory vegetable broth',
-      status: 'active',
+      menuStatus: 'active' as ItemMenuStatusType,
+      orderStatus: 'available' as ItemOrderStatusType,
       photoUrl: 'FrenchLentilKale.jpg',
     });
 
@@ -76,10 +89,14 @@ describe('Item Model', () => {
 
   it('should delete item', async () => {
     const data = {
+      sortOrder: 0,
+      isOnPublicMenu: true,
       name: 'Chicken Tortilla Soup',
       description:
         'smooth puree of roasted tomato, tomatillo, poblano, jalapeño, garlic, cumin, and corn tortillas, with shredded chicken',
-      status: 'active' as ItemStatusType,
+      status: 'active' as ItemMenuStatusType,
+      menuStatus: 'active' as ItemMenuStatusType,
+      orderStatus: 'available' as ItemOrderStatusType,
       photoUrl: 'ChickenTortilla.jpg',
     };
 

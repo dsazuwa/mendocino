@@ -9,7 +9,6 @@ import {
   ItemDiscount,
   ItemPrice,
   ItemTag,
-  Size,
   Tag,
 } from '@menu/models';
 
@@ -43,7 +42,6 @@ beforeAll(async () => {
   await ItemCategory.destroy({ where: {} });
 
   await Discount.destroy({ where: {} });
-  await Size.destroy({ where: {} });
   await Category.destroy({ where: {} });
   await Tag.destroy({ where: {} });
   await Item.destroy({ where: {} });

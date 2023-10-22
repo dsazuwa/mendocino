@@ -16,9 +16,13 @@ class Category extends Model<
 > {
   declare categoryId: CreationOptional<number>;
 
+  declare sortOrder: number;
+
   declare name: string;
 
-  declare notes: CreationOptional<string | null>;
+  declare menuDescription: CreationOptional<string | null>;
+
+  declare orderDescription: CreationOptional<string | null>;
 
   declare createdAt: CreationOptional<Date>;
 
@@ -32,12 +36,22 @@ Category.init(
       primaryKey: true,
       autoIncrement: true,
     },
+    sortOrder: {
+      type: DataTypes.NUMBER,
+      unique: true,
+      allowNull: false,
+    },
     name: {
       type: DataTypes.STRING,
       unique: true,
       allowNull: false,
     },
-    notes: {
+    menuDescription: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      defaultValue: null,
+    },
+    orderDescription: {
       type: DataTypes.STRING,
       allowNull: true,
       defaultValue: null,
