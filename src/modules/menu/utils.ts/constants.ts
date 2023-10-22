@@ -12,6 +12,11 @@ export const TABLENAMES = {
 
   MENU_ITEM_DISCOUNT: 'item_discounts',
   MENU_CATEGORY_DISCOUNT: 'category_discounts',
+
+  MODIFIER_GROUP: 'modifier_groups',
+  MODIFIER_GROUP_PARENT: 'modifier_group_parents',
+  ITEM_MODIFIER_GROUP: 'items_modifier_groups',
+  MODIFIER_OPTION: 'modifier_options',
 };
 
 export const VIEWS = {

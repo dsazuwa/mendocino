@@ -1,11 +1,17 @@
 import Category from './category.model';
 import CategoryDiscount from './category_discount.model';
 import Discount, { DiscountUnitType } from './discount.model';
-import Item, { ItemOrderStatusType, ItemMenuStatusType } from './item.model';
+import Item, { ItemMenuStatusType, ItemOrderStatusType } from './item.model';
 import ItemCategory from './item_category.model';
 import ItemDiscount from './item_discount.model';
+import ItemModifierGroup from './item_modifier_group.model';
 import ItemPrice from './item_price.model';
 import ItemTag from './item_tag.model';
+import ModifierGroup from './modifier_group.model';
+import ModifierGroupParent from './modifier_group_parent.model';
+import ModifierOption, {
+  ModifierOptionStatusType,
+} from './modifier_option.model';
 import Tag from './tag.model';
 
 Item.belongsToMany(Category, {
@@ -29,6 +35,23 @@ Tag.belongsToMany(Item, {
 Item.hasMany(ItemPrice, { foreignKey: 'itemId' });
 ItemPrice.belongsTo(Item, { foreignKey: 'itemId' });
 
+ModifierGroup.hasMany(ModifierGroupParent, { foreignKey: 'parent' });
+ModifierGroupParent.belongsTo(ModifierGroup, { foreignKey: 'parent' });
+ModifierGroup.hasMany(ModifierGroupParent, { foreignKey: 'child' });
+ModifierGroupParent.belongsTo(ModifierGroup, { foreignKey: 'child' });
+
+ModifierOption.belongsTo(ModifierGroup, { foreignKey: 'groupId' });
+ModifierGroup.hasMany(ModifierOption, { foreignKey: 'groupId' });
+
+Item.belongsToMany(ModifierGroup, {
+  through: ItemModifierGroup,
+  foreignKey: 'itemId',
+});
+ModifierGroup.belongsToMany(Item, {
+  through: ItemModifierGroup,
+  foreignKey: 'groupId',
+});
+
 Discount.hasMany(ItemDiscount, { foreignKey: 'discountId' });
 ItemDiscount.belongsTo(Discount, { foreignKey: 'discountId' });
 
@@ -49,9 +72,14 @@ export {
   Item,
   ItemCategory,
   ItemDiscount,
+  ItemMenuStatusType,
+  ItemModifierGroup,
   ItemOrderStatusType,
   ItemPrice,
-  ItemMenuStatusType,
   ItemTag,
+  ModifierGroup,
+  ModifierGroupParent,
+  ModifierOption,
+  ModifierOptionStatusType,
   Tag,
 };
