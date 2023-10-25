@@ -107,9 +107,10 @@ BEGIN
       g.max_selection,
       g.max_free_selection,
       g.name,
-      CASE WHEN n.options IS NULL THEN o.options
-        WHEN o.options IS NULL THEN NULL
-        ELSE ARRAY_CAT(o.options, n.options) END AS options
+      -- CASE WHEN n.options IS NULL THEN o.options
+      --   WHEN o.options IS NULL THEN NULL
+      --   ELSE ARRAY_CAT(o.options, n.options) END AS options
+      ARRAY_CAT(o.options, n.options) AS options
     FROM menu.modifier_groups g
     JOIN menu.items_modifier_groups ig ON ig.group_id = g.group_id AND ig.item_id = p_item_id
     LEFT JOIN options o ON o.group_id = g.group_id
@@ -119,7 +120,7 @@ BEGIN
   )
   SELECT
     ARRAY_AGG(JSONB_BUILD_OBJECT(
-      'group_id', m.group_id,
+      'groupId', m.group_id,
       'isRequired', m.is_required,
       'allowMultipleSelections', m.allow_multiple_selections,
       'minSelection', m.min_selection,
@@ -176,9 +177,10 @@ BEGIN
       g.max_selection,
       g.max_free_selection,
       g.name,
-      CASE WHEN n.options IS NULL THEN o.options
-        WHEN o.options IS NULL THEN NULL
-        ELSE ARRAY_CAT(o.options, n.options) END AS options
+      -- CASE WHEN n.options IS NULL THEN o.options
+      --   WHEN o.options IS NULL THEN NULL
+      --   ELSE ARRAY_CAT(o.options, n.options) END AS options
+      ARRAY_CAT(o.options, n.options) AS options
     FROM menu.modifier_groups g
     LEFT JOIN options o ON o.group_id = g.group_id
     LEFT JOIN nested_options n ON n.group_id = g.group_id
@@ -187,7 +189,7 @@ BEGIN
   )
   SELECT
     ARRAY_AGG(JSONB_BUILD_OBJECT(
-      'group_id', m.group_id,
+      'groupId', m.group_id,
       'isRequired', m.is_required,
       'allowMultipleSelections', m.allow_multiple_selections,
       'minSelection', m.min_selection,

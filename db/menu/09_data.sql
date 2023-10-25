@@ -1218,7 +1218,7 @@ BEGIN
     FALSE,
     TRUE,
     0,
-    5,
+    4,
     0,
     ARRAY[
       '{"name": "Aji Amarillo Steak", "price": 6.84}',
@@ -1288,6 +1288,9 @@ BEGIN
     ]::JSONB[]
   );
 
+  base_id := menu.insert_modifier_group('Choose your base', TRUE, FALSE, NULL, NULL, NULL);
+  PERFORM menu.insert_modifier_group_parent(base_id, salad_style_id, NULL);
+
   item_id := menu.insert_item(
     8,
     FALSE,
@@ -1300,7 +1303,7 @@ BEGIN
   PERFORM menu.insert_items_categories(item_id, salad_id, NULL);
 
   PERFORM menu.insert_item_modifier(item_id, protein_id, 0);
-  PERFORM menu.insert_item_modifier(item_id, salad_style_id, 1);
+  PERFORM menu.insert_item_modifier(item_id, base_id, 1);
   PERFORM menu.insert_item_modifier(item_id, cheese_id, 2);
   PERFORM menu.insert_item_modifier(item_id, accent_id, 3);
   PERFORM menu.insert_item_modifier(item_id, produce_id, 4);
@@ -1323,11 +1326,11 @@ BEGIN
     'Would you like to add protein?',
     NULL,
     NULL,
-    TRUE,
     FALSE,
-    NULL,
-    NULL,
-    NULL,
+    TRUE,
+    0,
+    5,
+    0,
     ARRAY[
       '{"name": "Add Bacon", "price": 3.05}',
       '{"name": "Add Chicken", "price": 4.54}',
@@ -1347,8 +1350,8 @@ BEGIN
     10,
     0,
     ARRAY[
-      '{"name": "Sub Tofu", "price": null}',
       '{"name": "Add Avocado", "price": 2.42}',
+      '{"name": "Sub Tofu", "price": null}',
       '{"name": "No Cilantro", "price": null}',
       '{"name": "No Honey Roasted Almonds", "price": null}',
       '{"name": "No Mint", "price": null}',
@@ -1376,7 +1379,7 @@ BEGIN
     ]::JSONB[]
   );
 
-  change_dressing_id := menu.insert_modifier_group('Change Chef''s Recommended Dressing (om the side)', TRUE, FALSE, NULL, NULL, NULL);
+  change_dressing_id := menu.insert_modifier_group('Change Chef''s Recommended Dressing (on the side)', TRUE, FALSE, NULL, NULL, NULL);
   PERFORM menu.insert_modifier_group_parent(change_dressing_id, dressing_id, NULL);
   PERFORM menu.insert_modifier_group_parent(item_dressing_id, change_dressing_id, NULL);
 
@@ -1438,7 +1441,7 @@ BEGIN
     ]::JSONB[]
   );
 
-  change_dressing_id := menu.insert_modifier_group('Change Chef''s Recommended Dressing (om the side)', TRUE, FALSE, NULL, NULL, NULL);
+  change_dressing_id := menu.insert_modifier_group('Change Chef''s Recommended Dressing (on the side)', TRUE, FALSE, NULL, NULL, NULL);
   PERFORM menu.insert_modifier_group_parent(change_dressing_id, dressing_id, NULL);
   PERFORM menu.insert_modifier_group_parent(item_dressing_id, change_dressing_id, NULL);
 
@@ -1518,7 +1521,7 @@ BEGIN
     ]::JSONB[]
   );
 
-  change_dressing_id := menu.insert_modifier_group('Change Chef''s Recommended Dressing (om the side)', TRUE, FALSE, NULL, NULL, NULL);
+  change_dressing_id := menu.insert_modifier_group('Change Chef''s Recommended Dressing (on the side)', TRUE, FALSE, NULL, NULL, NULL);
   PERFORM menu.insert_modifier_group_parent(change_dressing_id, dressing_id, NULL);
   PERFORM menu.insert_modifier_group_parent(item_dressing_id, change_dressing_id, NULL);
 
@@ -1599,7 +1602,7 @@ BEGIN
     ]::JSONB[]
   );
 
-  change_dressing_id := menu.insert_modifier_group('Change Chef''s Recommended Dressing (om the side)', TRUE, FALSE, NULL, NULL, NULL);
+  change_dressing_id := menu.insert_modifier_group('Change Chef''s Recommended Dressing (on the side)', TRUE, FALSE, NULL, NULL, NULL);
   PERFORM menu.insert_modifier_group_parent(change_dressing_id, dressing_id, NULL);
   PERFORM menu.insert_modifier_group_parent(item_dressing_id, change_dressing_id, NULL);
 
@@ -1672,7 +1675,7 @@ BEGIN
     ]::JSONB[]
   );
 
-  change_dressing_id := menu.insert_modifier_group('Change Chef''s Recommended Dressing (om the side)', TRUE, FALSE, NULL, NULL, NULL);
+  change_dressing_id := menu.insert_modifier_group('Change Chef''s Recommended Dressing (on the side)', TRUE, FALSE, NULL, NULL, NULL);
   PERFORM menu.insert_modifier_group_parent(change_dressing_id, dressing_id, NULL);
   PERFORM menu.insert_modifier_group_parent(item_dressing_id, change_dressing_id, NULL);
 
@@ -1748,7 +1751,7 @@ BEGIN
     ]::JSONB[]
   );
 
-  change_dressing_id := menu.insert_modifier_group('Change Chef''s Recommended Dressing (om the side)', TRUE, FALSE, NULL, NULL, NULL);
+  change_dressing_id := menu.insert_modifier_group('Change Chef''s Recommended Dressing (on the side)', TRUE, FALSE, NULL, NULL, NULL);
   PERFORM menu.insert_modifier_group_parent(change_dressing_id, dressing_id, NULL);
   PERFORM menu.insert_modifier_group_parent(item_dressing_id, change_dressing_id, NULL);
 
@@ -1818,7 +1821,7 @@ BEGIN
     ]::JSONB[]
   );
 
-  change_dressing_id := menu.insert_modifier_group('Change Chef''s Recommended Dressing (om the side)', TRUE, FALSE, NULL, NULL, NULL);
+  change_dressing_id := menu.insert_modifier_group('Change Chef''s Recommended Dressing (on the side)', TRUE, FALSE, NULL, NULL, NULL);
   PERFORM menu.insert_modifier_group_parent(change_dressing_id, dressing_id, NULL);
   PERFORM menu.insert_modifier_group_parent(item_dressing_id, change_dressing_id, NULL);
 
@@ -1888,7 +1891,7 @@ BEGIN
     ]::JSONB[]
   );
 
-  change_dressing_id := menu.insert_modifier_group('Change Chef''s Recommended Dressing (om the side)', TRUE, FALSE, NULL, NULL, NULL);
+  change_dressing_id := menu.insert_modifier_group('Change Chef''s Recommended Dressing (on the side)', TRUE, FALSE, NULL, NULL, NULL);
   PERFORM menu.insert_modifier_group_parent(change_dressing_id, dressing_id, NULL);
   PERFORM menu.insert_modifier_group_parent(item_dressing_id, change_dressing_id, NULL);
 
@@ -1965,7 +1968,7 @@ BEGIN
     ]::JSONB[]
   );
 
-  change_dressing_id := menu.insert_modifier_group('Change Chef''s Recommended Dressing (om the side)', TRUE, FALSE, NULL, NULL, NULL);
+  change_dressing_id := menu.insert_modifier_group('Change Chef''s Recommended Dressing (on the side)', TRUE, FALSE, NULL, NULL, NULL);
   PERFORM menu.insert_modifier_group_parent(change_dressing_id, dressing_id, NULL);
   PERFORM menu.insert_modifier_group_parent(item_dressing_id, change_dressing_id, NULL);
 
@@ -2039,7 +2042,7 @@ BEGIN
     ]::JSONB[]
   );
 
-  change_dressing_id := menu.insert_modifier_group('Change Chef''s Recommended Dressing (om the side)', TRUE, FALSE, NULL, NULL, NULL);
+  change_dressing_id := menu.insert_modifier_group('Change Chef''s Recommended Dressing (on the side)', TRUE, FALSE, NULL, NULL, NULL);
   PERFORM menu.insert_modifier_group_parent(change_dressing_id, dressing_id, NULL);
   PERFORM menu.insert_modifier_group_parent(item_dressing_id, change_dressing_id, NULL);
 
