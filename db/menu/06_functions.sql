@@ -119,16 +119,18 @@ BEGIN
     ORDER BY g.group_id
   )
   SELECT
-    ARRAY_AGG(JSONB_BUILD_OBJECT(
-      'groupId', m.group_id,
-      'isRequired', m.is_required,
-      'allowMultipleSelections', m.allow_multiple_selections,
-      'minSelection', m.min_selection,
-      'maxSelection', m.max_selection,
-      'maxFree', m.max_free_selection, 
-      'name', m.name,
-      'options', m.options
-    )) AS modifiers
+    ARRAY_AGG(
+      JSONB_BUILD_OBJECT(
+        'groupId', m.group_id,
+        'isRequired', m.is_required,
+        'allowMultipleSelections', m.allow_multiple_selections,
+        'minSelection', m.min_selection,
+        'maxSelection', m.max_selection,
+        'maxFree', m.max_free_selection, 
+        'name', m.name,
+        'options', m.options
+      ) ORDER BY m.is_required DESC
+    ) AS modifiers
   FROM menu.items_modifier_groups i
   JOIN modifiers m ON m.group_id = i.group_id
   WHERE i.item_id = p_item_id;
@@ -183,20 +185,22 @@ BEGIN
     LEFT JOIN options o ON o.group_id = g.group_id
     LEFT JOIN nested_options n ON n.group_id = g.group_id
     GROUP BY g.group_id, n.options, o.options
-    ORDER BY g.group_id
+    ORDER BY g.group_id, g.is_required
   )
   SELECT
     g.name AS name,
-    ARRAY_AGG(JSONB_BUILD_OBJECT(
-      'groupId', m.group_id,
-      'isRequired', m.is_required,
-      'allowMultipleSelections', m.allow_multiple_selections,
-      'minSelection', m.min_selection,
-      'maxSelection', m.max_selection,
-      'maxFree', m.max_free_selection, 
-      'name', m.name,
-      'options', m.options
-    )) AS modifiers
+    ARRAY_AGG(
+      JSONB_BUILD_OBJECT(
+        'groupId', m.group_id,
+        'isRequired', m.is_required,
+        'allowMultipleSelections', m.allow_multiple_selections,
+        'minSelection', m.min_selection,
+        'maxSelection', m.max_selection,
+        'maxFree', m.max_free_selection, 
+        'name', m.name,
+        'options', m.options
+      ) ORDER BY m.is_required DESC
+    ) AS modifiers
   FROM modifiers m
   JOIN menu.modifier_group_parents p ON child_group_id = m.group_id
   JOIN menu.modifier_groups g ON g.group_id = p.parent_group_id
@@ -258,16 +262,18 @@ BEGIN
     ORDER BY g.group_id
   )
   SELECT
-    ARRAY_AGG(JSONB_BUILD_OBJECT(
-      'groupId', m.group_id,
-      'isRequired', m.is_required,
-      'allowMultipleSelections', m.allow_multiple_selections,
-      'minSelection', m.min_selection,
-      'maxSelection', m.max_selection,
-      'maxFree', m.max_free_selection, 
-      'name', m.name,
-      'options', m.options
-    )) AS modifiers
+    ARRAY_AGG(
+      JSONB_BUILD_OBJECT(
+        'groupId', m.group_id,
+        'isRequired', m.is_required,
+        'allowMultipleSelections', m.allow_multiple_selections,
+        'minSelection', m.min_selection,
+        'maxSelection', m.max_selection,
+        'maxFree', m.max_free_selection, 
+        'name', m.name,
+        'options', m.options
+      ) ORDER BY m.is_required DESC
+    ) AS modifiers
   FROM modifiers m
   WHERE m.group_id = p_group_id
   GROUP BY m.group_id;
