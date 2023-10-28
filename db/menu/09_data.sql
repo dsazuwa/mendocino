@@ -116,6 +116,7 @@ DECLARE
   soup_option_id INTEGER;
   bread_prep_id INTEGER;
   bread_id INTEGER;
+  change_bread_id INTEGER;
   bread_option_id INTEGER;
   customize_id INTEGER;
   sauce_option_id INTEGER;
@@ -293,6 +294,9 @@ BEGIN
 
   PERFORM menu.insert_modifier_group_parent(bread_id, salad_style_id, 2.30);
 
+  change_bread_id := menu.insert_modifier_group('Change Chef''s Recommended Bread', TRUE, FALSE, NULL, NULL, NULL);
+  PERFORM menu.insert_modifier_group_parent(change_bread_id, bread_id, NULL);
+
   item_id := menu.insert_item(
     0,
     TRUE,
@@ -332,7 +336,7 @@ BEGIN
   bread_option_id := menu.insert_modifier_group('Chef''s Recommended Bread', TRUE, FALSE, NULL, NULL, NULL);
   PERFORM menu.insert_modifier_option(bread_option_id, 'Toasted Sesame Roll', NULL, 'available');
   PERFORM menu.insert_modifier_group_parent(bread_option_id, gluten_free_bread_id, 2.36);
-  PERFORM menu.insert_modifier_group_parent(bread_option_id, bread_id, NULL);
+  PERFORM menu.insert_modifier_group_parent(bread_option_id, change_bread_id, NULL);
 
   PERFORM menu.insert_item_modifier(item_id, bread_option_id, 0);
   PERFORM menu.insert_item_modifier(item_id, customize_id, 1);
@@ -378,7 +382,7 @@ BEGIN
   bread_option_id := menu.insert_modifier_group('Chef''s Recommended Bread', TRUE, FALSE, NULL, NULL, NULL);
   PERFORM menu.insert_modifier_option(bread_option_id, 'Toasted Mom''s Seeded Honey Whole Wheat', NULL, 'available');
   PERFORM menu.insert_modifier_group_parent(bread_option_id, gluten_free_bread_id, 2.36);
-  PERFORM menu.insert_modifier_group_parent(bread_option_id, bread_id, NULL);
+  PERFORM menu.insert_modifier_group_parent(bread_option_id, change_bread_id, NULL);
 
   PERFORM menu.insert_item_modifier(item_id, bread_option_id, 0);
   PERFORM menu.insert_item_modifier(item_id, customize_id, 1);
@@ -440,7 +444,7 @@ BEGIN
   bread_option_id := menu.insert_modifier_group('Chef''s Recommended Bread', TRUE, FALSE, NULL, NULL, NULL);
   PERFORM menu.insert_modifier_option(bread_option_id, 'Toasted Ciabatta (V)', NULL, 'available');
   PERFORM menu.insert_modifier_group_parent(bread_option_id, gluten_free_bread_id, 2.36);
-  PERFORM menu.insert_modifier_group_parent(bread_option_id, bread_id, NULL);
+  PERFORM menu.insert_modifier_group_parent(bread_option_id, change_bread_id, NULL);
 
   PERFORM menu.insert_item_modifier(item_id, bread_option_id, 0);
   PERFORM menu.insert_item_modifier(item_id, sauce_option_id, 1);
@@ -503,7 +507,7 @@ BEGIN
   bread_option_id := menu.insert_modifier_group('Chef''s Recommended Bread', TRUE, FALSE, NULL, NULL, NULL);
   PERFORM menu.insert_modifier_option(bread_option_id, 'Panini Pressed Ciabatta (V)', NULL, 'available');
   PERFORM menu.insert_modifier_group_parent(bread_option_id, gluten_free_bread_id, 2.36);
-  PERFORM menu.insert_modifier_group_parent(bread_option_id, bread_id, NULL);
+  PERFORM menu.insert_modifier_group_parent(bread_option_id, change_bread_id, NULL);
 
   PERFORM menu.insert_item_modifier(item_id, bread_option_id, 0);
   PERFORM menu.insert_item_modifier(item_id, customize_id, 1);
@@ -567,7 +571,7 @@ BEGIN
   bread_option_id := menu.insert_modifier_group('Chef''s Recommended Bread', TRUE, FALSE, NULL, NULL, NULL);
   PERFORM menu.insert_modifier_option(bread_option_id, 'Original Mom''s Seeded Honey Whole Wheat', NULL, 'available');
   PERFORM menu.insert_modifier_group_parent(bread_option_id, gluten_free_bread_id, 2.36);
-  PERFORM menu.insert_modifier_group_parent(bread_option_id, bread_id, NULL);
+  PERFORM menu.insert_modifier_group_parent(bread_option_id, change_bread_id, NULL);
 
   PERFORM menu.insert_item_modifier(item_id, bread_option_id, 0);
   PERFORM menu.insert_item_modifier(item_id, customize_id, 1);
@@ -633,7 +637,7 @@ BEGIN
   bread_option_id := menu.insert_modifier_group('Chef''s Recommended Bread', TRUE, FALSE, NULL, NULL, NULL);
   PERFORM menu.insert_modifier_option(bread_option_id, 'Panini Pressed Ciabatta (V)', NULL, 'available');
   PERFORM menu.insert_modifier_group_parent(bread_option_id, gluten_free_bread_id, 2.36);
-  PERFORM menu.insert_modifier_group_parent(bread_option_id, bread_id, NULL);
+  PERFORM menu.insert_modifier_group_parent(bread_option_id, change_bread_id, NULL);
 
   PERFORM menu.insert_item_modifier(item_id, bread_option_id, 0);
   PERFORM menu.insert_item_modifier(item_id, customize_id, 1);
@@ -695,7 +699,7 @@ BEGIN
   bread_option_id := menu.insert_modifier_group('Chef''s Recommended Bread', TRUE, FALSE, NULL, NULL, NULL);
   PERFORM menu.insert_modifier_option(bread_option_id, 'Panini Pressed Ciabatta (V)', NULL, 'available');
   PERFORM menu.insert_modifier_group_parent(bread_option_id, gluten_free_bread_id, 2.36);
-  PERFORM menu.insert_modifier_group_parent(bread_option_id, bread_id, NULL);
+  PERFORM menu.insert_modifier_group_parent(bread_option_id, change_bread_id, NULL);
 
   PERFORM menu.insert_item_modifier(item_id, bread_option_id, 0);
   PERFORM menu.insert_item_modifier(item_id, customize_id, 1);
@@ -762,7 +766,7 @@ BEGIN
   bread_option_id := menu.insert_modifier_group('Chef''s Recommended Bread', TRUE, FALSE, NULL, NULL, NULL);
   PERFORM menu.insert_modifier_option(bread_option_id, 'Panini Pressed Sourdough', NULL, 'available');
   PERFORM menu.insert_modifier_group_parent(bread_option_id, gluten_free_bread_id, 2.36);
-  PERFORM menu.insert_modifier_group_parent(bread_option_id, bread_id, NULL);
+  PERFORM menu.insert_modifier_group_parent(bread_option_id, change_bread_id, NULL);
 
   PERFORM menu.insert_item_modifier(item_id, bread_option_id, 0);
   PERFORM menu.insert_item_modifier(item_id, customize_id, 1);
@@ -824,7 +828,7 @@ BEGIN
   bread_option_id := menu.insert_modifier_group('Chef''s Recommended Bread', TRUE, FALSE, NULL, NULL, NULL);
   PERFORM menu.insert_modifier_option(bread_option_id, 'Toasted Sesame Roll (V)', NULL, 'available');
   PERFORM menu.insert_modifier_group_parent(bread_option_id, gluten_free_bread_id, 2.36);
-  PERFORM menu.insert_modifier_group_parent(bread_option_id, bread_id, NULL);
+  PERFORM menu.insert_modifier_group_parent(bread_option_id, change_bread_id, NULL);
 
   PERFORM menu.insert_item_modifier(item_id, bread_option_id, 0);
   PERFORM menu.insert_item_modifier(item_id, customize_id, 1);
@@ -881,7 +885,7 @@ BEGIN
   bread_option_id := menu.insert_modifier_group('Chef''s Recommended Bread', TRUE, FALSE, NULL, NULL, NULL);
   PERFORM menu.insert_modifier_option(bread_option_id, 'Toasted Sesame Brioche Bun', NULL, 'available');
   PERFORM menu.insert_modifier_group_parent(bread_option_id, gluten_free_bread_id, 2.36);
-  PERFORM menu.insert_modifier_group_parent(bread_option_id, bread_id, NULL);
+  PERFORM menu.insert_modifier_group_parent(bread_option_id, change_bread_id, NULL);
 
   PERFORM menu.insert_item_modifier(item_id, bread_option_id, 0);
   PERFORM menu.insert_item_modifier(item_id, customize_id, 1);
@@ -924,7 +928,7 @@ BEGIN
   bread_option_id := menu.insert_modifier_group('Chef''s Recommended Bread', TRUE, FALSE, NULL, NULL, NULL);
   PERFORM menu.insert_modifier_option(bread_option_id, 'Toasted Potato Roll', NULL, 'available');
   PERFORM menu.insert_modifier_group_parent(bread_option_id, gluten_free_bread_id, 2.36);
-  PERFORM menu.insert_modifier_group_parent(bread_option_id, bread_id, NULL);
+  PERFORM menu.insert_modifier_group_parent(bread_option_id, change_bread_id, NULL);
 
   PERFORM menu.insert_item_modifier(item_id, bread_option_id, 0);
   PERFORM menu.insert_item_modifier(item_id, customize_id, 1);
@@ -971,7 +975,7 @@ BEGIN
   bread_option_id := menu.insert_modifier_group('Chef''s Recommended Bread', TRUE, FALSE, NULL, NULL, NULL);
   PERFORM menu.insert_modifier_option(bread_option_id, 'Panini Pressed Ciabatta (V)', NULL, 'available');
   PERFORM menu.insert_modifier_group_parent(bread_option_id, gluten_free_bread_id, 2.36);
-  PERFORM menu.insert_modifier_group_parent(bread_option_id, bread_id, NULL);
+  PERFORM menu.insert_modifier_group_parent(bread_option_id, change_bread_id, NULL);
 
   PERFORM menu.insert_item_modifier(item_id, bread_option_id, 0);
   PERFORM menu.insert_item_modifier(item_id, customize_id, 1);
@@ -1011,7 +1015,7 @@ BEGIN
   bread_option_id := menu.insert_modifier_group('Chef''s Recommended Bread', TRUE, FALSE, NULL, NULL, NULL);
   PERFORM menu.insert_modifier_option(bread_option_id, 'Toasted Sesame Roll (V)', NULL, 'available');
   PERFORM menu.insert_modifier_group_parent(bread_option_id, gluten_free_bread_id, 2.36);
-  PERFORM menu.insert_modifier_group_parent(bread_option_id, bread_id, NULL);
+  PERFORM menu.insert_modifier_group_parent(bread_option_id, change_bread_id, NULL);
 
   PERFORM menu.insert_item_modifier(item_id, bread_option_id, 0);
   PERFORM menu.insert_item_modifier(item_id, customize_id, 1);
@@ -1053,7 +1057,7 @@ BEGIN
   bread_option_id := menu.insert_modifier_group('Chef''s Recommended Bread', TRUE, FALSE, NULL, NULL, NULL);
   PERFORM menu.insert_modifier_option(bread_option_id, 'Panini Pressed Ciabatta (V)', NULL, 'available');
   PERFORM menu.insert_modifier_group_parent(bread_option_id, gluten_free_bread_id, 2.36);
-  PERFORM menu.insert_modifier_group_parent(bread_option_id, bread_id, NULL);
+  PERFORM menu.insert_modifier_group_parent(bread_option_id, change_bread_id, NULL);
 
   PERFORM menu.insert_item_modifier(item_id, bread_option_id, 0);
   PERFORM menu.insert_item_modifier(item_id, customize_id, 1);
@@ -1094,7 +1098,7 @@ BEGIN
   bread_option_id := menu.insert_modifier_group('Chef''s Recommended Bread', TRUE, FALSE, NULL, NULL, NULL);
   PERFORM menu.insert_modifier_option(bread_option_id, 'Toasted Sesame Roll (V)', NULL, 'available');
   PERFORM menu.insert_modifier_group_parent(bread_option_id, gluten_free_bread_id, 2.36);
-  PERFORM menu.insert_modifier_group_parent(bread_option_id, bread_id, NULL);
+  PERFORM menu.insert_modifier_group_parent(bread_option_id, change_bread_id, NULL);
 
   PERFORM menu.insert_item_modifier(item_id, bread_option_id, 0);
   PERFORM menu.insert_item_modifier(item_id, customize_id, 1);
@@ -1109,27 +1113,6 @@ BEGIN
   );
 
   PERFORM menu.insert_items_categories(item_id, sandwiches_id, NULL);
-
-  protein_id := menu.insert_modifiers_and_options(
-    'Choose your protein',
-    NULL,
-    NULL,
-    TRUE,
-    FALSE,
-    NULL,
-    NULL,
-    NULL,
-    ARRAY[
-      '{"name": "No Meat", "price": 12.94}',
-      '{"name": "Applewood Smoked Bacon", "price": 14.09}',
-      '{"name": "Shaved, Roasted Chicken Breast", "price": 14.38}',
-      '{"name": "Shaved, Roasted Turkey Breast", "price": 14.38}',
-      '{"name": "Organic Marinated, Baked Tofu", "price": 14.09}',
-      '{"name": "Braised, Caramelized Pork Belly", "price": 15.24}',
-      '{"name": "Hand Carved Steak", "price": 15.87}',
-      '{"name": "Roast Beef", "price": 16.33}'
-    ]::JSONB[]
-  );
 
   cheese_id := menu.insert_modifiers_and_options(
     'Would you like cheese?',
@@ -1228,12 +1211,82 @@ BEGIN
     ]::JSONB[]
   );
 
+  protein_id := menu.insert_modifier_group('Choose your protein', TRUE, FALSE, NULL, NULL, NULL);
+  
+  id := menu.insert_modifier_group('No Meat', FALSE, FALSE, NULL, NULL, NULL);
+  PERFORM menu.insert_modifier_group_parent(protein_id, id, 12.94);
+
+  PERFORM menu.insert_modifier_group_parent(id, bread_id, NULL);
+  PERFORM menu.insert_modifier_group_parent(id, cheese_id, NULL);
+  PERFORM menu.insert_modifier_group_parent(id, accent_id, NULL);
+  PERFORM menu.insert_modifier_group_parent(id, produce_id, NULL);
+  PERFORM menu.insert_modifier_group_parent(id, premium_id, NULL);
+
+
+  id := menu.insert_modifier_group('Applewood Smoked Bacon', FALSE, FALSE, NULL, NULL, NULL);
+  PERFORM menu.insert_modifier_group_parent(protein_id, id, 14.09);
+
+  PERFORM menu.insert_modifier_group_parent(id, bread_id, NULL);
+  PERFORM menu.insert_modifier_group_parent(id, cheese_id, NULL);
+  PERFORM menu.insert_modifier_group_parent(id, accent_id, NULL);
+  PERFORM menu.insert_modifier_group_parent(id, produce_id, NULL);
+  PERFORM menu.insert_modifier_group_parent(id, premium_id, NULL);
+
+  id := menu.insert_modifier_group('Shaved, Roasted Chicken Breast', FALSE, FALSE, NULL, NULL, NULL);
+  PERFORM menu.insert_modifier_group_parent(protein_id, id, 14.38);
+
+  PERFORM menu.insert_modifier_group_parent(id, bread_id, NULL);
+  PERFORM menu.insert_modifier_group_parent(id, cheese_id, NULL);
+  PERFORM menu.insert_modifier_group_parent(id, accent_id, NULL);
+  PERFORM menu.insert_modifier_group_parent(id, produce_id, NULL);
+  PERFORM menu.insert_modifier_group_parent(id, premium_id, NULL);
+
+  id := menu.insert_modifier_group('Shaved, Roasted Turkey Breast', FALSE, FALSE, NULL, NULL, NULL);
+  PERFORM menu.insert_modifier_group_parent(protein_id, id, 14.38);
+
+  PERFORM menu.insert_modifier_group_parent(id, bread_id, NULL);
+  PERFORM menu.insert_modifier_group_parent(id, cheese_id, NULL);
+  PERFORM menu.insert_modifier_group_parent(id, accent_id, NULL);
+  PERFORM menu.insert_modifier_group_parent(id, produce_id, NULL);
+  PERFORM menu.insert_modifier_group_parent(id, premium_id, NULL);
+  
+  id := menu.insert_modifier_group('Organic Marinated, Baked Tofu', FALSE, FALSE, NULL, NULL, NULL);
+  PERFORM menu.insert_modifier_group_parent(protein_id, id, 14.09);
+
+  PERFORM menu.insert_modifier_group_parent(id, bread_id, NULL);
+  PERFORM menu.insert_modifier_group_parent(id, cheese_id, NULL);
+  PERFORM menu.insert_modifier_group_parent(id, accent_id, NULL);
+  PERFORM menu.insert_modifier_group_parent(id, produce_id, NULL);
+  PERFORM menu.insert_modifier_group_parent(id, premium_id, NULL);
+  
+  id := menu.insert_modifier_group('Braised, Caramelized Pork Belly', FALSE, FALSE, NULL, NULL, NULL);
+  PERFORM menu.insert_modifier_group_parent(protein_id, id, 15.24);
+
+  PERFORM menu.insert_modifier_group_parent(id, bread_id, NULL);
+  PERFORM menu.insert_modifier_group_parent(id, cheese_id, NULL);
+  PERFORM menu.insert_modifier_group_parent(id, accent_id, NULL);
+  PERFORM menu.insert_modifier_group_parent(id, produce_id, NULL);
+  PERFORM menu.insert_modifier_group_parent(id, premium_id, NULL);
+  
+  id := menu.insert_modifier_group('Hand Carved Steak', FALSE, FALSE, NULL, NULL, NULL);
+  PERFORM menu.insert_modifier_group_parent(protein_id, id, 15.87);
+
+  PERFORM menu.insert_modifier_group_parent(id, bread_id, NULL);
+  PERFORM menu.insert_modifier_group_parent(id, cheese_id, NULL);
+  PERFORM menu.insert_modifier_group_parent(id, accent_id, NULL);
+  PERFORM menu.insert_modifier_group_parent(id, produce_id, NULL);
+  PERFORM menu.insert_modifier_group_parent(id, premium_id, NULL);
+  
+  id := menu.insert_modifier_group('Roast Beef', FALSE, FALSE, NULL, NULL, NULL);
+  PERFORM menu.insert_modifier_group_parent(protein_id, id, 16.33);
+
+  PERFORM menu.insert_modifier_group_parent(id, bread_id, NULL);
+  PERFORM menu.insert_modifier_group_parent(id, cheese_id, NULL);
+  PERFORM menu.insert_modifier_group_parent(id, accent_id, NULL);
+  PERFORM menu.insert_modifier_group_parent(id, produce_id, NULL);
+  PERFORM menu.insert_modifier_group_parent(id, premium_id, NULL);
+
   PERFORM menu.insert_item_modifier(item_id, protein_id, 0);
-  PERFORM menu.insert_item_modifier(item_id, bread_id, 1);
-  PERFORM menu.insert_item_modifier(item_id, cheese_id, 2);
-  PERFORM menu.insert_item_modifier(item_id, accent_id, 3);
-  PERFORM menu.insert_item_modifier(item_id, produce_id, 4);
-  PERFORM menu.insert_item_modifier(item_id, premium_id, 5);
 END $$;
 -- #endregion
 
@@ -1267,27 +1320,7 @@ BEGIN
   SELECT group_id FROM menu.modifier_groups WHERE name = 'Would you like to add any accents?' INTO accent_id;
   SELECT group_id FROM menu.modifier_groups WHERE name = 'Would you like to add any fruits or veggies?' INTO produce_id;
   SELECT group_id FROM menu.modifier_groups WHERE name = 'Would you like to add any premium add-ons?' INTO premium_id;
-
-  protein_id := menu.insert_modifiers_and_options(
-    'Choose your protein',
-    NULL,
-    NULL,
-    TRUE,
-    FALSE,
-    NULL,
-    NULL,
-    NULL,
-    ARRAY[
-      '{"name": "No Meat", "price": 12.94}',
-      '{"name": "Applewood Smoked Bacon", "price": 14.09}',
-      '{"name": "Shaved, Roasted Chicken Breast", "price": 14.38}',
-      '{"name": "Shaved, Roasted Turkey Breast", "price": 14.38}',
-      '{"name": "Organic Marinated, Baked Tofu", "price": 14.38}',
-      '{"name": "Braised, Caramelized Pork Belly", "price": 15.24}',
-      '{"name": "Hand Carved Steak", "price": 16.33}'
-    ]::JSONB[]
-  );
-
+ 
   base_id := menu.insert_modifier_group('Choose your base', TRUE, FALSE, NULL, NULL, NULL);
   PERFORM menu.insert_modifier_group_parent(base_id, salad_style_id, NULL);
 
@@ -1302,12 +1335,73 @@ BEGIN
 
   PERFORM menu.insert_items_categories(item_id, salad_id, NULL);
 
+  protein_id := menu.insert_modifier_group('Choose your protein', TRUE, FALSE, NULL, NULL, NULL);
+  
+  id := menu.insert_modifier_group('No Meat', FALSE, FALSE, NULL, NULL, NULL);
+  PERFORM menu.insert_modifier_group_parent(protein_id, id, 12.94);
+
+  PERFORM menu.insert_modifier_group_parent(id, base_id, NULL);
+  PERFORM menu.insert_modifier_group_parent(id, cheese_id, NULL);
+  PERFORM menu.insert_modifier_group_parent(id, accent_id, NULL);
+  PERFORM menu.insert_modifier_group_parent(id, produce_id, NULL);
+  PERFORM menu.insert_modifier_group_parent(id, premium_id, NULL);
+
+
+  id := menu.insert_modifier_group('Applewood Smoked Bacon', FALSE, FALSE, NULL, NULL, NULL);
+  PERFORM menu.insert_modifier_group_parent(protein_id, id, 14.09);
+
+  PERFORM menu.insert_modifier_group_parent(id, base_id, NULL);
+  PERFORM menu.insert_modifier_group_parent(id, cheese_id, NULL);
+  PERFORM menu.insert_modifier_group_parent(id, accent_id, NULL);
+  PERFORM menu.insert_modifier_group_parent(id, produce_id, NULL);
+  PERFORM menu.insert_modifier_group_parent(id, premium_id, NULL);
+
+  id := menu.insert_modifier_group('Shaved, Roasted Chicken Breast', FALSE, FALSE, NULL, NULL, NULL);
+  PERFORM menu.insert_modifier_group_parent(protein_id, id, 14.38);
+
+  PERFORM menu.insert_modifier_group_parent(id, base_id, NULL);
+  PERFORM menu.insert_modifier_group_parent(id, cheese_id, NULL);
+  PERFORM menu.insert_modifier_group_parent(id, accent_id, NULL);
+  PERFORM menu.insert_modifier_group_parent(id, produce_id, NULL);
+  PERFORM menu.insert_modifier_group_parent(id, premium_id, NULL);
+
+  id := menu.insert_modifier_group('Shaved, Roasted Turkey Breast', FALSE, FALSE, NULL, NULL, NULL);
+  PERFORM menu.insert_modifier_group_parent(protein_id, id, 14.38);
+
+  PERFORM menu.insert_modifier_group_parent(id, base_id, NULL);
+  PERFORM menu.insert_modifier_group_parent(id, cheese_id, NULL);
+  PERFORM menu.insert_modifier_group_parent(id, accent_id, NULL);
+  PERFORM menu.insert_modifier_group_parent(id, produce_id, NULL);
+  PERFORM menu.insert_modifier_group_parent(id, premium_id, NULL);
+  
+  id := menu.insert_modifier_group('Organic Marinated, Baked Tofu', FALSE, FALSE, NULL, NULL, NULL);
+  PERFORM menu.insert_modifier_group_parent(protein_id, id, 14.38);
+
+  PERFORM menu.insert_modifier_group_parent(id, base_id, NULL);
+  PERFORM menu.insert_modifier_group_parent(id, cheese_id, NULL);
+  PERFORM menu.insert_modifier_group_parent(id, accent_id, NULL);
+  PERFORM menu.insert_modifier_group_parent(id, produce_id, NULL);
+  PERFORM menu.insert_modifier_group_parent(id, premium_id, NULL);
+  
+  id := menu.insert_modifier_group('Braised, Caramelized Pork Belly', FALSE, FALSE, NULL, NULL, NULL);
+  PERFORM menu.insert_modifier_group_parent(protein_id, id, 15.24);
+
+  PERFORM menu.insert_modifier_group_parent(id, base_id, NULL);
+  PERFORM menu.insert_modifier_group_parent(id, cheese_id, NULL);
+  PERFORM menu.insert_modifier_group_parent(id, accent_id, NULL);
+  PERFORM menu.insert_modifier_group_parent(id, produce_id, NULL);
+  PERFORM menu.insert_modifier_group_parent(id, premium_id, NULL);
+  
+  id := menu.insert_modifier_group('Hand Carved Steak', FALSE, FALSE, NULL, NULL, NULL);
+  PERFORM menu.insert_modifier_group_parent(protein_id, id, 16.33);
+
+  PERFORM menu.insert_modifier_group_parent(id, base_id, NULL);
+  PERFORM menu.insert_modifier_group_parent(id, cheese_id, NULL);
+  PERFORM menu.insert_modifier_group_parent(id, accent_id, NULL);
+  PERFORM menu.insert_modifier_group_parent(id, produce_id, NULL);
+  PERFORM menu.insert_modifier_group_parent(id, premium_id, NULL);
+
   PERFORM menu.insert_item_modifier(item_id, protein_id, 0);
-  PERFORM menu.insert_item_modifier(item_id, base_id, 1);
-  PERFORM menu.insert_item_modifier(item_id, cheese_id, 2);
-  PERFORM menu.insert_item_modifier(item_id, accent_id, 3);
-  PERFORM menu.insert_item_modifier(item_id, produce_id, 4);
-  PERFORM menu.insert_item_modifier(item_id, premium_id, 5);
 
   item_id := menu.insert_item(
     0,
@@ -1374,7 +1468,7 @@ BEGIN
     NULL,
     ARRAY[
       '{"name": "Thai Almond Dressing (on the side)", "price": null}',
-      '{"name": "Thai Almond Dressing (on the side)", "price": null}',
+      '{"name": "Extra Thai Almond Dressing (on the side)", "price": null}',
       '{"name": "No Dressing", "price": null}'
     ]::JSONB[]
   );
