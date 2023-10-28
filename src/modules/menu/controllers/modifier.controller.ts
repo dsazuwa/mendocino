@@ -20,6 +20,26 @@ export const getModifier = async (
   }
 };
 
+export const getChildModifiers = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { id } = req.params;
+
+    const result = await modifierService.getChildModifiers(
+      Number.parseInt(id, 10),
+    );
+
+    if (!result) res.status(400).json({ message: 'Child Modifiers not found' });
+
+    res.status(200).json({ ...result });
+  } catch (e) {
+    next(e);
+  }
+};
+
 export const getItemModifiers = async (
   req: Request,
   res: Response,

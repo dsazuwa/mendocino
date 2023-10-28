@@ -20,6 +20,7 @@ DROP FUNCTION IF EXISTS menu.insert_item_modifier(INTEGER, INTEGER, INTEGER);
 DROP FUNCTION IF EXISTS menu.get_menu();
 DROP FUNCTION IF EXISTS menu.get_order_menu();
 DROP FUNCTION IF EXISTS menu.get_item_modifiers(INTEGER);
+DROP FUNCTION IF EXISTS menu.get_child_modifiers(INTEGER);
 DROP FUNCTION IF EXISTS menu.get_modifier(INTEGER);
 
 -- Drop views

@@ -136,6 +136,76 @@ END;
 $$ LANGUAGE plpgsql;
 -- #endregion
 
+-- #region get_child_modifiers
+CREATE OR REPLACE FUNCTION menu.get_child_modifiers(p_group_id INTEGER)
+RETURNS TABLE (
+  name VARCHAR,
+  modifiers JSONB[]
+) AS $$
+BEGIN
+  RETURN QUERY
+  WITH options AS (
+    SELECT
+      g.group_id,
+      ARRAY_AGG(JSONB_BUILD_OBJECT(
+        'optionId', o.option_id,
+        'name', o.name,
+        'price', o.price
+      )) AS options
+    FROM menu.modifier_groups g
+    JOIN menu.modifier_options o ON o.group_id = g.group_id
+    GROUP BY g.group_id
+  ),
+  nested_options AS (
+    SELECT
+      gp.parent_group_id AS group_id,
+      ARRAY_AGG(JSONB_BUILD_OBJECT(
+        'groupId', cm.group_id,
+        'name', cm.name,
+        'price', gp.price
+      )) AS options
+    FROM menu.modifier_group_parents gp
+    JOIN menu.modifier_groups pm ON pm.group_id = gp.parent_group_id
+    JOIN menu.modifier_groups cm ON cm.group_id = gp.child_group_id
+    GROUP BY gp.parent_group_id
+  ),
+  modifiers AS (
+    SELECT
+      g.group_id,
+      g.is_required,
+      g.allow_multiple_selections,
+      g.min_selection,
+      g.max_selection,
+      g.max_free_selection,
+      g.name,
+      ARRAY_CAT(o.options, n.options) AS options
+    FROM menu.modifier_groups g
+    LEFT JOIN options o ON o.group_id = g.group_id
+    LEFT JOIN nested_options n ON n.group_id = g.group_id
+    GROUP BY g.group_id, n.options, o.options
+    ORDER BY g.group_id
+  )
+  SELECT
+    g.name AS name,
+    ARRAY_AGG(JSONB_BUILD_OBJECT(
+      'groupId', m.group_id,
+      'isRequired', m.is_required,
+      'allowMultipleSelections', m.allow_multiple_selections,
+      'minSelection', m.min_selection,
+      'maxSelection', m.max_selection,
+      'maxFree', m.max_free_selection, 
+      'name', m.name,
+      'options', m.options
+    )) AS modifiers
+  FROM modifiers m
+  JOIN menu.modifier_group_parents p ON child_group_id = m.group_id
+  JOIN menu.modifier_groups g ON g.group_id = p.parent_group_id
+  WHERE p.parent_group_id = p_group_id
+  GROUP BY g.name;
+END;
+$$ LANGUAGE plpgsql;
+-- #endregion
+
 -- #region get_modifier
 CREATE OR REPLACE FUNCTION menu.get_modifier(p_group_id INTEGER)
 RETURNS TABLE (
