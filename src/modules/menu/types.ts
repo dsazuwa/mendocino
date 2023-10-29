@@ -33,7 +33,6 @@ interface NestedOption {
 interface Modifier {
   group_id: number;
   isRequired: boolean;
-  allowMultipleSelections: boolean;
   minSelection: number;
   maxSelection: number;
   maxFree: number;

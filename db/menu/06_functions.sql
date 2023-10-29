@@ -102,7 +102,6 @@ BEGIN
     SELECT
       g.group_id,
       g.is_required,
-      g.allow_multiple_selections,
       g.min_selection,
       g.max_selection,
       g.max_free_selection,
@@ -123,7 +122,6 @@ BEGIN
       JSONB_BUILD_OBJECT(
         'groupId', m.group_id,
         'isRequired', m.is_required,
-        'allowMultipleSelections', m.allow_multiple_selections,
         'minSelection', m.min_selection,
         'maxSelection', m.max_selection,
         'maxFree', m.max_free_selection, 
@@ -175,7 +173,6 @@ BEGIN
     SELECT
       g.group_id,
       g.is_required,
-      g.allow_multiple_selections,
       g.min_selection,
       g.max_selection,
       g.max_free_selection,
@@ -193,7 +190,6 @@ BEGIN
       JSONB_BUILD_OBJECT(
         'groupId', m.group_id,
         'isRequired', m.is_required,
-        'allowMultipleSelections', m.allow_multiple_selections,
         'minSelection', m.min_selection,
         'maxSelection', m.max_selection,
         'maxFree', m.max_free_selection, 
@@ -246,7 +242,6 @@ BEGIN
     SELECT
       g.group_id,
       g.is_required,
-      g.allow_multiple_selections,
       g.min_selection,
       g.max_selection,
       g.max_free_selection,
@@ -266,7 +261,6 @@ BEGIN
       JSONB_BUILD_OBJECT(
         'groupId', m.group_id,
         'isRequired', m.is_required,
-        'allowMultipleSelections', m.allow_multiple_selections,
         'minSelection', m.min_selection,
         'maxSelection', m.max_selection,
         'maxFree', m.max_free_selection, 

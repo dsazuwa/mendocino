@@ -157,7 +157,6 @@ $$ LANGUAGE plpgsql;
 CREATE OR REPLACE FUNCTION menu.insert_modifier_group(
   p_modifier_name VARCHAR(100),
   p_is_required BOOLEAN,
-  p_allow_multiple_selections BOOLEAN,
   p_min_selection INTEGER,
   p_max_selection INTEGER,
   p_max_free_selection INTEGER
@@ -170,7 +169,6 @@ BEGIN
     (
       "name",
       "is_required",
-      "allow_multiple_selections",
       "min_selection",
       "max_selection",
       "max_free_selection",
@@ -181,7 +179,6 @@ BEGIN
     (
       p_modifier_name,
       p_is_required,
-      p_allow_multiple_selections,
       p_min_selection,
       p_max_selection,
       p_max_free_selection,
@@ -257,7 +254,6 @@ CREATE OR REPLACE FUNCTION menu.insert_modifiers_and_options(
   p_parent_group_id INTEGER,
   p_price DECIMAL(10, 2),
   p_is_required BOOLEAN,
-  p_allow_multiple_selections BOOLEAN,
   p_min_selection INTEGER,
   p_max_selection INTEGER,
   p_max_free_selection INTEGER,
@@ -268,7 +264,6 @@ DECLARE
   modifier_id INTEGER := menu.insert_modifier_group(
     p_modifier_name,
     p_is_required,
-    p_allow_multiple_selections,
     p_min_selection,
     p_max_selection,
     p_max_free_selection

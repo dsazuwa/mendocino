@@ -20,8 +20,6 @@ class ModifierGroup extends Model<
 
   declare isRequired: boolean;
 
-  declare allowMultipleSelections: boolean;
-
   declare minSelection: CreationOptional<number | null>;
 
   declare maxSelection: CreationOptional<number | null>;
@@ -46,10 +44,6 @@ ModifierGroup.init(
       allowNull: false,
     },
     isRequired: {
-      type: DataTypes.BOOLEAN,
-      allowNull: false,
-    },
-    allowMultipleSelections: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
     },

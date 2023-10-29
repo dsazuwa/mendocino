@@ -69,10 +69,9 @@ CREATE TABLE menu.modifier_groups (
   group_id SERIAL,
   name VARCHAR(100) NOT NULL,
   is_required BOOLEAN NOT NULL,
-  allow_multiple_selections BOOLEAN NOT NULL,
-  min_selection INTEGER,
-  max_selection INTEGER,
-  max_free_selection INTEGER,
+  min_selection INTEGER NOT NULL,
+  max_selection INTEGER NOT NULL,
+  max_free_selection INTEGER NOT NULL,
   created_at TIMESTAMP NOT NULL,
   updated_at TIMESTAMP NOT NULL,
   PRIMARY KEY (group_id)
