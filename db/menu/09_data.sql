@@ -252,7 +252,7 @@ BEGIN
   PERFORM menu.insert_modifier_group_parent(id, bread_prep_id, NULL);
   PERFORM menu.insert_modifier_group_parent(bread_id, id, NULL);
 
-  id := menu.insert_modifier_group('Mon''s Seeded Honey Whole Wheat', TRUE, 1, 1, 0);
+  id := menu.insert_modifier_group('Mom''s Seeded Honey Whole Wheat', TRUE, 1, 1, 0);
   PERFORM menu.insert_modifier_group_parent(id, bread_prep_id, NULL);
   PERFORM menu.insert_modifier_group_parent(bread_id, id, NULL);
 
@@ -372,6 +372,51 @@ BEGIN
 
   bread_option_id := menu.insert_modifier_group('Chef''s Recommended Bread', TRUE, 1, 1, 0);
   PERFORM menu.insert_modifier_option(bread_option_id, 'Toasted Mom''s Seeded Honey Whole Wheat', NULL, 'available');
+  PERFORM menu.insert_modifier_group_parent(bread_option_id, gluten_free_bread_id, 2.36);
+  PERFORM menu.insert_modifier_group_parent(bread_option_id, change_bread_id, NULL);
+
+  PERFORM menu.insert_item_modifier(item_id, bread_option_id, 0);
+  PERFORM menu.insert_item_modifier(item_id, customize_id, 1);
+
+  item_id := menu.insert_item(
+    5,
+    TRUE,
+    'November to Remember',
+    'Warm carved turkey, mushroom-turkey sausage stuffing, spicy cranberry chutney, mozzarella cheese, herb aioli, shredded romaine (870 cal) on toasted cranberry walnut wheat (320 cal)',
+    'Nov2Remember.jpg',
+    NULL
+  );
+
+  PERFORM menu.insert_items_categories(item_id, creations_id, NULL);
+  PERFORM menu.insert_item_price(item_id, 16.04);
+  PERFORM menu.insert_item_tag(item_id, n_id);
+
+  customize_id := menu.insert_modifiers_and_options(
+    'Change It Up',
+    NULL,
+    NULL,
+    FALSE,
+    0,
+    12,
+    0,
+    ARRAY[
+      '{"name": "Extra Turkey", "price": 2.27}',
+      '{"name": "No Turkey", "price": null}',
+      '{"name": "Extra Stuffing", "price": 1.15}',
+      '{"name": "No Stuffing", "price": null}',
+      '{"name": "No Herb Aioli", "price": null}',
+      '{"name": "Lite Herb Aioli", "price": null}',
+      '{"name": "Herb Aioli (on the side)", "price": null}',
+      '{"name": "No Cranberry Chutney", "price": null}',
+      '{"name": "Lite Cranberry Chutney", "price": null}',
+      '{"name": "Cranberry Chutney (on the side)", "price": null}',
+      '{"name": "No Romaine", "price": null}',
+      '{"name": "No Mozzarella", "price": null}'
+    ]::JSONB[]
+  );
+
+  bread_option_id := menu.insert_modifier_group('Chef''s Recommended Bread', TRUE, 1, 1, 0);
+  PERFORM menu.insert_modifier_option(bread_option_id, 'Toasted Cranberry Walnut Bread', NULL, 'available');
   PERFORM menu.insert_modifier_group_parent(bread_option_id, gluten_free_bread_id, 2.36);
   PERFORM menu.insert_modifier_group_parent(bread_option_id, change_bread_id, NULL);
 
@@ -1963,7 +2008,7 @@ BEGIN
     NULL,
     FALSE,
     0,
-    2,
+    1,
     0,
     ARRAY[
       '{"name": "Extra Chicken", "price": 2.15}',
@@ -2160,11 +2205,11 @@ BEGIN
       '{"name": "No Cilantro", "price": null}',
       '{"name": "No Crema", "price": null}',
       '{"name": "No Cotija Cheese", "price": null}',
-      '{"name": "No Pico De Gallo", "price": null}',
-      '{"name": "Pico De Gallo (on the side)", "price": null}',
       '{"name": "No Shredded Cabbage", "price": null}',
       '{"name": "No Tortilla Strips (G)", "price": null}',
       '{"name": "No Zucchini", "price": null}',
+      '{"name": "No Pico De Gallo", "price": null}',
+      '{"name": "Pico De Gallo (on the side)", "price": null}',
       '{"name": "No Fresh Lime", "price": null}'
     ]::JSONB[]
   );
@@ -2189,21 +2234,23 @@ BEGIN
     NULL,
     FALSE,
     0,
-    12,
+    14,
     0,
     ARRAY[
       '{"name": "No Whole Grain Bulgur", "price": null}',
-      '{"name": "Baby Spinach", "price": null}',
-      '{"name": "Roasted Romanesco Broccoli with Tomatoes", "price": null}',
+      '{"name": "No Baby Spinach", "price": null}',
+      '{"name": "No Roasted Romanesco Broccoli with Tomatoes", "price": null}',
       '{"name": "No Yellow Peppers", "price": null}',
       '{"name": "No Red Onions", "price": null}',
       '{"name": "No Sumac", "price": null}',
-      '{"name": "Pickled Golden Raisins (on the side)", "price": null}',
       '{"name": "No Pickled Golden Raisins", "price": null}',
-      '{"name": "Lemon Dill Vinaigrette (on the side)", "price": null}',
+      '{"name": "Pickled Golden Raisins (on the side)", "price": null}',
       '{"name": "No Lemon Dill Vinaigrette", "price": null}',
-      '{"name": "Tahini Yogurt Sauce (on the side)", "price": null}',
-      '{"name": "No Tahini Yogurt Sauce", "price": null}'
+      '{"name": "Lite Lemon Dill Vinaigrette", "price": null}',
+      '{"name": "Lemon Dill Vinaigrette (on the side)", "price": null}',
+      '{"name": "No Tahini Yogurt Sauce", "price": null}',
+      '{"name": "Lite Tahini Yogurt Sauce", "price": null}',
+      '{"name": "Tahini Yogurt Sauce (on the side)", "price": null}'
     ]::JSONB[]
   );
 

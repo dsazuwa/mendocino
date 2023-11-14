@@ -49,7 +49,7 @@ BEGIN
         'name', v.name,
         'description', description,
         'subCategory', sub_category,
-        'price', price,
+        'price', COALESCE(price, 0),
         'tags', tags,
         'photoUrl', photo_url,
         'notes', v.notes
