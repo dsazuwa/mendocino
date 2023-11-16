@@ -2,12 +2,11 @@
 
 import { Profile } from 'passport';
 
-import { ApiError } from '@App/utils';
-
-import { ProviderType } from '@user/models';
-import authService from '@user/services/auth.service';
-import userService from '@user/services/user.service';
-import messages from '@user/utils/messages';
+import { ApiError } from '../../../../utils';
+import { ProviderType } from '../../models';
+import authService from '../../services/auth.service';
+import userService from '../../services/user.service';
+import messages from '../../utils/messages';
 
 const verifyFunction = async (
   profile: Profile,

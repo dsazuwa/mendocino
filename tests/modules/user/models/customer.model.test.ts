@@ -1,6 +1,6 @@
-import { Customer, CustomerStatusType } from '@user/models';
+import { Customer, CustomerStatusType } from 'modules/user/models';
 
-import 'tests/db-setup';
+import '../../../db-setup';
 
 const raw = true;
 

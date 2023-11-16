@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 
-import { permitPending } from '@user/middleware/route-guards';
+import { permitPending } from 'modules/user/middleware/route-guards';
 
 describe('Permit Pending Guard', () => {
   it('should permit access to pending user', () => {

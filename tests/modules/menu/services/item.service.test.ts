@@ -1,5 +1,5 @@
-// import { Category, Item, ItemCategory } from '@menu/models';
-// import itemsService from '@menu/services/items.service';
+// import { Category, Item, ItemCategory } from 'modules/menu/models';
+// import itemsService from 'modules/menu/services/items.service';
 
 // import {
 //   createItem,
@@ -7,7 +7,7 @@
 //   getItem,
 // } from 'tests/modules/menu/helper-functions';
 
-// import 'tests/db-setup';
+// import '../../../db-setup';
 
 // beforeAll(async () => {
 //   await createMenu();

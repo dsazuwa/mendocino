@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 
-import messages from '@user/utils/messages';
+import messages from '../../utils/messages';
 
 const permitPending = (req: Request, res: Response, next: NextFunction) => {
   const { user } = req;

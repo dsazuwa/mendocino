@@ -1,7 +1,7 @@
 // import { Op, QueryTypes, Transaction } from 'sequelize';
 
-// import sequelize from '@App/db';
-// import { ApiError } from '@App/utils';
+// import sequelize from '../../../db';
+// import { ApiError } from 'utils';
 
 // import {
 //   Category,
@@ -11,7 +11,7 @@
 //   ItemMenuStatusType,
 //   ItemTag,
 //   Tag,
-// } from '@menu/models';
+// } from 'modules/menu/models';
 
 // const getCategoryId = async (name: string, transaction?: Transaction) => {
 //   const retrievedCategory = await Category.findOne({

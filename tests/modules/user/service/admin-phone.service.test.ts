@@ -1,10 +1,10 @@
-import { AdminOTP, AdminPhone, Phone } from '@user/models';
-import adminPhoneService from '@user/services/admin-phone.service';
-import { ROLES } from '@user/utils/constants';
+import { AdminOTP, AdminPhone, Phone } from 'modules/user/models';
+import adminPhoneService from 'modules/user/services/admin-phone.service';
+import { ROLES } from 'modules/user/utils/constants';
 
-import { createAdmin, createRoles } from 'tests/modules/user/helper-functions';
+import { createAdmin, createRoles } from '../helper-functions';
 
-import 'tests/db-setup';
+import '../../../db-setup';
 
 beforeAll(async () => {
   await createRoles();

@@ -6,18 +6,18 @@ import {
   CustomerOTP,
   CustomerPassword,
   Email,
-} from '@user/models';
-import authService from '@user/services/auth.service';
-import { ROLES } from '@user/utils/constants';
+} from 'modules/user/models';
+import authService from 'modules/user/services/auth.service';
+import { ROLES } from 'modules/user/utils/constants';
 
 import {
   createAdmin,
   createCustomer,
   createCustomerAndIdentity,
   createRoles,
-} from 'tests/modules/user/helper-functions';
+} from '../helper-functions';
 
-import 'tests/db-setup';
+import '../../../db-setup';
 
 const raw = true;
 

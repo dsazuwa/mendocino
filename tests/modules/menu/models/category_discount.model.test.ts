@@ -1,6 +1,6 @@
-import { Category, CategoryDiscount, Discount } from '@menu/models';
+import { Category, CategoryDiscount, Discount } from 'modules/menu/models';
 
-import 'tests/db-setup';
+import '../../../db-setup';
 
 describe('Category Discount Model', () => {
   let discountId: number;

@@ -4,9 +4,9 @@ import {
   CustomerEmail,
   CustomerIdentity,
   Email,
-} from '@user/models';
+} from 'modules/user/models';
 
-import 'tests/db-setup';
+import '../../../db-setup';
 
 const raw = true;
 

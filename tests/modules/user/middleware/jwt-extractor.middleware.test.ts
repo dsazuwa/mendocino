@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 
-import { extractJwtFromCookie } from '@App/modules/user';
+import { extractJwtFromCookie } from 'modules/user';
 
 describe('extractJwtFromCookie Middleware', () => {
   const res = {} as unknown as Response;

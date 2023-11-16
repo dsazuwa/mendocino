@@ -4,7 +4,7 @@ import {
   getMenu,
   getMenuGrouped,
   getOrderMenu,
-} from '@menu/controllers/menu.controller';
+} from '../controllers/menu.controller';
 
 const menuRouter = Router();
 

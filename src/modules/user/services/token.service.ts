@@ -2,10 +2,9 @@ import { JwtPayload, sign, verify } from 'jsonwebtoken';
 import { QueryTypes, Transaction } from 'sequelize';
 import { v4 as uuidv4 } from 'uuid';
 
-import sequelize from '@App/db';
-
-import { AdminRefreshToken, CustomerRefreshToken } from '@user/models';
-import { JwtProviderType } from '@user/types';
+import sequelize from '../../../db';
+import { AdminRefreshToken, CustomerRefreshToken } from '../models';
+import { JwtProviderType } from '../types';
 
 const accessTokenService = {
   create: (

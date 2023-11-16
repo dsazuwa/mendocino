@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 
-import { messages } from '@menu/utils.ts/messages';
+import { messages } from '../utils.ts/messages';
 
 export const getItems = async (
   req: Request,

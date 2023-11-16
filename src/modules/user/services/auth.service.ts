@@ -1,6 +1,6 @@
 import { QueryTypes } from 'sequelize';
 
-import sequelize from '@App/db';
+import sequelize from '../../../db';
 
 import {
   AdminAccount,
@@ -12,7 +12,7 @@ import {
   CustomerPassword,
   Email,
   ProviderType,
-} from '@user/models';
+} from '../models';
 
 const authService = {
   createIdentityForCustomer: (

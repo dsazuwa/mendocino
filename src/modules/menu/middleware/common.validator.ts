@@ -1,6 +1,6 @@
 import { string } from 'zod';
 
-import { ItemMenuStatusType } from '@menu/models';
+import { ItemMenuStatusType } from '../models';
 
 export const idRules = string()
   .trim()

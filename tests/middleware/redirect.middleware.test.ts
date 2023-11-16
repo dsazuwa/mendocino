@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 
-import { redirectToApiOnRootGet } from '@App/middleware';
-import { request } from 'tests/supertest.helper';
+import { redirectToApiOnRootGet } from '../../src/middleware';
+import { request } from '../supertest.helper';
 
 describe('Redirect Middleware', () => {
   it('should redirect get / to get /api', async () => {

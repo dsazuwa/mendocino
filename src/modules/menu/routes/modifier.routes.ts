@@ -4,7 +4,7 @@ import {
   getModifier,
   getItemModifiers,
   getChildModifiers,
-} from '@menu/controllers/modifier.controller';
+} from '../controllers/modifier.controller';
 
 const modifierRouter = Router();
 

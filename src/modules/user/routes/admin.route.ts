@@ -1,16 +1,15 @@
 import { Router } from 'express';
 
-import { trimRequestBody, validate } from '@App/middleware';
-
+import { trimRequestBody, validate } from '../../../middleware';
 import {
   changePassword,
   updateUserName,
-} from '@user/controllers/admin.controller';
-import { authenticate, authorizeAdmin } from '@user/middleware/auth';
+} from '../controllers/admin.controller';
+import { authenticate, authorizeAdmin } from '../middleware/auth';
 import {
   changePasswordSchema,
   updateUserNameSchema,
-} from '@user/middleware/validators/users.validator';
+} from '../middleware/validators/users.validator';
 
 const adminRouter = Router();
 

@@ -1,11 +1,10 @@
-import sequelize from '@App/db';
-
+import sequelize from '../../../db';
 import {
   AdminOTP,
   AdminOTPType,
   CustomerOTP,
   CustomerOTPType,
-} from '@user/models';
+} from '../models';
 
 const createAdminOTP = (adminId: number, type: AdminOTPType) =>
   sequelize.transaction(async (transaction) => {

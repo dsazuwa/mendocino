@@ -6,9 +6,8 @@ import {
   Model,
 } from 'sequelize';
 
-import sequelize from '@App/db';
-
-import { MENU_SCHEMA, TABLENAMES } from '@menu/utils.ts/constants';
+import sequelize from '../../../db';
+import { MENU_SCHEMA, TABLENAMES } from '../utils.ts/constants';
 
 class ItemTag extends Model<
   InferAttributes<ItemTag>,

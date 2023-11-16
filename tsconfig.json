@@ -3,18 +3,10 @@
   "exclude": ["node_modules"],
   "compilerOptions": {
     "target": "ES6",
+    "module": "CommonJS",
+    "moduleResolution": "Node",
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    "module": "commonjs",
-    "moduleResolution": "NodeNext",
-    "baseUrl": "./",
-    "paths": {
-      "@App/*": ["src/*"],
-      "@middleware/*": ["src/middleware/*"],
-      "@utils/*": ["src/utils/*"],
-      "@user/*":["src/modules/user/*"],
-      "@menu/*":["src/modules/menu/*"]
-    },
     "types": ["node", "jest"],
     "resolveJsonModule": true,
     "outDir": "dist",

@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 
-import { ApiError, logger } from '@App/utils';
+import { ApiError, logger } from '../../utils';
 
 export const errorHandler = (
   error: Error,

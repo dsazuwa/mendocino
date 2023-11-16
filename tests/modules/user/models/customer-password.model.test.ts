@@ -1,6 +1,11 @@
-import { Customer, CustomerEmail, CustomerPassword, Email } from '@user/models';
+import {
+  Customer,
+  CustomerEmail,
+  CustomerPassword,
+  Email,
+} from 'modules/user/models';
 
-import 'tests/db-setup';
+import '../../../db-setup';
 
 const raw = true;
 

@@ -1,22 +1,20 @@
 import { Router } from 'express';
 
-import { trimRequestBody, validate } from '@App/middleware';
-
-import { authenticate, authorize, ROLES } from '@App/modules/user';
-
+import { trimRequestBody, validate } from '../../../middleware';
+import { ROLES, authenticate, authorize } from '../../user';
 import {
   createItem,
   deleteItem,
   getItems,
   updateItem,
   updateItemStatus,
-} from '@menu/controllers/items.controller';
+} from '../controllers/items.controller';
 import {
   createItemSchema,
   deleteItemSchema,
   updateItemSchema,
   updateItemStatusSchema,
-} from '@menu/middleware/item.validator';
+} from '../middleware/item.validator';
 
 const MANAGER = ROLES.MANAGER.name;
 const SUPER_ADMIN = ROLES.SUPER_ADMIN.name;

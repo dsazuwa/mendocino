@@ -1,8 +1,8 @@
-import menuService from '@menu/services/menu.service';
+import menuService from 'modules/menu/services/menu.service';
 
-import { createMenu } from 'tests/modules/menu/helper-functions';
+import { createMenu } from '../helper-functions';
 
-import 'tests/db-setup';
+import '../../../db-setup';
 
 beforeAll(async () => {
   await createMenu();

@@ -2,7 +2,7 @@ import {
   createAddressSchema,
   deleteAddressSchema,
   updateAddressSchema,
-} from '@user/middleware/validators/address.validator';
+} from 'modules/user/middleware/validators/address.validator';
 
 import { testIdRules } from './common.validator';
 

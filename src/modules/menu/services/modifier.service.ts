@@ -1,6 +1,6 @@
 import { QueryTypes } from 'sequelize';
 
-import sequelize from '@App/db';
+import sequelize from '../../../db';
 
 const modifierService = {
   getModifier: async (groupId: number) => {

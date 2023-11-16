@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 
-import addressService from '@user/services/address.service';
-import messages from '@user/utils/messages';
+import addressService from '../services/address.service';
+import messages from '../utils/messages';
 
 export const getAddress = async (
   req: Request,

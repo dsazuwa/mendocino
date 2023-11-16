@@ -1,13 +1,12 @@
-import { CustomerOTP, CustomerPhone, Phone } from '@user/models';
-import tokenService from '@user/services/token.service';
+import { CustomerOTP, CustomerPhone, Phone } from 'modules/user/models';
+import tokenService from 'modules/user/services/token.service';
 
-import { createCustomer } from 'tests/modules/user/helper-functions';
-import { request } from 'tests/supertest.helper';
+import { request } from '../../../supertest.helper';
+import { createCustomer } from '../helper-functions';
 
-import 'tests/db-setup';
+import '../../../db-setup';
 
 const BASE_URL = '/api/customers/me/phone';
-const raw = true;
 
 describe('Phone number management', () => {
   const mockOTP = '12345';
@@ -30,14 +29,14 @@ describe('Phone number management', () => {
   });
 
   it(`POST ${BASE_URL} should register a new phone number`, async () => {
-    let phone = await Phone.findOne({ where: { phoneNumber }, raw });
+    let phone = await Phone.findOne({ where: { phoneNumber }, raw: true });
     let customerPhone = await CustomerPhone.findOne({
       where: { customerId },
-      raw,
+      raw: true,
     });
     let otp = await CustomerOTP.findOne({
       where: { customerId, type: 'phone' },
-      raw,
+      raw: true,
     });
 
     expect(phone).toBeNull();
@@ -52,15 +51,15 @@ describe('Phone number management', () => {
 
     phone = await Phone.findOne({
       where: { phoneNumber },
-      raw,
+      raw: true,
     });
     customerPhone = await CustomerPhone.findOne({
       where: { customerId },
-      raw,
+      raw: true,
     });
     otp = await CustomerOTP.findOne({
       where: { customerId, type: 'phone' },
-      raw,
+      raw: true,
     });
 
     expect(phone).not.toBeNull();
@@ -71,7 +70,7 @@ describe('Phone number management', () => {
   it(`PATCH ${BASE_URL}/resend should create a new otp`, async () => {
     const otp1 = await CustomerOTP.findOne({
       where: { customerId, type: 'phone' },
-      raw,
+      raw: true,
     });
 
     await request
@@ -81,7 +80,7 @@ describe('Phone number management', () => {
 
     const otp2 = await CustomerOTP.findOne({
       where: { customerId, type: 'phone' },
-      raw,
+      raw: true,
     });
 
     expect(otp1?.otpId).not.toBe(otp2?.otpId);
@@ -90,7 +89,7 @@ describe('Phone number management', () => {
   it(`PATCH ${BASE_URL}/:otp should fail to verify phone number on invalid otp`, async () => {
     let phone = await CustomerPhone.findOne({
       where: { customerId, status: 'pending' },
-      raw,
+      raw: true,
     });
     expect(phone).not.toBeNull();
 
@@ -101,7 +100,7 @@ describe('Phone number management', () => {
 
     phone = await CustomerPhone.findOne({
       where: { customerId, status: 'pending' },
-      raw,
+      raw: true,
     });
     expect(phone).not.toBeNull();
   });
@@ -109,13 +108,13 @@ describe('Phone number management', () => {
   it(`PATCH ${BASE_URL}/:otp should verify phone number on valid otp`, async () => {
     let phone = await CustomerPhone.findOne({
       where: { customerId, status: 'pending' },
-      raw,
+      raw: true,
     });
     expect(phone).not.toBeNull();
 
     let otp = await CustomerOTP.findOne({
       where: { customerId, type: 'phone' },
-      raw,
+      raw: true,
     });
 
     expect(otp).not.toBeNull();
@@ -127,19 +126,22 @@ describe('Phone number management', () => {
 
     phone = await CustomerPhone.findOne({
       where: { customerId, status: 'active' },
-      raw,
+      raw: true,
     });
     expect(phone).not.toBeNull();
 
     otp = await CustomerOTP.findOne({
       where: { customerId, type: 'phone' },
-      raw,
+      raw: true,
     });
     expect(otp).toBeNull();
   });
 
   it(`DELETE ${BASE_URL} should delete phone number`, async () => {
-    let phone = await CustomerPhone.findOne({ where: { customerId }, raw });
+    let phone = await CustomerPhone.findOne({
+      where: { customerId },
+      raw: true,
+    });
     expect(phone).not.toBeNull();
 
     await request
@@ -147,7 +149,7 @@ describe('Phone number management', () => {
       .auth(jwt, { type: 'bearer' })
       .expect(200);
 
-    phone = await CustomerPhone.findOne({ where: { customerId }, raw });
+    phone = await CustomerPhone.findOne({ where: { customerId }, raw: true });
     expect(phone).toBeNull();
   });
 });

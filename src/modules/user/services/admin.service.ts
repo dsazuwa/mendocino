@@ -1,4 +1,4 @@
-import { AdminAccount, Admin } from '@user/models';
+import { AdminAccount, Admin } from '../models';
 
 const adminService = {
   updateName: async (

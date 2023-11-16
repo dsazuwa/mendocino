@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 
-import userService from '@user/services/user.service';
-import messages from '@user/utils/messages';
+import userService from '../services/user.service';
+import messages from '../utils/messages';
 
 export const getUserData = async (
   req: Request,

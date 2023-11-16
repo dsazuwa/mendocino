@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 
-import { syntaxErrorHandlier } from '@App/middleware';
-import ApiError from '@App/utils/api-error';
+import { syntaxErrorHandlier } from '../../../src/middleware';
+import { ApiError } from '../../../src/utils';
 
 describe('Syntax Error Handler', () => {
   it('should handle json syntax error', () => {

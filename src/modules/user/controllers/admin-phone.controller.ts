@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from 'express';
 
-import adminPhoneService from '@user/services/admin-phone.service';
-import otpService from '@user/services/otp.service';
-import messages from '@user/utils/messages';
+import adminPhoneService from '../services/admin-phone.service';
+import otpService from '../services/otp.service';
+import messages from '../utils/messages';
 
 export const registerPhone = async (
   req: Request,

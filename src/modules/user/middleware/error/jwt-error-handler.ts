@@ -5,7 +5,7 @@ import {
   TokenExpiredError,
 } from 'jsonwebtoken';
 
-import { ApiError } from '@App/utils';
+import { ApiError } from '../../../../utils';
 
 const jwtErrorHandler = (
   error: Error,

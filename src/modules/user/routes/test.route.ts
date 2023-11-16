@@ -1,6 +1,6 @@
 import { Request, Response, Router } from 'express';
 
-import { authenticate, authenticateInactive } from '@user/middleware/auth';
+import { authenticate, authenticateInactive } from '../middleware/auth';
 
 const testRouter = Router();
 

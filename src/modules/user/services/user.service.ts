@@ -3,12 +3,11 @@
 import { Request } from 'express';
 import { QueryTypes } from 'sequelize';
 
-import sequelize from '@App/db';
-import { ApiError } from '@App/utils';
-
-import { ProviderType } from '@user/models';
-import { UserType } from '@user/types';
-import messages from '@user/utils/messages';
+import sequelize from '../../../db';
+import { ApiError } from '../../../utils';
+import { ProviderType } from '../models';
+import { UserType } from '../types';
+import messages from '../utils/messages';
 
 const userService = {
   getUserFromReq: async (req: Request) => {

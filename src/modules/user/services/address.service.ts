@@ -1,6 +1,5 @@
-import sequelize from '@App/db';
-
-import { Address } from '@user/models';
+import sequelize from '../../../db';
+import { Address } from '../models';
 
 type AddressType = {
   addressLine1: string;

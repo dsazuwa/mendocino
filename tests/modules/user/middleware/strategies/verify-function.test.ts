@@ -1,21 +1,25 @@
 import { Profile } from 'passport';
 
-import ApiError from '@utils/api-error';
-
-import verifyFunction from '@user/middleware/strategies/verify-function';
-import { Customer, CustomerIdentity, Email, ProviderType } from '@user/models';
-import authService from '@user/services/auth.service';
-import { ROLES } from '@user/utils/constants';
-import messages from '@user/utils/messages';
+import verifyFunction from 'modules/user/middleware/strategies/verify-function';
+import {
+  Customer,
+  CustomerIdentity,
+  Email,
+  ProviderType,
+} from 'modules/user/models';
+import authService from 'modules/user/services/auth.service';
+import { ROLES } from 'modules/user/utils/constants';
+import messages from 'modules/user/utils/messages';
+import { ApiError } from 'utils';
 
 import {
   createAdmin,
   createCustomer,
   createCustomerAndIdentity,
   createRoles,
-} from 'tests/modules/user/helper-functions';
+} from '../../helper-functions';
 
-import 'tests/db-setup';
+import '../../../../db-setup';
 
 const raw = true;
 

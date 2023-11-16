@@ -1,6 +1,6 @@
-import { Item, ItemTag, Tag } from '@menu/models';
+import { Item, ItemTag, Tag } from 'modules/menu/models';
 
-import 'tests/db-setup';
+import '../../../db-setup';
 
 describe('Item tag Model', () => {
   let itemId: number;

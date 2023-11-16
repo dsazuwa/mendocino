@@ -1,5 +1,4 @@
-import sequelize from '@App/db';
-
+import sequelize from '../src/db';
 import {
   Category,
   CategoryDiscount,
@@ -10,8 +9,7 @@ import {
   ItemPrice,
   ItemTag,
   Tag,
-} from '@menu/models';
-
+} from '../src/modules/menu/models';
 import {
   Address,
   Admin,
@@ -24,13 +22,13 @@ import {
   CustomerEmail,
   CustomerIdentity,
   CustomerOTP,
+  CustomerPassword,
   CustomerPhone,
   CustomerRefreshToken,
   Email,
   Phone,
   Role,
-  CustomerPassword,
-} from '@user/models';
+} from '../src/modules/user/models';
 
 beforeAll(async () => {
   // Menu

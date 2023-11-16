@@ -7,9 +7,8 @@ import {
   literal,
 } from 'sequelize';
 
-import sequelize from '@App/db';
-
-import { TABLENAMES, USER_SCHEMA } from '@user/utils/constants';
+import sequelize from '../../../db';
+import { TABLENAMES, USER_SCHEMA } from '../utils/constants';
 
 export type CustomerStatusType =
   | 'active'

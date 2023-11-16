@@ -1,8 +1,8 @@
-import { request } from 'tests/supertest.helper';
+import { request } from '../../../supertest.helper';
 
-import { createMenu } from 'tests/modules/menu/helper-functions';
+import { createMenu } from '../helper-functions';
 
-import 'tests/db-setup';
+import '../../../db-setup';
 
 const BASE_URL = '/api/menu';
 

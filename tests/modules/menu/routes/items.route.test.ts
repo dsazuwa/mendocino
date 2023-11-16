@@ -1,17 +1,17 @@
-// import { ROLES } from '@App/modules/user';
-// import tokenService from '@user/services/token.service';
+// import { ROLES } from 'modules/user';
+// import tokenService from 'modules/user/services/token.service';
 
-// import { Category, Item, ItemCategory } from '@menu/models';
+// import { Category, Item, ItemCategory } from 'modules/menu/models';
 
 // import { createItem, createMenu } from 'tests/modules/menu/helper-functions';
 // import {
 //   createAdmin,
 //   createCustomer,
 //   createRoles,
-// } from 'tests/modules/user/helper-functions';
-// import { request } from 'tests/supertest.helper';
+// } from '../helper-functions';
+// import { request } from '../../../supertest.helper';
 
-// import 'tests/db-setup';
+// import '../../../db-setup';
 
 // const BASE_URL = '/api/menu/items';
 

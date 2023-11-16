@@ -1,16 +1,16 @@
 import { Request } from 'express';
 
-import userService from '@user/services/user.service';
-import { ROLES } from '@user/utils/constants';
+import userService from 'modules/user/services/user.service';
+import { ROLES } from 'modules/user/utils/constants';
 
 import {
   createAdmin,
   createCustomer,
   createCustomerAndIdentity,
   createRoles,
-} from 'tests/modules/user/helper-functions';
+} from '../helper-functions';
 
-import 'tests/db-setup';
+import '../../../db-setup';
 
 beforeAll(async () => {
   await createRoles();

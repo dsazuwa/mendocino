@@ -7,16 +7,13 @@ import {
   CustomerOTP,
   CustomerPassword,
   Email,
-} from '@user/models';
-import tokenService from '@user/services/token.service';
+} from 'modules/user/models';
+import tokenService from 'modules/user/services/token.service';
 
-import {
-  createCustomer,
-  createCustomerAndIdentity,
-} from 'tests/modules/user/helper-functions';
-import { getTokenFrom, request } from 'tests/supertest.helper';
+import { getTokenFrom, request } from '../../../supertest.helper';
+import { createCustomer, createCustomerAndIdentity } from '../helper-functions';
 
-import 'tests/db-setup';
+import '../../../db-setup';
 
 const BASE_URL = '/api/customers/me';
 

@@ -8,10 +8,9 @@ import {
   Model,
 } from 'sequelize';
 
-import sequelize from '@App/db';
-import { ApiError } from '@App/utils';
-
-import { TABLENAMES, USER_SCHEMA } from '@user/utils/constants';
+import sequelize from '../../../db';
+import { ApiError } from '../../../utils';
+import { TABLENAMES, USER_SCHEMA } from '../utils/constants';
 
 export type CustomerOTPType = 'email' | 'password' | 'phone';
 

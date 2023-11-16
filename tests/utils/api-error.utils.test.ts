@@ -1,4 +1,4 @@
-import ApiError from '@App/utils/api-error';
+import ApiError from 'utils/api-error';
 
 describe('ApiError', () => {
   test('should create an instance with correct properties', () => {

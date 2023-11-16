@@ -1,6 +1,10 @@
-import { Item, ItemMenuStatusType, ItemOrderStatusType } from '@menu/models';
+import {
+  Item,
+  ItemMenuStatusType,
+  ItemOrderStatusType,
+} from 'modules/menu/models';
 
-import 'tests/db-setup';
+import '../../../db-setup';
 
 describe('Item Model', () => {
   it('should create item', async () => {

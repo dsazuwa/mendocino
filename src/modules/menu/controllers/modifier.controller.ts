@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 
-import modifierService from '@menu/services/modifier.service';
+import modifierService from '../services/modifier.service';
 
 export const getModifier = async (
   req: Request,

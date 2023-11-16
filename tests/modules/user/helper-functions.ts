@@ -1,4 +1,4 @@
-import sequelize from '@App/db';
+import sequelize from '../../../src/db';
 import {
   Admin,
   AdminAccount,
@@ -12,8 +12,8 @@ import {
   Email,
   ProviderType,
   Role,
-} from '@user/models';
-import { ROLES } from '@user/utils/constants';
+} from '../../../src/modules/user/models';
+import { ROLES } from '../../../src/modules/user/utils/constants';
 
 export const createCustomer = async (
   firstName: string,

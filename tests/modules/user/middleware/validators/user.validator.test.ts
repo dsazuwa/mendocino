@@ -4,7 +4,7 @@ import {
   revokeSocialAuthenticationSchema,
   updateUserNameSchema,
   verifyEmailSchema,
-} from '@user/middleware/validators/users.validator';
+} from 'modules/user/middleware/validators/users.validator';
 
 import { testOTPRules, testPasswordRules } from './common.validator';
 

@@ -1,6 +1,6 @@
-import { Admin, AdminAccount, Email } from '@user/models';
+import { Admin, AdminAccount, Email } from 'modules/user/models';
 
-import 'tests/db-setup';
+import '../../../db-setup';
 
 const raw = true;
 

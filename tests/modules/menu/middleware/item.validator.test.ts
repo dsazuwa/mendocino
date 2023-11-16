@@ -3,7 +3,7 @@ import {
   deleteItemSchema,
   updateItemSchema,
   updateItemStatusSchema,
-} from '@menu/middleware/item.validator';
+} from 'modules/menu/middleware/item.validator';
 
 import { testIdRules } from './common.validator';
 

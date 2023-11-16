@@ -1,8 +1,7 @@
-import { Request, Response, NextFunction } from 'express';
+import { NextFunction, Request, Response } from 'express';
 
-import { ApiError } from '@App/utils';
-
-import messages from '@user/utils/messages';
+import { ApiError } from '../../../../utils';
+import messages from '../../utils/messages';
 
 const authorize =
   (roles: string[]) => (req: Request, res: Response, next: NextFunction) => {

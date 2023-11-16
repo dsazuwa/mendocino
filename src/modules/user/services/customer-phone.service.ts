@@ -1,6 +1,5 @@
-import sequelize from '@App/db';
-
-import { CustomerOTP, CustomerPhone, Phone } from '@user/models';
+import sequelize from '../../../db';
+import { CustomerOTP, CustomerPhone, Phone } from '../models';
 
 const customerPhoneService = {
   createPhone: async (customerId: number, phoneNumber: string) =>

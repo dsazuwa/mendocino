@@ -1,7 +1,7 @@
 import { PassportStatic } from 'passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 
-import userService from '@user/services/user.service';
+import userService from '../../services/user.service';
 
 const { JWT_SECRET } = process.env;
 

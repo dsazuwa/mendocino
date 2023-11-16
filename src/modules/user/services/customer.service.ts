@@ -1,22 +1,21 @@
 import { QueryTypes } from 'sequelize';
 
-import sequelize from '@App/db';
-
+import sequelize from '../../../db';
 import {
   Address,
   Customer,
   CustomerEmail,
-  CustomerStatusType,
   CustomerIdentity,
   CustomerOTP,
   CustomerPassword,
   CustomerPhone,
+  CustomerStatusType,
   Email,
   Phone,
   ProviderType,
-} from '@user/models';
-import { JwtProviderType } from '@user/types';
-import { USER_SCHEMA } from '@user/utils/constants';
+} from '../models';
+import { JwtProviderType } from '../types';
+import { USER_SCHEMA } from '../utils/constants';
 
 const deleteIdentity = (customerId: number, provider: ProviderType) =>
   CustomerIdentity.destroy({ where: { customerId, provider } });

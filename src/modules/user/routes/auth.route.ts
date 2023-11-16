@@ -1,8 +1,7 @@
 import { Router } from 'express';
 import passport from 'passport';
 
-import { trimRequestBody, validate } from '@App/middleware';
-
+import { trimRequestBody, validate } from '../../../middleware';
 import {
   facebookLogin,
   googleLogin,
@@ -16,8 +15,8 @@ import {
   requestPasswordRecovery,
   setCookieAfterCallBack,
   verifyRecoveryOTP,
-} from '@user/controllers/auth.controller';
-import { authenticateInactive } from '@user/middleware/auth';
+} from '../controllers/auth.controller';
+import { authenticateInactive } from '../middleware/auth';
 import {
   loginAdminSchema,
   loginSchema,
@@ -26,7 +25,7 @@ import {
   requestRecoverySchema,
   setCookieSchema,
   verifyRecoveryOTPSchema,
-} from '@user/middleware/validators/auth.validator';
+} from '../middleware/validators/auth.validator';
 
 const authRouter = Router();
 

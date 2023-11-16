@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 
-import { ApiError } from '@App/utils';
+import { ApiError } from '../utils';
 
 const trimRequestBody = (req: Request, res: Response, next: NextFunction) => {
   try {

@@ -1,14 +1,10 @@
-import tokenService from '@user/services/token.service';
-import { ROLES } from '@user/utils/constants';
+import tokenService from 'modules/user/services/token.service';
+import { ROLES } from 'modules/user/utils/constants';
 
-import {
-  createAdmin,
-  createCustomer,
-  createRoles,
-} from 'tests/modules/user/helper-functions';
-import { request } from 'tests/supertest.helper';
+import { request } from '../../../supertest.helper';
+import { createAdmin, createCustomer, createRoles } from '../helper-functions';
 
-import 'tests/db-setup';
+import '../../../db-setup';
 
 const BASE_URL = '/api/users';
 

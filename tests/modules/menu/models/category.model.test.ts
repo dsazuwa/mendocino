@@ -1,6 +1,6 @@
-import { Category } from '@menu/models';
+import { Category } from 'modules/menu/models';
 
-import 'tests/db-setup';
+import '../../../db-setup';
 
 describe('Category Model', () => {
   it('should create category', async () => {

@@ -1,7 +1,6 @@
 import { Router } from 'express';
 
-import { trimRequestBody, validate } from '@App/middleware';
-
+import { trimRequestBody, validate } from '../../../middleware';
 import {
   changePassword,
   closeAccount,
@@ -11,16 +10,16 @@ import {
   revokeSocialAuthentication,
   updateUserName,
   verifyEmail,
-} from '@user/controllers/customer.controller';
-import { authenticate, authorize } from '@user/middleware/auth';
-import { permitPending } from '@user/middleware/route-guards';
+} from '../controllers/customer.controller';
+import { authenticate, authorize } from '../middleware/auth';
+import { permitPending } from '../middleware/route-guards';
 import {
   changePasswordSchema,
   createPasswordSchema,
   revokeSocialAuthenticationSchema,
   updateUserNameSchema,
   verifyEmailSchema,
-} from '@user/middleware/validators/users.validator';
+} from '../middleware/validators/users.validator';
 
 const customerRouter = Router();
 

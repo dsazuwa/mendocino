@@ -1,6 +1,6 @@
-import { Tag } from '@menu/models';
+import { Tag } from 'modules/menu/models';
 
-import 'tests/db-setup';
+import '../../../db-setup';
 
 describe('Tag Model', () => {
   it('should create tag', async () => {

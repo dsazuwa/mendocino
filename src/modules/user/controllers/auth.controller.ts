@@ -1,11 +1,11 @@
 import { NextFunction, Request, Response } from 'express';
 
-import { ProviderType } from '@user/models';
-import authService from '@user/services/auth.service';
-import otpService from '@user/services/otp.service';
-import tokenService from '@user/services/token.service';
-import userService from '@user/services/user.service';
-import messages from '@user/utils/messages';
+import { ProviderType } from '../models';
+import authService from '../services/auth.service';
+import otpService from '../services/otp.service';
+import tokenService from '../services/token.service';
+import userService from '../services/user.service';
+import messages from '../utils/messages';
 
 export const setAuthCookies = (
   res: Response,

@@ -1,18 +1,17 @@
 import { Router } from 'express';
 
-import { trimRequestBody, validate } from '@App/middleware';
-
+import { trimRequestBody, validate } from '../../../middleware';
 import {
   deletePhone,
   registerPhone,
   resendVerifySMS,
   verifyPhone,
-} from '@user/controllers/admin-phone.controller';
-import { authenticate, authorizeAdmin } from '@user/middleware/auth';
+} from '../controllers/admin-phone.controller';
+import { authenticate, authorizeAdmin } from '../middleware/auth';
 import {
   registerPhoneSchema,
   verifyPhoneSchema,
-} from '@user/middleware/validators/phones.validator';
+} from '../middleware/validators/phones.validator';
 
 const adminPhoneRouter = Router();
 

@@ -1,6 +1,5 @@
-import sequelize from '@App/db';
-
-import { AdminOTP, AdminPhone, Phone } from '@user/models';
+import sequelize from '../../../db';
+import { AdminOTP, AdminPhone, Phone } from '../models';
 
 const adminPhoneService = {
   createPhone: async (adminId: number, phoneNumber: string) =>

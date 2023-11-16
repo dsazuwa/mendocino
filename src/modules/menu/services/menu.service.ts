@@ -1,6 +1,6 @@
 import { QueryTypes } from 'sequelize';
 
-import sequelize from '@App/db';
+import sequelize from '../../../db';
 
 const menuService = {
   getMenu: async () => {

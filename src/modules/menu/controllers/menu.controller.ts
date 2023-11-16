@@ -1,7 +1,7 @@
-import { Request, Response, NextFunction } from 'express';
+import { NextFunction, Request, Response } from 'express';
 
-import menuService from '@menu/services/menu.service';
-import { messages } from '@menu/utils.ts/messages';
+import menuService from '../services/menu.service';
+import { messages } from '../utils.ts/messages';
 
 export const getMenu = async (
   req: Request,

@@ -8,15 +8,12 @@ import {
   CustomerPhone,
   Email,
   Phone,
-} from '@user/models';
-import customerService from '@user/services/customer.service';
+} from 'modules/user/models';
+import customerService from 'modules/user/services/customer.service';
 
-import {
-  createCustomer,
-  createCustomerAndIdentity,
-} from 'tests/modules/user/helper-functions';
+import { createCustomer, createCustomerAndIdentity } from '../helper-functions';
 
-import 'tests/db-setup';
+import '../../../db-setup';
 
 describe('get customer profile', () => {
   const firstName = 'Jino';

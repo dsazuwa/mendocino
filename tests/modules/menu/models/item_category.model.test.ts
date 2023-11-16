@@ -1,6 +1,6 @@
-import { Category, Item, ItemCategory } from '@menu/models';
+import { Category, Item, ItemCategory } from 'modules/menu/models';
 
-import 'tests/db-setup';
+import '../../../db-setup';
 
 describe('Item Category Model', () => {
   let itemId: number;

@@ -6,9 +6,8 @@ import {
   Model,
 } from 'sequelize';
 
-import sequelize from '@App/db';
-
-import { TABLENAMES, USER_SCHEMA } from '@user/utils/constants';
+import sequelize from '../../../db';
+import { TABLENAMES, USER_SCHEMA } from '../utils/constants';
 
 class Role extends Model<InferAttributes<Role>, InferCreationAttributes<Role>> {
   declare roleId: CreationOptional<number>;

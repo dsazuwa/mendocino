@@ -1,19 +1,18 @@
 import { Router } from 'express';
 
-import { trimRequestBody, validate } from '@App/middleware';
-
+import { trimRequestBody, validate } from '../../../middleware';
 import {
   createAddress,
   deleteAddress,
   getAddress,
   updateAddress,
-} from '@user/controllers/address.controller';
-import { authenticate, authorize } from '@user/middleware/auth';
+} from '../controllers/address.controller';
+import { authenticate, authorize } from '../middleware/auth';
 import {
   createAddressSchema,
   deleteAddressSchema,
   updateAddressSchema,
-} from '@user/middleware/validators/address.validator';
+} from '../middleware/validators/address.validator';
 
 const addressRouter = Router();
 

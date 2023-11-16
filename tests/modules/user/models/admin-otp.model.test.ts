@@ -1,9 +1,9 @@
-import { Admin, AdminOTP, Email } from '@user/models';
-import { ROLES } from '@user/utils/constants';
+import { Admin, AdminOTP, Email } from 'modules/user/models';
+import { ROLES } from 'modules/user/utils/constants';
 
 import { createAdmin, createRoles } from '../helper-functions';
 
-import 'tests/db-setup';
+import '../../../db-setup';
 
 const raw = true;
 

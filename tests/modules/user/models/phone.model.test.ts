@@ -4,9 +4,9 @@ import {
   AdminPhone,
   Customer,
   CustomerPhone,
-} from '@user/models';
+} from 'modules/user/models';
 
-import 'tests/db-setup';
+import '../../../db-setup';
 
 describe('Phone Model', () => {
   const phoneNumber = '1234567890';
