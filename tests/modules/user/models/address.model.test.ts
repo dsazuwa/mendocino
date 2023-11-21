@@ -1,8 +1,8 @@
-import { Address, Customer } from 'modules/user/models';
+import { Address, Customer } from '@app/modules/user/models';
 
 import { createCustomer } from '../helper-functions';
 
-import '../../../db-setup';
+import 'tests/db-setup';
 
 const raw = true;
 

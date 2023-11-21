@@ -9,12 +9,11 @@ import {
   CustomerOTP,
   CustomerPassword,
   Email,
-} from 'modules/user/models';
-import tokenService from 'modules/user/services/token.service';
-import { ROLES } from 'modules/user/utils/constants';
+} from '@app/modules/user/models';
+import tokenService from '@app/modules/user/services/token.service';
+import { ROLES } from '@app/modules/user/utils/constants';
 
-import { getTokenFrom, request } from '../../../supertest.helper';
-
+import { getTokenFrom, request } from 'tests/supertest.helper';
 import {
   createAdmin,
   createCustomer,
@@ -22,7 +21,7 @@ import {
   createRoles,
 } from '../helper-functions';
 
-import '../../../db-setup';
+import 'tests/db-setup';
 
 const BASE_URL = '/api/auth';
 

@@ -1,7 +1,7 @@
 import {
   registerPhoneSchema,
   verifyPhoneSchema,
-} from 'modules/user/middleware/validators/phones.validator';
+} from '@app/modules/user/middleware/validators/phones.validator';
 
 import { testOTPRules } from './common.validator';
 

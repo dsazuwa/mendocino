@@ -1,11 +1,11 @@
-import { Address } from 'modules/user/models';
-import addressService from 'modules/user/services/address.service';
-import tokenService from 'modules/user/services/token.service';
+import { Address } from '@app/modules/user/models';
+import addressService from '@app/modules/user/services/address.service';
+import tokenService from '@app/modules/user/services/token.service';
 
-import { request } from '../../../supertest.helper';
+import { request } from 'tests/supertest.helper';
 import { createCustomer } from '../helper-functions';
 
-import '../../../db-setup';
+import 'tests/db-setup';
 
 const BASE_URL = '/api/customers/me/address';
 

@@ -1,7 +1,7 @@
-import tokenService from 'modules/user/services/token.service';
-import { ROLES } from 'modules/user/utils/constants';
+import { ROLES } from '@app/modules/user';
+import { tokenService } from '@app/modules/user/services';
 
-import { request } from '../../../../supertest.helper';
+import { request } from 'tests/supertest.helper';
 import {
   createAdmin,
   createCustomer,
@@ -9,7 +9,7 @@ import {
   createRoles,
 } from '../../helper-functions';
 
-import '../../../../db-setup';
+import 'tests/db-setup';
 
 const URL = '/api/test/greeting';
 

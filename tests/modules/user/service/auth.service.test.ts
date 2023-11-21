@@ -6,9 +6,9 @@ import {
   CustomerOTP,
   CustomerPassword,
   Email,
-} from 'modules/user/models';
-import authService from 'modules/user/services/auth.service';
-import { ROLES } from 'modules/user/utils/constants';
+} from '@app/modules/user/models';
+import authService from '@app/modules/user/services/auth.service';
+import { ROLES } from '@app/modules/user/utils/constants';
 
 import {
   createAdmin,
@@ -17,7 +17,7 @@ import {
   createRoles,
 } from '../helper-functions';
 
-import '../../../db-setup';
+import 'tests/db-setup';
 
 const raw = true;
 

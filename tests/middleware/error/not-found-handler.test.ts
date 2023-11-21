@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 
-import { notFoundHandler } from '../../../src/middleware';
-import { ApiError } from '../../../src/utils';
+import { notFoundHandler } from '@app/middleware';
+import { ApiError } from '@app/utils';
 
 describe('Not Found Handler', () => {
   it('should handle not found error', () => {

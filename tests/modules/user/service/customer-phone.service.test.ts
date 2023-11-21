@@ -1,9 +1,9 @@
-import { CustomerOTP, CustomerPhone, Phone } from 'modules/user/models';
-import customerPhoneService from 'modules/user/services/customer-phone.service';
+import { CustomerOTP, CustomerPhone, Phone } from '@app/modules/user/models';
+import customerPhoneService from '@app/modules/user/services/customer-phone.service';
 
 import { createCustomer } from '../helper-functions';
 
-import '../../../db-setup';
+import 'tests/db-setup';
 
 describe('customer phone number management', () => {
   const oldPhoneNumber = '1234567890';

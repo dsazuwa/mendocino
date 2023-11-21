@@ -1,6 +1,6 @@
-import { Discount, DiscountUnitType } from 'modules/menu/models';
+import { Discount, DiscountUnitType } from '@app/modules/menu/models';
 
-import '../../../db-setup';
+import 'tests/db-setup';
 
 describe('Discount Model', () => {
   it('should create discount', async () => {

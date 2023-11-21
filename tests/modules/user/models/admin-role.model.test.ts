@@ -4,9 +4,9 @@ import {
   AdminRole,
   Email,
   Role,
-} from 'modules/user/models';
+} from '@app/modules/user/models';
 
-import '../../../db-setup';
+import 'tests/db-setup';
 
 const raw = true;
 

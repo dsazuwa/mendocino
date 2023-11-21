@@ -1,6 +1,6 @@
 import { agent as _request } from 'supertest';
 
-import createApp from 'app';
+import createApp from '@app/app';
 
 export const request = _request(createApp());
 

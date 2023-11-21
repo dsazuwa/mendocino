@@ -1,5 +1,5 @@
-// import { ROLES } from 'modules/user';
-// import tokenService from 'modules/user/services/token.service';
+// import { ROLES } from '@app/modules/user';
+// import tokenService from '@app/modules/user/services/token.service';
 
 // import { Category, Item, ItemCategory } from 'modules/menu/models';
 
@@ -11,7 +11,7 @@
 // } from '../helper-functions';
 // import { request } from '../../../supertest.helper';
 
-// import '../../../db-setup';
+// import 'tests/db-setup';
 
 // const BASE_URL = '/api/menu/items';
 

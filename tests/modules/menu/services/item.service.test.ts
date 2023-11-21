@@ -7,7 +7,7 @@
 //   getItem,
 // } from 'tests/modules/menu/helper-functions';
 
-// import '../../../db-setup';
+// import 'tests/db-setup';
 
 // beforeAll(async () => {
 //   await createMenu();

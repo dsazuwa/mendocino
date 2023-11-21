@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 
-import { permitActive } from 'modules/user/middleware/route-guards';
+import { permitActive } from '@app/modules/user/middleware/route-guards';
 
 describe('Permit Active Guard', () => {
   it('should permit access to active user', () => {

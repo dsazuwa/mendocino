@@ -1,6 +1,6 @@
-import { Item, ItemPrice } from 'modules/menu/models';
+import { Item, ItemPrice } from '@app/modules/menu/models';
 
-import '../../../db-setup';
+import 'tests/db-setup';
 
 describe('Item Price Model', () => {
   let itemId: number;

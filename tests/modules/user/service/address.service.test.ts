@@ -1,9 +1,9 @@
-import { Address } from 'modules/user/models';
-import addressService from 'modules/user/services/address.service';
+import { Address } from '@app/modules/user/models';
+import { addressService } from '@app/modules/user/services';
 
 import { createCustomer } from '../helper-functions';
 
-import '../../../db-setup';
+import '@test/db-setup';
 
 describe('address management', () => {
   let customerId: number;

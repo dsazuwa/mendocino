@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 
-import { trimRequestBody } from '../../src/middleware';
+import { trimRequestBody } from '@app/middleware';
 
 describe('Trim Request Middleware', () => {
   it('should trim string and number values in req.body', () => {

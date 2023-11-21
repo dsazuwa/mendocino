@@ -6,7 +6,7 @@ import {
   requestRecoverySchema,
   setCookieSchema,
   verifyRecoveryOTPSchema,
-} from 'modules/user/middleware/validators/auth.validator';
+} from '@app/modules/user/middleware/validators/auth.validator';
 
 import {
   testEmailRules,

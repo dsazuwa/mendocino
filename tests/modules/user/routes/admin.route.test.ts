@@ -1,11 +1,11 @@
-import { Admin, Email } from 'modules/user/models';
-import tokenService from 'modules/user/services/token.service';
-import { ROLES } from 'modules/user/utils/constants';
+import { Admin, Email } from '@app/modules/user/models';
+import tokenService from '@app/modules/user/services/token.service';
+import { ROLES } from '@app/modules/user/utils/constants';
 
-import { request } from '../../../supertest.helper';
+import { request } from 'tests/supertest.helper';
 import { createAdmin, createRoles } from '../helper-functions';
 
-import '../../../db-setup';
+import 'tests/db-setup';
 
 const BASE_URL = '/api/admins/me';
 

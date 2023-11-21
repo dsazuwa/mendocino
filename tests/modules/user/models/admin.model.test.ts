@@ -1,6 +1,6 @@
-import { Admin, AdminStatusType } from 'modules/user/models';
+import { Admin, AdminStatusType } from '@app/modules/user/models';
 
-import '../../../db-setup';
+import 'tests/db-setup';
 
 const raw = true;
 

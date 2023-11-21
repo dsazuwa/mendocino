@@ -1,10 +1,10 @@
-import { CustomerOTP, CustomerPhone, Phone } from 'modules/user/models';
-import tokenService from 'modules/user/services/token.service';
+import { CustomerOTP, CustomerPhone, Phone } from '@app/modules/user/models';
+import tokenService from '@app/modules/user/services/token.service';
 
-import { request } from '../../../supertest.helper';
+import { request } from 'tests/supertest.helper';
 import { createCustomer } from '../helper-functions';
 
-import '../../../db-setup';
+import 'tests/db-setup';
 
 const BASE_URL = '/api/customers/me/phone';
 

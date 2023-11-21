@@ -1,8 +1,8 @@
-import { Customer, CustomerOTP } from 'modules/user/models';
+import { Customer, CustomerOTP } from '@app/modules/user/models';
 
 import { createCustomer } from '../helper-functions';
 
-import '../../../db-setup';
+import 'tests/db-setup';
 
 const raw = true;
 

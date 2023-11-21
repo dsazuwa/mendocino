@@ -1,9 +1,9 @@
-import tokenService from 'modules/user/services/token.service';
+import { tokenService } from '@app/modules/user/services';
 
-import { request } from '../../../../supertest.helper';
+import { request } from 'tests/supertest.helper';
 import { createCustomer } from '../../helper-functions';
 
-import '../../../../db-setup';
+import 'tests/db-setup';
 
 describe('Inative Authentication Middleware', () => {
   const URL = '/api/test/inactive/greeting';

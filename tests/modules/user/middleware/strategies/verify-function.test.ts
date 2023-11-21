@@ -1,16 +1,16 @@
 import { Profile } from 'passport';
 
-import verifyFunction from 'modules/user/middleware/strategies/verify-function';
+import { ROLES } from '@app/modules/user';
+import verifyFunction from '@app/modules/user/middleware/strategies/verify-function';
 import {
   Customer,
   CustomerIdentity,
   Email,
   ProviderType,
-} from 'modules/user/models';
-import authService from 'modules/user/services/auth.service';
-import { ROLES } from 'modules/user/utils/constants';
-import messages from 'modules/user/utils/messages';
-import { ApiError } from 'utils';
+} from '@app/modules/user/models';
+import { authService } from '@app/modules/user/services';
+import messages from '@app/modules/user/utils/messages';
+import { ApiError } from '@app/utils';
 
 import {
   createAdmin,
@@ -19,7 +19,7 @@ import {
   createRoles,
 } from '../../helper-functions';
 
-import '../../../../db-setup';
+import 'tests/db-setup';
 
 const raw = true;
 

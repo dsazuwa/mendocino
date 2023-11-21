@@ -4,9 +4,9 @@ import {
   AdminAccount,
   Customer,
   CustomerEmail,
-} from 'modules/user/models';
+} from '@app/modules/user/models';
 
-import '../../../db-setup';
+import 'tests/db-setup';
 
 describe('Email Model', () => {
   beforeEach(async () => {

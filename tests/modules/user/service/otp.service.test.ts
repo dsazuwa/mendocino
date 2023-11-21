@@ -1,10 +1,10 @@
-import { AdminOTP, CustomerOTP } from 'modules/user/models';
-import otpService from 'modules/user/services/otp.service';
-import { ROLES } from 'modules/user/utils/constants';
+import { AdminOTP, CustomerOTP } from '@app/modules/user/models';
+import otpService from '@app/modules/user/services/otp.service';
+import { ROLES } from '@app/modules/user/utils/constants';
 
 import { createAdmin, createCustomer, createRoles } from '../helper-functions';
 
-import '../../../db-setup';
+import 'tests/db-setup';
 
 beforeAll(async () => {
   await createRoles();

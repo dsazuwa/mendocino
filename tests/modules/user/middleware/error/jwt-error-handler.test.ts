@@ -5,7 +5,7 @@ import {
   TokenExpiredError,
 } from 'jsonwebtoken';
 
-import { jwtErrorHandler } from 'modules/user';
+import { jwtErrorHandler } from '@app/modules/user';
 
 describe('jwtErrorHandler Middleware', () => {
   it('should handle TokenExpiredError', () => {

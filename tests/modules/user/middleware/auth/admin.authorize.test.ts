@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
 
-import { ApiError } from 'utils';
-import { authorizeAdmin } from 'modules/user/middleware/auth';
-import messages from 'modules/user/utils/messages';
+import { authorizeAdmin } from '@app/modules/user';
+import messages from '@app/modules/user/utils/messages';
+import { ApiError } from '@app/utils';
 
 describe('authorize middleware', () => {
   const res = {} as unknown as Response;

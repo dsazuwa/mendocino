@@ -1,6 +1,6 @@
-import { Role } from 'modules/user/models';
+import { Role } from '@app/modules/user/models';
 
-import '../../../db-setup';
+import 'tests/db-setup';
 
 const raw = true;
 

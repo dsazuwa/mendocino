@@ -1,10 +1,10 @@
-import { Admin, AdminAccount, Email } from 'modules/user/models';
-import adminService from 'modules/user/services/admin.service';
-import { ROLES } from 'modules/user/utils/constants';
+import { Admin, AdminAccount, Email } from '@app/modules/user/models';
+import adminService from '@app/modules/user/services/admin.service';
+import { ROLES } from '@app/modules/user/utils/constants';
 
 import { createAdmin, createRoles } from '../helper-functions';
 
-import '../../../db-setup';
+import 'tests/db-setup';
 
 beforeAll(async () => {
   await createRoles();

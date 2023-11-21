@@ -1,6 +1,6 @@
 import { QueryTypes } from 'sequelize';
 
-import sequelize from '../../../src/db';
+import sequelize from '@app/db';
 import {
   Category,
   Item,
@@ -10,7 +10,7 @@ import {
   ItemPrice,
   ItemTag,
   Tag,
-} from '../../../src/modules/menu/models';
+} from '@app/modules/menu/models';
 
 export const getItem = async (itemId: number) => {
   const query = `
