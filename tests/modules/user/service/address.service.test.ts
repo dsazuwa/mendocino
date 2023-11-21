@@ -3,7 +3,7 @@ import { addressService } from '@app/modules/user/services';
 
 import { createCustomer } from '../helper-functions';
 
-import '@test/db-setup';
+import 'test/db-setup';
 
 describe('address management', () => {
   let customerId: number;

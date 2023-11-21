@@ -1,4 +1,4 @@
-import sequelize from '../src/db';
+import sequelize from '@app/db';
 import {
   Category,
   CategoryDiscount,
@@ -9,7 +9,7 @@ import {
   ItemPrice,
   ItemTag,
   Tag,
-} from '../src/modules/menu/models';
+} from '@app/modules/menu/models';
 import {
   Address,
   Admin,
@@ -28,7 +28,7 @@ import {
   Email,
   Phone,
   Role,
-} from '../src/modules/user/models';
+} from '@app/modules/user/models';
 
 beforeAll(async () => {
   // Menu
