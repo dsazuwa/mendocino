@@ -4,8 +4,7 @@ import { Profile } from 'passport';
 
 import { ApiError } from '../../../../utils';
 import { ProviderType } from '../../models';
-import authService from '../../services/auth.service';
-import userService from '../../services/user.service';
+import { authService, userService } from '../../services';
 import messages from '../../utils/messages';
 
 const verifyFunction = async (

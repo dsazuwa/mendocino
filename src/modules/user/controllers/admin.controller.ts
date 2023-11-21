@@ -1,7 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 
-import adminService from '../services/admin.service';
-import userService from '../services/user.service';
+import { adminService, userService } from '../services';
 import messages from '../utils/messages';
 
 export const updateUserName = async (

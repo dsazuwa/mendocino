@@ -1,9 +1,11 @@
 import { NextFunction, Request, Response } from 'express';
 
-import customerService from '../services/customer.service';
-import otpService from '../services/otp.service';
-import tokenService from '../services/token.service';
-import userService from '../services/user.service';
+import {
+  customerService,
+  otpService,
+  tokenService,
+  userService,
+} from '../services';
 import messages from '../utils/messages';
 import { setAuthCookies } from './auth.controller';
 
