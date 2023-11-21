@@ -14,7 +14,9 @@ services:
     ports:
       - ${DEV_DB_HOST_PORT}:${DEV_DB_CONTAINER_PORT}
     volumes:
-      - ./data/dev:/var/lib/postgresql/data
+      - ./data/dev:/var/lib/postgresql/dev/data
+      - ./db:/db
+      - ./db/db-populated.sql:/docker-entrypoint-initdb.d/db-populated.sql
 
   # Test PostgreSQL Database
   test-db:
@@ -27,10 +29,13 @@ services:
     ports:
       - ${TEST_DB_HOST_PORT}:${TEST_DB_CONTAINER_PORT}
     volumes:
-      - ./data/test:/var/lib/postgresql/data
+      - ./data/test:/var/lib/postgresql/test/data
+      - ./db:/db
+      - ./db/db.sql:/docker-entrypoint-initdb.d/db.sql
 
   # Express API Service
   api:
+    # container_name: spoons-api
     build:
       context: .
       dockerfile: Dockerfile
@@ -40,6 +45,7 @@ services:
       - ${API_PORT}:${API_PORT}
     depends_on:
       - dev-db
+      - cache
     environment:
-      - DB_URL=postgres://${DB_USER}:${DB_PASSWORD}@dev-db:${DEV_DB_HOST_PORT}/${DEV_DB_NAME}
-      - TEST_DB_URL=postgres://${DB_USER}:${DB_PASSWORD}@test-db:${TEST_DB_HOST_PORT}/${TEST_DB_NAME}
+      - DB_URL=postgres://${DB_USER}:${DB_PASSWORD}@dev-db/${DEV_DB_NAME}
+      - TEST_DB_URL=postgres://${DB_USER}:${DB_PASSWORD}@test-db/${TEST_DB_NAME}
