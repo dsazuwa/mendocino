@@ -1,6 +1,38 @@
 -- #region get_menu
 CREATE OR REPLACE FUNCTION menu.get_menu()
 RETURNS TABLE (
+  "itemId" INTEGER,
+  name VARCHAR,
+  description VARCHAR,
+  category VARCHAR,
+  "subCategory" VARCHAR,
+  price DECIMAL(10, 4),
+  tags VARCHAR[],
+  "photoUrl" VARCHAR,
+  notes VARCHAR
+) AS $$
+BEGIN
+  RETURN QUERY
+  SELECT
+    item_id AS "itemId",
+    v.name,
+    v.description,
+    c.name AS category,
+    sub_category AS "subCategory",
+    v.price,
+    v.tags,
+    photo_url AS "photoUrl",
+    v.notes
+  FROM menu.menu_view v
+  JOIN menu.categories c ON c.name = v.category
+  ORDER BY item_id;
+END;
+$$ LANGUAGE plpgsql;
+-- #endregion
+
+-- #region get_active_public_menu
+CREATE OR REPLACE FUNCTION menu.get_active_public_menu()
+RETURNS TABLE (
   category VARCHAR,
   notes TEXT[],
   items JSONB[]

@@ -4,11 +4,7 @@ import sequelize from '../../../db';
 
 const menuService = {
   getMenu: async () => {
-    const query = `
-      SELECT 
-        item_id, name, description, category, tags, price, status, photo_url
-      FROM menu.menu_view
-      WHERE status IN ('active', 'sold out');`;
+    const query = `SELECT * FROM menu.get_menu();`;
 
     const result = await sequelize.query(query, { type: QueryTypes.SELECT });
 
@@ -16,7 +12,7 @@ const menuService = {
   },
 
   getGroupedMenu: async () => {
-    const query = `SELECT * FROM menu.get_menu();`;
+    const query = `SELECT * FROM menu.get_active_public_menu();`;
 
     const result = (await sequelize.query(query, {
       type: QueryTypes.SELECT,

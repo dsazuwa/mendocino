@@ -18,6 +18,7 @@ DROP FUNCTION IF EXISTS menu.insert_item_modifier(INTEGER, INTEGER, INTEGER);
 
 -- Drop functions
 DROP FUNCTION IF EXISTS menu.get_menu();
+DROP FUNCTION IF EXISTS menu.get_active_public_menu();
 DROP FUNCTION IF EXISTS menu.get_order_menu();
 DROP FUNCTION IF EXISTS menu.get_item_modifiers(INTEGER);
 DROP FUNCTION IF EXISTS menu.get_child_modifiers(INTEGER);
