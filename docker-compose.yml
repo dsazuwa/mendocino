@@ -3,6 +3,16 @@ version: '3'
 name: spoons
 
 services:
+  # Redis cache
+  cache:
+    image: redis:7.2.3-alpine3.18
+    restart: always
+    ports:
+      - ${REDIS_HOST_PORT}:${REDIS_CONTAINER_PORT}
+    command: redis-server --save 60 1 --loglevel warning --requirepass ${REDIS_PASSWORD}
+    volumes: 
+      - ./data/cache:/var/lib/redis/data
+
   # Development PostgreSQL Database
   dev-db:
     image: postgres

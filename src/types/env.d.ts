@@ -19,6 +19,11 @@ declare global {
       DB_URL: string;
       TEST_DB_URL: string;
 
+      REDIS_HOST_PORT: string;
+      REDIS_CONTAINER_PORT: string;
+      REDIS_PASSWORD: string;
+      REDIS_URL: string;
+
       JWT_SECRET: string;
       REFRESH_TOKEN_SECRET: string;
 

@@ -1,6 +1,7 @@
 import { config } from 'dotenv';
 
 import createApp from './app';
+import redisClient from './cache';
 import sequelize from './db';
 import logger from './utils/logger';
 
@@ -12,8 +13,11 @@ const app = createApp();
 
 sequelize
   .authenticate()
-  .then(() => {
+  .then(async () => {
     logger.info('Connection to DB has been established');
+
+    redisClient.on('error', (err) => logger.error('Redis Client Error: ', err));
+    await redisClient.connect().then(() => logger.info('Connected to redis'));
   })
   .catch((err) => {
     logger.error('Error on connect to DB:', err);
