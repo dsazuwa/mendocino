@@ -39,7 +39,7 @@ export const getOrderMenu = async (
   try {
     const menu = await menuService.getOrderMenu();
 
-    res.status(200).json({ ...menu, message: messages.GET_MENU });
+    res.status(200).json({ menu, message: messages.GET_MENU });
   } catch (e) {
     next(e);
   }

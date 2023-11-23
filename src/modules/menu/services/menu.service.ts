@@ -30,9 +30,7 @@ const menuService = {
       type: QueryTypes.SELECT,
     })) as CategoryItems<MenuItem>[];
 
-    const categories = result.map((x) => x.category);
-
-    return { menu: result, categories };
+    return result;
   },
 } as const;
 
