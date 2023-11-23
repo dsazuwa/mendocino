@@ -1127,7 +1127,7 @@ BEGIN
 
   item_id := menu.insert_item(
     0,
-    TRUE,
+    FALSE,
     'Build Your Own Sandwich',
     'When you build your own sandwich, the item price includes one cheese, two accents, and three fruits or veggies',
     'BuildSandwich.jpg',

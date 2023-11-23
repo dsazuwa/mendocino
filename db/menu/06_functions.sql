@@ -35,30 +35,42 @@ CREATE OR REPLACE FUNCTION menu.get_active_public_menu()
 RETURNS TABLE (
   category VARCHAR,
   notes TEXT[],
-  items JSONB[]
+  "subCategories" JSONB[]
 ) AS $$
 BEGIN
   RETURN QUERY
-  SELECT
-    c.name,
-    c.menu_description AS notes,
+  WITH aggregated_menu AS (
+    SELECT 
+      v.category,
+      sub_category,
+      ARRAY_AGG(
+        JSONB_BUILD_OBJECT(
+          'itemId', item_id,
+          'name', v.name,
+          'description', description,
+          'price', price,
+          'tags', tags,
+          'photoUrl', photo_url,
+          'notes', v.notes
+        ) ORDER BY v.item_sort_order
+      ) AS items
+    FROM menu.menu_view v
+    WHERE is_public IS TRUE AND menu_status = 'active'
+    GROUP BY v.category, sub_category
+  )
+  SELECT 
+    c.name AS category,
+    menu_description AS notes,
     ARRAY_AGG(
-      jsonb_build_object(
-        'itemId', item_id,
-        'name', v.name,
-        'description', description,
-        'subCategory', sub_category,
-        'price', price,
-        'tags', tags,
-        'photoUrl', photo_url,
-        'notes', v.notes
-      ) ORDER BY sub_category, v.item_sort_order
-    ) AS items
-  FROM menu.menu_view v
-  JOIN menu.categories c ON c.name = v.category
-  WHERE is_public IS TRUE AND menu_status = 'active'
-  GROUP BY c.name, c.category_id
-  ORDER BY c.sort_order;
+      JSONB_BUILD_OBJECT(
+        'name', sub_category,
+        'items', m.items
+      ) ORDER BY sub_category
+    ) AS "subCategories"
+  FROM aggregated_menu m
+  JOIN menu.categories c ON c.name = m.category
+  GROUP BY c.name, c.menu_description, c.category_id
+  ORDER BY sort_order;
 END;
 $$ LANGUAGE plpgsql;
 -- #endregion
