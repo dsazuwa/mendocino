@@ -295,7 +295,7 @@ BEGIN
     TRUE,
     'Hot Honey Peach & Prosciutto',
     'Italian prosciutto & sliced peaches with fresh mozzarella, crushed honey roasted almonds, Calabrian chili aioli, hot peach honey, arugula (700 cal) on a toasted sesame roll (300 cal)',
-    'PeachProsciutto.jpg',
+    'PeachProsciutto',
     NULL
   );
 
@@ -338,7 +338,7 @@ BEGIN
     TRUE,
     'The Happy Hippie',
     'Avocado, cucumber, carrots, Kumato tomatoes, beet caviar, sprouts, hummus, white cheddar, cucumber dill ranch (620 cal) on toasted Mom''s seeded honey whole wheat (320 cal)',
-    'HappyHippie.jpg',
+    'HappyHippie',
     'want to make it vegan? Remove the white cheddar and request ciabatta bread'
   );
 
@@ -379,11 +379,11 @@ BEGIN
   PERFORM menu.insert_item_modifier(item_id, customize_id, 1);
 
   item_id := menu.insert_item(
-    5,
+    7,
     TRUE,
     'November to Remember',
     'Warm carved turkey, mushroom-turkey sausage stuffing, spicy cranberry chutney, mozzarella cheese, herb aioli, shredded romaine (870 cal) on toasted cranberry walnut wheat (320 cal)',
-    'Nov2Remember.jpg',
+    'Nov2Remember',
     NULL
   );
 
@@ -424,11 +424,47 @@ BEGIN
   PERFORM menu.insert_item_modifier(item_id, customize_id, 1);
 
   item_id := menu.insert_item(
+    5,
+    TRUE,
+    'Philly Shroomsteak',
+    'Naturally meaty Fable shiitake steak, roasted red peppers & sweet onions, choice of hot or mild giardiniera, plant-based American cheese, green peppercorn aioli (817 cal) on a toasted sesame roll (300 cal)',
+    'Shroomsteak',
+    '*available at select locations*'
+  );
+
+  PERFORM menu.insert_items_categories(item_id, creations_id, NULL);
+  PERFORM menu.insert_item_price(item_id, 18.34);
+  PERFORM menu.insert_item_tag(item_id, v_id);
+
+  customize_id := menu.insert_modifiers_and_options(
+    'Choose Giardiniera',
+    NULL,
+    NULL,
+    TRUE,
+    0,
+    1,
+    0,
+    ARRAY[
+      '{"name": "Hot Giardiniera", "price": null}',
+      '{"name": "Mild Giardiniera", "price": null}',
+      '{"name": "No Giardiniera", "price": null}'
+    ]::JSONB[]
+  );
+
+  bread_option_id := menu.insert_modifier_group('Chef''s Recommended Bread', TRUE, 1, 1, 0);
+  PERFORM menu.insert_modifier_option(bread_option_id, 'Toasted Sesame Roll (Vegan)', NULL, 'available');
+  PERFORM menu.insert_modifier_group_parent(bread_option_id, gluten_free_bread_id, 2.36);
+  PERFORM menu.insert_modifier_group_parent(bread_option_id, change_bread_id, NULL);
+
+  PERFORM menu.insert_item_modifier(item_id, bread_option_id, 0);
+  PERFORM menu.insert_item_modifier(item_id, customize_id, 1);
+
+  item_id := menu.insert_item(
     0,
     TRUE,
     '“Not So Fried” Chicken',
     'Shaved, roasted chicken breast topped with Mendo''s krispies, herb aioli, mustard pickle slaw, tomatoes, pickled red onions (640 cal) on toasted ciabatta (260 cal) with a side of tangy mustard barbeque sauce (80 cal) or mustard pickle remoulade (120 cal)',
-    'NotSoFriedChicken.jpg',
+    'NotSoFriedChicken',
     NULL
   );
 
@@ -489,7 +525,7 @@ BEGIN
     TRUE,
     '1/2 “Not So Fried” Chicken',
     'Shaved, roasted chicken breast topped with Mendo''s krispies, herb aioli, mustard pickle slaw, tomatoes, pickled red onions on toasted ciabatta (450 cal) with a side of tangy mustard barbecue sauce (80 cal) or mustard pickle remoulade (120 cal)',
-    'BPNotSoFriedChicken.jpg',
+    'BPNotSoFriedChicken',
     NULL
   );
 
@@ -509,7 +545,7 @@ BEGIN
     TRUE,
     'Chicken Pesto Caprese',
     'Shaved, roasted chicken breast, fresh mozzarella, marinated red peppers, basil pesto, mixed greens, balsamic glaze drizzle (600 cal) on panini-pressed ciabatta (260 cal)',
-    'ChickenPestoCaprese.jpg',
+    'ChickenPestoCaprese',
     'Want to make it vegetarian? Swap the chicken for extra mozzarella'
   );
 
@@ -550,7 +586,7 @@ BEGIN
     TRUE,
     '1/2 Chicken Pesto Caprese',
     'Shaved, roasted chicken breast, fresh mozzarella, marinated red peppers, basil pesto, mixed greens, balsamic glaze drizzle on panini-pressed ciabatta (430 cal)',
-    'BPChickenPestoCaprese.jpg',
+    'BPChickenPestoCaprese',
     'Want to make it vegetarian? Swap the chicken for extra mozzarella'
   );
 
@@ -570,7 +606,7 @@ BEGIN
     TRUE,
     'The Farm Club',
     'Shaved, roasted turkey breast, smashed avocado, applewood smoked bacon, herb aioli, tomatoes, mixed greens, pickled red onions (440 cal) on Mom''s seeded honey whole wheat (320 cal)',
-    'FarmClub.jpg',
+    'FarmClub',
     NULL
   );
 
@@ -613,7 +649,7 @@ BEGIN
     TRUE,
     '1/2 The Farm Club',
     'Shaved, roasted turkey breast, smashed avocado, applewood smoked bacon, herb aioli, tomatoes, mixed greens, pickled red onions (440 cal) on Mom''s seeded honey whole wheat (320 cal)',
-    'BPFarmClub.jpg',
+    'BPFarmClub',
     NULL
   );
 
@@ -633,7 +669,7 @@ BEGIN
     TRUE,
     'Vegan Banh Mi',
     'Organic marinated, baked tofu with vegan aioli, sweet chili sauce, pickled daikon & carrots, cucumbers, jalapeños, Thai basil, cilantro (390 cal) on panini-pressed ciabatta (260 cal)',
-    'VeganBahnMi.jpg',
+    'VeganBahnMi',
     NULL
   );
 
@@ -678,7 +714,7 @@ BEGIN
     TRUE,
     '1/2 Vegan Banh Mi',
     'Organic marinated, baked tofu with vegan aioli, sweet chili sauce, pickled daikon & carrots, cucumbers, jalapeños, Thai basil, cilantro (390 cal) on panini-pressed ciabatta (260 cal)',
-    'BPVeganBanhMi.jpg',
+    'BPVeganBanhMi',
     NULL
   );
 
@@ -699,7 +735,7 @@ BEGIN
     FALSE,
     'Vegetarian Pesto Caprese',
     'Fresh mozzarella, marinated red peppers, basil pesto, mixed greens, balsamic glaze drizzle (600 cal) on panini-pressed ciabatta (260 cal)',
-    'VegetarianCapreseSandwich.jpg',
+    'VegetarianCapreseSandwich',
     NULL
   );
 
@@ -739,7 +775,7 @@ BEGIN
     FALSE,
     '1/2 Vegetarian Pesto Caprese Sandwich',
     'Fresh mozzarella, marinated red peppers, basil pesto, mixed greens, balsamic glaze drizzle (600 cal) on panini-pressed ciabatta (260 cal)',
-    'BPVegetarianCapreseSandwich.jpg',
+    'BPVegetarianCapreseSandwich',
     NULL
   );
 
@@ -760,7 +796,7 @@ BEGIN
     TRUE,
     'Turkey Avo Salsa Verde',
     'Shaved, roasted turkey breast, smashed avocado, smoked gouda, cotija cheese, Mama Lil''s sweet hot peppers, jalapeño salsa aioli, tomatoes, shredded romaine, red onions (580 cal) on panini-pressed sourdough (300 cal) served with a side of jalapeño salsa verde (20 cal)',
-    'TurkeyAvoSalsaVerde.jpg',
+    'TurkeyAvoSalsaVerde',
     NULL
   );
 
@@ -805,7 +841,7 @@ BEGIN
     TRUE,
     '1/2 Turkey Avo Salsa Verde',
     'Shaved, roasted turkey breast, smashed avocado, smoked gouda, cotija cheese, Mama Lil''s sweet hot peppers, jalapeño salsa aioli, tomatoes, shredded romaine, red onions on on panini-pressed sourdough (420 cal)',
-    'BPTurkeyAvo.jpg',
+    'BPTurkeyAvo',
     NULL
   );
 
@@ -825,7 +861,7 @@ BEGIN
     TRUE,
     'Italian Roast Beef',
     'Shaved roast beef, sliced mozzarella, Chicago-style mild giardiniera, tomatoes, sweet onion, shredded romaine, Italian herb & cheese aioli (620 cal) on a toasted sesame roll (300 cal)',
-    'ItalianRoastBeef.jpg',
+    'ItalianRoastBeef',
     NULL
   );
 
@@ -866,7 +902,7 @@ BEGIN
     TRUE,
     '1/2 Italian Roast Beef',
     'Shaved roast beef, sliced mozzarella, Chicago-style mild giardiniera, tomatoes, sweet onion, shredded romaine, Italian herb & cheese aioli (on a toasted sesame roll (460 cal)',
-    'BPItalianRoastBeef.jpg',
+    'BPItalianRoastBeef',
     NULL
   );
 
@@ -886,7 +922,7 @@ BEGIN
     TRUE,
     'Sweet Heat Crispy Thai Chicken',
     'Air-fried crispy chicken tenders, Thai basil slaw, pickled daikon & carrots, sweet chili sauce, sriracha mayo, and fried shallots (860 cal) on a toasted sesame brioche bun (240 cal)',
-    'ThaiChickenSandwich.jpg',
+    'ThaiChickenSandwich',
     '*available at select locations*'
   );
 
@@ -922,7 +958,7 @@ BEGIN
     TRUE,
     'Peruvian Steak',
     'Spicy aji amarillo marinated steak with Oaxacan cheese, herb aioli, red onions, tomatoes, shredded romaine (520 cal) on a toasted potato roll (240 cal)',
-    'PeruvianSteak.jpg',
+    'PeruvianSteak',
     'Add avocado (80 cal) +$2+'
   );
 
@@ -964,7 +1000,7 @@ BEGIN
     TRUE,
     'Prosciutto & Chicken',
     'Italian prosciutto & shaved, roasted chicken breast with fresh mozzarella, crushed honey roasted almonds, basil pesto, balsamic glaze drizzle, tomatoes (590 cal) on panini-pressed ciabatta (260 cal)',
-    'ProsciuttoChicken.jpg',
+    'ProsciuttoChicken',
     NULL
   );
 
@@ -1010,7 +1046,7 @@ BEGIN
     TRUE,
     'Chimichurri Steak & Bacon',
     'Roasted, carved steak and applewood smoked bacon topped with marinated red peppers, caramelized onion jam, chimichurri, shredded romaine, herb aioli (640 cal) on a toasted sesame roll (300 cal)',
-    'ChimichurriSteakSandwich.jpg',
+    'ChimichurriSteakSandwich',
     NULL
   );
 
@@ -1049,7 +1085,7 @@ BEGIN
     TRUE,
     'Mendo''s Original Pork Belly Banh Mi',
     'Our Chef''s playful take on the popular Vietnamese sandwich with braised, caramelized pork belly, pickled daikon & carrots, cilantro, cucumbers, jalapeños, Thai basil, sriracha mayo (540 cal) on panini-pressed ciabatta (260 cal)',
-    'BanhMi.jpg',
+    'BanhMi',
     NULL
   );
 
@@ -1090,7 +1126,7 @@ BEGIN
     TRUE,
     'Chicken Parm Dip',
     'Shaved, roasted chicken breast, Mendo''s krispies, melted mozzarella and Grana Padano cheeses, pomodoro sauce, Italian basil, Calabrian chili aioli (630 cal) on a toasted sesame roll (300 cal) served with an extra side of pomodoro sauce for dipping (40 cal)',
-    'ChickenParmDip.jpg',
+    'ChickenParmDip',
     NULL
   );
 
@@ -1130,7 +1166,7 @@ BEGIN
     FALSE,
     'Build Your Own Sandwich',
     'When you build your own sandwich, the item price includes one cheese, two accents, and three fruits or veggies',
-    'BuildSandwich.jpg',
+    'BuildSandwich',
     NULL
   );
 
@@ -1347,7 +1383,7 @@ BEGIN
     FALSE,
     'Build Your Own Salad',
     'When you build your own salad, the item price includes one cheese, two accents, and three fruits or veggies.',
-    'BuildSalad.jpg',
+    'BuildSalad',
     NULL
   );
 
@@ -1426,7 +1462,7 @@ BEGIN
     TRUE,
     'Thai Mango Salad',
     'Shaved, roasted chicken breast, ramen noodles, napa cabbage & kale slaw with carrots & bean sprouts, baby spinach, sliced mango, honey roasted almonds, pickled daikon & carrots, Thai basil, fresh mint, cilantro, lime, and fried shallots (640 cal) with Thai almond dressing (200 cal)',
-    'ThaiMango.jpg',
+    'ThaiMango',
     NULL
   );
 
@@ -1501,7 +1537,7 @@ BEGIN
     TRUE,
     'Avocado & Quinoa Superfood Ensalada',
     'Chopped romaine, curly kale, quinoa & millet, housemade superfood krunchies, succotash with roasted corn, black beans & jicama, red onions, cilantro, cotija cheese, grape tomatoes, avocado (400 cal) with chipotle vinaigrette (250 cal)',
-    'AvoQuinoa.jpg',
+    'AvoQuinoa',
     'Add shaved, roasted chicken breast (110 cal) +$3.75+'
   );
 
@@ -1561,7 +1597,7 @@ BEGIN
     TRUE,
     'The Impossible Taco Salad',
     'Plant-based Impossible chorizo, housemade superfood krunchies, chopped romaine, curly kale, succotash with roasted corn, black beans & jicama, red onions, cilantro, grape tomatoes, avocado (400 cal) with house vegan chipotle ranch (240 cal)',
-    'ImpossibleTaco.jpg',
+    'ImpossibleTaco',
     NULL
   );
 
@@ -1638,7 +1674,7 @@ BEGIN
     TRUE,
     'Pink Lady Beets & Goat Cheese Salad',
     'Shaved, roasted chicken breast, honey and herb marinated goat cheese, pink lady beets, green apples, dried cranberries, crushed honey roasted almonds, red onions, mixed greens, chopped romaine (620 cal) with citrus vinaigrette (220 cal)',
-    'PinkLady.jpg',
+    'PinkLady',
     NULL
   );
 
@@ -1716,7 +1752,7 @@ BEGIN
     TRUE,
     'The Modern Caesar',
     'Curly kale, chopped romaine, housemade superfood krunchies, shaved Grana Padano cheese, red onions, grape tomatoes, avocado, lemon squeeze (290 cal) with classic Caesar dressing (340 cal)',
-    'ModernCesear.jpg',
+    'ModernCesear',
     'Add shaved, roasted chicken breast (110 cal) +$3.75'
   );
 
@@ -1786,7 +1822,7 @@ BEGIN
     TRUE,
     'Mama Chen''s Chinese Chicken Salad',
     'Shaved, roasted chicken breast, napa cabbage & kale slaw, carrots, bean sprouts, baby spinach, chopped romaine, scallions, cilantro, toasted cashews, crispy wontons (420 cal) with miso mustard sesame dressing (230 cal)',
-    'MamaChensChicken.jpg',
+    'MamaChensChicken',
     'Want to make it vegan? Swap the chicken for marinated, baked tofu'
   );
 
@@ -1859,7 +1895,7 @@ BEGIN
     FALSE,
     '"Not So Fried" Chicken Sandwich - Salad Style!',
     'Our chef''s special "salad style" recipe for the "Not So Fried" Chicken Sandwich - shaved, roasted chicken breast, mustard pickle slaw, grape tomatoes, pickled red onions, chopped romaine, mixed greens, and Mendo''s krispies, (470 cal) with citrus vinaigrette and a barbeque sauce drizzle (280 cal)',
-    'NotSoFriedSalad.jpg',
+    'NotSoFriedSalad',
     NULL
   );
 
@@ -1926,7 +1962,7 @@ BEGIN
     FALSE,
     'Mendo''s Original Pork Belly Banh Mi - Salad Style!',
     'Our chef''s special "salad style" recipe for our Mendo''s Original Pork Belly Banh Mi sandwich - braised, caramelized pork belly, housemade pickled daikon & carrots, cucumbers, jalapenos, chopped romaine, napa cabbage & kale slaw mix, and cilantro, (340 cal) with miso vinaigrette (230 cal)',
-    'BanhMiSalad.jpg',
+    'BanhMiSalad',
     NULL
   );
 
@@ -1993,7 +2029,7 @@ BEGIN
     TRUE,
     'Strawberry Fields Salad with Chicken',
     'Shaved, roasted chicken breast, strawberries, watermelon radish, shaved fennel, fresh mint, red onions, goat gouda, toasted pistachios, mixed greens, romaine (380 cal) with greek yogurt poppyseed dressing (280 cal)',
-    'StrawberryFields.jpg',
+    'StrawberryFields',
     NULL
   );
 
@@ -2067,7 +2103,7 @@ BEGIN
     TRUE,
     'Mediterranean Crunch Salad',
     'Shaved, roasted chicken breast, Persian cucumbers, apricot, red pepper, radish, feta cheese, pita chips, fresh mint, parsley, scallions, chopped romaine, curly kale (450 cal) with creamy pomegranate dressing (210 cal)',
-    'CrunchSalad.jpg',
+    'CrunchSalad',
     'can be requested GF by removing pita chips'
   );
 
@@ -2132,6 +2168,80 @@ BEGIN
   PERFORM menu.insert_item_modifier(item_id, item_dressing_id, 0);
   PERFORM menu.insert_item_modifier(item_id, id, 1);
   PERFORM menu.insert_item_modifier(item_id, customize_id, 2);
+
+
+
+  item_id := menu.insert_item(
+    6,
+    TRUE,
+    'Farmer''s Market Pesto Salad',
+    'Fresh mozzarella, marinated peppers, Kumato tomatoes, carrots, red onions, honey roasted almonds, chopped romaine, mixed greens (340 cal) with basil pesto vinaigrette (250 cal)',
+    'FarmersMarketPesto',
+    'Craveable as is or add shaved chicken breast (110 cal) $3.95+ or Italian prosciutto (90 cal) $3.95+'
+  );
+
+  PERFORM menu.insert_items_categories(item_id, creations_id, NULL);
+  PERFORM menu.insert_item_price(item_id, 13.97);
+  PERFORM menu.insert_item_tag(item_id, vg_id);
+  PERFORM menu.insert_item_tag(item_id, gf_id);
+  PERFORM menu.insert_item_tag(item_id, n_id);
+
+  id := menu.insert_modifiers_and_options(
+    'Craveable as is, orrr',
+    NULL,
+    NULL,
+    FALSE,
+    0,
+    3,
+    0,
+    ARRAY[
+      '{"name": "Add Chicken", "price": 4.60}',
+      '{"name": "Add Italian Prosciutto", "price": 4.89}',
+      '{"name": "Add Avocado", "price": 2.59}'
+    ]::JSONB[]
+  );
+
+  customize_id := menu.insert_modifiers_and_options(
+    'Change It Up',
+    NULL,
+    NULL,
+    FALSE,
+    0,
+    7,
+    0,
+    ARRAY[
+      '{"name": "No Mixed Greens and Chopped Romaine", "price": null}',
+      '{"name": "No Kumato Tomatoes", "price": null}',
+      '{"name": "No Carrots", "price": null}',
+      '{"name": "No Fresh Mozzarella", "price": null}',
+      '{"name": "No Red Onions", "price": null}',
+      '{"name": "No Honey Roasted Almonds", "price": null}',
+      '{"name": "No Marinated Peppers", "price": null}'
+    ]::JSONB[]
+  );
+
+  item_dressing_id := menu.insert_modifiers_and_options(
+    'Chef''s Recommended Dressing',
+    NULL,
+    NULL,
+    TRUE,
+    1,
+    1,
+    0,
+    ARRAY[
+      '{"name": "Basil Pesto Vinaigrette (on the side)", "price": null}',
+      '{"name": "Extra Basil Pesto Vinaigrette (on the side)", "price": null}',
+      '{"name": "No Dressing", "price": null}'
+    ]::JSONB[]
+  );
+
+  change_dressing_id := menu.insert_modifier_group('Change Chef''s Recommended Dressing (on the side)', TRUE, 1, 1, 0);
+  PERFORM menu.insert_modifier_group_parent(change_dressing_id, dressing_id, NULL);
+  PERFORM menu.insert_modifier_group_parent(item_dressing_id, change_dressing_id, NULL);
+
+  PERFORM menu.insert_item_modifier(item_id, item_dressing_id, 0);
+  PERFORM menu.insert_item_modifier(item_id, id, 1);
+  PERFORM menu.insert_item_modifier(item_id, customize_id, 2);
 END $$;
 -- #endregion
 
@@ -2151,7 +2261,7 @@ BEGIN
     TRUE,
     'Chimichurri Steak & Shishito Bowl',
     'Roasted, carved steak over ancient grains tossed with caramelized onion jam & chimichurri, baby spinach, roasted shishito peppers with broccolini, tomatoes & red onions, grilled lemon (740 cal)',
-    'ChimichurriSteakBowl.jpg',
+    'ChimichurriSteakBowl',
     NULL
   );
 
@@ -2185,7 +2295,7 @@ BEGIN
     TRUE,
     'Smoky Chicken Elote Bowl',
     'Al pastor chicken, smoky corn & guajillo broth, zucchini, ancient grains, shredded cabbage, topped with tortilla strips, crema, cotija, pico de gallo, cilantro, and fresh lime (700 cal)',
-    'SmokyChickenEloteBowl.jpg',
+    'SmokyChickenEloteBowl',
     NULL
   );
 
@@ -2221,7 +2331,7 @@ BEGIN
     TRUE,
     'Mediterranean Chicken Bowl',
     'Sliced, roasted chicken over cracked whole-grain bulgur tossed with lemon-dill vinaigrette & tahini yogurt sauce, baby spinach, roasted romanesco broccoli with tomatoes, yellow peppers & red onions, topped with pickled golden raisins, sumac (800 cal)',
-    'MediterraneanChickenBowl.jpg',
+    'MediterraneanChickenBowl',
     NULL
   );
 
@@ -2320,7 +2430,7 @@ BEGIN
     TRUE,
     'Crispy Chicken Tenders',
     'with a side of ketchup or vegan ranch (320 cal)',
-    'CrispyChickenTenders.jpg',
+    'CrispyChickenTenders',
     '*available at select locations*'
   );
 
@@ -2378,7 +2488,7 @@ BEGIN
     TRUE,
     'Grilled Turkey & Cheddar Sandwich',
     'add herb mayo, yellow mustard, or tomato by request (540 cal)',
-    'TurkeyCheddar.jpg',
+    'TurkeyCheddar',
     NULL
   );
 
@@ -2396,7 +2506,7 @@ BEGIN
     TRUE,
     'Grilled Cheddar Cheese Sandwich',
     'add tomato by request (610 cal)',
-    'GrilledCheese.jpg',
+    'GrilledCheese',
     NULL
   );
 
@@ -2414,7 +2524,7 @@ BEGIN
     TRUE,
     'Peanut Butter & Jelly',
     'creamy, natural peanut butter & strawberry jam (520 cal)',
-    'PBJ.jpg',
+    'PBJ',
     NULL
   );
 
@@ -2432,7 +2542,7 @@ BEGIN
     TRUE,
     'Cheddar Cheese Quesadilla',
     'melted cheddar cheese on a whole wheat tortilla (410 cal)',
-    'Quesadilla.jpg',
+    'Quesadilla',
     NULL
   );
 
@@ -2478,7 +2588,7 @@ BEGIN
     TRUE,
     'Dan Dan Noodle Salad',
     'ramen noodles, cucumber, sugar snap peas, rainbow carrots, scallions, cilantro, toasted cashews, sesame seeds, dan dan sauce',
-    'DanDanNoodle.jpg',
+    'DanDanNoodle',
     NULL
   );
 
@@ -2491,7 +2601,7 @@ BEGIN
     TRUE,
     'Pickles & Dill Potato Salad',
     'classic creamy potato salad with a little kick from sweet-hot mustard, chopped pickles, fresh dill',
-    'PickleDillPotatoSalad.jpg',
+    'PickleDillPotatoSalad',
     NULL
   );
 
@@ -2504,7 +2614,7 @@ BEGIN
     TRUE,
     'Basil Pesto Shells',
     'pasta shells, basil pesto, sun dried tomatoes, feta cheese, parmesan, arugula',
-    'BasilPestoShells.jpg',
+    'BasilPestoShells',
     NULL
   );
 
@@ -2517,7 +2627,7 @@ BEGIN
     TRUE,
     'Watermelon Street Cart Salad',
     'watermelon, cucumber, jicama, fresh mint, green onion, chile-lime vinaigrette',
-    'WatermelonStreetCart.jpg',
+    'WatermelonStreetCart',
     NULL
   );
 
@@ -2531,7 +2641,7 @@ BEGIN
     TRUE,
     'Oaxacan Potato Salad',
     'creamy potato salad with roasted corn, cotija cheese, cilantro, green onion, and a hint of jalapeño',
-    'OaxacanPotatoSalad.jpg',
+    'OaxacanPotatoSalad',
     NULL
   );
 
@@ -2545,7 +2655,7 @@ BEGIN
     TRUE,
     'Southern Macaroni Salad',
     'creamy macaroni with pickled peppadew peppers, roasted red peppers, smoked gouda, spinach, celery, green onion, with a little kick of sriracha',
-    'SouthernMacSalad.jpg',
+    'SouthernMacSalad',
     NULL
   );
 
@@ -2558,7 +2668,7 @@ BEGIN
     TRUE,
     'Spicy Curried Couscous',
     'with roasted cauliflower & carrots with Mendo''s signature spice mix',
-    'Couscous.jpg',
+    'Couscous',
     NULL
   );
 
@@ -2571,7 +2681,7 @@ BEGIN
     TRUE,
     'Kale & Apple Rainbow Salad',
     'kale, granny smith apples, rainbow carrots, candied pecans, dried cranberries, toasted coconut, Thai basil vinaigrette',
-    'KaleAppleRainbow.jpg',
+    'KaleAppleRainbow',
     NULL
   );
 
@@ -2581,26 +2691,39 @@ BEGIN
   PERFORM menu.insert_item_tag(item_id, n_id);
   PERFORM menu.insert_item_modifier(item_id, group_id, NULL);
 
-  group_id := menu.insert_modifiers_and_options(
-    'Select size',
-    NULL,
-    NULL,
-    TRUE,
-    1,
-    1,
-    0,
-    ARRAY[
-      '{"name": "Cup", "price": 6.33}',
-      '{"name": "Bowl", "price": 9.95}'
-    ]::JSONB[]
-  );
-
   item_id := menu.insert_item(
     8,
     TRUE,
+    'Chopped Italian Chickpea Salad',
+    'marinated artichokes, pepperoni, Mama Lil''s sweet hot peppers, grape tomatoes, chickpeas, kale, radicchio, red onion, parmesan, Italian dressing',
+    'ItalianChickpeaSalad',
+    NULL
+  );
+
+  PERFORM menu.insert_items_categories(item_id, deli_id, 'deli sides');
+  PERFORM menu.insert_item_tag(item_id, gf_id);
+  PERFORM menu.insert_item_modifier(item_id, group_id, NULL);
+
+  item_id := menu.insert_item(
+    9,
+    TRUE,
+    'Spicy Dijon Potato Salad',
+    'uniquely creamy smashed potato salad with a kick!',
+    'SpicyDijonPotato',
+    NULL
+  );
+
+  PERFORM menu.insert_items_categories(item_id, deli_id, 'deli sides');
+  PERFORM menu.insert_item_tag(item_id, v_id);
+  PERFORM menu.insert_item_tag(item_id, gf_id);
+  PERFORM menu.insert_item_modifier(item_id, group_id, NULL);
+
+  item_id := menu.insert_item(
+    10,
+    TRUE,
     'Roasted Tomato Basil Soup',
     'a creamy puree of roasted tomatoes, garlic, and fresh basil',
-    'RoastedTomatoSoup.jpg',
+    'RoastedTomatoSoup',
     NULL
   );
 
@@ -2609,11 +2732,11 @@ BEGIN
   PERFORM menu.insert_item_modifier(item_id, group_id, NULL);
 
   item_id := menu.insert_item(
-    9,
+    11,
     TRUE,
     'Greek Lemon Chicken & Farro Soup',
     'a hearty chicken soup with whole-grain farro, carrot, celery, onion, baby spinach, and lemon',
-    'GreekLemonChickenSoup.jpg',
+    'GreekLemonChickenSoup',
     NULL
   );
 
@@ -2621,11 +2744,11 @@ BEGIN
   PERFORM menu.insert_item_modifier(item_id, group_id, NULL);
 
   item_id := menu.insert_item(
-    10,
+    12,
     TRUE,
     'Chicken Tortilla Soup',
     'smooth puree of roasted tomato, tomatillo, poblano, jalapeño, garlic, cumin, and corn tortillas, with shredded chicken',
-    'ChickenTortilla.jpg',
+    'ChickenTortilla',
     NULL
   );
 
@@ -2634,17 +2757,44 @@ BEGIN
   PERFORM menu.insert_item_modifier(item_id, group_id, NULL);
 
   item_id := menu.insert_item(
-    11,
+    13,
     TRUE,
     'French Lentil & Kale Soup',
     'french lentils, kale, carrot, celery, onion, herbs, and garlic in a savory vegetable broth',
-    'FrenchLentilKale.jpg',
+    'FrenchLentilKale',
     NULL
   );
 
   PERFORM menu.insert_items_categories(item_id, deli_id, 'soups');
   PERFORM menu.insert_item_tag(item_id, v_id);
   PERFORM menu.insert_item_tag(item_id, gf_id);
+  PERFORM menu.insert_item_modifier(item_id, group_id, NULL);
+
+  item_id := menu.insert_item(
+    14,
+    TRUE,
+    'Turkey Sausage & Kale Soup',
+    'a hearty blend of turkey sausage, kale, vegetables, brown rice, beans, & Parmesan cheese',
+    'TurkeyKaleSoup',
+    NULL
+  );
+
+  PERFORM menu.insert_items_categories(item_id, deli_id, 'soups');
+  PERFORM menu.insert_item_modifier(item_id, group_id, NULL);
+
+  item_id := menu.insert_item(
+    15,
+    TRUE,
+    'Thai Sweet Potato Soup',
+    'a puree of sweet potatoes, red bell peppers, shallots, coconut milk, lime, Thai red curry, ginger, lemongrass, almond butter',
+    'ThaiSweetPotatoSoup',
+    NULL
+  );
+
+  PERFORM menu.insert_items_categories(item_id, deli_id, 'soups');
+  PERFORM menu.insert_item_tag(item_id, v_id);
+  PERFORM menu.insert_item_tag(item_id, gf_id);
+  PERFORM menu.insert_item_tag(item_id, n_id);
   PERFORM menu.insert_item_modifier(item_id, group_id, NULL);
 END $$;
 -- #endregion
@@ -2660,7 +2810,7 @@ BEGIN
     FALSE,
     'Lemon Cheesecake Cookie',
     NULL,
-    'LemonCheesecakeCookie.jpg',
+    'LemonCheesecakeCookie',
     NULL
   );
 
@@ -2673,7 +2823,7 @@ BEGIN
     FALSE,
     'Chocolate Chunk Cookie',
     NULL,
-    'ChocolateChunkCookie.jpg',
+    'ChocolateChunkCookie',
     NULL
   );
 
@@ -2686,7 +2836,7 @@ BEGIN
     FALSE,
     'Ginger Molasses Cookie',
     NULL,
-    'GingerMolassesCookie.jpg',
+    'GingerMolassesCookie',
     NULL
   );
 
@@ -2699,7 +2849,7 @@ BEGIN
     FALSE,
     'Plant-Based Oat Hemp Date Cookie',
     NULL,
-    'OatHempDateCookie.jpg',
+    'OatHempDateCookie',
     NULL
   );
 
@@ -2720,7 +2870,7 @@ BEGIN
     FALSE,
     'Joe''s Classic Chips',
     NULL,
-    'ClassicChips.jpg',
+    'ClassicChips',
     NULL
   );
 
@@ -2732,7 +2882,7 @@ BEGIN
     FALSE,
     'BBQ Chips',
     NULL,
-    'BBQChips.jpg',
+    'BBQChips',
     NULL
   );
 
@@ -2744,7 +2894,7 @@ BEGIN
     FALSE,
     'Dill Pickle Chips',
     NULL,
-    'DillPickleChips.jpg',
+    'DillPickleChips',
     NULL
   );
 
@@ -2756,7 +2906,7 @@ BEGIN
     FALSE,
     'Mama Zuma''s Habanero Chips',
     NULL,
-    'Habanero.jpg',
+    'HabaneroChips',
     NULL
   );
 
@@ -2776,7 +2926,7 @@ BEGIN
     FALSE,
     'Coke (Can)',
     NULL,
-    'CokeCan.jpg',
+    'CokeCan',
     NULL
   );
 
@@ -2788,7 +2938,7 @@ BEGIN
     FALSE,
     'Diet Coke (Can)',
     NULL,
-    'DietCokeCan.jpg',
+    'DietCokeCan',
     NULL
   );
 
@@ -2800,7 +2950,7 @@ BEGIN
     FALSE,
     'Sprite (Can)',
     NULL,
-    'SpriteCan.jpg',
+    'SpriteCan',
     NULL
   );
 
@@ -2812,7 +2962,7 @@ BEGIN
     FALSE,
     'Orange Mango Spindrift (Can)',
     NULL,
-    'OrangeMangoSpindriftCan.jpg',
+    'OrangeMangoSpindriftCan',
     NULL
   );
 
@@ -2824,7 +2974,7 @@ BEGIN
     FALSE,
     'Raspberry Lime Spindrift (Can)',
     NULL,
-    'RaspberryLimeSpindriftCan.jpg',
+    'RaspberryLimeSpindriftCan',
     NULL
   );
 
@@ -2836,7 +2986,7 @@ BEGIN
     FALSE,
     'San Pellegrino (Can)',
     NULL,
-    'SanPellegrinoCan.jpg',
+    'SanPellegrinoCan',
     NULL
   );
 
@@ -2848,7 +2998,7 @@ BEGIN
     FALSE,
     'Bottled Water',
     NULL,
-    'BottledWater.jpg',
+    'BottledWater',
     NULL
   );
 
@@ -2868,7 +3018,7 @@ BEGIN
     FALSE,
     'Bottle of Chipotle Vinaigrette',
     'Bottle size: 12oz',
-    'ChipotleVinaigrette.jpg',
+    'ChipotleVinaigrette',
     NULL
   );
 
@@ -2880,7 +3030,7 @@ BEGIN
     FALSE,
     'Bottle of Miso Mustard Vinaigrette',
     'Bottle size: 12oz',
-    'MisoMustardVinaigrette.jpg',
+    'MisoMustardVinaigrette',
     NULL
   );
 

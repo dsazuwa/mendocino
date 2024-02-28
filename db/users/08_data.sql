@@ -24,3 +24,21 @@ BEGIN
     VALUES (customer_id_var, '$2a$10$jMi7MIm2ahA/Om/EpztbDexrMSFizl.dmJjDv1OpvU2sWPOWyfeoC', '2023-01-01 00:00:00', '2023-01-01 00:00:00');
   END LOOP;
 END $$;
+
+DO $$
+DECLARE
+  email text;
+  email_id_var INTEGER;
+  admin_id_var INTEGER;
+BEGIN
+  INSERT INTO users.emails ("email_id", "email", "created_at")
+  VALUES (DEFAULT, 'admin@gmail.com', '2023-01-01 00:00:00')
+  RETURNING "email_id" INTO email_id_var;
+
+  INSERT INTO users.admins ("admin_id", "first_name", "last_name", "status", "created_at", "updated_at")
+  VALUES (DEFAULT, 'admin', 'Doe', 'active', '2023-01-01 00:00:00', '2023-01-01 00:00:00')
+  RETURNING "admin_id" INTO admin_id_var;
+
+  INSERT INTO users.admin_accounts ("admin_id", "email_id", "password", "created_at", "updated_at")
+  VALUES (admin_id_var, email_id_var, '$2a$10$jMi7MIm2ahA/Om/EpztbDexrMSFizl.dmJjDv1OpvU2sWPOWyfeoC', '2023-01-01 00:00:00', '2023-01-01 00:00:00');
+END $$;
