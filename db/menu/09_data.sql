@@ -283,7 +283,7 @@ BEGIN
   PERFORM menu.insert_modifier_group_parent(bread_id, id, NULL);
 
   PERFORM menu.insert_modifier_group_parent(bread_id, gluten_free_bread_id, NULL);
-  PERFORM menu.insert_modifier_option(bread_id, 'Tortilla (V)', NULL, 'available');
+  PERFORM menu.insert_modifier_option(bread_id, 'Tortilla (V)', NULL, 'available', FALSE);
 
   PERFORM menu.insert_modifier_group_parent(bread_id, salad_style_id, 2.30);
 
@@ -326,7 +326,7 @@ BEGIN
   );
 
   bread_option_id := menu.insert_modifier_group('Chef''s Recommended Bread', TRUE, 1, 1, 0);
-  PERFORM menu.insert_modifier_option(bread_option_id, 'Toasted Sesame Roll', NULL, 'available');
+  PERFORM menu.insert_modifier_option(bread_option_id, 'Toasted Sesame Roll', NULL, 'available', TRUE);
   PERFORM menu.insert_modifier_group_parent(bread_option_id, gluten_free_bread_id, 2.36);
   PERFORM menu.insert_modifier_group_parent(bread_option_id, change_bread_id, NULL);
 
@@ -371,7 +371,7 @@ BEGIN
   );
 
   bread_option_id := menu.insert_modifier_group('Chef''s Recommended Bread', TRUE, 1, 1, 0);
-  PERFORM menu.insert_modifier_option(bread_option_id, 'Toasted Mom''s Seeded Honey Whole Wheat', NULL, 'available');
+  PERFORM menu.insert_modifier_option(bread_option_id, 'Toasted Mom''s Seeded Honey Whole Wheat', NULL, 'available', TRUE);
   PERFORM menu.insert_modifier_group_parent(bread_option_id, gluten_free_bread_id, 2.36);
   PERFORM menu.insert_modifier_group_parent(bread_option_id, change_bread_id, NULL);
 
@@ -416,7 +416,7 @@ BEGIN
   );
 
   bread_option_id := menu.insert_modifier_group('Chef''s Recommended Bread', TRUE, 1, 1, 0);
-  PERFORM menu.insert_modifier_option(bread_option_id, 'Toasted Cranberry Walnut Bread', NULL, 'available');
+  PERFORM menu.insert_modifier_option(bread_option_id, 'Toasted Cranberry Walnut Bread', NULL, 'available', TRUE);
   PERFORM menu.insert_modifier_group_parent(bread_option_id, gluten_free_bread_id, 2.36);
   PERFORM menu.insert_modifier_group_parent(bread_option_id, change_bread_id, NULL);
 
@@ -452,7 +452,7 @@ BEGIN
   );
 
   bread_option_id := menu.insert_modifier_group('Chef''s Recommended Bread', TRUE, 1, 1, 0);
-  PERFORM menu.insert_modifier_option(bread_option_id, 'Toasted Sesame Roll (Vegan)', NULL, 'available');
+  PERFORM menu.insert_modifier_option(bread_option_id, 'Toasted Sesame Roll (Vegan)', NULL, 'available', TRUE);
   PERFORM menu.insert_modifier_group_parent(bread_option_id, gluten_free_bread_id, 2.36);
   PERFORM menu.insert_modifier_group_parent(bread_option_id, change_bread_id, NULL);
 
@@ -511,7 +511,7 @@ BEGIN
   );
 
   bread_option_id := menu.insert_modifier_group('Chef''s Recommended Bread', TRUE, 1, 1, 0);
-  PERFORM menu.insert_modifier_option(bread_option_id, 'Toasted Ciabatta (V)', NULL, 'available');
+  PERFORM menu.insert_modifier_option(bread_option_id, 'Toasted Ciabatta (V)', NULL, 'available', TRUE);
   PERFORM menu.insert_modifier_group_parent(bread_option_id, gluten_free_bread_id, 2.36);
   PERFORM menu.insert_modifier_group_parent(bread_option_id, change_bread_id, NULL);
 
@@ -531,7 +531,7 @@ BEGIN
   PERFORM menu.insert_items_categories(item_id, combos_id, NULL);
 
   bread_option_id := menu.insert_modifier_group('Chef''s Recommended Bread', TRUE, 1, 1, 0);
-  PERFORM menu.insert_modifier_option(bread_option_id, 'Toasted Ciabatta (V)', NULL, 'available');
+  PERFORM menu.insert_modifier_option(bread_option_id, 'Toasted Ciabatta (V)', NULL, 'available', TRUE);
   PERFORM menu.insert_modifier_group_parent(bread_option_id, gluten_free_bread_id, 1.15);
 
   PERFORM menu.insert_item_modifier(item_id, bread_option_id, 0);
@@ -573,7 +573,7 @@ BEGIN
   );
 
   bread_option_id := menu.insert_modifier_group('Chef''s Recommended Bread', TRUE, 1, 1, 0);
-  PERFORM menu.insert_modifier_option(bread_option_id, 'Panini Pressed Ciabatta (V)', NULL, 'available');
+  PERFORM menu.insert_modifier_option(bread_option_id, 'Panini Pressed Ciabatta (V)', NULL, 'available', TRUE);
   PERFORM menu.insert_modifier_group_parent(bread_option_id, gluten_free_bread_id, 2.36);
   PERFORM menu.insert_modifier_group_parent(bread_option_id, change_bread_id, NULL);
 
@@ -593,7 +593,7 @@ BEGIN
   PERFORM menu.insert_item_tag(item_id, rgf_id);
 
   bread_option_id := menu.insert_modifier_group('Chef''s Recommended Bread', TRUE, 1, 1, 0);
-  PERFORM menu.insert_modifier_option(bread_option_id, 'Panini Pressed Ciabatta (V)', NULL, 'available');
+  PERFORM menu.insert_modifier_option(bread_option_id, 'Panini Pressed Ciabatta (V)', NULL, 'available', TRUE);
   PERFORM menu.insert_modifier_group_parent(bread_option_id, gluten_free_bread_id, 1.15);
 
   PERFORM menu.insert_item_modifier(item_id, bread_option_id, 0);
@@ -636,7 +636,7 @@ BEGIN
   );
 
   bread_option_id := menu.insert_modifier_group('Chef''s Recommended Bread', TRUE, 1, 1, 0);
-  PERFORM menu.insert_modifier_option(bread_option_id, 'Original Mom''s Seeded Honey Whole Wheat', NULL, 'available');
+  PERFORM menu.insert_modifier_option(bread_option_id, 'Original Mom''s Seeded Honey Whole Wheat', NULL, 'available', TRUE);
   PERFORM menu.insert_modifier_group_parent(bread_option_id, gluten_free_bread_id, 2.36);
   PERFORM menu.insert_modifier_group_parent(bread_option_id, change_bread_id, NULL);
 
@@ -656,7 +656,7 @@ BEGIN
   PERFORM menu.insert_item_tag(item_id, rgf_id);
 
   bread_option_id := menu.insert_modifier_group('Chef''s Recommended Bread', TRUE, 1, 1, 0);
-  PERFORM menu.insert_modifier_option(bread_option_id, 'Original Mom''s Seeded Honey Whole Wheat', NULL, 'available');
+  PERFORM menu.insert_modifier_option(bread_option_id, 'Original Mom''s Seeded Honey Whole Wheat', NULL, 'available', TRUE);
   PERFORM menu.insert_modifier_group_parent(bread_option_id, gluten_free_bread_id, 1.15);
 
   PERFORM menu.insert_item_modifier(item_id, bread_option_id, 0);
@@ -701,7 +701,7 @@ BEGIN
   );
 
   bread_option_id := menu.insert_modifier_group('Chef''s Recommended Bread', TRUE, 1, 1, 0);
-  PERFORM menu.insert_modifier_option(bread_option_id, 'Panini Pressed Ciabatta (V)', NULL, 'available');
+  PERFORM menu.insert_modifier_option(bread_option_id, 'Panini Pressed Ciabatta (V)', NULL, 'available', TRUE);
   PERFORM menu.insert_modifier_group_parent(bread_option_id, gluten_free_bread_id, 2.36);
   PERFORM menu.insert_modifier_group_parent(bread_option_id, change_bread_id, NULL);
 
@@ -722,7 +722,7 @@ BEGIN
   PERFORM menu.insert_item_tag(item_id, rgf_id);
 
   bread_option_id := menu.insert_modifier_group('Chef''s Recommended Bread', TRUE, 1, 1, 0);
-  PERFORM menu.insert_modifier_option(bread_option_id, 'Panini Pressed Ciabatta (V)', NULL, 'available');
+  PERFORM menu.insert_modifier_option(bread_option_id, 'Panini Pressed Ciabatta (V)', NULL, 'available', TRUE);
   PERFORM menu.insert_modifier_group_parent(bread_option_id, gluten_free_bread_id, 1.15);
 
   PERFORM menu.insert_item_modifier(item_id, bread_option_id, 0);
@@ -762,7 +762,7 @@ BEGIN
   );
 
   bread_option_id := menu.insert_modifier_group('Chef''s Recommended Bread', TRUE, 1, 1, 0);
-  PERFORM menu.insert_modifier_option(bread_option_id, 'Panini Pressed Ciabatta (V)', NULL, 'available');
+  PERFORM menu.insert_modifier_option(bread_option_id, 'Panini Pressed Ciabatta (V)', NULL, 'available', TRUE);
   PERFORM menu.insert_modifier_group_parent(bread_option_id, gluten_free_bread_id, 2.36);
   PERFORM menu.insert_modifier_group_parent(bread_option_id, change_bread_id, NULL);
 
@@ -783,7 +783,7 @@ BEGIN
   PERFORM menu.insert_item_tag(item_id, rgf_id);
 
   bread_option_id := menu.insert_modifier_group('Chef''s Recommended Bread', TRUE, 1, 1, 0);
-  PERFORM menu.insert_modifier_option(bread_option_id, 'Panini Pressed Ciabatta (V)', NULL, 'available');
+  PERFORM menu.insert_modifier_option(bread_option_id, 'Panini Pressed Ciabatta (V)', NULL, 'available', TRUE);
   PERFORM menu.insert_modifier_group_parent(bread_option_id, gluten_free_bread_id, 1.15);
 
   PERFORM menu.insert_item_modifier(item_id, bread_option_id, 0);
@@ -828,7 +828,7 @@ BEGIN
   );
 
   bread_option_id := menu.insert_modifier_group('Chef''s Recommended Bread', TRUE, 1, 1, 0);
-  PERFORM menu.insert_modifier_option(bread_option_id, 'Panini Pressed Sourdough', NULL, 'available');
+  PERFORM menu.insert_modifier_option(bread_option_id, 'Panini Pressed Sourdough', NULL, 'available', TRUE);
   PERFORM menu.insert_modifier_group_parent(bread_option_id, gluten_free_bread_id, 2.36);
   PERFORM menu.insert_modifier_group_parent(bread_option_id, change_bread_id, NULL);
 
@@ -848,7 +848,7 @@ BEGIN
   PERFORM menu.insert_item_tag(item_id, rgf_id);
 
   bread_option_id := menu.insert_modifier_group('Chef''s Recommended Bread', TRUE, 1, 1, 0);
-  PERFORM menu.insert_modifier_option(bread_option_id, 'Panini Pressed Sourdough', NULL, 'available');
+  PERFORM menu.insert_modifier_option(bread_option_id, 'Panini Pressed Sourdough', NULL, 'available', TRUE);
   PERFORM menu.insert_modifier_group_parent(bread_option_id, gluten_free_bread_id, 1.15);
 
   PERFORM menu.insert_item_modifier(item_id, bread_option_id, 0);
@@ -889,7 +889,7 @@ BEGIN
   );
 
   bread_option_id := menu.insert_modifier_group('Chef''s Recommended Bread', TRUE, 1, 1, 0);
-  PERFORM menu.insert_modifier_option(bread_option_id, 'Toasted Sesame Roll (V)', NULL, 'available');
+  PERFORM menu.insert_modifier_option(bread_option_id, 'Toasted Sesame Roll (V)', NULL, 'available', TRUE);
   PERFORM menu.insert_modifier_group_parent(bread_option_id, gluten_free_bread_id, 2.36);
   PERFORM menu.insert_modifier_group_parent(bread_option_id, change_bread_id, NULL);
 
@@ -909,7 +909,7 @@ BEGIN
   PERFORM menu.insert_item_tag(item_id, rgf_id);
 
   bread_option_id := menu.insert_modifier_group('Chef''s Recommended Bread', TRUE, 1, 1, 0);
-  PERFORM menu.insert_modifier_option(bread_option_id, 'Toasted Sesame Roll (V)', NULL, 'available');
+  PERFORM menu.insert_modifier_option(bread_option_id, 'Toasted Sesame Roll (V)', NULL, 'available', TRUE);
   PERFORM menu.insert_modifier_group_parent(bread_option_id, gluten_free_bread_id, 1.15);
 
   PERFORM menu.insert_item_modifier(item_id, bread_option_id, 0);
@@ -945,7 +945,7 @@ BEGIN
   );
 
   bread_option_id := menu.insert_modifier_group('Chef''s Recommended Bread', TRUE, 1, 1, 0);
-  PERFORM menu.insert_modifier_option(bread_option_id, 'Toasted Sesame Brioche Bun', NULL, 'available');
+  PERFORM menu.insert_modifier_option(bread_option_id, 'Toasted Sesame Brioche Bun', NULL, 'available', TRUE);
   PERFORM menu.insert_modifier_group_parent(bread_option_id, gluten_free_bread_id, 2.36);
   PERFORM menu.insert_modifier_group_parent(bread_option_id, change_bread_id, NULL);
 
@@ -987,7 +987,7 @@ BEGIN
   );
 
   bread_option_id := menu.insert_modifier_group('Chef''s Recommended Bread', TRUE, 1, 1, 0);
-  PERFORM menu.insert_modifier_option(bread_option_id, 'Toasted Potato Roll', NULL, 'available');
+  PERFORM menu.insert_modifier_option(bread_option_id, 'Toasted Potato Roll', NULL, 'available', TRUE);
   PERFORM menu.insert_modifier_group_parent(bread_option_id, gluten_free_bread_id, 2.36);
   PERFORM menu.insert_modifier_group_parent(bread_option_id, change_bread_id, NULL);
 
@@ -1033,7 +1033,7 @@ BEGIN
   );
 
   bread_option_id := menu.insert_modifier_group('Chef''s Recommended Bread', TRUE, 1, 1, 0);
-  PERFORM menu.insert_modifier_option(bread_option_id, 'Panini Pressed Ciabatta (V)', NULL, 'available');
+  PERFORM menu.insert_modifier_option(bread_option_id, 'Panini Pressed Ciabatta (V)', NULL, 'available', TRUE);
   PERFORM menu.insert_modifier_group_parent(bread_option_id, gluten_free_bread_id, 2.36);
   PERFORM menu.insert_modifier_group_parent(bread_option_id, change_bread_id, NULL);
 
@@ -1072,7 +1072,7 @@ BEGIN
   );
 
   bread_option_id := menu.insert_modifier_group('Chef''s Recommended Bread', TRUE, 1, 1, 0);
-  PERFORM menu.insert_modifier_option(bread_option_id, 'Toasted Sesame Roll (V)', NULL, 'available');
+  PERFORM menu.insert_modifier_option(bread_option_id, 'Toasted Sesame Roll (V)', NULL, 'available', TRUE);
   PERFORM menu.insert_modifier_group_parent(bread_option_id, gluten_free_bread_id, 2.36);
   PERFORM menu.insert_modifier_group_parent(bread_option_id, change_bread_id, NULL);
 
@@ -1113,7 +1113,7 @@ BEGIN
   );
 
   bread_option_id := menu.insert_modifier_group('Chef''s Recommended Bread', TRUE, 1, 1, 0);
-  PERFORM menu.insert_modifier_option(bread_option_id, 'Panini Pressed Ciabatta (V)', NULL, 'available');
+  PERFORM menu.insert_modifier_option(bread_option_id, 'Panini Pressed Ciabatta (V)', NULL, 'available', TRUE);
   PERFORM menu.insert_modifier_group_parent(bread_option_id, gluten_free_bread_id, 2.36);
   PERFORM menu.insert_modifier_group_parent(bread_option_id, change_bread_id, NULL);
 
@@ -1153,7 +1153,7 @@ BEGIN
   );
 
   bread_option_id := menu.insert_modifier_group('Chef''s Recommended Bread', TRUE, 1, 1, 0);
-  PERFORM menu.insert_modifier_option(bread_option_id, 'Toasted Sesame Roll (V)', NULL, 'available');
+  PERFORM menu.insert_modifier_option(bread_option_id, 'Toasted Sesame Roll (V)', NULL, 'available', TRUE);
   PERFORM menu.insert_modifier_group_parent(bread_option_id, gluten_free_bread_id, 2.36);
   PERFORM menu.insert_modifier_group_parent(bread_option_id, change_bread_id, NULL);
 
@@ -1517,7 +1517,7 @@ BEGIN
     1,
     0,
     ARRAY[
-      '{"name": "Thai Almond Dressing (on the side)", "price": null}',
+      '{"name": "Thai Almond Dressing (on the side)", "price": null, "is_default": true}',
       '{"name": "Extra Thai Almond Dressing (on the side)", "price": null}',
       '{"name": "No Dressing", "price": null}'
     ]::JSONB[]
@@ -1577,7 +1577,7 @@ BEGIN
     1,
     0,
     ARRAY[
-      '{"name": "Chipotle Vinaigrette (on the side)", "price": null}',
+      '{"name": "Chipotle Vinaigrette (on the side)", "price": null, "is_default": true}',
       '{"name": "Extra Chipotle Vinaigrette (on the side)", "price": null}',
       '{"name": "No Dressing", "price": null}'
     ]::JSONB[]
@@ -1654,7 +1654,7 @@ BEGIN
     1,
     0,
     ARRAY[
-      '{"name": "Vagan Chipotle Ranch (on the side)", "price": null}',
+      '{"name": "Vagan Chipotle Ranch (on the side)", "price": null, "is_default": true}',
       '{"name": "Extra Vagan Chipotle Ranch (on the side)", "price": null}',
       '{"name": "No Dressing", "price": null}'
     ]::JSONB[]
@@ -1732,7 +1732,7 @@ BEGIN
     1,
     0,
     ARRAY[
-      '{"name": "Citrus Vinaigrette (on the side)", "price": null}',
+      '{"name": "Citrus Vinaigrette (on the side)", "price": null, "is_default": true}',
       '{"name": "Extra Citrus Vinaigrette (on the side)", "price": null}',
       '{"name": "No Dressing", "price": null}'
     ]::JSONB[]
@@ -1802,7 +1802,7 @@ BEGIN
     1,
     0,
     ARRAY[
-      '{"name": "Ceasar Dressing (on the side)", "price": null}',
+      '{"name": "Ceasar Dressing (on the side)", "price": null, "is_default": true}',
       '{"name": "Extra Ceasar Dressing (on the side)", "price": null}',
       '{"name": "No Dressing", "price": null}'
     ]::JSONB[]
@@ -1875,7 +1875,7 @@ BEGIN
     1,
     0,
     ARRAY[
-      '{"name": "Miso Mustard Sesame Dressing (G) (on the side)", "price": null}',
+      '{"name": "Miso Mustard Sesame Dressing (G) (on the side)", "price": null, "is_default": true}',
       '{"name": "Extra Miso Mustard Sesame Dressing (G) (on the side)", "price": null}',
       '{"name": "No Dressing", "price": null}'
     ]::JSONB[]
@@ -1942,7 +1942,7 @@ BEGIN
     1,
     0,
     ARRAY[
-      '{"name": "Citrus Vinaigrette (on the side)", "price": null}',
+      '{"name": "Citrus Vinaigrette (on the side)", "price": null, "is_default": true}',
       '{"name": "Extra Citrus Vinaigrette (G) (on the side)", "price": null}',
       '{"name": "No Dressing", "price": null}'
     ]::JSONB[]
@@ -2009,7 +2009,7 @@ BEGIN
     1,
     0,
     ARRAY[
-      '{"name": "Miso Mustard Sesame Dressing (G) (on the side)", "price": null}',
+      '{"name": "Miso Mustard Sesame Dressing (G) (on the side)", "price": null, "is_default": true}',
       '{"name": "Extra Miso Mustard Sesame Dressing (G) (on the side)", "price": null}',
       '{"name": "No Dressing", "price": null}'
     ]::JSONB[]
@@ -2083,7 +2083,7 @@ BEGIN
     1,
     0,
     ARRAY[
-      '{"name": "Greek Yogurt Poppyseed Dressing (on the side)", "price": null}',
+      '{"name": "Greek Yogurt Poppyseed Dressing (on the side)", "price": null, "is_default": true}',
       '{"name": "Extra Greek Yogurt Poppyseed Dressing (on the side)", "price": null}',
       '{"name": "No Dressing", "price": null}'
     ]::JSONB[]
@@ -2154,7 +2154,7 @@ BEGIN
     1,
     0,
     ARRAY[
-      '{"name": "Creamy Pomegranate Dressing (on the side)", "price": null}',
+      '{"name": "Creamy Pomegranate Dressing (on the side)", "price": null, "is_default": true}',
       '{"name": "Extra Creamy Pomegranate Dressing (on the side)", "price": null}',
       '{"name": "No Dressing", "price": null}'
     ]::JSONB[]
@@ -2228,7 +2228,7 @@ BEGIN
     1,
     0,
     ARRAY[
-      '{"name": "Basil Pesto Vinaigrette (on the side)", "price": null}',
+      '{"name": "Basil Pesto Vinaigrette (on the side)", "price": null, "is_default": true}',
       '{"name": "Extra Basil Pesto Vinaigrette (on the side)", "price": null}',
       '{"name": "No Dressing", "price": null}'
     ]::JSONB[]

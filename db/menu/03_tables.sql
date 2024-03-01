@@ -94,6 +94,7 @@ CREATE TABLE menu.modifier_options (
   name VARCHAR(75) NOT NULL,
   price DECIMAL(10, 4),
   status menu.enum_modifier_status NOT NULL,
+  is_default BOOLEAN NOT NULL,
   created_at TIMESTAMP NOT NULL,
   updated_at TIMESTAMP NOT NULL,
   PRIMARY KEY (option_id),

@@ -11,7 +11,7 @@ DROP FUNCTION IF EXISTS menu.insert_item_price(INTEGER, DECIMAL(10, 4));
 DROP FUNCTION IF EXISTS menu.insert_item_tag(INTEGER, INTEGER);
 DROP FUNCTION IF EXISTS menu.insert_modifier_group_parent(INTEGER, INTEGER, DECIMAL(10, 4));
 DROP FUNCTION IF EXISTS menu.insert_modifier_group(vARCHAR(100), BOOLEAN, INTEGER, INTEGER, INTEGER);
-DROP FUNCTION IF EXISTS menu.insert_modifier_option(INTEGER, VARCHAR(50), DECIMAL(10, 2), menu.enum_modifier_status);
+DROP FUNCTION IF EXISTS menu.insert_modifier_option(INTEGER, VARCHAR(50), DECIMAL(10, 2), menu.enum_modifier_status, BOOLEAN);
 DROP FUNCTION IF EXISTS menu.insert_modifier_options(INTEGER, JSONB[]);
 DROP FUNCTION IF EXISTS menu.insert_modifiers_and_options(VARCHAR(100), INTEGER, DECIMAL(10, 2), BOOLEAN, INTEGER, INTEGER, INTEGER, JSONB[]);
 DROP FUNCTION IF EXISTS menu.insert_item_modifier(INTEGER, INTEGER, INTEGER);
@@ -73,4 +73,4 @@ DROP TYPE IF EXISTS menu.enum_order_status;
 DROP TYPE IF EXISTS menu.enum_menu_status;
 
 -- Drop schema
-DROP SCHEMA IF EXISTS menu cascade;
+DROP SCHEMA IF EXISTS menu CASCADE;

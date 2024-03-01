@@ -197,7 +197,8 @@ CREATE OR REPLACE FUNCTION menu.insert_modifier_option(
   p_group_id INTEGER,
   p_name VARCHAR(50),
   p_price DECIMAL(10, 2),
-  p_status menu.enum_modifier_status
+  p_status menu.enum_modifier_status,
+  p_is_default BOOLEAN
 ) RETURNS INTEGER AS $$
 DECLARE
   modifier_option_id INTEGER;
@@ -208,6 +209,7 @@ BEGIN
       "name",
       "price",
       "status",
+      "is_default",
       "created_at",
       "updated_at"
     ) 
@@ -217,6 +219,7 @@ BEGIN
       p_name,
       p_price,
       p_status,
+      p_is_default,
       NOW(),
       NOW()
     )
@@ -241,7 +244,8 @@ BEGIN
       p_modifier_id,
       option_data_record->>'name',
       (option_data_record->>'price')::DECIMAL(10, 4),
-      'available'
+      'available',
+      COALESCE((option_data_record->>'is_default')::BOOLEAN, FALSE)
     );
   END LOOP;
 END;

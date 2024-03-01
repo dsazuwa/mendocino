@@ -121,7 +121,8 @@ BEGIN
       ARRAY_AGG(JSONB_BUILD_OBJECT(
         'optionId', o.option_id,
         'name', o.name,
-        'price', o.price
+        'price', o.price,
+        'isDefault', o.is_default
       )) AS options
     FROM menu.modifier_groups g
     JOIN menu.items_modifier_groups ig ON ig.group_id = g.group_id AND ig.item_id = p_item_id
@@ -194,7 +195,8 @@ BEGIN
       ARRAY_AGG(JSONB_BUILD_OBJECT(
         'optionId', o.option_id,
         'name', o.name,
-        'price', o.price
+        'price', o.price,
+        'isDefault', o.is_default
       )) AS options
     FROM menu.modifier_groups g
     JOIN menu.modifier_options o ON o.group_id = g.group_id
@@ -263,7 +265,8 @@ BEGIN
       ARRAY_AGG(JSONB_BUILD_OBJECT(
         'optionId', o.option_id,
         'name', o.name,
-        'price', o.price
+        'price', o.price,
+        'isDefault', o.is_default
       )) AS options
     FROM menu.modifier_groups g
     JOIN menu.modifier_options o ON o.group_id = g.group_id
