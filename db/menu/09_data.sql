@@ -441,7 +441,7 @@ BEGIN
     NULL,
     NULL,
     TRUE,
-    0,
+    1,
     1,
     0,
     ARRAY[
@@ -506,8 +506,7 @@ BEGIN
     0,
     ARRAY[
       '{"name": "Tangy Mustard BBQ Sauce", "price": null}',
-      '{"name": "Mustard Remoulade (G)", "price": null}',
-      '{"name": "No Sauce", "price": null}'
+      '{"name": "Mustard Remoulade (G)", "price": null}'
     ]::JSONB[]
   );
 
@@ -535,8 +534,8 @@ BEGIN
   PERFORM menu.insert_modifier_option(bread_option_id, 'Toasted Ciabatta (V)', NULL, 'available');
   PERFORM menu.insert_modifier_group_parent(bread_option_id, gluten_free_bread_id, 1.15);
 
-  PERFORM menu.insert_item_modifier(item_id, side_id, 0);
-  PERFORM menu.insert_item_modifier(item_id, bread_option_id, 1);
+  PERFORM menu.insert_item_modifier(item_id, bread_option_id, 0);
+  PERFORM menu.insert_item_modifier(item_id, side_id, 1);
   PERFORM menu.insert_item_modifier(item_id, sauce_option_id, 2);
   PERFORM menu.insert_item_modifier(item_id, customize_id, 3);
 
@@ -597,8 +596,8 @@ BEGIN
   PERFORM menu.insert_modifier_option(bread_option_id, 'Panini Pressed Ciabatta (V)', NULL, 'available');
   PERFORM menu.insert_modifier_group_parent(bread_option_id, gluten_free_bread_id, 1.15);
 
-  PERFORM menu.insert_item_modifier(item_id, side_id, 0);
-  PERFORM menu.insert_item_modifier(item_id, bread_option_id, 1);
+  PERFORM menu.insert_item_modifier(item_id, bread_option_id, 0);
+  PERFORM menu.insert_item_modifier(item_id, side_id, 1);
   PERFORM menu.insert_item_modifier(item_id, customize_id, 2);
 
   item_id := menu.insert_item(
@@ -660,8 +659,8 @@ BEGIN
   PERFORM menu.insert_modifier_option(bread_option_id, 'Original Mom''s Seeded Honey Whole Wheat', NULL, 'available');
   PERFORM menu.insert_modifier_group_parent(bread_option_id, gluten_free_bread_id, 1.15);
 
-  PERFORM menu.insert_item_modifier(item_id, side_id, 0);
-  PERFORM menu.insert_item_modifier(item_id, bread_option_id, 1);
+  PERFORM menu.insert_item_modifier(item_id, bread_option_id, 0);
+  PERFORM menu.insert_item_modifier(item_id, side_id, 1);
   PERFORM menu.insert_item_modifier(item_id, customize_id, 2);
 
   item_id := menu.insert_item(
@@ -726,8 +725,8 @@ BEGIN
   PERFORM menu.insert_modifier_option(bread_option_id, 'Panini Pressed Ciabatta (V)', NULL, 'available');
   PERFORM menu.insert_modifier_group_parent(bread_option_id, gluten_free_bread_id, 1.15);
 
-  PERFORM menu.insert_item_modifier(item_id, side_id, 0);
-  PERFORM menu.insert_item_modifier(item_id, bread_option_id, 1);
+  PERFORM menu.insert_item_modifier(item_id, bread_option_id, 0);
+  PERFORM menu.insert_item_modifier(item_id, side_id, 1);
   PERFORM menu.insert_item_modifier(item_id, customize_id, 2);
 
   item_id := menu.insert_item(
@@ -787,8 +786,8 @@ BEGIN
   PERFORM menu.insert_modifier_option(bread_option_id, 'Panini Pressed Ciabatta (V)', NULL, 'available');
   PERFORM menu.insert_modifier_group_parent(bread_option_id, gluten_free_bread_id, 1.15);
 
-  PERFORM menu.insert_item_modifier(item_id, side_id, 0);
-  PERFORM menu.insert_item_modifier(item_id, bread_option_id, 1);
+  PERFORM menu.insert_item_modifier(item_id, bread_option_id, 0);
+  PERFORM menu.insert_item_modifier(item_id, side_id, 1);
   PERFORM menu.insert_item_modifier(item_id, customize_id, 2);
 
   item_id := menu.insert_item(
@@ -852,8 +851,8 @@ BEGIN
   PERFORM menu.insert_modifier_option(bread_option_id, 'Panini Pressed Sourdough', NULL, 'available');
   PERFORM menu.insert_modifier_group_parent(bread_option_id, gluten_free_bread_id, 1.15);
 
-  PERFORM menu.insert_item_modifier(item_id, side_id, 0);
-  PERFORM menu.insert_item_modifier(item_id, bread_option_id, 1);
+  PERFORM menu.insert_item_modifier(item_id, bread_option_id, 0);
+  PERFORM menu.insert_item_modifier(item_id, side_id, 1);
   PERFORM menu.insert_item_modifier(item_id, customize_id, 2);
 
   item_id := menu.insert_item(
@@ -913,8 +912,8 @@ BEGIN
   PERFORM menu.insert_modifier_option(bread_option_id, 'Toasted Sesame Roll (V)', NULL, 'available');
   PERFORM menu.insert_modifier_group_parent(bread_option_id, gluten_free_bread_id, 1.15);
 
-  PERFORM menu.insert_item_modifier(item_id, side_id, 0);
-  PERFORM menu.insert_item_modifier(item_id, bread_option_id, 1);
+  PERFORM menu.insert_item_modifier(item_id, bread_option_id, 0);
+  PERFORM menu.insert_item_modifier(item_id, side_id, 1);
   PERFORM menu.insert_item_modifier(item_id, customize_id, 2);
 
   item_id := menu.insert_item(
@@ -2577,9 +2576,9 @@ BEGIN
     1,
     0,
     ARRAY[
-      '{"name": "Small (serves 1)", "price": 3.74}',
-      '{"name": "Medium (serves 2)", "price": 6.33}',
-      '{"name": "Large (serves 3-4)", "price": 11.56}'
+      '{"name": "Small (serves 1)", "price": 4.03}',
+      '{"name": "Medium (serves 2)", "price": 6.84}',
+      '{"name": "Large (serves 3-4)", "price": 12.13}'
     ]::JSONB[]
   );
 
@@ -2725,6 +2724,20 @@ BEGIN
     'a creamy puree of roasted tomatoes, garlic, and fresh basil',
     'RoastedTomatoSoup',
     NULL
+  );
+
+  group_id := menu.insert_modifiers_and_options(
+    'Select size',
+    NULL,
+    NULL,
+    TRUE,
+    1,
+    1,
+    0,
+    ARRAY[
+      '{"name": "Cup", "price": 6.84}',
+      '{"name": "Bowl", "price": 10.64}'
+    ]::JSONB[]
   );
 
   PERFORM menu.insert_items_categories(item_id, deli_id, 'soups');
