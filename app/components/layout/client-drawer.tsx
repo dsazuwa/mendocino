@@ -5,8 +5,8 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import useWindowWidth from '@/hooks/useWindowWidth';
-import { cn } from '@/lib/utils';
+import useWindowWidth from '../../hooks/useWindowWidth';
+import { cn } from '../../lib/utils';
 import { Button } from '../ui/button';
 import { publicLinks } from './client-constants';
 

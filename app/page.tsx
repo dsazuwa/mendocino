@@ -1,5 +1,5 @@
-import ClientAppBar from '@/components/layout/client-appbar';
-import Footer from '@/components/layout/footer';
+import ClientAppBar from './components/layout/client-appbar';
+import Footer from './components/layout/footer';
 
 export default function X() {
   return (

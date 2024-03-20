@@ -1,6 +1,6 @@
 import { FC, SVGProps } from 'react';
 
-import { AddPerson, Home, Info, LogIn, LogOut, Menu, Receipt } from '@/icons';
+import { AddPerson, Home, Info, LogIn, LogOut, Menu, Receipt } from '../icons';
 
 export type PageType = {
   name: string;
