@@ -1,12 +1,11 @@
-import ClientAppBar from './components/layout/client-appbar';
-import Footer from './components/layout/footer';
+import { ClientLayout, Footer } from './components/layout';
 
-export default function X() {
+export default function Home() {
   return (
-    <main className='flex min-h-screen flex-col'>
-      <ClientAppBar />
-
-      <Footer />
-    </main>
+    <ClientLayout>
+      <main className='flex min-h-[calc(100vh-48px)] flex-col'>
+        <Footer />
+      </main>
+    </ClientLayout>
   );
 }
