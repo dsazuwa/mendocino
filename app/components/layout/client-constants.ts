@@ -1,6 +1,15 @@
 import { FC, SVGProps } from 'react';
 
-import { AddPerson, Home, Info, LogIn, LogOut, Menu, Receipt } from '../icons';
+import {
+  AddPerson,
+  CircleUser,
+  Home,
+  Info,
+  LogIn,
+  LogOut,
+  Menu,
+  Receipt,
+} from '../icons';
 
 export type PageType = {
   name: string;
@@ -20,16 +29,16 @@ export const publicLinks: PageType[] = [
   { name: 'About', href: '/about', Icon: Info },
 ];
 
-export const authLinks: AuthPageType[] = [
-  // {
-  //   page: { name: 'Account', href: '/account', Icon: CircleUser },
-  //   handleLogout: undefined,
-  // },
-  {
-    page: { name: 'Log Out', href: '', Icon: LogOut },
-    handleLogout: undefined, // for now
-  },
-];
+export const accountLink = {
+  name: 'Account',
+  href: '/account',
+  Icon: CircleUser,
+};
+export const logoutLink = {
+  name: 'Log Out',
+  Icon: LogOut,
+  handleLogout: undefined, // for now
+};
 
 export const unauthLinks: PageType[] = [
   { name: 'Log In', href: '/login', Icon: LogIn },
