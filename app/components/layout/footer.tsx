@@ -7,9 +7,9 @@ function FooterLink({ label }: { label: string }) {
   return (
     <Button
       asChild={true}
-      variant='link'
+      variant='ghost'
       size='none'
-      className='rounded-none cursor-pointer justify-start text-xs text-gray-700 sm:justify-end'
+      className='rounded-none cursor-pointer justify-start py-1 text-xs text-gray-700 hover:bg-neutral-100 sm:justify-end'
     >
       <a>{label}</a>
     </Button>
@@ -35,13 +35,13 @@ export default function Footer() {
         <div className='flex flex-col gap-4'>
           <Logo />
 
-          <p className='max-w-80 text-sm leading-6 text-gray-500'>
+          <p className='max-w-80 text-xs leading-5 text-gray-500'>
             Excepteur sint occaecat cupidatat non proident, sunt in culpa qui
             officia deserunt mollit anim id est laborum
           </p>
         </div>
 
-        <div className='grid grid-cols-1 gap-x-4 gap-y-4 sm:grid-cols-2'>
+        <div className='grid grid-cols-1 gap-x-4 gap-y-2 sm:grid-cols-2'>
           <FooterLink label='Our Story' />
 
           <FooterLink label='Catering' />
