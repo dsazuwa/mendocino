@@ -1,4 +1,5 @@
 import type { Config } from 'tailwindcss';
+import colors from 'tailwindcss/colors';
 
 const config = {
   darkMode: ['class'],
@@ -17,6 +18,18 @@ const config = {
         '2xl': '1400px',
       },
     },
+
+    colors: {
+      ...colors,
+      primary: 'hsl(200,76%,60%)',
+    },
+
+    borderRadius: {
+      lg: '16px',
+      md: '8px',
+      sm: '4px',
+    },
+
     extend: {
       keyframes: {
         'accordion-down': {
