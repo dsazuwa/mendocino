@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { accountLink, logoutLink, unauthLinks } from './client-constants';
 
 export default function ClientAuthLinks() {
-  const isAuth = true;
+  const isAuth = false;
 
   return !isAuth ? (
     <div className='hidden gap-4 md:flex'>

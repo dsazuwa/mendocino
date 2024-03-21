@@ -1,8 +1,8 @@
 import Link from 'next/link';
 
-import { AuthLayout } from '@/components/layout';
-import { buttonVariants } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
+import { AuthLayout } from '@/_components/layout';
+import { buttonVariants } from '@/_components/ui/button';
+import { cn } from '@/_lib/utils';
 import RegisterForm from './register-form';
 
 export default function Register() {

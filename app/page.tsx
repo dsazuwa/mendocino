@@ -1,4 +1,4 @@
-import { ClientLayout, Footer } from './components/layout';
+import { ClientLayout, Footer } from './_components/layout';
 
 export default function Home() {
   return (

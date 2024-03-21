@@ -5,7 +5,7 @@ import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { TypeOf, boolean, object, string } from 'zod';
 
-import { Button } from '@/components/ui/button';
+import { Button } from '@/_components/ui/button';
 import {
   Form,
   FormControl,
@@ -13,8 +13,8 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
+} from '@/_components/ui/form';
+import { Input } from '@/_components/ui/input';
 
 const formSchema = object({
   firstName: string().trim().min(1, 'First name required'),

@@ -14,9 +14,9 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { cn } from '@/lib/utils';
+} from '@/_components/ui/form';
+import { cn } from '@/_lib/utils';
+import { Input } from '@/_components/ui/input';
 
 const formSchema = object({
   email: string().email({ message: 'Invalid email address' }),

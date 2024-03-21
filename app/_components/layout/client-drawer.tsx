@@ -3,8 +3,8 @@
 import { HamburgerMenuIcon } from '@radix-ui/react-icons';
 import { useEffect, useState } from 'react';
 
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import useWindowWidth from '@/hooks/useWindowWidth';
+import { Sheet, SheetContent, SheetTrigger } from '@/_components/ui/sheet';
+import useWindowWidth from '@/_hooks/useWindowWidth';
 import { Button } from '../ui/button';
 import {
   accountLink,
@@ -15,7 +15,7 @@ import {
 import DrawerLink from './client-drawer-link';
 
 export default function ClientAppBarDrawer() {
-  const isAuth = false;
+  const isAuth = true;
 
   const [open, setOpen] = useState(false);
   const windowWidth = useWindowWidth();
