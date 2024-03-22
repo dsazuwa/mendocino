@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Montserrat } from 'next/font/google';
 import { ReactNode } from 'react';
 
+import { Toaster } from './_components/ui/toaster';
 import './globals.css';
 import StoreProvider from './store-provider';
 
@@ -27,6 +28,7 @@ export default function RootLayout({
     <html lang='en'>
       <body className={font.className}>
         <StoreProvider>{children}</StoreProvider>
+        <Toaster />
       </body>
     </html>
   );
