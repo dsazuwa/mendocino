@@ -46,12 +46,8 @@ export const authApi = createApi({
       },
 
       async onQueryStarted(args, api) {
-        try {
-          await api.queryFulfilled;
-          api.dispatch(logout());
-        } catch (e) {
-          console.log(e);
-        }
+        await api.queryFulfilled;
+        api.dispatch(logout());
       },
     }),
 
@@ -65,12 +61,8 @@ export const authApi = createApi({
       },
 
       async onQueryStarted(arg, api) {
-        try {
-          const { data } = await api.queryFulfilled;
-          api.dispatch(setUser(data.user));
-        } catch (e) {
-          console.log(e);
-        }
+        const { data } = await api.queryFulfilled;
+        api.dispatch(setUser(data.user));
       },
     }),
 
@@ -107,12 +99,8 @@ export const authApi = createApi({
       },
 
       async onQueryStarted(arg, api) {
-        try {
-          const { data } = await api.queryFulfilled;
-          api.dispatch(setUser(data.user));
-        } catch (e) {
-          console.log(e);
-        }
+        const { data } = await api.queryFulfilled;
+        api.dispatch(setUser(data.user));
       },
     }),
   }),
