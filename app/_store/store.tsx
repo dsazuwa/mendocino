@@ -1,5 +1,7 @@
 import { configureStore } from '@reduxjs/toolkit';
+
 import { authApi } from './api/auth-api';
+import { userApi } from './api/user-api';
 import { userReducer } from './slices/user-slice';
 
 export const makeStore = () =>
@@ -8,11 +10,12 @@ export const makeStore = () =>
 
     reducer: {
       [authApi.reducerPath]: authApi.reducer,
+      [userApi.reducerPath]: userApi.reducer,
       userState: userReducer,
     },
 
     middleware: (getDefaultMiddleware) =>
-      getDefaultMiddleware({}).concat([authApi.middleware]),
+      getDefaultMiddleware({}).concat([authApi.middleware, userApi.middleware]),
   });
 
 export type AppStore = ReturnType<typeof makeStore>;
