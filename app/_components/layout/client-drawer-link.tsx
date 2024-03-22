@@ -1,8 +1,8 @@
 import Link from 'next/link';
 
-import { PageType } from './client-constants';
+import { ClientLink } from './client-constants';
 
-export default function DrawerLink({ name, href, Icon }: PageType) {
+export default function DrawerLink({ name, href, Icon }: ClientLink) {
   return (
     <Link href={href} className='flex flex-row gap-4 p-4'>
       <Icon className='w-4 fill-gray-600' />

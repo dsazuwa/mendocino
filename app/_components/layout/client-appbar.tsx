@@ -1,9 +1,10 @@
 import Link from 'next/link';
 
 import Logo from '../logo';
-import ClientAuthLinks from './client-auth-links';
+import ClientAuthLinks from './client-auth';
 import { publicLinks } from './client-constants';
 import ClientAppBarDrawer from './client-drawer';
+import ClientLink from './client-link';
 
 export default function ClientAppBar() {
   return (
@@ -17,13 +18,7 @@ export default function ClientAppBar() {
 
         <div className='hidden flex-grow gap-4 md:flex'>
           {publicLinks.map(({ name, href }) => (
-            <Link
-              key={`${name}-link`}
-              href={href}
-              className='text-xs font-semibold'
-            >
-              {name}
-            </Link>
+            <ClientLink key={`${name}-link`} href={href} name={name} />
           ))}
         </div>
 

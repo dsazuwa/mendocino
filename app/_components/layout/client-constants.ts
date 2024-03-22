@@ -11,22 +11,28 @@ import {
   Receipt,
 } from '../icons';
 
-export type PageType = {
+export type ClientLink = {
   name: string;
   href: string;
   Icon: FC<SVGProps<SVGSVGElement>>;
 };
 
-export type AuthPageType = {
-  page: PageType;
-  handleLogout?: () => void;
+export type ClientButton = {
+  name: string;
+  Icon: FC<SVGProps<SVGSVGElement>>;
+  handleClick: () => void;
 };
 
-export const publicLinks: PageType[] = [
+export const publicLinks: ClientLink[] = [
   { name: 'Home', href: '/', Icon: Home },
   { name: 'Menu', href: '/menu', Icon: Menu },
   { name: 'Order', href: '/order', Icon: Receipt },
   { name: 'About', href: '/about', Icon: Info },
+];
+
+export const unauthLinks: ClientLink[] = [
+  { name: 'Log In', href: '/login', Icon: LogIn },
+  { name: 'Sign Up', href: '/register', Icon: AddPerson },
 ];
 
 export const accountLink = {
@@ -34,13 +40,9 @@ export const accountLink = {
   href: '/account',
   Icon: CircleUser,
 };
-export const logoutLink = {
+
+export const logOutLink: ClientButton = {
   name: 'Log Out',
   Icon: LogOut,
-  handleLogout: undefined, // for now
+  handleClick: () => {},
 };
-
-export const unauthLinks: PageType[] = [
-  { name: 'Log In', href: '/login', Icon: LogIn },
-  { name: 'Sign Up', href: '/register', Icon: AddPerson },
-];
