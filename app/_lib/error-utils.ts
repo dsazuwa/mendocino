@@ -7,14 +7,13 @@ export const getErrorMessage = (
   if (error === undefined) return '';
 
   let message = '';
+
   if ('status' in error) {
     message =
       'error' in error
         ? error.error
         : (error.data as { message: string }).message;
-  } else {
-    message = error.message ?? '';
-  }
+  } else message = error.message ?? '';
 
   return message;
 };

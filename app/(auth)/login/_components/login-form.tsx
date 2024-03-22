@@ -33,7 +33,7 @@ type FormSchema = TypeOf<typeof formSchema>;
 export default function LoginForm() {
   const router = useRouter();
   const { toast } = useToast();
-  const [loginUser, { data, isLoading, isSuccess, error }] =
+  const [loginUser, { data, isLoading, isSuccess, isError, error }] =
     useLoginUserMutation();
 
   const form = useForm<FormSchema>({
@@ -62,8 +62,9 @@ export default function LoginForm() {
     if (isSuccess)
       router.push(data?.user.roles[0] === 'customer' ? '/' : '/admin');
 
-    if (error) toast({ description: getErrorMessage(error) });
-  }, [data, isLoading, isSuccess, error, router]);
+    if (isError)
+      toast({ variant: 'destructive', description: getErrorMessage(error) });
+  }, [data, isLoading, isSuccess, isError, error, router]);
 
   return (
     <Form {...form}>

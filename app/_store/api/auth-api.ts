@@ -32,13 +32,8 @@ export const authApi = createApi({
       },
 
       async onQueryStarted(arg, api) {
-        try {
-          const { data } = await api.queryFulfilled;
-          api.dispatch(setUser(data.user));
-        } catch (e) {
-          // TODO: dispatch(createToastMessage('Error fetching posts!'))
-          console.log(e);
-        }
+        const { data } = await api.queryFulfilled;
+        api.dispatch(setUser(data.user));
       },
     }),
 
