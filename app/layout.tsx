@@ -3,6 +3,7 @@ import { Montserrat } from 'next/font/google';
 import { ReactNode } from 'react';
 
 import './globals.css';
+import StoreProvider from './store-provider';
 
 const font = Montserrat({
   weight: ['100', '200', '300', '400', '500', '600', '700', '800', '900'],
@@ -24,7 +25,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang='en'>
-      <body className={font.className}>{children}</body>
+      <body className={font.className}>
+        <StoreProvider>{children}</StoreProvider>
+      </body>
     </html>
   );
 }
