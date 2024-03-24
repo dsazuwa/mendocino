@@ -2,7 +2,7 @@ import { cva } from 'class-variance-authority';
 
 import { cn } from '@/_lib/utils';
 
-const iconVariants = cva('animate-spin fill-primary text-gray-100', {
+const iconVariants = cva('animate-spin fill-primary text-neutral-100', {
   variants: {
     size: {
       sm: 'w-4 h-4',

@@ -28,7 +28,7 @@ export default function AdminDrawer() {
         side='left'
         className='flex max-h-screen w-60 flex-col bg-white'
       >
-        <div className='h-12 border-b border-solid border-gray-200' />
+        <div className='h-12 border-b border-solid border-neutral-200' />
 
         <AdminLinks />
       </SheetContent>

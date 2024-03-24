@@ -38,7 +38,7 @@ export default function ClientAppBarDrawer() {
         side='left'
         className='flex max-h-screen w-60 flex-col bg-white'
       >
-        <div className='h-12 border-b border-solid border-gray-200' />
+        <div className='h-12 border-b border-solid border-neutral-200' />
 
         <div className='flex flex-grow flex-col'>
           {publicLinks.map(({ name, href, Icon }, i) => (
@@ -52,7 +52,7 @@ export default function ClientAppBarDrawer() {
         </div>
 
         {authReady && (
-          <div className='flex flex-col border-t border-solid border-gray-200'>
+          <div className='flex flex-col border-t border-solid border-neutral-200'>
             {isAuthenticated ? (
               <>
                 <DrawerLink
