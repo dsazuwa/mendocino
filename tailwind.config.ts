@@ -1,4 +1,5 @@
 import type { Config } from 'tailwindcss';
+import { fontFamily } from 'tailwindcss/defaultTheme';
 import colors from 'tailwindcss/colors';
 
 const config = {
@@ -45,6 +46,10 @@ const config = {
     },
 
     extend: {
+      fontFamily: {
+        sans: ['var(--font-sans)', ...fontFamily.sans],
+      },
+
       keyframes: {
         'accordion-down': {
           from: { height: '0' },
