@@ -41,6 +41,7 @@ const config = {
       lg: '8px',
       md: '4px',
       sm: '2px',
+      full: '100px',
     },
 
     extend: {
