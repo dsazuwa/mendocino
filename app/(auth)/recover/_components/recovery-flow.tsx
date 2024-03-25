@@ -21,8 +21,6 @@ export default function RecoveryFlow() {
     setStep(3);
   };
 
-  console.log(step, email, code);
-
   if (step === 1)
     return <ForgotPasswordForm handleFlowChange={handleForgott} />;
   if (step === 2)

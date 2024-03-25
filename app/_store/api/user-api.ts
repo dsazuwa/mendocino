@@ -22,12 +22,8 @@ export const userApi = createApi({
       },
       transformResponse: (result: { user: User }) => result.user,
       async onQueryStarted(args, { dispatch, queryFulfilled }) {
-        try {
-          const { data } = await queryFulfilled;
-          dispatch(setUser(data));
-        } catch (e) {
-          console.log(e);
-        }
+        const { data } = await queryFulfilled;
+        dispatch(setUser(data));
       },
     }),
   }),
