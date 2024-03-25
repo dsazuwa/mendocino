@@ -6,7 +6,6 @@ import {
   Home,
   Info,
   LogIn,
-  LogOut,
   Menu,
   Receipt,
 } from '../icons';
@@ -39,10 +38,4 @@ export const accountLink = {
   name: 'Account',
   href: '/account',
   Icon: CircleUser,
-};
-
-export const logOutLink: ClientButton = {
-  name: 'Log Out',
-  Icon: LogOut,
-  handleClick: () => {},
 };

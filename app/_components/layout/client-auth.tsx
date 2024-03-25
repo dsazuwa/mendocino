@@ -1,11 +1,13 @@
 'use client';
 
 import useAuthentication from '@/_hooks/useAuthentication';
-import { accountLink, logOutLink, unauthLinks } from './client-constants';
+import useLogout from '@/_hooks/useLogout';
+import { accountLink, unauthLinks } from './client-constants';
 import ClientLink from './client-link';
 
 export default function ClientAuthLinks() {
   const { authReady, isAuthenticated } = useAuthentication();
+  const { handleLogout } = useLogout(false);
 
   return authReady ? (
     isAuthenticated ? (
@@ -13,10 +15,10 @@ export default function ClientAuthLinks() {
         <ClientLink href={accountLink.href} name={accountLink.name} />
 
         <button
-          onClick={logOutLink.handleClick}
+          onClick={() => handleLogout()}
           className='text-xs font-semibold'
         >
-          {logOutLink.name}
+          Log Out
         </button>
       </div>
     ) : (
