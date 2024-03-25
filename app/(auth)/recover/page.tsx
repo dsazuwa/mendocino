@@ -19,7 +19,7 @@ export default function Recover() {
             size: 'none',
             className: 'text-xs',
           }),
-          'mt-2 gap-1',
+          'gap-1',
         )}
       >
         <ArrowLeftIcon className='w-3 text-primary-800' />

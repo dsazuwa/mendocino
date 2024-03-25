@@ -88,7 +88,10 @@ export default function VerifyForm({ email, handleFlowChange }: Props) {
       });
 
     if (isRequestSuccess)
-      toast({ description: 'A recovery code has been sent to your email' });
+      toast({
+        variant: 'info',
+        description: 'A recovery code has been sent to your email',
+      });
   }, [isRequestSuccess, isRequestError, requestError, toast]);
 
   useEffect(() => {
@@ -100,7 +103,7 @@ export default function VerifyForm({ email, handleFlowChange }: Props) {
 
     if (isVerifySuccess) {
       handleFlowChange(getValues('code'));
-      toast({ description: 'Email verified!' });
+      toast({ variant: 'success', description: 'Email verified!' });
     }
   }, [
     isVerifySuccess,
@@ -146,17 +149,7 @@ export default function VerifyForm({ email, handleFlowChange }: Props) {
             )}
           />
 
-          <span className='space-x-1'>
-            <span className='text-xs'>Didn&apos;t receive the email?</span>
-            <Button
-              variant='primaryLink'
-              size='none'
-              className='text-xs'
-              onClick={handleResend}
-            >
-              Click to resend
-            </Button>
-          </span>
+        
 
           <Button
             type='submit'
@@ -169,6 +162,18 @@ export default function VerifyForm({ email, handleFlowChange }: Props) {
             )}
           </Button>
         </form>
+
+        <span className='space-x-1'>
+            <span className='text-xs'>Didn&apos;t receive the email?</span>
+            <Button
+              variant='primaryLink'
+              size='none'
+              className='text-xs'
+              onClick={handleResend}
+            >
+              Click to resend
+            </Button>
+          </span>
       </Form>
     </>
   );

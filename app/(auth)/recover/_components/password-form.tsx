@@ -69,7 +69,13 @@ export default function ChangePasswordForm({ email, code }: Props) {
   }, [isError, error, toast]);
 
   useEffect(() => {
-    if (isSuccess) toast({ description: 'Password successfully changed!' });
+    if (isSuccess) {
+      toast({
+        variant: 'success',
+        description: 'Password successfully changed!',
+      });
+      router.push('/');
+    }
   }, [isSuccess, router, toast]);
 
   return (
