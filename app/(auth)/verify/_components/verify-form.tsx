@@ -1,6 +1,7 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { TypeOf, object, string } from 'zod';
@@ -31,6 +32,7 @@ type FormSchema = TypeOf<typeof formSchema>;
 
 export default function VerifyForm() {
   const { toast } = useToast();
+  const router = useRouter();
 
   const form = useForm<FormSchema>({
     defaultValues: { code: '' },
@@ -93,8 +95,11 @@ export default function VerifyForm() {
         description: getErrorMessage(verifyError),
       });
 
-    if (isVerifySuccess)
+    if (isVerifySuccess) {
       toast({ variant: 'success', description: 'Email verified!' });
+
+      router.push('/');
+    }
   }, [isVerifySuccess, isVerifyError, verifyError, toast]);
 
   return (

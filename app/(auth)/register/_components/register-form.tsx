@@ -78,7 +78,7 @@ export default function RegisterForm() {
 
   useEffect(() => {
     if (isSuccess) {
-      toast({ description: 'Registration Successful!' });
+      toast({ variant: 'success', description: 'Registration Successful!' });
 
       router.push('/verify');
     }
