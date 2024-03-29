@@ -1,22 +1,22 @@
-'use client';
-
-import { useRouter } from 'next/navigation';
+import { redirect } from 'next/navigation';
 
 import { AuthLayout } from '@/_components/layout';
-import Loader from '@/_components/loader';
-import useAuthentication from '@/_hooks/useAuthentication';
+import { fetchWithReauth } from '@/_lib/auth.utils';
 import VerifyForm from './_components/verify-form';
 
-export default function Verify() {
-  const { authReady, isAuthenticated, user } = useAuthentication();
-  const router = useRouter();
+export default async function Verify() {
+  const res = await fetchWithReauth(
+    `${process.env.NEXT_PUBLIC_API_URL}/users/me`,
+    {
+      method: 'GET',
+      credentials: 'include',
+    },
+  );
 
-  if (!authReady) return <Loader className='mt-[15vh]' size='lg' />;
+  if (res.status === 401 || (await res.json()).status !== 'pending')
+    redirect('/');
 
-  if (!isAuthenticated || user === undefined || user.status !== 'pending')
-    router.push('/');
-
-  return user?.status === 'pending' ? (
+  return (
     <AuthLayout>
       <h1 className='md-2 text-xl font-bold'>Verify Email</h1>
 
@@ -26,7 +26,5 @@ export default function Verify() {
 
       <VerifyForm />
     </AuthLayout>
-  ) : (
-    <></>
   );
 }
