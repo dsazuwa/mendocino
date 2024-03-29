@@ -5,17 +5,14 @@ import { useEffect, useState } from 'react';
 
 import { Sheet, SheetContent, SheetTrigger } from '@/_components/ui/sheet';
 import useAuthentication from '@/_hooks/useAuthentication';
-import useLogout from '@/_hooks/useLogout';
 import useWindowWidth from '@/_hooks/useWindowWidth';
-import { LogOut } from '../icons';
 import { Button } from '../ui/button';
 import { accountLink, publicLinks, unauthLinks } from './client-constants';
-import DrawerButton from './client-drawer-btn';
 import DrawerLink from './client-drawer-link';
+import LogoutButton from './logout-btn';
 
 export default function ClientAppBarDrawer() {
   const { authReady, isAuthenticated } = useAuthentication();
-  const { handleLogout } = useLogout(false);
 
   const [open, setOpen] = useState(false);
   const windowWidth = useWindowWidth();
@@ -59,12 +56,7 @@ export default function ClientAppBarDrawer() {
                   Icon={accountLink.Icon}
                 />
 
-                <DrawerButton
-                  key='logout-btn'
-                  name='Log Out'
-                  Icon={LogOut}
-                  handleClick={handleLogout}
-                />
+                <LogoutButton />
               </>
             ) : (
               <>
