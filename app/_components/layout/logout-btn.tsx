@@ -8,7 +8,7 @@ export default function LogoutButton() {
 
   return (
     <button
-      onClick={() => handleLogout()}
+      onClick={() => void handleLogout()}
       className='flex flex-row gap-4 p-4 md:p-0'
     >
       <LogOut className='w-4 fill-neutral-600 md:hidden' />

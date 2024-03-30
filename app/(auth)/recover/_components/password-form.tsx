@@ -60,7 +60,7 @@ export default function ChangePasswordForm({ email, code }: Props) {
 
   const { control, handleSubmit } = form;
 
-  const onSubmitHandler: SubmitHandler<FormSchema> = ({ password }) =>
+  const handleFormSubmit: SubmitHandler<FormSchema> = ({ password }) =>
     recoverPassword({ code, email, password });
 
   useEffect(() => {
@@ -88,7 +88,7 @@ export default function ChangePasswordForm({ email, code }: Props) {
 
       <Form {...form}>
         <form
-          onSubmit={handleSubmit(onSubmitHandler)}
+          onSubmit={(event) => void handleSubmit(handleFormSubmit)(event)}
           className='flex w-full flex-col gap-4'
         >
           <FormField

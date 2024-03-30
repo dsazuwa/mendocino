@@ -39,7 +39,7 @@ export default function VerifyForm() {
     resolver: zodResolver(formSchema),
   });
 
-  const { control, handleSubmit, watch } = form;
+  const { control, handleSubmit, watch, reset } = form;
 
   const [
     verifyCode,
@@ -62,15 +62,20 @@ export default function VerifyForm() {
   ] = useResendVerificationMutation();
 
   const handleFormSubmit = useCallback<SubmitHandler<FormSchema>>(
-    ({ code }) => verifyCode({ code }),
+    ({ code }) => void verifyCode({ code }),
     [verifyCode],
   );
 
-  const handleResend = () => requestVerify();
+  const handleResend = () => {
+    void requestVerify();
+    reset();
+  };
 
   useEffect(() => {
     const subscription = watch((data) => {
-      if (data.code?.length === 5) handleSubmit(handleFormSubmit)();
+      if (data.code?.length === 5) {
+        void handleSubmit(handleFormSubmit)();
+      }
     });
 
     return () => subscription.unsubscribe();
@@ -108,7 +113,7 @@ export default function VerifyForm() {
     <>
       <Form {...form}>
         <form
-          onSubmit={handleSubmit(handleFormSubmit)}
+          onSubmit={(event) => void handleSubmit(handleFormSubmit)(event)}
           className='flex w-full flex-col items-center gap-4'
         >
           <FormField
@@ -160,17 +165,3 @@ export default function VerifyForm() {
     </>
   );
 }
-
-// {
-//   "extends": [
-//     "next/core-web-vitals",
-//     "eslint:recommended",
-//     "plugin:@typescript-eslint/eslint-recommended",
-//     "plugin:@typescript-eslint/recommended",
-//     "prettier"
-//   ],
-//   "plugins": [
-//     "jsx-a11y"
-//   ],
-//   "root": true
-// }

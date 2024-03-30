@@ -45,7 +45,7 @@ export default function VerifyForm({ email, handleFlowChange }: Props) {
     resolver: zodResolver(formSchema),
   });
 
-  const { control, handleSubmit, watch, getValues } = form;
+  const { control, handleSubmit, watch, getValues, reset } = form;
 
   const [
     verifyCode,
@@ -72,11 +72,16 @@ export default function VerifyForm({ email, handleFlowChange }: Props) {
     [email, verifyCode],
   );
 
-  const handleResend = () => requestRecovery({ email });
+  const handleResend = () => {
+    void requestRecovery({ email });
+    reset();
+  };
 
   useEffect(() => {
     const subscription = watch((data) => {
-      if (data.code?.length === 5) handleSubmit(handleFormSubmit)();
+      if (data.code?.length === 5) {
+        void handleSubmit(handleFormSubmit)();
+      }
     });
 
     return () => subscription.unsubscribe();
@@ -126,7 +131,7 @@ export default function VerifyForm({ email, handleFlowChange }: Props) {
 
       <Form {...form}>
         <form
-          onSubmit={handleSubmit(handleFormSubmit)}
+          onSubmit={(event) => void handleSubmit(handleFormSubmit)(event)}
           className='flex w-full flex-col items-center gap-4'
         >
           <FormField

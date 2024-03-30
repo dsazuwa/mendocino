@@ -42,7 +42,7 @@ export default function ForgotPasswordForm({ handleFlowChange }: Props) {
 
   const { control, handleSubmit, getValues } = form;
 
-  const onSubmitHandler: SubmitHandler<FormSchema> = (formData) =>
+  const handleFormSubmit: SubmitHandler<FormSchema> = (formData) =>
     requestRecovery(formData);
 
   useEffect(() => {
@@ -67,7 +67,7 @@ export default function ForgotPasswordForm({ handleFlowChange }: Props) {
 
       <Form {...form}>
         <form
-          onSubmit={handleSubmit(onSubmitHandler)}
+          onSubmit={(event) => void handleSubmit(handleFormSubmit)(event)}
           className='flex w-full flex-col gap-4'
         >
           <FormField

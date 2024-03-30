@@ -69,7 +69,7 @@ export default function RegisterForm() {
     formState: { isSubmitSuccessful },
   } = form;
 
-  const onSubmitHandler: SubmitHandler<FormSchema> = (formData) =>
+  const handleFormSubmit: SubmitHandler<FormSchema> = (formData) =>
     registerUser(formData);
 
   useEffect(() => {
@@ -90,7 +90,7 @@ export default function RegisterForm() {
   return (
     <Form {...form}>
       <form
-        onSubmit={handleSubmit(onSubmitHandler)}
+        onSubmit={(event) => void handleSubmit(handleFormSubmit)(event)}
         className='flex w-full flex-col gap-4'
       >
         <div className='flex w-full flex-col gap-2'>

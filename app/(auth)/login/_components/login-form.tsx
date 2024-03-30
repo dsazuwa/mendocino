@@ -51,7 +51,7 @@ export default function LoginForm() {
     formState: { isSubmitSuccessful },
   } = form;
 
-  const onSubmitHandler: SubmitHandler<FormSchema> = (formData) =>
+  const handleFormSubmit: SubmitHandler<FormSchema> = (formData) =>
     loginUser(formData);
 
   useEffect(() => {
@@ -69,7 +69,7 @@ export default function LoginForm() {
   return (
     <Form {...form}>
       <form
-        onSubmit={handleSubmit(onSubmitHandler)}
+        onSubmit={(event) => void handleSubmit(handleFormSubmit)(event)}
         className='flex w-full flex-col gap-4'
       >
         <div className='flex w-full flex-col gap-2'>
