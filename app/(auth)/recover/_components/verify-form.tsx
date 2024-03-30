@@ -1,7 +1,7 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { TypeOf, object, string } from 'zod';
 
@@ -67,8 +67,10 @@ export default function VerifyForm({ email, handleFlowChange }: Props) {
     },
   ] = useRequestPasswordRecoveryMutation();
 
-  const handleFormSubmit: SubmitHandler<FormSchema> = ({ code }) =>
-    verifyCode({ code, email });
+  const handleFormSubmit = useCallback<SubmitHandler<FormSchema>>(
+    ({ code }) => verifyCode({ code, email }),
+    [email, verifyCode],
+  );
 
   const handleResend = () => requestRecovery({ email });
 
@@ -78,7 +80,7 @@ export default function VerifyForm({ email, handleFlowChange }: Props) {
     });
 
     return () => subscription.unsubscribe();
-  }, [watch]);
+  }, [watch, handleSubmit, handleFormSubmit]);
 
   useEffect(() => {
     if (isRequestError)
@@ -149,8 +151,6 @@ export default function VerifyForm({ email, handleFlowChange }: Props) {
             )}
           />
 
-        
-
           <Button
             type='submit'
             className='w-full bg-primary-600 hover:bg-primary'
@@ -164,16 +164,16 @@ export default function VerifyForm({ email, handleFlowChange }: Props) {
         </form>
 
         <span className='space-x-1'>
-            <span className='text-xs'>Didn&apos;t receive the email?</span>
-            <Button
-              variant='primaryLink'
-              size='none'
-              className='text-xs'
-              onClick={handleResend}
-            >
-              Click to resend
-            </Button>
-          </span>
+          <span className='text-xs'>Didn&apos;t receive the email?</span>
+          <Button
+            variant='primaryLink'
+            size='none'
+            className='text-xs'
+            onClick={handleResend}
+          >
+            Click to resend
+          </Button>
+        </span>
       </Form>
     </>
   );

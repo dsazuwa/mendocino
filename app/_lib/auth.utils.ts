@@ -1,3 +1,5 @@
+/* global RequestInit */
+
 export async function fetchWithReauth(
   input: string | Request | URL,
   init?: RequestInit,

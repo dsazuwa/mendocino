@@ -2,7 +2,7 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { TypeOf, object, string } from 'zod';
 
@@ -61,8 +61,10 @@ export default function VerifyForm() {
     },
   ] = useResendVerificationMutation();
 
-  const handleFormSubmit: SubmitHandler<FormSchema> = ({ code }) =>
-    verifyCode({ code });
+  const handleFormSubmit = useCallback<SubmitHandler<FormSchema>>(
+    ({ code }) => verifyCode({ code }),
+    [verifyCode],
+  );
 
   const handleResend = () => requestVerify();
 
@@ -72,7 +74,7 @@ export default function VerifyForm() {
     });
 
     return () => subscription.unsubscribe();
-  }, [watch]);
+  }, [watch, handleSubmit, handleFormSubmit]);
 
   useEffect(() => {
     if (isRequestError)
@@ -100,7 +102,7 @@ export default function VerifyForm() {
 
       router.push('/');
     }
-  }, [isVerifySuccess, isVerifyError, verifyError, toast]);
+  }, [isVerifySuccess, isVerifyError, verifyError, toast, router]);
 
   return (
     <>
@@ -158,3 +160,17 @@ export default function VerifyForm() {
     </>
   );
 }
+
+// {
+//   "extends": [
+//     "next/core-web-vitals",
+//     "eslint:recommended",
+//     "plugin:@typescript-eslint/eslint-recommended",
+//     "plugin:@typescript-eslint/recommended",
+//     "prettier"
+//   ],
+//   "plugins": [
+//     "jsx-a11y"
+//   ],
+//   "root": true
+// }

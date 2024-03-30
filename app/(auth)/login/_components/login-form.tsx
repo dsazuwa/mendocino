@@ -64,7 +64,7 @@ export default function LoginForm() {
 
     if (isError)
       toast({ variant: 'destructive', description: getErrorMessage(error) });
-  }, [data, isLoading, isSuccess, isError, error, router]);
+  }, [data, isLoading, isSuccess, isError, error, router, toast]);
 
   return (
     <Form {...form}>

@@ -85,7 +85,7 @@ export default function RegisterForm() {
 
     if (isError)
       toast({ variant: 'destructive', description: getErrorMessage(error) });
-  }, [isLoading, isSuccess, isError, error, router]);
+  }, [isLoading, isSuccess, isError, error, router, toast]);
 
   return (
     <Form {...form}>
