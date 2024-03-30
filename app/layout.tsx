@@ -3,6 +3,7 @@ import { Montserrat } from 'next/font/google';
 import { ReactNode } from 'react';
 
 import { Toaster } from './_components/ui/toaster';
+import { cn } from './_lib/utils';
 import './globals.css';
 import StoreProvider from './store-provider';
 
@@ -26,7 +27,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang='en'>
-      <body className={font.className}>
+      <body className={cn(font.className, 'flex min-h-screen flex-col')}>
         <StoreProvider>{children}</StoreProvider>
         <Toaster />
       </body>
