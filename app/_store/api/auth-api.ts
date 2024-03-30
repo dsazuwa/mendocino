@@ -1,7 +1,6 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
 import {
-  GenericResponse,
   LoginInput,
   LoginResponse,
   RecoverData,
@@ -10,7 +9,8 @@ import {
   RegisterResponse,
   RequestRecoverData,
   VerifyRecoverData,
-} from '@/_types';
+} from '@/_types/auth-types';
+import { GenericResponse } from '@/_types/common-types';
 import { logout, setUser } from '../slices/user-slice';
 
 export const authApi = createApi({

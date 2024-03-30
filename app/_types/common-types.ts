@@ -5,3 +5,5 @@ export type User = {
   status: string;
   roles: string[];
 };
+
+export type GenericResponse = { message: string };

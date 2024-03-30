@@ -1,6 +1,6 @@
 import { createApi } from '@reduxjs/toolkit/query/react';
 
-import { User } from '@/_types';
+import { User } from '@/_types/common-types';
 import { setUser } from '../slices/user-slice';
 import baseQueryWithReauth from './base-query';
 

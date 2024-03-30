@@ -1,6 +1,6 @@
 import ClientLayout from '@/_components/layout/client-layout';
 import Footer from '@/_components/layout/footer';
-import { GroupedMenuResponse } from '@/_types';
+import { GroupedMenuResponse } from '@/_types/menu-types';
 import Category from './_components/category';
 
 async function getData() {

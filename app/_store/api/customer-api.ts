@@ -1,6 +1,10 @@
 import { createApi } from '@reduxjs/toolkit/query/react';
 
-import { CustomerProfile, VerifyData, VerifyResponse } from '@/_types';
+import {
+  CustomerProfile,
+  VerifyData,
+  VerifyResponse,
+} from '@/_types/customer-types';
 import { setUser } from '../slices/user-slice';
 import baseQueryWithReauth from './base-query';
 

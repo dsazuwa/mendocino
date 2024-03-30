@@ -2,7 +2,7 @@
 
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-import { User } from '@/_types';
+import { User } from '@/_types/common-types';
 
 type UserState = {
   user: User | undefined;
