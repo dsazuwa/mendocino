@@ -1,6 +1,6 @@
 import Link from 'next/link';
 
-import { AuthLayout } from '@/_components/layout';
+import AuthLayout from '@/_components/layout/auth-layout';
 import { buttonVariants } from '@/_components/ui/button';
 import { cn } from '@/_lib/utils';
 import RegisterForm from './_components/register-form';

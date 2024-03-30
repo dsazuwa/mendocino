@@ -1,4 +1,5 @@
-import { ClientLayout, Footer } from '@/_components/layout';
+import ClientLayout from '@/_components/layout/client-layout';
+import Footer from '@/_components/layout/footer';
 import { GroupedMenuResponse } from '@/_types';
 import Category from './_components/category';
 

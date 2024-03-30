@@ -1,7 +1,7 @@
-import { redirect } from 'next/navigation';
 import { cookies } from 'next/headers';
+import { redirect } from 'next/navigation';
 
-import { AuthLayout } from '@/_components/layout';
+import AuthLayout from '@/_components/layout/auth-layout';
 import { fetchWithReauth } from '@/_lib/auth.utils';
 import VerifyForm from './_components/verify-form';
 
