@@ -1,6 +1,5 @@
 import type { Config } from 'tailwindcss';
 import { fontFamily } from 'tailwindcss/defaultTheme';
-import colors from 'tailwindcss/colors';
 
 const config = {
   darkMode: ['class'],
@@ -20,24 +19,6 @@ const config = {
       },
     },
 
-    colors: {
-      ...colors,
-      primary: {
-        DEFAULT: 'hsl(200,76%,60%)',
-        '25': 'hsl(200,76%,85%)',
-        '50': 'hsl(200,76%,80%)',
-        '100': 'hsl(200,76%,75%)',
-        '200': 'hsl(200,76%,70%)',
-        '300': 'hsl(200,76%,65%)',
-        '400': 'hsl(200,76%,60%)',
-        '500': 'hsl(200,76%,55%)',
-        '600': 'hsl(200,76%,50%)',
-        '700': 'hsl(200,76%,40%)',
-        '800': 'hsl(200,76%,30%)',
-        '900': 'hsl(200,76%,20%)',
-      },
-    },
-
     borderRadius: {
       lg: '8px',
       md: '4px',
@@ -46,6 +27,23 @@ const config = {
     },
 
     extend: {
+      colors: {
+        primary: {
+          DEFAULT: 'hsl(200,76%,60%)',
+          '25': 'hsl(200,76%,85%)',
+          '50': 'hsl(200,76%,80%)',
+          '100': 'hsl(200,76%,75%)',
+          '200': 'hsl(200,76%,70%)',
+          '300': 'hsl(200,76%,65%)',
+          '400': 'hsl(200,76%,60%)',
+          '500': 'hsl(200,76%,55%)',
+          '600': 'hsl(200,76%,50%)',
+          '700': 'hsl(200,76%,40%)',
+          '800': 'hsl(200,76%,30%)',
+          '900': 'hsl(200,76%,20%)',
+        },
+      },
+
       fontFamily: {
         sans: ['var(--font-sans)', ...fontFamily.sans],
       },
