@@ -1,5 +1,7 @@
 /* global RequestInit */
 
+import { cookies } from 'next/headers';
+
 export async function fetchWithReauth(
   input: string | Request | URL,
   init?: RequestInit,
@@ -17,7 +19,7 @@ export async function fetchWithReauth(
     try {
       await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/refresh`, {
         method: 'POST',
-        credentials: 'include',
+        headers: { cookie: cookies().toString() },
       });
     } catch (error) {
       console.error('Error refreshing token: ', error);

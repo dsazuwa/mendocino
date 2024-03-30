@@ -1,4 +1,5 @@
 import { redirect } from 'next/navigation';
+import { cookies } from 'next/headers';
 
 import { AuthLayout } from '@/_components/layout';
 import { fetchWithReauth } from '@/_lib/auth.utils';
@@ -9,12 +10,14 @@ export default async function Verify() {
     `${process.env.NEXT_PUBLIC_API_URL}/users/me`,
     {
       method: 'GET',
-      credentials: 'include',
+      headers: { cookie: cookies().toString() },
     },
   );
 
-  if (res.status === 401 || (await res.json()).status !== 'pending')
-    redirect('/');
+  if (res.status === 401) redirect('/');
+
+  const body = (await res.json()) as { user: { status: string } };
+  if (body.user.status !== 'pending') redirect('/');
 
   return (
     <AuthLayout>
