@@ -19,7 +19,7 @@ import {
 import { Input } from '@/_components/ui/input';
 import { useToast } from '@/_components/ui/use-toast';
 import { getErrorMessage } from '@/_lib/error-utils';
-import { useRecoverPasswordMutation } from '@/_store';
+import { useRecoverPasswordMutation } from '@/_store/api/auth-api';
 
 const formSchema = object({
   password: string()

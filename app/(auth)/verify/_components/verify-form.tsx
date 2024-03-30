@@ -22,7 +22,10 @@ import {
 } from '@/_components/ui/input-otp';
 import { useToast } from '@/_components/ui/use-toast';
 import { getErrorMessage } from '@/_lib/error-utils';
-import { useResendVerificationMutation, useVerifyUserMutation } from '@/_store';
+import {
+  useResendVerificationMutation,
+  useVerifyUserMutation,
+} from '@/_store/api/customer-api';
 
 const formSchema = object({
   code: string().min(5, { message: 'OTP must be 5 characters' }),

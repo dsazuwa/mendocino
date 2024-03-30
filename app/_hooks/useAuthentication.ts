@@ -1,7 +1,8 @@
 import { getCookie } from 'cookies-next';
 import { useEffect, useState } from 'react';
 
-import { useAppSelector, useGetUserQuery } from '@/_store';
+import { useGetUserQuery } from '@/_store/api/user-api';
+import { useAppSelector } from '@/_store/hook';
 
 export default function useAuthentication() {
   const [authReady, setAuthReady] = useState(false);

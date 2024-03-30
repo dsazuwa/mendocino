@@ -21,7 +21,7 @@ import { Input } from '@/_components/ui/input';
 import { useToast } from '@/_components/ui/use-toast';
 import { getErrorMessage } from '@/_lib/error-utils';
 import { cn } from '@/_lib/utils';
-import { useLoginUserMutation } from '@/_store';
+import { useLoginUserMutation } from '@/_store/api/auth-api';
 
 const formSchema = object({
   email: string().email({ message: 'Invalid email address' }),

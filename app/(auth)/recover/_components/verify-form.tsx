@@ -24,7 +24,7 @@ import { getErrorMessage } from '@/_lib/error-utils';
 import {
   useRequestPasswordRecoveryMutation,
   useVerifyRecoveryCodeMutation,
-} from '@/_store';
+} from '@/_store/api/auth-api';
 
 const formSchema = object({
   code: string().min(5, { message: 'OTP must be 5 characters' }),

@@ -19,7 +19,7 @@ import {
 import { Input } from '@/_components/ui/input';
 import { useToast } from '@/_components/ui/use-toast';
 import { getErrorMessage } from '@/_lib/error-utils';
-import { useRegisterUserMutation } from '@/_store';
+import { useRegisterUserMutation } from '@/_store/api/auth-api';
 
 const formSchema = object({
   firstName: string().trim().min(1, 'First name required'),

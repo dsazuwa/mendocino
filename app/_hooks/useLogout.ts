@@ -2,7 +2,7 @@ import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 
-import { useLogoutUserMutation } from '@/_store';
+import { useLogoutUserMutation } from '@/_store/api/auth-api';
 
 export default function useLogout(shouldReturnHome: boolean) {
   const dispatch = useDispatch();
