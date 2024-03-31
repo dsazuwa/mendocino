@@ -8,7 +8,7 @@ import ClientLink from './client-link';
 
 export default function ClientAppBar() {
   return (
-    <nav className='bg-primary-foreground h-12 w-full'>
+    <nav id='client-app-bar' className='fixed z-50 h-12 w-full bg-white'>
       <div className='mx-auto flex h-full w-full max-w-screen-xl flex-row items-center border-b border-solid border-neutral-100 px-4 md:px-8'>
         <ClientAppBarDrawer />
 
