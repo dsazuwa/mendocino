@@ -2,6 +2,7 @@ import ClientLayout from '@/_components/layout/client-layout';
 import Footer from '@/_components/layout/footer';
 import { GroupedMenuResponse } from '@/_types/menu-types';
 import Category from './_components/category';
+import CategoryToggle from '@/_components/category-toggle';
 
 async function getData() {
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/menu/grouped`);
@@ -12,7 +13,7 @@ async function getData() {
 }
 
 export default async function Menu() {
-  const { menu } = await getData();
+  const { menu, categories } = await getData();
 
   return (
     <ClientLayout>
@@ -22,7 +23,9 @@ export default async function Menu() {
             MENU
           </h1>
 
-          <div className='space-y-6 md:space-y-8'>
+          <CategoryToggle categories={categories} />
+
+          <div className='space-y-6 pt-4 md:space-y-8'>
             {menu.map(({ category, notes, subCategories }, index) => (
               <Category
                 key={`category-${index}`}
