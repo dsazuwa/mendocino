@@ -5,7 +5,7 @@ export const TABLENAMES = {
   LOCATION_HOURS: 'location_hours',
 
   MENU_ITEM: 'items',
-  ORDER_MENU_ITEM: 'order_menu_itema',
+  ORDER_MENU_ITEM: 'order_menu_items',
 
   MENU_CATEGORY: 'categories',
   MENU_TAG: 'tags',

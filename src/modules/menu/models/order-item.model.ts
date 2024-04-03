@@ -33,13 +33,13 @@ OrderItem.init(
   {
     locationId: {
       type: DataTypes.INTEGER,
-      unique: true,
+      primaryKey: true,
       allowNull: false,
     },
 
     itemId: {
       type: DataTypes.INTEGER,
-      unique: true,
+      primaryKey: true,
       allowNull: false,
     },
 
