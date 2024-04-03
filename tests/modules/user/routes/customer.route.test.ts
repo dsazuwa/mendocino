@@ -36,7 +36,7 @@ describe(`GET ${BASE_URL}/profile`, () => {
       .auth(jwt, { type: 'bearer' });
 
     expect(response.status).toBe(200);
-    expect(response.body.profile).toMatchObject({
+    expect(response.body).toMatchObject({
       firstName,
       lastName,
       email: { address: email, isVerified: false },

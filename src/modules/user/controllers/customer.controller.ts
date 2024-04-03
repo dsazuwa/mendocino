@@ -19,7 +19,7 @@ export const getProfile = async (
 
     const profile = await customerService.getProfile(userId);
 
-    res.status(200).json({ profile });
+    res.status(200).json({ ...profile });
   } catch (e) {
     next(e);
   }
