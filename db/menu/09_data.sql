@@ -1,3 +1,130 @@
+DO $$
+BEGIN
+  PERFORM menu.insert_restaurant_and_hours(
+    'Addison',
+    '9723543924',
+    '5294 Belt Line Road, Suite 105',
+    'Dallas',
+    'TX',
+    '75254',
+    '{
+      "Monday": {"open": "11:00", "close": "21:00"},
+      "Tuesday": {"open": "11:00", "close": "21:00"},
+      "Wednesday": {"open": "11:00", "close": "21:00"},
+      "Thursday": {"open": "11:00", "close": "21:00"},
+      "Friday": {"open": "11:00", "close": "21:00"},
+      "Saturday": {"open": "11:00", "close": "21:00"},
+      "Sunday": {"open": "11:00", "close": "21:00"}
+    }'
+  );
+
+  PERFORM menu.insert_restaurant_and_hours(
+    'Downtown Dallas',
+    '2143791490',
+    '2000 Ross Ave',
+    'Dallas',
+    'TX',
+    '75201',
+    '{
+      "Monday": {"open": "10:00", "close": "19:30"},
+      "Tuesday": {"open": "10:00", "close": "19:30"},
+      "Wednesday": {"open": "10:00", "close": "19:30"},
+      "Thursday": {"open": "10:00", "close": "19:30"},
+      "Friday": {"open": "10:00", "close": "19:30"}
+    }'
+  );
+
+  PERFORM menu.insert_restaurant_and_hours(
+    'Plano',
+    '2144405788',
+    '7700 Windrose Avenue',
+    'Plano',
+    'TX',
+    '75024',
+    '{
+      "Monday": {"open": "11:00", "close": "21:00"},
+      "Tuesday": {"open": "11:00", "close": "21:00"},
+      "Wednesday": {"open": "11:00", "close": "21:00"},
+      "Thursday": {"open": "11:00", "close": "21:00"},
+      "Friday": {"open": "11:00", "close": "21:00"},
+      "Saturday": {"open": "11:00", "close": "21:00"},
+      "Sunday": {"open": "11:00", "close": "21:00"}
+    }'
+  );
+
+  PERFORM menu.insert_restaurant_and_hours(
+    'Preston Hollow',
+    '9723549386',
+    '10720 Preston Road',
+    'Dallas',
+    'TX',
+    '75230',
+    '{
+      "Monday": {"open": "11:00", "close": "21:00"},
+      "Tuesday": {"open": "11:00", "close": "21:00"},
+      "Wednesday": {"open": "11:00", "close": "21:00"},
+      "Thursday": {"open": "11:00", "close": "21:00"},
+      "Friday": {"open": "11:00", "close": "21:00"},
+      "Saturday": {"open": "11:00", "close": "21:00"},
+      "Sunday": {"open": "11:00", "close": "21:00"}
+    }'
+  );
+
+  PERFORM menu.insert_restaurant_and_hours(
+    'West Village',
+    '9729932792',
+    '3700 McKinney Avenue',
+    'Dallas',
+    'TX',
+    '75204',
+    '{
+      "Monday": {"open": "11:00", "close": "21:00"},
+      "Tuesday": {"open": "11:00", "close": "21:00"},
+      "Wednesday": {"open": "11:00", "close": "21:00"},
+      "Thursday": {"open": "11:00", "close": "21:00"},
+      "Friday": {"open": "11:00", "close": "21:00"},
+      "Saturday": {"open": "11:00", "close": "21:00"},
+      "Sunday": {"open": "11:00", "close": "21:00"}
+    }'
+  );
+
+  PERFORM menu.insert_restaurant_and_hours(
+    'Downtown (Rainier Square)',
+    '2067411329',
+    '1350 4th Ave',
+    'Seattle',
+    'WA',
+    '98101',
+    '{
+      "Monday": {"open": "11:00", "close": "19:30"},
+      "Tuesday": {"open": "11:00", "close": "19:30"},
+      "Wednesday": {"open": "11:00", "close": "19:30"},
+      "Thursday": {"open": "11:00", "close": "19:30"},
+      "Friday": {"open": "11:00", "close": "19:30"},
+      "Saturday": {"open": "11:00", "close": "19:30"},
+      "Sunday": {"open": "11:00", "close": "19:30"}
+    }'
+  );
+
+  PERFORM menu.insert_restaurant_and_hours(
+    'South Lake Union',
+    '2065082374',
+    '2118 Westlake Ave',
+    'Seattle',
+    'WA',
+    '98121',
+    '{
+      "Monday": {"open": "11:00", "close": "21:00"},
+      "Tuesday": {"open": "11:00", "close": "21:00"},
+      "Wednesday": {"open": "11:00", "close": "21:00"},
+      "Thursday": {"open": "11:00", "close": "21:00"},
+      "Friday": {"open": "11:00", "close": "21:00"},
+      "Saturday": {"open": "11:00", "close": "21:00"},
+      "Sunday": {"open": "11:00", "close": "21:00"}
+    }'
+  );
+END $$;
+
 -- #region CATEGORIES
 INSERT INTO menu.categories
   (

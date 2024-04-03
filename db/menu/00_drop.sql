@@ -1,10 +1,4 @@
--- Drop triggers
-DROP TRIGGER IF EXISTS modifier_group_check ON menu.modifier_groups;
-
--- Drop trigger functions
-DROP FUNCTION IF EXISTS menu.enforce_selection_constraint();
-
--- Drop population functions
+-- Drop populator functions
 DROP FUNCTION IF EXISTS menu.insert_item(INTEGER, BOOLEAN, VARCHAR(100), VARCHAR(355), VARCHAR(100), VARCHAR(255));
 DROP FUNCTION IF EXISTS menu.insert_items_categories(INTEGER, INTEGER, VARCHAR(50));
 DROP FUNCTION IF EXISTS menu.insert_item_price(INTEGER, DECIMAL(10, 4));
@@ -15,6 +9,7 @@ DROP FUNCTION IF EXISTS menu.insert_modifier_option(INTEGER, VARCHAR(50), DECIMA
 DROP FUNCTION IF EXISTS menu.insert_modifier_options(INTEGER, JSONB[]);
 DROP FUNCTION IF EXISTS menu.insert_modifiers_and_options(VARCHAR(100), INTEGER, DECIMAL(10, 2), BOOLEAN, INTEGER, INTEGER, INTEGER, JSONB[]);
 DROP FUNCTION IF EXISTS menu.insert_item_modifier(INTEGER, INTEGER, INTEGER);
+DROP FUNCTION IF EXISTS menu.insert_restaurant_and_hours(VARCHAR(100), VARCHAR(10), VARCHAR(255), VARCHAR(100), VARCHAR(50), VARCHAR(5), JSONB);
 
 -- Drop functions
 DROP FUNCTION IF EXISTS menu.get_menu();
@@ -49,7 +44,9 @@ ALTER TABLE IF EXISTS menu.items_prices DROP CONSTRAINT fk_item_id;
 ALTER TABLE IF EXISTS menu.items_tags DROP CONSTRAINT fk_item_id;
 ALTER TABLE IF EXISTS menu.items_tags DROP CONSTRAINT fk_tag_id;
 ALTER TABLE IF EXISTS menu.items_categories DROP CONSTRAINT fk_item_id;
-ALTER TABLE IF EXISTS menu.items_categories DROP CONSTRAINT fk_category_id;
+ALTER TABLE IF EXISTS menu.order_menu_items DROP CONSTRAINT fk_item_id;
+ALTER TABLE IF EXISTS menu.order_menu_items DROP CONSTRAINT fk_location_id;
+ALTER TABLE IF EXISTS menu.location_hours DROP CONSTRAINT fk_location_id;
 
 -- Drop tables
 DROP TABLE IF EXISTS menu.category_discounts;
@@ -64,7 +61,10 @@ DROP TABLE IF EXISTS menu.items_tags;
 DROP TABLE IF EXISTS menu.tags;
 DROP TABLE IF EXISTS menu.items_categories;
 DROP TABLE IF EXISTS menu.categories;
+DROP TABLE IF EXISTS menu.order_menu_items;
 DROP TABLE IF EXISTS menu.items;
+DROP TABLE IF EXISTS menu.location_hours;
+DROP TABLE IF EXISTS menu.locations;
 
 -- Drop enums
 DROP TYPE IF EXISTS menu.enum_modifier_status;

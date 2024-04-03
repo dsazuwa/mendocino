@@ -1,3 +1,61 @@
+-- #region insert_restaurant_and_hours
+CREATE OR REPLACE FUNCTION menu.insert_restaurant_and_hours(
+  name VARCHAR(100),
+  phone_number VARCHAR(10),
+  address VARCHAR(255),
+  city VARCHAR(100),
+  state VARCHAR(50),
+  zip_code VARCHAR(5),
+  p_hours JSONB
+)
+RETURNS VOID AS $$
+DECLARE
+  loc_id INTEGER;
+  day TEXT;
+  open_time TIME;
+  close_time TIME;
+BEGIN
+  INSERT INTO menu.locations
+    (
+      "name",
+      "phone_number",
+      "address",
+      "city",
+      "state",
+      "zip_code"
+    )
+  VALUES 
+    (
+      name,
+      phone_number,
+      address,
+      city,
+      state,
+      zip_code
+    )
+  RETURNING location_id INTO loc_id;
+
+  FOR day IN SELECT jsonb_object_keys(p_hours)
+  LOOP
+    open_time := (p_hours->day->>'open')::TIME;
+    close_time := (p_hours->day->>'close')::TIME;
+
+    INSERT INTO menu.location_hours (
+      location_id,
+      day_of_week,
+      open_time,
+      close_time
+    ) VALUES (
+      loc_id,
+      day,
+      open_time,
+      close_time
+    );
+  END LOOP;
+END;
+$$ LANGUAGE plpgsql;
+-- #endregion
+
 -- #region insert_item
 CREATE OR REPLACE FUNCTION menu.insert_item(
   p_order INTEGER,
@@ -10,6 +68,7 @@ CREATE OR REPLACE FUNCTION menu.insert_item(
 RETURNS INTEGER AS $$
 DECLARE
   menu_item_id INTEGER;
+  loc_id INTEGER;
 BEGIN
   INSERT INTO menu.items
     (
@@ -18,8 +77,7 @@ BEGIN
       "is_on_public_menu",
       "name",
       "description",
-      "menu_status",
-      "order_status",
+      "status",
       "photo_url",
       "notes",
       "created_at",
@@ -33,13 +91,34 @@ BEGIN
       p_name,
       p_description,
       'active',
-      'available',
       p_photo_url,
       p_notes,
       NOW(),
       NOW()
     )
   RETURNING item_id INTO menu_item_id;
+
+  IF p_is_public THEN
+    FOR loc_id IN SELECT location_id FROM menu.locations
+    LOOP
+      INSERT INTO menu.order_menu_items
+        (
+          "location_id",
+          "item_id",
+          "status",
+          "created_at",
+          "updated_at"
+        )
+      VALUES
+        (
+          loc_id,
+          menu_item_id,
+          'available',
+          NOW(),
+          NOW()
+        );
+    END LOOP;
+  END IF;
 
   RETURN menu_item_id;
 END;

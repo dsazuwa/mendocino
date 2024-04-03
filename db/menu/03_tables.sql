@@ -1,16 +1,46 @@
+CREATE TABLE menu.locations (
+  location_id SERIAL,
+  name VARCHAR(100) NOT NULL,
+  phone_number VARCHAR(10) NOT NULL,
+  address VARCHAR(255) NOT NULL,
+  city VARCHAR(100) NOT NULL,
+  state VARCHAR(50) NOT NULL,
+  zip_code VARCHAR(5) NOT NULL,
+  PRIMARY KEY (location_id)
+);
+
+CREATE TABLE menu.location_hours (
+  location_id INTEGER,
+  day_of_week VARCHAR(10) NOT NULL,
+  open_time TIME,
+  close_time TIME,
+  PRIMARY KEY (location_id, day_of_week),
+  CONSTRAINT fk_location_id FOREIGN KEY (location_id) REFERENCES menu.locations (location_id) ON DELETE CASCADE ON UPDATE NO ACTION
+);
+
 CREATE TABLE menu.items (
   item_id SERIAL,
-  sort_order INTEGER,
   is_on_public_menu BOOLEAN NOT NULL,
+  sort_order INTEGER NOT NULL,
   name VARCHAR(100) NOT NULL,
   description VARCHAR(355),
-  menu_status menu.enum_menu_status NOT NULL,
-  order_status menu.enum_order_status NOT NULL,
+  status menu.enum_menu_status NOT NULL,
   photo_url VARCHAR(100) NOT NULL,
   notes VARCHAR(255),
   created_at TIMESTAMP NOT NULL,
   updated_at TIMESTAMP NOT NULL,
   PRIMARY KEY (item_id)
+);
+
+CREATE TABLE menu.order_menu_items (
+  location_id INTEGER,
+  item_id INTEGER,
+  status menu.enum_order_status NOT NULL,
+  created_at TIMESTAMP NOT NULL,
+  updated_at TIMESTAMP NOT NULL,
+  PRIMARY KEY (location_id, item_id),
+  CONSTRAINT fk_location_id FOREIGN KEY (location_id) REFERENCES menu.locations (location_id) ON DELETE CASCADE ON UPDATE NO ACTION,
+  CONSTRAINT fk_item_id FOREIGN KEY (item_id) REFERENCES menu.items (item_id) ON DELETE CASCADE ON UPDATE NO ACTION
 );
 
 CREATE TABLE menu.categories (
