@@ -16,7 +16,14 @@ const menuService = {
 
     const result = (await sequelize.query(query, {
       type: QueryTypes.SELECT,
-    })) as CategoryItems<MenuItem>[];
+    })) as {
+      category: string;
+      notes: string;
+      subCategories: {
+        name: string | null;
+        items: MenuItem[];
+      }[];
+    }[];
 
     const categories = result.map((x) => x.category);
 

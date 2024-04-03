@@ -35,15 +35,15 @@ describe('get menu grouped', () => {
     const [chef, foodie, bowls, kids] = menu;
 
     expect(chef.category).toBe("chef's creations");
-    expect(chef.items).toHaveLength(2);
+    expect(chef.subCategories[0].items).toHaveLength(2);
 
     expect(foodie.category).toBe('foodie favorites');
-    expect(foodie.items).toHaveLength(1);
+    expect(foodie.subCategories[0].items).toHaveLength(1);
 
     expect(bowls.category).toBe('bowls');
-    expect(bowls.items).toHaveLength(2);
+    expect(bowls.subCategories[0].items).toHaveLength(2);
 
     expect(kids.category).toBe('kids');
-    expect(kids.items).toHaveLength(1);
+    expect(kids.subCategories[0].items).toHaveLength(1);
   });
 });
