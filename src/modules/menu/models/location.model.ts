@@ -9,73 +9,80 @@ import {
 import sequelize from '../../../db';
 import { MENU_SCHEMA, TABLENAMES } from '../utils.ts/constants';
 
-export type ItemMenuStatusType = 'active' | 'coming soon' | 'inactive';
-
-class Item extends Model<InferAttributes<Item>, InferCreationAttributes<Item>> {
-  declare itemId: CreationOptional<number>;
-
-  declare sortOrder: number;
-
-  declare isOnPublicMenu: boolean;
+class Location extends Model<
+  InferAttributes<Location>,
+  InferCreationAttributes<Location>
+> {
+  declare locationId: CreationOptional<number>;
 
   declare name: string;
 
-  declare description: string;
+  declare phoneNumber: string;
 
-  declare status: ItemMenuStatusType;
+  declare address: string;
 
-  declare photoUrl: string;
+  declare city: string;
 
-  declare notes: CreationOptional<string | null>;
+  declare state: string;
+
+  declare zipCode: string;
 
   declare createdAt: CreationOptional<Date>;
 
   declare updatedAt: CreationOptional<Date>;
 }
 
-Item.init(
+Location.init(
   {
-    itemId: {
+    locationId: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,
     },
-    sortOrder: {
-      type: DataTypes.NUMBER,
-      unique: true,
-      allowNull: false,
-    },
-    isOnPublicMenu: {
-      type: DataTypes.BOOLEAN,
-      unique: true,
-      allowNull: false,
-    },
+
     name: {
       type: DataTypes.STRING,
       unique: true,
       allowNull: false,
     },
-    description: {
+
+    phoneNumber: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: true,
+      validate: {
+        len: [10, 10],
+      },
+    },
+
+    address: {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    status: {
-      type: DataTypes.ENUM('active', 'coming soon', 'inactive'),
-      allowNull: false,
-    },
-    photoUrl: {
+
+    city: {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    notes: {
+
+    state: {
       type: DataTypes.STRING,
-      allowNull: true,
-      defaultValue: null,
+      allowNull: false,
     },
+
+    zipCode: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+        len: [5, 5],
+      },
+    },
+
     createdAt: {
       type: DataTypes.DATE,
       allowNull: false,
     },
+
     updatedAt: {
       type: DataTypes.DATE,
       allowNull: false,
@@ -85,8 +92,8 @@ Item.init(
     sequelize,
     underscored: true,
     schema: MENU_SCHEMA,
-    tableName: TABLENAMES.MENU_ITEM,
+    tableName: TABLENAMES.LOCATION,
   },
 );
 
-export default Item;
+export default Location;

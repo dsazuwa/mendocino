@@ -1,7 +1,12 @@
 export const MENU_SCHEMA = 'menu';
 
 export const TABLENAMES = {
+  LOCATION: 'locations',
+  LOCATION_HOURS: 'location_hours',
+
   MENU_ITEM: 'items',
+  ORDER_MENU_ITEM: 'order_menu_itema',
+
   MENU_CATEGORY: 'categories',
   MENU_TAG: 'tags',
   MENU_DISCOUNT: 'discounts',

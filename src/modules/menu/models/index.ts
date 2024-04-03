@@ -1,18 +1,27 @@
 import Category from './category.model';
 import CategoryDiscount from './category_discount.model';
 import Discount, { DiscountUnitType } from './discount.model';
-import Item, { ItemMenuStatusType, ItemOrderStatusType } from './item.model';
+import Item, { ItemMenuStatusType } from './item.model';
 import ItemCategory from './item_category.model';
 import ItemDiscount from './item_discount.model';
 import ItemModifierGroup from './item_modifier_group.model';
 import ItemPrice from './item_price.model';
 import ItemTag from './item_tag.model';
+import Location from './location.model';
+import LocationHour, { DayOfWeek } from './location_hour.model';
 import ModifierGroup from './modifier_group.model';
 import ModifierGroupParent from './modifier_group_parent.model';
 import ModifierOption, {
   ModifierOptionStatusType,
 } from './modifier_option.model';
+import OrderItem, { ItemOrderStatusType } from './order-item.model';
 import Tag from './tag.model';
+
+Location.hasMany(LocationHour, { foreignKey: 'locationId' });
+LocationHour.belongsTo(Location, { foreignKey: 'locationId' });
+
+OrderItem.belongsTo(Location, { foreignKey: 'location_id' });
+OrderItem.belongsTo(Item, { foreignKey: 'item_id' });
 
 Item.belongsToMany(Category, {
   through: ItemCategory,
@@ -67,6 +76,7 @@ CategoryDiscount.belongsTo(Category, { foreignKey: 'categoryId' });
 export {
   Category,
   CategoryDiscount,
+  DayOfWeek,
   Discount,
   DiscountUnitType,
   Item,
@@ -77,9 +87,12 @@ export {
   ItemOrderStatusType,
   ItemPrice,
   ItemTag,
+  Location,
+  LocationHour,
   ModifierGroup,
   ModifierGroupParent,
   ModifierOption,
   ModifierOptionStatusType,
+  OrderItem,
   Tag,
 };
