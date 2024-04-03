@@ -19,11 +19,9 @@ SELECT
   ) AS tags,
   p.base_price AS price,
   m.status AS menu_status,
-  o.status AS order_status,
   m.photo_url,
   m.notes
 FROM menu.items m
-LEFT JOIN menu.order_menu_items o ON o.item_id = m.item_id
 JOIN menu.items_categories mc ON mc.item_id = m.item_id
 JOIN menu.categories c ON c.category_id = mc.category_id
 LEFT JOIN menu.items_prices p ON p.item_id = m.item_id

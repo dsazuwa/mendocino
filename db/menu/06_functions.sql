@@ -76,7 +76,7 @@ $$ LANGUAGE plpgsql;
 -- #endregion
 
 -- #region get_order_menu
-CREATE OR REPLACE FUNCTION menu.get_order_menu()
+CREATE OR REPLACE FUNCTION menu.get_order_menu(p_location_id INTEGER)
 RETURNS TABLE (
   category VARCHAR,
   notes TEXT[],
@@ -100,8 +100,9 @@ BEGIN
       ) ORDER BY sub_category, v.item_sort_order
     ) AS items
   FROM menu.menu_view v
+  JOIN menu.order_menu_items o ON o.item_id = v.item_id
   JOIN menu.categories c ON c.name = v.category
-  WHERE menu_status = 'active' AND order_status = 'available'
+  WHERE menu_status = 'active' AND order_status = 'available' AND o.location_id = p_location_id
   GROUP BY c.name, c.category_id
   ORDER BY c.sort_order;
 END;
