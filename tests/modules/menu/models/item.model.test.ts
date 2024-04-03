@@ -1,8 +1,4 @@
-import {
-  Item,
-  ItemMenuStatusType,
-  ItemOrderStatusType,
-} from '@app/modules/menu/models';
+import { Item, ItemMenuStatusType } from '@app/modules/menu/models';
 
 import 'tests/db-setup';
 
@@ -14,8 +10,7 @@ describe('Item Model', () => {
       name: '1/2 Italian Roast Beef',
       description:
         'shaved roast beef, mozzarella, Chicago-style mild giardiniera, tomatoes, Vidalia onion, shredded romaine, Italian herb & cheese aioli on a toasted sesame roll',
-      menuStatus: 'active' as ItemMenuStatusType,
-      orderStatus: 'available' as ItemOrderStatusType,
+      status: 'active' as ItemMenuStatusType,
       photoUrl: 'BPItalianRoastBeef.jpg',
     };
 
@@ -31,8 +26,6 @@ describe('Item Model', () => {
       description:
         "shaved, roasted turkey breast, smashed avocado, applewood smoked bacon, herb aioli, tomatoes, mixed greens, pickled red onions on Mom's seeded whole wheat",
       status: 'active' as ItemMenuStatusType,
-      menuStatus: 'active' as ItemMenuStatusType,
-      orderStatus: 'available' as ItemOrderStatusType,
       photoUrl: 'BPFarmClub.jpg',
     };
 
@@ -47,8 +40,7 @@ describe('Item Model', () => {
       name: 'Smoky Chicken Elote Bowl',
       description:
         'al pastor chicken smoky corn & guajilo broth, zucchini, ancient grains, shredded cabbage, topped with tortilla strips, crema, cotija, pico de gailo, cilantro, and fresh lime',
-      menuStatus: 'active' as ItemMenuStatusType,
-      orderStatus: 'available' as ItemOrderStatusType,
+      status: 'active' as ItemMenuStatusType,
       photoUrl: 'SmokyChickenEloteBowl.jpg',
     });
 
@@ -69,8 +61,7 @@ describe('Item Model', () => {
       name: oldName,
       description:
         'french lentils, kale, carrot, celery, onion, herbs, and garlic in a savory vegetable broth',
-      menuStatus: 'active' as ItemMenuStatusType,
-      orderStatus: 'available' as ItemOrderStatusType,
+      status: 'active' as ItemMenuStatusType,
       photoUrl: 'FrenchLentilKale.jpg',
     });
 
@@ -99,8 +90,6 @@ describe('Item Model', () => {
       description:
         'smooth puree of roasted tomato, tomatillo, poblano, jalapeño, garlic, cumin, and corn tortillas, with shredded chicken',
       status: 'active' as ItemMenuStatusType,
-      menuStatus: 'active' as ItemMenuStatusType,
-      orderStatus: 'available' as ItemOrderStatusType,
       photoUrl: 'ChickenTortilla.jpg',
     };
 

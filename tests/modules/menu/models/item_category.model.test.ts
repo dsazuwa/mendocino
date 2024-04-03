@@ -13,8 +13,7 @@ describe('Item Category Model', () => {
       name: 'Chimichurri Steak & Shishito Bowl',
       description:
         'roasted carved steak over ancient grains tossed with caramelized onion jam & chimichurri, baby spinach, roasted shishito peppers with broccolini, tomatoes & red onions, grilled lemon',
-      menuStatus: 'active',
-      orderStatus: 'available',
+      status: 'active',
       photoUrl: 'ChimichurriSteakBowl.jpg',
     });
     itemId = item.itemId;
@@ -55,8 +54,7 @@ describe('Item Category Model', () => {
       isOnPublicMenu: true,
       name: 'Grilled Turkey & Cheddar Sandwich',
       description: 'add herb mayo, yellow mustard, or tomato by request',
-      menuStatus: 'active',
-      orderStatus: 'available',
+      status: 'active',
       photoUrl: 'TurkeyCheddar.jpg',
     });
 
@@ -83,8 +81,7 @@ describe('Item Category Model', () => {
       name: 'Spicy Curried Couscous',
       description:
         "with roasted cauliflower & carrots with Mendo's signature spice mix",
-      menuStatus: 'active',
-      orderStatus: 'available',
+      status: 'active',
       photoUrl: 'Couscous.jpg',
     });
 

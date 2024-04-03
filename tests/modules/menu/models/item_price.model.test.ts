@@ -12,8 +12,7 @@ describe('Item Price Model', () => {
       name: 'French Lentil & Kale Soup',
       description:
         'french lentils, kale, carrot, celery, onion, herbs, and garlic in a savory vegetable broth',
-      menuStatus: 'active',
-      orderStatus: 'available',
+      status: 'active',
       photoUrl: 'FrenchLentilKale.jpg',
     });
     itemId = item.itemId;
@@ -58,8 +57,7 @@ describe('Item Price Model', () => {
       name: 'Smoky Chicken Elote Bowl',
       description:
         'al pastor chicken smoky corn & guajilo broth, zucchini, ancient grains, shredded cabbage, topped with tortilla strips, crema, cotija, pico de gailo, cilantro, and fresh lime',
-      menuStatus: 'active',
-      orderStatus: 'available',
+      status: 'active',
       photoUrl: 'SmokyChickenEloteBowl.jpg',
     });
 

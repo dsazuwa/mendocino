@@ -9,6 +9,8 @@ import {
   ItemOrderStatusType,
   ItemPrice,
   ItemTag,
+  Location,
+  OrderItem,
   Tag,
 } from '@app/modules/menu/models';
 
@@ -37,6 +39,20 @@ export const createItem = (
   photoUrl: string,
 ) =>
   sequelize.transaction(async (transaction) => {
+    const [location] = await Location.findOrCreate({
+      where: {},
+      defaults: {
+        name: 'Addison',
+        phoneNumber: '9723543924',
+        address: '5294 Belt Line Road, Suite 105',
+        city: 'Dallas',
+        state: 'TX',
+        zipCode: '75254',
+      },
+      raw: true,
+      transaction,
+    });
+
     const { itemId } = await Item.create(
       {
         isOnPublicMenu,
@@ -44,8 +60,16 @@ export const createItem = (
         name,
         description,
         photoUrl,
-        menuStatus,
-        orderStatus,
+        status: menuStatus,
+      },
+      { transaction },
+    );
+
+    await OrderItem.create(
+      {
+        locationId: location.locationId,
+        itemId,
+        status: orderStatus,
       },
       { transaction },
     );
