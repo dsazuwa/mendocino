@@ -10,6 +10,7 @@
 \i db/users/05_views.sql
 \i db/users/06_functions.sql
 \i db/users/07_triggers.sql
+\i db/users/08_data_functions.sql
 
 -- menu schema
 \i db/menu/01_schema.sql

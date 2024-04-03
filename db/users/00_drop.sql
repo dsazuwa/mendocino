@@ -1,3 +1,6 @@
+-- Drop populators
+DROP FUNCTION IF EXISTS users.create_mock_admin_user(VARCHAR, INTEGER);
+
 -- Drop triggers
 DROP TRIGGER IF EXISTS before_update_prevent_admin_id  ON users.admins;
 DROP TRIGGER IF EXISTS before_update_prevent_customer_id  ON users.customers;
