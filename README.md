@@ -29,31 +29,12 @@ Follow the steps below to get the Spoons API up and running:
    * Create a `.env` file based on the provided `.env.example` file
    * Update the variables with the appropriate values
 
-4. Set up the database:
-   * Start the database containers
+4. Run the application
      
      ```shell
-     docker-compose up -d
-     
-   * Start the `psql` interactive terminal
+     docker-compose up -d 
 
-     ```shell
-     psql -h <hostname> -p <port> -U <username> -d <database>     
-
-5. Run the database scripts:
-   
-   ```shell
-   \i <path-to>/spoons-api/db/menu.sql
-   \i <path-to>/spoons-api/db/users.sql
-   \i <path-to>/spoons-api/db/orders.sql
-
-6. Start the server
-
-   ```shell
-   npm run build
-   npm start
-
-7. The Spoons API should now be running at `http://localhost:<PORT>`.
+5. The Spoons API should now be running at `http://localhost:<PORT>`.
 
 ## API Documentation
 For detailed information about the available API endpoints, please refer to the [API Documentation](https://documenter.getpostman.com/view/19231873/2s93z86NgN).
