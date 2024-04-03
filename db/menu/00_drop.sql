@@ -71,6 +71,7 @@ DROP TYPE IF EXISTS menu.enum_modifier_status;
 DROP TYPE IF EXISTS menu.enum_discount_unit;
 DROP TYPE IF EXISTS menu.enum_order_status;
 DROP TYPE IF EXISTS menu.enum_menu_status;
+DROP TYPE IF EXISTS menu.enum_days_of_week;
 
 -- Drop schema
 DROP SCHEMA IF EXISTS menu CASCADE;

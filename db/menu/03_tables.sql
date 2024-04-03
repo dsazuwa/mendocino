@@ -6,12 +6,14 @@ CREATE TABLE menu.locations (
   city VARCHAR(100) NOT NULL,
   state VARCHAR(50) NOT NULL,
   zip_code VARCHAR(5) NOT NULL,
+  created_at TIMESTAMP NOT NULL,
+  updated_at TIMESTAMP NOT NULL,
   PRIMARY KEY (location_id)
 );
 
 CREATE TABLE menu.location_hours (
   location_id INTEGER,
-  day_of_week VARCHAR(10) NOT NULL,
+  day_of_week menu.enum_days_of_week NOT NULL,
   open_time TIME,
   close_time TIME,
   PRIMARY KEY (location_id, day_of_week),
@@ -20,8 +22,8 @@ CREATE TABLE menu.location_hours (
 
 CREATE TABLE menu.items (
   item_id SERIAL,
-  is_on_public_menu BOOLEAN NOT NULL,
   sort_order INTEGER NOT NULL,
+  is_on_public_menu BOOLEAN NOT NULL,
   name VARCHAR(100) NOT NULL,
   description VARCHAR(355),
   status menu.enum_menu_status NOT NULL,

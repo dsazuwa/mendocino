@@ -22,7 +22,9 @@ BEGIN
       "address",
       "city",
       "state",
-      "zip_code"
+      "zip_code",
+      "created_at",
+      "updated_at"
     )
   VALUES 
     (
@@ -31,7 +33,9 @@ BEGIN
       address,
       city,
       state,
-      zip_code
+      zip_code,
+      NOW(),
+      NOW()
     )
   RETURNING location_id INTO loc_id;
 
@@ -47,7 +51,7 @@ BEGIN
       close_time
     ) VALUES (
       loc_id,
-      day,
+      day::menu.enum_days_of_week,
       open_time,
       close_time
     );
