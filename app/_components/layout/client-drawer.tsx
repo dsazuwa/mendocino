@@ -4,16 +4,17 @@ import { HamburgerMenuIcon } from '@radix-ui/react-icons';
 import { useEffect, useState } from 'react';
 
 import { Sheet, SheetContent, SheetTrigger } from '@/_components/ui/sheet';
-import useAuthentication from '@/_hooks/useAuthentication';
 import useWindowWidth from '@/_hooks/useWindowWidth';
 import { Button } from '../ui/button';
 import { accountLink, publicLinks, unauthLinks } from './client-constants';
 import DrawerLink from './client-drawer-link';
 import LogoutButton from './logout-btn';
 
-export default function ClientAppBarDrawer() {
-  const { authReady, isAuthenticated } = useAuthentication();
+type Props = {
+  isAuthenticated: boolean;
+};
 
+export default function ClientAppBarDrawer({ isAuthenticated }: Props) {
   const [open, setOpen] = useState(false);
   const windowWidth = useWindowWidth();
 
@@ -46,32 +47,30 @@ export default function ClientAppBarDrawer() {
           ))}
         </div>
 
-        {authReady && (
-          <div className='flex flex-col border-t border-solid border-neutral-200'>
-            {isAuthenticated ? (
-              <>
-                <DrawerLink
-                  name={accountLink.name}
-                  href={accountLink.href}
-                  Icon={accountLink.Icon}
-                />
+        <div className='flex flex-col border-t border-solid border-neutral-200'>
+          {isAuthenticated ? (
+            <>
+              <DrawerLink
+                name={accountLink.name}
+                href={accountLink.href}
+                Icon={accountLink.Icon}
+              />
 
-                <LogoutButton />
-              </>
-            ) : (
-              <>
-                {unauthLinks.map(({ name, href, Icon }, i) => (
-                  <DrawerLink
-                    key={`auth-link-${i}`}
-                    href={href}
-                    name={name}
-                    Icon={Icon}
-                  />
-                ))}
-              </>
-            )}
-          </div>
-        )}
+              <LogoutButton />
+            </>
+          ) : (
+            <>
+              {unauthLinks.map(({ name, href, Icon }, i) => (
+                <DrawerLink
+                  key={`auth-link-${i}`}
+                  href={href}
+                  name={name}
+                  Icon={Icon}
+                />
+              ))}
+            </>
+          )}
+        </div>
       </SheetContent>
     </Sheet>
   );

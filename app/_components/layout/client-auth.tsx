@@ -1,15 +1,14 @@
 'use client';
 
-import useAuthentication from '@/_hooks/useAuthentication';
 import { accountLink, unauthLinks } from './client-constants';
 import ClientLink from './client-link';
 import LogoutButton from './logout-btn';
 
-export default function ClientAuthLinks() {
-  const { authReady, isAuthenticated } = useAuthentication();
+type Props = {
+  isAuthenticated: boolean;
+};
 
-  if (!authReady) return <></>;
-
+export default function ClientAuthLinks({ isAuthenticated }: Props) {
   return isAuthenticated ? (
     <div className='hidden gap-4 md:flex'>
       <ClientLink href={accountLink.href} name={accountLink.name} />

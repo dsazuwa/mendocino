@@ -1,40 +1,10 @@
-import { getCookie } from 'cookies-next';
-import { useEffect, useState } from 'react';
+import { cookies } from 'next/headers';
 
-import { useGetUserQuery } from '@/_store/api/user-api';
-import { useAppSelector } from '@/_store/hook';
+export default async function useAuthentication() {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/me`, {
+    method: 'GET',
+    headers: { cookie: cookies().toString() },
+  });
 
-export default function useAuthentication() {
-  const [authReady, setAuthReady] = useState(false);
-
-  const cachedUser = useAppSelector((state) => state.userState.user);
-  const accessToken = getCookie('auth-flag');
-  const isSkipped =
-    accessToken === undefined || (!!accessToken && cachedUser !== undefined);
-
-  const { data, isLoading, isFetching, isError, isSuccess } = useGetUserQuery(
-    undefined,
-    { skip: isSkipped },
-  );
-
-  const isAuthenticated =
-    accessToken !== undefined &&
-    (cachedUser !== undefined || data !== undefined);
-
-  const user = isError ? undefined : cachedUser ?? data ?? undefined;
-
-  useEffect(() => {
-    if (isSuccess || isSkipped || isError) setAuthReady(true);
-  }, [setAuthReady, isSuccess, isSkipped, isError]);
-
-  return {
-    authReady,
-    isAuthenticated,
-    user,
-    isSkipped,
-    isLoading,
-    isFetching,
-    isError,
-    isSuccess,
-  };
+  return { isAuthenticated: res.status === 200, response: res };
 }
