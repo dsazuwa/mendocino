@@ -11,7 +11,7 @@ import {
   VerifyRecoverData,
 } from '@/_types/auth-types';
 import { GenericResponse } from '@/_types/common-types';
-import { logout, setUser } from '../slices/user-slice';
+import { setUser } from '../slices/user-slice';
 
 export const authApi = createApi({
   reducerPath: 'authApi',
@@ -34,20 +34,6 @@ export const authApi = createApi({
       async onQueryStarted(arg, api) {
         const { data } = await api.queryFulfilled;
         api.dispatch(setUser(data.user));
-      },
-    }),
-
-    logoutUser: builder.mutation<void, void>({
-      query() {
-        return {
-          url: 'logout',
-          method: 'POST',
-        };
-      },
-
-      async onQueryStarted(args, api) {
-        await api.queryFulfilled;
-        api.dispatch(logout());
       },
     }),
 
@@ -108,7 +94,6 @@ export const authApi = createApi({
 
 export const {
   useLoginUserMutation,
-  useLogoutUserMutation,
   useRegisterUserMutation,
   useRequestPasswordRecoveryMutation,
   useVerifyRecoveryCodeMutation,

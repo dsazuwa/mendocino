@@ -38,6 +38,7 @@ export default async function middleware(request: NextRequest) {
     {
       method: 'GET',
       headers: { cookie: cookies().toString() },
+      next: { tags: ['user'] },
     },
   );
 

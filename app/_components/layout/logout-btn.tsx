@@ -1,10 +1,10 @@
 'use client';
 
-import useLogout from '@/_hooks/useLogout';
+import { logout } from '@/action';
 import { LogOut } from '../icons';
 
 export default function LogoutButton() {
-  const { handleLogout } = useLogout(false);
+  const handleLogout = () => logout(false);
 
   return (
     <button
