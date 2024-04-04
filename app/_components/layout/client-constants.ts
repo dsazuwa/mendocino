@@ -1,14 +1,6 @@
 import { FC, SVGProps } from 'react';
 
-import {
-  AddPerson,
-  CircleUser,
-  Home,
-  Info,
-  LogIn,
-  Menu,
-  Receipt,
-} from '../icons';
+import { AddPerson, CircleUser, Home, LogIn, Menu } from '../icons';
 
 export type ClientLink = {
   name: string;
@@ -25,8 +17,6 @@ export type ClientButton = {
 export const publicLinks: ClientLink[] = [
   { name: 'Home', href: '/', Icon: Home },
   { name: 'Menu', href: '/menu', Icon: Menu },
-  { name: 'Order', href: '/order', Icon: Receipt },
-  { name: 'About', href: '/about', Icon: Info },
 ];
 
 export const unauthLinks: ClientLink[] = [
