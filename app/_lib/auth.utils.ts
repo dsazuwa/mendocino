@@ -17,7 +17,7 @@ export async function fetchWithReauth(
 
   const refreshToken = async () => {
     try {
-      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/refresh`, {
+      return await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/refresh`, {
         method: 'POST',
         headers: { cookie: cookies().toString() },
       });
@@ -30,7 +30,6 @@ export async function fetchWithReauth(
   const res = await makeRequest();
 
   if (res.status === 401) {
-    await refreshToken();
-    return await makeRequest();
-  } else return res;
+    return { res: await makeRequest(), refreshResponse: await refreshToken() };
+  } else return { res };
 }

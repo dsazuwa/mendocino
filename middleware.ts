@@ -1,22 +1,99 @@
-import { NextResponse } from 'next/server';
+import {
+  RequestCookies,
+  ResponseCookies,
+} from 'next/dist/compiled/@edge-runtime/cookies';
+import { cookies } from 'next/headers';
 import type { NextRequest } from 'next/server';
+import { NextResponse } from 'next/server';
 
-const protectedRoutes = ['/account'];
+import { fetchWithReauth } from '@/_lib/auth.utils';
+
+const protectedRoutes = ['/account', '/verify'];
 const publicOnlyRoutes = ['/login', '/register', '/recover'];
 
-export default function middleware(request: NextRequest) {
-  const isAuthenticated = !!request.cookies.get('auth-flag')?.value;
-  const { origin, pathname } = request.nextUrl;
+// source: https://github.com/vercel/next.js/discussions/50374#discussioncomment-6732402
+function applySetCookie(req: NextRequest, res: NextResponse) {
+  const setCookies = new ResponseCookies(res.headers);
 
-  if (!isAuthenticated && protectedRoutes.includes(pathname)) {
-    const absoluteURL = new URL('/', origin); // TODO: store the return path in query params. Eg- /login?redirect=%2Faccount
-    return NextResponse.redirect(absoluteURL.toString());
+  const newReqHeaders = new Headers(req.headers);
+  const newReqCookies = new RequestCookies(newReqHeaders);
+  setCookies.getAll().forEach((cookie) => newReqCookies.set(cookie));
+
+  const dummyRes = NextResponse.next({ request: { headers: newReqHeaders } });
+
+  dummyRes.headers.forEach((value, key) => {
+    if (
+      key === 'x-middleware-override-headers' ||
+      key.startsWith('x-middleware-request-')
+    ) {
+      res.headers.set(key, value);
+    }
+  });
+}
+
+// TODO: store the return path in query params. Eg- /login?redirect=%2Faccount
+export default async function middleware(request: NextRequest) {
+  const { res, refreshResponse } = await fetchWithReauth(
+    `${process.env.NEXT_PUBLIC_API_URL}/users/me`,
+    {
+      method: 'GET',
+      headers: { cookie: cookies().toString() },
+    },
+  );
+
+  const nextResponse = await getNextResponse(request, res);
+
+  if (refreshResponse?.status === 200) {
+    const { accessToken, refreshToken } = (await refreshResponse.json()) as {
+      accessToken: string;
+      refreshToken: string;
+    };
+
+    nextResponse.cookies.delete('access-token');
+    nextResponse.cookies.delete('refresh-token');
+
+    nextResponse.cookies.set('access-token', accessToken, {
+      secure: true,
+      httpOnly: true,
+      expires: new Date(Date.now() + 5 * 60 * 1000),
+    });
+
+    nextResponse.cookies.set('refresh-token', refreshToken, {
+      secure: true,
+      httpOnly: true,
+      expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+    });
+
+    applySetCookie(request, nextResponse);
   }
 
-  if (isAuthenticated && publicOnlyRoutes.includes(pathname)) {
+  return nextResponse;
+}
+
+async function getNextResponse(request: NextRequest, response: Response) {
+  const { origin, pathname } = request.nextUrl;
+
+  if (response.status === 200 && publicOnlyRoutes.includes(pathname)) {
     const absoluteURL = new URL('/', origin);
     return NextResponse.redirect(absoluteURL.toString());
   }
+
+  if (response.status !== 200 && protectedRoutes.includes(pathname)) {
+    const absoluteURL = new URL('/', origin);
+    return NextResponse.redirect(absoluteURL.toString());
+  }
+
+  if (pathname === '/verify') {
+    const body = (await response.json()) as { user: { status: string } };
+
+    if (body.user.status !== 'pending') {
+      const absoluteURL = new URL('/', origin);
+
+      return NextResponse.redirect(absoluteURL.toString());
+    }
+  }
+
+  return NextResponse.next();
 }
 
 export const config = {
