@@ -2,7 +2,6 @@
 
 /* eslint-disable  @typescript-eslint/no-explicit-any */
 
-import { revalidateTag } from 'next/cache';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 
@@ -18,8 +17,6 @@ export async function logout(shouldReturnHome: boolean) {
 
   cookies().delete('access-token');
   cookies().delete('refresh-token');
-
-  revalidateTag('user');
 
   if (shouldReturnHome) redirect('/');
 }
@@ -43,8 +40,6 @@ export async function login(prevState: any, data: LoginInput) {
     };
 
     setAuthCookies(accessToken, refreshToken);
-
-    // revalidateTag('user');
 
     redirect(user.roles[0] === 'customer' ? '/' : '/admin');
   }
