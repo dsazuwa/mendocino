@@ -9,7 +9,7 @@ import { setAuthCookies } from './_lib/auth.utils';
 import { LoginInput } from './_types/auth-types';
 import { User } from './_types/common-types';
 
-export async function logout(shouldReturnHome: boolean) {
+export async function logout() {
   await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/logout`, {
     method: 'POST',
     headers: { cookie: cookies().toString() },
@@ -17,8 +17,6 @@ export async function logout(shouldReturnHome: boolean) {
 
   cookies().delete('access-token');
   cookies().delete('refresh-token');
-
-  if (shouldReturnHome) redirect('/');
 }
 
 export async function login(prevState: any, data: LoginInput) {

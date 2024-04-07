@@ -4,7 +4,7 @@ import { logout } from '@/action';
 import { LogOut } from '../icons';
 
 export default function LogoutButton() {
-  const handleLogout = () => logout(false);
+  const handleLogout = () => logout();
 
   return (
     <button
