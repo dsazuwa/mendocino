@@ -6,8 +6,14 @@ import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 
 import { setAuthCookies } from './_lib/auth.utils';
-import { LoginInput } from './_types/auth-types';
-import { User } from './_types/common-types';
+import {
+  LoginInput,
+  LoginResponse,
+  RegisterInput,
+  RegisterResponse,
+} from './_types/auth-types';
+
+type GeneralResponse = { message: string };
 
 export async function logout() {
   await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/logout`, {
@@ -30,12 +36,8 @@ export async function login(prevState: any, data: LoginInput) {
   });
 
   if (res.status === 200) {
-    const { user, refreshToken, accessToken } = (await res.json()) as {
-      user: User;
-      accessToken: string;
-      refreshToken: string;
-      message: string;
-    };
+    const { user, refreshToken, accessToken } =
+      (await res.json()) as LoginResponse;
 
     setAuthCookies(accessToken, refreshToken);
 
@@ -43,7 +45,30 @@ export async function login(prevState: any, data: LoginInput) {
   }
   // TODO: handle case where user is deactivated if ('user' in body)
   else {
-    const { message } = (await res.json()) as { message: string };
+    const { message } = (await res.json()) as GeneralResponse;
     return { message };
+  }
+}
+
+export async function register(prevState: any, data: RegisterInput) {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/register`, {
+    method: 'POST',
+    headers: {
+      cookie: cookies().toString(),
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  });
+
+  if (res.status === 200) {
+    const { refreshToken, accessToken, message } =
+      (await res.json()) as RegisterResponse;
+
+    setAuthCookies(accessToken, refreshToken);
+
+    return { isSuccess: true, message };
+  } else {
+    const { message } = (await res.json()) as GeneralResponse;
+    return { isSuccess: false, message };
   }
 }

@@ -2,8 +2,9 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
-import { SubmitHandler, useForm } from 'react-hook-form';
+import { useEffect, useState } from 'react';
+import { useFormState } from 'react-dom';
+import { useForm } from 'react-hook-form';
 import { TypeOf, object, string } from 'zod';
 
 import Loader from '@/_components/loader';
@@ -18,8 +19,7 @@ import {
 } from '@/_components/ui/form';
 import { Input } from '@/_components/ui/input';
 import { useToast } from '@/_components/ui/use-toast';
-import { getErrorMessage } from '@/_lib/error-utils';
-import { useRegisterUserMutation } from '@/_store/api/auth-api';
+import { register } from '@/action';
 
 const formSchema = object({
   firstName: string().trim().min(1, 'First name required'),
@@ -47,9 +47,12 @@ type FormSchema = TypeOf<typeof formSchema>;
 export default function RegisterForm() {
   const router = useRouter();
   const { toast } = useToast();
+  const [isLoading, setIsLoading] = useState(false);
 
-  const [registerUser, { isLoading, isSuccess, isError, error }] =
-    useRegisterUserMutation();
+  const [state, formAction] = useFormState(register, {
+    isSuccess: false,
+    message: '',
+  });
 
   const form = useForm<FormSchema>({
     defaultValues: {
@@ -69,28 +72,30 @@ export default function RegisterForm() {
     formState: { isSubmitSuccessful },
   } = form;
 
-  const handleFormSubmit: SubmitHandler<FormSchema> = (formData) =>
-    registerUser(formData);
-
   useEffect(() => {
-    if (isSubmitSuccessful) reset();
+    if (isSubmitSuccessful) {
+      setIsLoading(true);
+      reset();
+    }
   }, [isSubmitSuccessful, reset]);
 
   useEffect(() => {
-    if (isSuccess) {
-      toast({ variant: 'success', description: 'Registration Successful!' });
+    if (state.message === '') return;
 
+    setIsLoading(false);
+
+    if (state.isSuccess) {
+      toast({ variant: 'success', description: state.message });
       router.push('/verify');
+    } else {
+      toast({ variant: 'destructive', description: state.message });
     }
-
-    if (isError)
-      toast({ variant: 'destructive', description: getErrorMessage(error) });
-  }, [isLoading, isSuccess, isError, error, router, toast]);
+  }, [state, toast]);
 
   return (
     <Form {...form}>
       <form
-        onSubmit={(event) => void handleSubmit(handleFormSubmit)(event)}
+        onSubmit={(event) => void handleSubmit(formAction)(event)}
         className='flex w-full flex-col gap-4'
       >
         <div className='flex w-full flex-col gap-2'>
@@ -187,6 +192,7 @@ export default function RegisterForm() {
 
         <Button
           type='submit'
+          disabled={isLoading}
           className='w-full bg-primary-600 hover:bg-primary'
         >
           {isLoading ? <Loader size='sm' /> : <span>Sign Up</span>}

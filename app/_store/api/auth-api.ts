@@ -3,8 +3,6 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import {
   RecoverData,
   RecoverResponse,
-  RegisterInput,
-  RegisterResponse,
   RequestRecoverData,
   VerifyRecoverData,
 } from '@/_types/auth-types';
@@ -20,21 +18,6 @@ export const authApi = createApi({
   }),
 
   endpoints: (builder) => ({
-    registerUser: builder.mutation<RegisterResponse, RegisterInput>({
-      query(data) {
-        return {
-          url: 'register',
-          method: 'POST',
-          body: data,
-        };
-      },
-
-      async onQueryStarted(arg, api) {
-        const { data } = await api.queryFulfilled;
-        api.dispatch(setUser(data.user));
-      },
-    }),
-
     requestPasswordRecovery: builder.mutation<
       GenericResponse,
       RequestRecoverData
@@ -76,7 +59,6 @@ export const authApi = createApi({
 });
 
 export const {
-  useRegisterUserMutation,
   useRequestPasswordRecoveryMutation,
   useVerifyRecoveryCodeMutation,
   useRecoverPasswordMutation,

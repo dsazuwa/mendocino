@@ -9,6 +9,8 @@ export type RegisterInput = {
 
 export type RegisterResponse = {
   user: User;
+  accessToken: string;
+  refreshToken: string;
   message: string;
 };
 
@@ -19,8 +21,9 @@ export type LoginInput = {
 
 export type LoginResponse = {
   user: User;
+  accessToken: string;
+  refreshToken: string;
   message: string;
-  accessToken: string | null;
 };
 
 export type RequestRecoverData = {
