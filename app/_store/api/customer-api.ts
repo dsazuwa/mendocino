@@ -1,11 +1,6 @@
 import { createApi } from '@reduxjs/toolkit/query/react';
 
-import {
-  CustomerProfile,
-  VerifyData,
-  VerifyResponse,
-} from '@/_types/customer-types';
-import { setUser } from '../slices/user-slice';
+import { CustomerProfile } from '@/_types/customer-types';
 import baseQueryWithReauth from './base-query';
 
 const baseUrl = '/customers';
@@ -26,40 +21,7 @@ export const customerApi = createApi({
         };
       },
     }),
-
-    verifyUser: builder.mutation<VerifyResponse, VerifyData>({
-      query(data) {
-        return {
-          url: `${baseUrl}/me/verify/${data.code}`,
-          method: 'PATCH',
-          credentials: 'include',
-        };
-      },
-
-      async onQueryStarted(arg, api) {
-        try {
-          const { data } = await api.queryFulfilled;
-          api.dispatch(setUser(data.user));
-        } catch (e) {
-          console.log(e);
-        }
-      },
-    }),
-
-    resendVerification: builder.mutation<void, void>({
-      query() {
-        return {
-          url: `${baseUrl}/me/verify`,
-          method: 'POST',
-          credentials: 'include',
-        };
-      },
-    }),
   }),
 });
 
-export const {
-  useGetCustomerProfileQuery,
-  useVerifyUserMutation,
-  useResendVerificationMutation,
-} = customerApi;
+export const { useGetCustomerProfileQuery } = customerApi;

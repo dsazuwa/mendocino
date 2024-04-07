@@ -12,6 +12,7 @@ import {
   RegisterInput,
   RegisterResponse,
 } from './_types/auth-types';
+import { VerifyData } from './_types/customer-types';
 
 type GeneralResponse = { message: string };
 
@@ -71,4 +72,32 @@ export async function register(prevState: any, data: RegisterInput) {
     const { message } = (await res.json()) as GeneralResponse;
     return { isSuccess: false, message };
   }
+}
+
+export async function verifyCustomer(prevState: any, data: VerifyData) {
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/customers/me/verify/${data.code}`,
+    {
+      method: 'PATCH',
+      headers: { cookie: cookies().toString() },
+    },
+  );
+
+  const { message } = (await res.json()) as GeneralResponse;
+
+  return { isSuccess: res.status === 200, message };
+}
+
+export async function resendCustomerVerification() {
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/customers/me/verify`,
+    {
+      method: 'POST',
+      headers: { cookie: cookies().toString() },
+    },
+  );
+
+  const { message } = (await res.json()) as GeneralResponse;
+
+  return { isSuccess: res.status === 200, message };
 }
