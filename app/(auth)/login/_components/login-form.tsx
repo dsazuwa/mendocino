@@ -48,7 +48,10 @@ export default function LoginForm() {
   } = form;
 
   useEffect(() => {
-    if (isSubmitSuccessful) reset();
+    if (isSubmitSuccessful) {
+      setIsLoading(true);
+      reset();
+    }
   }, [isSubmitSuccessful, reset]);
 
   useEffect(() => {
@@ -61,10 +64,7 @@ export default function LoginForm() {
   return (
     <Form {...form}>
       <form
-        onSubmit={(event) => {
-          setIsLoading(true);
-          void handleSubmit(formAction)(event);
-        }}
+        onSubmit={(event) => void handleSubmit(formAction)(event)}
         className='flex w-full flex-col gap-4'
       >
         <div className='flex w-full flex-col gap-2'>
@@ -116,6 +116,7 @@ export default function LoginForm() {
 
         <Button
           type='submit'
+          disabled={isLoading}
           className='w-full bg-primary-600 hover:bg-primary'
         >
           {isLoading ? <Loader size='sm' /> : <span>Sign In</span>}
