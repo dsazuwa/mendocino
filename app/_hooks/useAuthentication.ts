@@ -5,7 +5,8 @@ import { User } from '@/_types/common-types';
 export default async function useAuthentication() {
   const accessToken = cookies().get('access-token');
 
-  if (!accessToken) return { isAuthenticated: false, user: undefined };
+  if (!accessToken || accessToken.value === '')
+    return { isAuthenticated: false, user: undefined };
 
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/me`, {
     method: 'GET',
