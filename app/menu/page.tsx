@@ -17,29 +17,27 @@ export default async function Menu() {
 
   return (
     <ClientLayout>
-      <main className='flex flex-1 flex-col'>
-        <div className='mx-auto w-full max-w-screen-md flex-1 gap-2 p-4 pb-4'>
-          <h1 className='p-2 text-center text-3xl font-extrabold tracking-wider text-primary-900'>
-            MENU
-          </h1>
+      <main className='mx-auto w-full max-w-screen-md flex-1 gap-2 p-4 pb-4'>
+        <h1 className='p-2 text-center text-3xl font-extrabold tracking-wider text-primary-900'>
+          MENU
+        </h1>
 
-          <CategoryToggle categories={categories} />
+        <CategoryToggle categories={categories} />
 
-          <div className='space-y-6 pt-4 md:space-y-8'>
-            {menu.map(({ category, notes, subCategories }, index) => (
-              <Category
-                key={`category-${index}`}
-                index={index}
-                category={category}
-                notes={notes}
-                subCategories={subCategories}
-              />
-            ))}
-          </div>
+        <div className='space-y-6 pt-4 md:space-y-8'>
+          {menu.map(({ category, notes, subCategories }, index) => (
+            <Category
+              key={`category-${index}`}
+              index={index}
+              category={category}
+              notes={notes}
+              subCategories={subCategories}
+            />
+          ))}
         </div>
-
-        <Footer />
       </main>
+
+      <Footer />
     </ClientLayout>
   );
 }
