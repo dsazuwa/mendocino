@@ -33,3 +33,26 @@ export async function fetchWithReauth(
     return { res: await makeRequest(), refreshResponse: await refreshToken() };
   } else return { res };
 }
+
+export const getAuthCookieObject = (
+  accessToken: string,
+  refreshToken: string,
+) => {
+  return {
+    accessToken: {
+      name: 'access-token',
+      value: accessToken,
+      secure: true,
+      httpOnly: true,
+      expires: new Date(Date.now() + 5 * 60 * 1000),
+    },
+
+    refreshToken: {
+      name: 'refresh-token',
+      value: refreshToken,
+      secure: true,
+      httpOnly: true,
+      expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+    },
+  };
+};

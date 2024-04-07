@@ -6,7 +6,7 @@ import { cookies } from 'next/headers';
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 
-import { fetchWithReauth } from '@/_lib/auth.utils';
+import { fetchWithReauth, getAuthCookieObject } from '@/_lib/auth.utils';
 
 const protectedRoutes = ['/account', '/verify'];
 const publicOnlyRoutes = ['/login', '/register', '/recover'];
@@ -54,17 +54,10 @@ export default async function middleware(request: NextRequest) {
     nextResponse.cookies.delete('access-token');
     nextResponse.cookies.delete('refresh-token');
 
-    nextResponse.cookies.set('access-token', accessToken, {
-      secure: true,
-      httpOnly: true,
-      expires: new Date(Date.now() + 5 * 60 * 1000),
-    });
+    const authCookies = getAuthCookieObject(accessToken, refreshToken);
 
-    nextResponse.cookies.set('refresh-token', refreshToken, {
-      secure: true,
-      httpOnly: true,
-      expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-    });
+    nextResponse.cookies.set(authCookies.accessToken);
+    nextResponse.cookies.set(authCookies.refreshToken);
 
     applySetCookie(request, nextResponse);
   }
