@@ -1,8 +1,6 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
 import {
-  LoginInput,
-  LoginResponse,
   RecoverData,
   RecoverResponse,
   RegisterInput,
@@ -22,21 +20,6 @@ export const authApi = createApi({
   }),
 
   endpoints: (builder) => ({
-    loginUser: builder.mutation<LoginResponse, LoginInput>({
-      query(data) {
-        return {
-          url: 'login',
-          method: 'POST',
-          body: data,
-        };
-      },
-
-      async onQueryStarted(arg, api) {
-        const { data } = await api.queryFulfilled;
-        api.dispatch(setUser(data.user));
-      },
-    }),
-
     registerUser: builder.mutation<RegisterResponse, RegisterInput>({
       query(data) {
         return {
@@ -93,7 +76,6 @@ export const authApi = createApi({
 });
 
 export const {
-  useLoginUserMutation,
   useRegisterUserMutation,
   useRequestPasswordRecoveryMutation,
   useVerifyRecoveryCodeMutation,

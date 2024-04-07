@@ -2,9 +2,9 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
-import { SubmitHandler, useForm } from 'react-hook-form';
+import { useEffect, useState } from 'react';
+import { useFormState } from 'react-dom';
+import { useForm } from 'react-hook-form';
 import { TypeOf, object, string } from 'zod';
 
 import Loader from '@/_components/loader';
@@ -19,9 +19,8 @@ import {
 } from '@/_components/ui/form';
 import { Input } from '@/_components/ui/input';
 import { useToast } from '@/_components/ui/use-toast';
-import { getErrorMessage } from '@/_lib/error-utils';
 import { cn } from '@/_lib/utils';
-import { useLoginUserMutation } from '@/_store/api/auth-api';
+import { login } from '@/action';
 
 const formSchema = object({
   email: string().email({ message: 'Invalid email address' }),
@@ -31,16 +30,13 @@ const formSchema = object({
 type FormSchema = TypeOf<typeof formSchema>;
 
 export default function LoginForm() {
-  const router = useRouter();
   const { toast } = useToast();
-  const [loginUser, { data, isLoading, isSuccess, isError, error }] =
-    useLoginUserMutation();
+  const [isLoading, setIsLoading] = useState(false);
+
+  const [state, formAction] = useFormState(login, { message: '' });
 
   const form = useForm<FormSchema>({
-    defaultValues: {
-      email: '',
-      password: '',
-    },
+    defaultValues: { email: '', password: '' },
     resolver: zodResolver(formSchema),
   });
 
@@ -51,25 +47,24 @@ export default function LoginForm() {
     formState: { isSubmitSuccessful },
   } = form;
 
-  const handleFormSubmit: SubmitHandler<FormSchema> = (formData) =>
-    loginUser(formData);
-
   useEffect(() => {
     if (isSubmitSuccessful) reset();
   }, [isSubmitSuccessful, reset]);
 
   useEffect(() => {
-    if (isSuccess)
-      router.push(data?.user.roles[0] === 'customer' ? '/' : '/admin');
-
-    if (isError)
-      toast({ variant: 'destructive', description: getErrorMessage(error) });
-  }, [data, isLoading, isSuccess, isError, error, router, toast]);
+    if (state.message !== '') {
+      setIsLoading(false);
+      toast({ variant: 'destructive', description: state.message });
+    }
+  }, [state.message, toast]);
 
   return (
     <Form {...form}>
       <form
-        onSubmit={(event) => void handleSubmit(handleFormSubmit)(event)}
+        onSubmit={(event) => {
+          setIsLoading(true);
+          void handleSubmit(formAction)(event);
+        }}
         className='flex w-full flex-col gap-4'
       >
         <div className='flex w-full flex-col gap-2'>
