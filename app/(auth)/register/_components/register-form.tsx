@@ -7,8 +7,8 @@ import { useFormState } from 'react-dom';
 import { useForm } from 'react-hook-form';
 import { TypeOf, object, string } from 'zod';
 
-import Loader from '@/_components/loader';
-import { Button } from '@/_components/ui/button';
+import Loader from '@/components/loader';
+import { Button } from '@/components/ui/button';
 import {
   Form,
   FormControl,
@@ -16,10 +16,10 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/_components/ui/form';
-import { Input } from '@/_components/ui/input';
-import { useToast } from '@/_components/ui/use-toast';
-import { register } from '@/action';
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { useToast } from '@/components/ui/use-toast';
+import { register } from '@/app/action';
 
 const formSchema = object({
   firstName: string().trim().min(1, 'First name required'),
@@ -90,7 +90,7 @@ export default function RegisterForm() {
     } else {
       toast({ variant: 'destructive', description: state.message });
     }
-  }, [state, toast]);
+  }, [state, router, toast]);
 
   return (
     <Form {...form}>

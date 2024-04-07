@@ -5,14 +5,14 @@
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 
-import { setAuthCookies } from './_lib/auth.utils';
+import { setAuthCookies } from '../lib/auth.utils';
 import {
   LoginInput,
   LoginResponse,
   RegisterInput,
   RegisterResponse,
-} from './_types/auth-types';
-import { VerifyData } from './_types/customer-types';
+} from '../lib/types/auth';
+import { VerifyData } from '../lib/types/customer';
 
 type GeneralResponse = { message: string };
 

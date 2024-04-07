@@ -2,8 +2,8 @@ import type { Metadata } from 'next';
 import { Montserrat } from 'next/font/google';
 import { ReactNode } from 'react';
 
-import { Toaster } from './_components/ui/toaster';
-import { cn } from './_lib/utils';
+import { Toaster } from '@/components/ui/toaster';
+import { cn } from '@/lib/utils';
 import './globals.css';
 import StoreProvider from './store-provider';
 

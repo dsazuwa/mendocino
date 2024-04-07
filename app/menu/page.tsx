@@ -1,8 +1,8 @@
-import ClientLayout from '@/_components/layout/client-layout';
-import Footer from '@/_components/layout/footer';
-import { GroupedMenuResponse } from '@/_types/menu-types';
+import ClientLayout from '@/components/layout/client-layout';
+import Footer from '@/components/layout/footer';
+import { GroupedMenuResponse } from '@/lib/types/menu';
 import Category from './_components/category';
-import CategoryToggle from '@/_components/category-toggle';
+import CategoryToggle from '@/components/category-toggle';
 
 async function getData() {
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/menu/grouped`);

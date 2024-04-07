@@ -1,9 +1,9 @@
 import { ArrowLeftIcon } from '@radix-ui/react-icons';
 import Link from 'next/link';
 
-import AuthLayout from '@/_components/layout/auth-layout';
-import { buttonVariants } from '@/_components/ui/button';
-import { cn } from '@/_lib/utils';
+import AuthLayout from '@/components/layout/auth-layout';
+import { buttonVariants } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 import RecoveryFlow from './_components/recovery-flow';
 
 export default function Recover() {

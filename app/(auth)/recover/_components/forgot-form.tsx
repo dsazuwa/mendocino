@@ -5,8 +5,8 @@ import { useEffect } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { TypeOf, object, string } from 'zod';
 
-import Loader from '@/_components/loader';
-import { Button } from '@/_components/ui/button';
+import Loader from '@/components/loader';
+import { Button } from '@/components/ui/button';
 import {
   Form,
   FormControl,
@@ -14,11 +14,11 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/_components/ui/form';
-import { Input } from '@/_components/ui/input';
-import { useToast } from '@/_components/ui/use-toast';
-import { getErrorMessage } from '@/_lib/error-utils';
-import { useRequestPasswordRecoveryMutation } from '@/_store/api/auth-api';
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { useToast } from '@/components/ui/use-toast';
+import { getErrorMessage } from '@/lib/error-utils';
+import { useRequestPasswordRecoveryMutation } from '@/store/api/auth-api';
 
 const formSchema = object({
   email: string().email({ message: 'Invalid email address' }),

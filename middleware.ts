@@ -6,7 +6,7 @@ import { cookies } from 'next/headers';
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 
-import { AuthCookies, getAuthCookieObject } from '@/_lib/auth.utils';
+import { AuthCookies, getAuthCookieObject } from '@/lib/auth.utils';
 
 const protectedRoutes = ['/account', '/verify'];
 const publicOnlyRoutes = ['/login', '/register', '/recover'];

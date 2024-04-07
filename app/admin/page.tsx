@@ -1,4 +1,4 @@
-import AdminLayout from '@/_components/layout/admin-layout';
+import AdminLayout from '@/components/layout/admin-layout';
 
 export default function AdminHome() {
   return (

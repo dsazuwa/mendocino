@@ -7,8 +7,9 @@ import { useFormState } from 'react-dom';
 import { useForm } from 'react-hook-form';
 import { TypeOf, object, string } from 'zod';
 
-import Loader from '@/_components/loader';
-import { Button, buttonVariants } from '@/_components/ui/button';
+import { login } from '@/app/action';
+import Loader from '@/components/loader';
+import { Button, buttonVariants } from '@/components/ui/button';
 import {
   Form,
   FormControl,
@@ -16,11 +17,10 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/_components/ui/form';
-import { Input } from '@/_components/ui/input';
-import { useToast } from '@/_components/ui/use-toast';
-import { cn } from '@/_lib/utils';
-import { login } from '@/action';
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { useToast } from '@/components/ui/use-toast';
+import { cn } from '@/lib/utils';
 
 const formSchema = object({
   email: string().email({ message: 'Invalid email address' }),

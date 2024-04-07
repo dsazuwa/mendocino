@@ -7,22 +7,22 @@ import { useFormState } from 'react-dom';
 import { useForm } from 'react-hook-form';
 import { TypeOf, object, string } from 'zod';
 
-import Loader from '@/_components/loader';
-import { Button } from '@/_components/ui/button';
+import { resendCustomerVerification, verifyCustomer } from '@/app/action';
+import Loader from '@/components/loader';
+import { Button } from '@/components/ui/button';
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
   FormMessage,
-} from '@/_components/ui/form';
+} from '@/components/ui/form';
 import {
   InputOTP,
   InputOTPGroup,
   InputOTPSlot,
-} from '@/_components/ui/input-otp';
-import { useToast } from '@/_components/ui/use-toast';
-import { resendCustomerVerification, verifyCustomer } from '@/action';
+} from '@/components/ui/input-otp';
+import { useToast } from '@/components/ui/use-toast';
 
 const formSchema = object({
   code: string().min(5, { message: 'OTP must be 5 characters' }),

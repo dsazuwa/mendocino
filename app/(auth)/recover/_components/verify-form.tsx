@@ -5,26 +5,26 @@ import { useCallback, useEffect } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { TypeOf, object, string } from 'zod';
 
-import Loader from '@/_components/loader';
-import { Button } from '@/_components/ui/button';
+import Loader from '@/components/loader';
+import { Button } from '@/components/ui/button';
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
   FormMessage,
-} from '@/_components/ui/form';
+} from '@/components/ui/form';
 import {
   InputOTP,
   InputOTPGroup,
   InputOTPSlot,
-} from '@/_components/ui/input-otp';
-import { useToast } from '@/_components/ui/use-toast';
-import { getErrorMessage } from '@/_lib/error-utils';
+} from '@/components/ui/input-otp';
+import { useToast } from '@/components/ui/use-toast';
+import { getErrorMessage } from '@/lib/error-utils';
 import {
   useRequestPasswordRecoveryMutation,
   useVerifyRecoveryCodeMutation,
-} from '@/_store/api/auth-api';
+} from '@/store/api/auth-api';
 
 const formSchema = object({
   code: string().min(5, { message: 'OTP must be 5 characters' }),

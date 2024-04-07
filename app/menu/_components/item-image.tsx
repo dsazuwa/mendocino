@@ -3,8 +3,8 @@
 import Image from 'next/image';
 import { useState } from 'react';
 
-import { Skeleton } from '@/_components/ui/skeleton';
-import { cn } from '@/_lib/utils';
+import { Skeleton } from '@/components/ui/skeleton';
+import { cn } from '@/lib/utils';
 
 export default function ItemImage({ alt, url }: { alt: string; url: string }) {
   const [loaded, setLoaded] = useState(false);

@@ -1,5 +1,5 @@
-import ClientLayout from './_components/layout/client-layout';
-import Footer from './_components/layout/footer';
+import ClientLayout from '@/components/layout/client-layout';
+import Footer from '@/components/layout/footer';
 
 export default function Home() {
   return (
