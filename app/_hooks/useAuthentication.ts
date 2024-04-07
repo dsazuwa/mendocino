@@ -5,6 +5,7 @@ export default async function useAuthentication() {
     method: 'GET',
     headers: { cookie: cookies().toString() },
     next: { tags: ['user'] },
+    cache: 'force-cache',
   });
 
   return { isAuthenticated: res.status === 200, response: res };
