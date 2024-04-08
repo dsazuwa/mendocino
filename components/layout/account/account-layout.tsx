@@ -20,11 +20,11 @@ export default async function AccountLayout({ children }: Props) {
   const pathName = headersList.get('x-pathname');
 
   return (
-    <div className='mx-auto w-full max-w-screen-xl flex-1 p-4 md:p-8'>
-      <div className='grid grid-cols-12 gap-4'>
+    <div className='mx-auto flex w-full max-w-screen-xl flex-1 p-4 md:p-8'>
+      <div className='grid flex-1 grid-cols-12 gap-6'>
         <div className='col-span-4 hidden md:inline lg:col-span-3'>
-          <div className='border-b border-solid border-neutral-200 p-4 text-center'>
-            <div className='truncate font-bold text-primary-900'>
+          <div className='h-20 border-b border-solid border-neutral-200 p-4 text-center'>
+            <div className='space-x-1 truncate font-semibold text-primary-900'>
               <span>{firstName}</span>
               <span>{lastName}</span>
             </div>

@@ -34,3 +34,11 @@ export type VerifyResponse = {
 export type VerifyData = {
   code: string;
 };
+
+export type ProfileData = {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phoneNumber: string;
+  receiveStatusByText: boolean;
+};
