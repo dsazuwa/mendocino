@@ -5,7 +5,6 @@ import { ReactNode } from 'react';
 import { Toaster } from '@/components/ui/toaster';
 import { cn } from '@/lib/utils';
 import './globals.css';
-import StoreProvider from './store-provider';
 
 const font = Montserrat({
   weight: ['100', '200', '300', '400', '500', '600', '700', '800', '900'],
@@ -28,7 +27,7 @@ export default function RootLayout({
   return (
     <html lang='en'>
       <body className={cn(font.className, 'flex min-h-screen flex-col')}>
-        <StoreProvider>{children}</StoreProvider>
+        {children}
         <Toaster />
       </body>
     </html>
