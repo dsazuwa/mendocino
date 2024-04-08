@@ -91,7 +91,7 @@ export default function VerifyForm({ email, handleFlowChange }: Props) {
     } else {
       toast({ variant: 'destructive', description: verifyState.message });
     }
-  }, [verifyState, setIsLoading, toast]);
+  }, [verifyState, setIsLoading, toast, handleFlowChange, getValues]);
 
   useEffect(() => {
     if (resendState.isSuccess) {
