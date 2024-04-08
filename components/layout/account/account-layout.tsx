@@ -5,7 +5,7 @@ import { redirect } from 'next/navigation';
 import { ReactNode } from 'react';
 
 import useAuthentication from '@/hooks/useAuthentication';
-import { accountLinks } from '../client-constants';
+import { accountLinks } from '../client/client-constants';
 
 type Props = { children: ReactNode };
 

@@ -10,7 +10,7 @@ import {
   LogIn,
   Menu,
   Payments,
-} from '../icons';
+} from '../../icons';
 
 export type ClientLink = {
   name: string;

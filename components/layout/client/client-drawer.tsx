@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import useWindowWidth from '@/hooks/useWindowWidth';
-import { Button } from '../ui/button';
+import { Button } from '../../ui/button';
 import { accountLinks, publicLinks, unauthLinks } from './client-constants';
 import DrawerLink from './client-drawer-link';
 import LogoutButton from './logout-btn';

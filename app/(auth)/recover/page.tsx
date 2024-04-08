@@ -1,7 +1,7 @@
 import { ArrowLeftIcon } from '@radix-ui/react-icons';
 import Link from 'next/link';
 
-import AuthLayout from '@/components/layout/auth-layout';
+import { AuthLayout } from '@/components/layout/auth';
 import { buttonVariants } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import RecoveryFlow from './_components/recovery-flow';

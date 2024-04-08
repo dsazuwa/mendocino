@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { ReactNode } from 'react';
 
-import Logo from '../logo';
+import Logo from '../../logo';
 
 export default function AuthLayout({ children }: { children: ReactNode }) {
   return (

@@ -1,7 +1,7 @@
 import Link from 'next/link';
 
 import useAuthentication from '@/hooks/useAuthentication';
-import Logo from '../logo';
+import Logo from '../../logo';
 import ClientAuthLinks from './client-auth-links';
 import { publicLinks } from './client-constants';
 import ClientAppBarDrawer from './client-drawer';
