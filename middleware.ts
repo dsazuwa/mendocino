@@ -43,6 +43,7 @@ export default async function middleware(request: NextRequest) {
     : undefined;
 
   const nextResponse = await getNextResponse(request, response);
+  nextResponse.headers.set('x-pathname', request.nextUrl.pathname);
 
   if (authCookies) {
     nextResponse.cookies.set(authCookies.accessToken);
@@ -103,6 +104,7 @@ async function getNextResponse(
 }
 
 // source: https://github.com/vercel/next.js/discussions/50374#discussioncomment-6732402
+// it's days are numbered
 function applySetCookie(req: NextRequest, res: NextResponse) {
   const setCookies = new ResponseCookies(res.headers);
 

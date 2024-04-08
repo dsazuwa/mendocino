@@ -1,6 +1,16 @@
 import { FC, SVGProps } from 'react';
 
-import { AddPerson, CircleUser, Home, LogIn, Menu } from '../icons';
+import {
+  Account,
+  AddPerson,
+  CircleUser,
+  History,
+  Home,
+  ImportContacts,
+  LogIn,
+  Menu,
+  Payments,
+} from '../icons';
 
 export type ClientLink = {
   name: string;
@@ -24,8 +34,15 @@ export const unauthLinks: ClientLink[] = [
   { name: 'Sign Up', href: '/register', Icon: AddPerson },
 ];
 
-export const accountLink = {
+export const profileLink = {
   name: 'Account',
-  href: '/account',
+  href: '/account/profile',
   Icon: CircleUser,
 };
+
+export const accountLinks: ClientLink[] = [
+  { name: 'Profile', href: '/account/profile', Icon: Account },
+  { name: 'Addresses', href: '/account/addresses', Icon: ImportContacts },
+  { name: 'Payment Methods', href: '/account/wallet', Icon: Payments },
+  { name: 'Order History', href: '/account/orders', Icon: History },
+];

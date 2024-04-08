@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import useWindowWidth from '@/hooks/useWindowWidth';
 import { Button } from '../ui/button';
-import { accountLink, publicLinks, unauthLinks } from './client-constants';
+import { accountLinks, publicLinks, unauthLinks } from './client-constants';
 import DrawerLink from './client-drawer-link';
 import LogoutButton from './logout-btn';
 
@@ -45,19 +45,20 @@ export default function ClientAppBarDrawer({ isAuthenticated }: Props) {
               Icon={Icon}
             />
           ))}
+
+          {accountLinks.map(({ name, href, Icon }, i) => (
+            <DrawerLink
+              key={`public-link-${i}`}
+              name={name}
+              href={href}
+              Icon={Icon}
+            />
+          ))}
         </div>
 
-        <div className='flex flex-col border-t border-solid border-neutral-200'>
+        <div className='flex flex-col'>
           {isAuthenticated ? (
-            <>
-              <DrawerLink
-                name={accountLink.name}
-                href={accountLink.href}
-                Icon={accountLink.Icon}
-              />
-
-              <LogoutButton />
-            </>
+            <LogoutButton />
           ) : (
             <>
               {unauthLinks.map(({ name, href, Icon }, i) => (
