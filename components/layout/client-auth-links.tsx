@@ -1,12 +1,8 @@
-'use client';
-
 import { accountLink, unauthLinks } from './client-constants';
 import ClientLink from './client-link';
 import LogoutButton from './logout-btn';
 
-type Props = {
-  isAuthenticated: boolean;
-};
+type Props = { isAuthenticated: boolean };
 
 export default function ClientAuthLinks({ isAuthenticated }: Props) {
   return isAuthenticated ? (
