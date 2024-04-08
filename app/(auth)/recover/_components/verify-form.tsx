@@ -1,10 +1,12 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useCallback, useEffect } from 'react';
-import { SubmitHandler, useForm } from 'react-hook-form';
+import { useEffect, useState } from 'react';
+import { useFormState } from 'react-dom';
+import { useForm } from 'react-hook-form';
 import { TypeOf, object, string } from 'zod';
 
+import { requestRecovery, verifyRecoveryCode } from '@/app/action';
 import Loader from '@/components/loader';
 import { Button } from '@/components/ui/button';
 import {
@@ -20,13 +22,9 @@ import {
   InputOTPSlot,
 } from '@/components/ui/input-otp';
 import { useToast } from '@/components/ui/use-toast';
-import { getErrorMessage } from '@/lib/error-utils';
-import {
-  useRequestPasswordRecoveryMutation,
-  useVerifyRecoveryCodeMutation,
-} from '@/store/api/auth-api';
 
 const formSchema = object({
+  email: string().email({ message: 'Invalid email address' }),
   code: string().min(5, { message: 'OTP must be 5 characters' }),
 });
 
@@ -39,87 +37,69 @@ type Props = {
 
 export default function VerifyForm({ email, handleFlowChange }: Props) {
   const { toast } = useToast();
+  const [isLoading, setIsLoading] = useState(false);
+
+  const defaultState = { isSuccess: false, message: '' };
+
+  const [verifyState, verifyAction] = useFormState(
+    verifyRecoveryCode,
+    defaultState,
+  );
+
+  const [resendState, resendAction] = useFormState(
+    requestRecovery,
+    defaultState,
+  );
 
   const form = useForm<FormSchema>({
-    defaultValues: { code: '' },
+    defaultValues: { code: '', email },
     resolver: zodResolver(formSchema),
   });
 
-  const { control, handleSubmit, watch, getValues, reset } = form;
+  const {
+    control,
+    handleSubmit,
+    getValues,
+    watch,
+    reset,
+    formState: { isSubmitSuccessful },
+  } = form;
 
-  const [
-    verifyCode,
-    {
-      isLoading: isVerifyLoading,
-      isSuccess: isVerifySuccess,
-      isError: isVerifyError,
-      error: verifyError,
-    },
-  ] = useVerifyRecoveryCodeMutation();
-
-  const [
-    requestRecovery,
-    {
-      isLoading: isRequestLoading,
-      isSuccess: isRequestSuccess,
-      isError: isRequestError,
-      error: requestError,
-    },
-  ] = useRequestPasswordRecoveryMutation();
-
-  const handleFormSubmit = useCallback<SubmitHandler<FormSchema>>(
-    ({ code }) => verifyCode({ code, email }),
-    [email, verifyCode],
-  );
-
-  const handleResend = () => {
-    void requestRecovery({ email });
-    reset();
-  };
+  useEffect(() => {
+    if (isSubmitSuccessful) {
+      setIsLoading(true);
+      reset();
+    }
+  }, [isSubmitSuccessful, reset]);
 
   useEffect(() => {
     const subscription = watch((data) => {
       if (data.code?.length === 5) {
-        void handleSubmit(handleFormSubmit)();
+        void handleSubmit(verifyAction)();
       }
     });
 
     return () => subscription.unsubscribe();
-  }, [watch, handleSubmit, handleFormSubmit]);
+  }, [watch, handleSubmit, verifyAction]);
 
   useEffect(() => {
-    if (isRequestError)
-      toast({
-        variant: 'destructive',
-        description: getErrorMessage(requestError),
-      });
+    setIsLoading(false);
 
-    if (isRequestSuccess)
-      toast({
-        variant: 'info',
-        description: 'A recovery code has been sent to your email',
-      });
-  }, [isRequestSuccess, isRequestError, requestError, toast]);
-
-  useEffect(() => {
-    if (isVerifyError)
-      toast({
-        variant: 'destructive',
-        description: getErrorMessage(verifyError),
-      });
-
-    if (isVerifySuccess) {
+    if (verifyState.isSuccess) {
+      toast({ variant: 'success', description: verifyState.message });
       handleFlowChange(getValues('code'));
-      toast({ variant: 'success', description: 'Email verified!' });
+    } else {
+      toast({ variant: 'destructive', description: verifyState.message });
     }
-  }, [
-    isVerifySuccess,
-    isVerifyError,
-    verifyError,
-    toast,
-    getValues,
-    handleFlowChange,
-  ]);
+  }, [verifyState, setIsLoading, toast]);
+
+  useEffect(() => {
+    if (resendState.isSuccess) {
+      toast({ variant: 'info', description: resendState.message });
+    } else {
+      toast({ variant: 'destructive', description: resendState.message });
+    }
+  }, [resendState, toast]);
 
   return (
     <>
@@ -131,7 +111,7 @@ export default function VerifyForm({ email, handleFlowChange }: Props) {
 
       <Form {...form}>
         <form
-          onSubmit={(event) => void handleSubmit(handleFormSubmit)(event)}
+          onSubmit={(event) => void handleSubmit(verifyAction)(event)}
           className='flex w-full flex-col items-center gap-4'
         >
           <FormField
@@ -158,23 +138,22 @@ export default function VerifyForm({ email, handleFlowChange }: Props) {
 
           <Button
             type='submit'
+            disabled={isLoading}
             className='w-full bg-primary-600 hover:bg-primary'
           >
-            {isVerifyLoading || isRequestLoading ? (
-              <Loader size='sm' />
-            ) : (
-              <span>Verify</span>
-            )}
+            {isLoading ? <Loader size='sm' /> : <span>Verify</span>}
           </Button>
         </form>
 
         <span className='space-x-1'>
           <span className='text-xs'>Didn&apos;t receive the email?</span>
+
           <Button
+            type='submit'
             variant='primaryLink'
             size='none'
             className='text-xs'
-            onClick={handleResend}
+            onClick={() => void resendAction({ email })}
           >
             Click to resend
           </Button>

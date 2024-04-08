@@ -2,10 +2,12 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
-import { SubmitHandler, useForm } from 'react-hook-form';
+import { useEffect, useState } from 'react';
+import { useFormState } from 'react-dom';
+import { useForm } from 'react-hook-form';
 import { TypeOf, object, string } from 'zod';
 
+import { recoverPassword } from '@/app/action';
 import Loader from '@/components/loader';
 import { Button } from '@/components/ui/button';
 import {
@@ -18,10 +20,12 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/components/ui/use-toast';
-import { getErrorMessage } from '@/lib/error-utils';
-import { useRecoverPasswordMutation } from '@/store/api/auth-api';
 
 const formSchema = object({
+  email: string().email({ message: 'Invalid email address' }),
+
+  code: string().min(5, { message: 'OTP must be 5 characters' }),
+
   password: string()
     .trim()
     .min(8, { message: 'Password must be 8 or more characters long' })
@@ -33,6 +37,7 @@ const formSchema = object({
     .regex(/[A-Z]/, {
       message: 'Password must contain at least 1 uppercase letter',
     }),
+
   confirm: string().trim(),
 }).refine((data) => data.password === data.confirm, {
   message: 'Passwords do not match',
@@ -49,34 +54,42 @@ type Props = {
 export default function ChangePasswordForm({ email, code }: Props) {
   const router = useRouter();
   const { toast } = useToast();
+  const [isLoading, setIsLoading] = useState(false);
 
-  const [recoverPassword, { isLoading, isSuccess, isError, error }] =
-    useRecoverPasswordMutation();
+  const [state, formAction] = useFormState(recoverPassword, {
+    isSuccess: true,
+    message: '',
+  });
 
   const form = useForm<FormSchema>({
-    defaultValues: { password: '', confirm: '' },
+    defaultValues: { email, code, password: '', confirm: '' },
     resolver: zodResolver(formSchema),
   });
 
-  const { control, handleSubmit } = form;
-
-  const handleFormSubmit: SubmitHandler<FormSchema> = ({ password }) =>
-    recoverPassword({ code, email, password });
-
-  useEffect(() => {
-    if (isError)
-      toast({ variant: 'destructive', description: getErrorMessage(error) });
-  }, [isError, error, toast]);
+  const {
+    control,
+    handleSubmit,
+    reset,
+    formState: { isSubmitSuccessful },
+  } = form;
 
   useEffect(() => {
-    if (isSuccess) {
-      toast({
-        variant: 'success',
-        description: 'Password successfully changed!',
-      });
-      router.push('/');
+    if (isSubmitSuccessful) {
+      setIsLoading(true);
+      reset();
     }
-  }, [isSuccess, router, toast]);
+  }, [isSubmitSuccessful, reset]);
+
+  useEffect(() => {
+    setIsLoading(false);
+
+    if (state.isSuccess) {
+      toast({ variant: 'success', description: state.message });
+      router.push('/');
+    } else {
+      toast({ variant: 'destructive', description: state.message });
+    }
+  }, [state, router, setIsLoading, toast]);
 
   return (
     <>
@@ -88,7 +101,7 @@ export default function ChangePasswordForm({ email, code }: Props) {
 
       <Form {...form}>
         <form
-          onSubmit={(event) => void handleSubmit(handleFormSubmit)(event)}
+          onSubmit={(event) => void handleSubmit(formAction)(event)}
           className='flex w-full flex-col gap-4'
         >
           <FormField
@@ -125,6 +138,7 @@ export default function ChangePasswordForm({ email, code }: Props) {
 
           <Button
             type='submit'
+            disabled={isLoading}
             className='w-full bg-primary-600 hover:bg-primary'
           >
             {isLoading ? <Loader size='sm' /> : <span>Reset Password</span>}

@@ -43,5 +43,7 @@ export type RecoverData = {
 
 export type RecoverResponse = {
   user: User;
+  accessToken: string;
+  refreshToken: string;
   message: string;
 };

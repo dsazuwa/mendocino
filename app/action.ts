@@ -9,12 +9,15 @@ import { setAuthCookies } from '../lib/auth.utils';
 import {
   LoginInput,
   LoginResponse,
+  RecoverData,
+  RecoverResponse,
   RegisterInput,
   RegisterResponse,
+  RequestRecoverData,
+  VerifyRecoverData,
 } from '../lib/types/auth';
 import { VerifyData } from '../lib/types/customer';
-
-type GeneralResponse = { message: string };
+import { GenericResponse } from '@/lib/types/common';
 
 export async function logout() {
   await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/logout`, {
@@ -46,7 +49,7 @@ export async function login(prevState: any, data: LoginInput) {
   }
   // TODO: handle case where user is deactivated if ('user' in body)
   else {
-    const { message } = (await res.json()) as GeneralResponse;
+    const { message } = (await res.json()) as GenericResponse;
     return { message };
   }
 }
@@ -69,7 +72,66 @@ export async function register(prevState: any, data: RegisterInput) {
 
     return { isSuccess: true, message };
   } else {
-    const { message } = (await res.json()) as GeneralResponse;
+    const { message } = (await res.json()) as GenericResponse;
+    return { isSuccess: false, message };
+  }
+}
+
+export async function requestRecovery(
+  prevState: any,
+  data: RequestRecoverData,
+) {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/recover`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  });
+
+  const { message } = (await res.json()) as GenericResponse;
+
+  return { isSuccess: res.status === 200, message };
+}
+
+export async function verifyRecoveryCode(
+  prevState: any,
+  { code, ...data }: VerifyRecoverData,
+) {
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/auth/recover/${code}`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    },
+  );
+
+  const { message } = (await res.json()) as GenericResponse;
+
+  return { isSuccess: res.status === 200, message };
+}
+
+export async function recoverPassword(
+  prevState: any,
+  { code, ...data }: RecoverData,
+) {
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/auth/recover/${code}`,
+    {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    },
+  );
+
+  if (res.status === 200) {
+    const { refreshToken, accessToken, message } =
+      (await res.json()) as RecoverResponse;
+
+    setAuthCookies(accessToken, refreshToken);
+
+    return { isSuccess: true, message };
+  } else {
+    const { message } = (await res.json()) as GenericResponse;
     return { isSuccess: false, message };
   }
 }
@@ -83,7 +145,7 @@ export async function verifyCustomer(prevState: any, data: VerifyData) {
     },
   );
 
-  const { message } = (await res.json()) as GeneralResponse;
+  const { message } = (await res.json()) as GenericResponse;
 
   return { isSuccess: res.status === 200, message };
 }
@@ -97,7 +159,7 @@ export async function resendCustomerVerification() {
     },
   );
 
-  const { message } = (await res.json()) as GeneralResponse;
+  const { message } = (await res.json()) as GenericResponse;
 
   return { isSuccess: res.status === 200, message };
 }

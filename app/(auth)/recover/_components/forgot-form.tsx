@@ -1,10 +1,12 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useEffect } from 'react';
-import { SubmitHandler, useForm } from 'react-hook-form';
+import { useEffect, useState } from 'react';
+import { useFormState } from 'react-dom';
+import { useForm } from 'react-hook-form';
 import { TypeOf, object, string } from 'zod';
 
+import { requestRecovery } from '@/app/action';
 import Loader from '@/components/loader';
 import { Button } from '@/components/ui/button';
 import {
@@ -17,8 +19,6 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/components/ui/use-toast';
-import { getErrorMessage } from '@/lib/error-utils';
-import { useRequestPasswordRecoveryMutation } from '@/store/api/auth-api';
 
 const formSchema = object({
   email: string().email({ message: 'Invalid email address' }),
@@ -32,29 +32,47 @@ type Props = {
 
 export default function ForgotPasswordForm({ handleFlowChange }: Props) {
   const { toast } = useToast();
-  const [requestRecovery, { isLoading, isSuccess, isError, error }] =
-    useRequestPasswordRecoveryMutation();
+  const [isLoading, setIsLoading] = useState(false);
+
+  const [state, formAction] = useFormState(requestRecovery, {
+    isSuccess: false,
+    message: '',
+  });
 
   const form = useForm<FormSchema>({
     defaultValues: { email: '' },
     resolver: zodResolver(formSchema),
   });
 
-  const { control, handleSubmit, getValues } = form;
-
-  const handleFormSubmit: SubmitHandler<FormSchema> = (formData) =>
-    requestRecovery(formData);
-
-  useEffect(() => {
-    if (isError)
-      toast({ variant: 'destructive', description: getErrorMessage(error) });
-  }, [isError, error, toast]);
+  const {
+    control,
+    handleSubmit,
+    getValues,
+    reset,
+    formState: { isSubmitSuccessful },
+  } = form;
 
   useEffect(() => {
-    if (isSuccess) {
+    if (state.isSuccess) {
       handleFlowChange(getValues('email'));
+    } else {
+      toast({ variant: 'destructive', description: state.message });
     }
-  }, [isSuccess, toast, handleFlowChange, getValues]);
+  }, [state, toast, handleFlowChange, getValues]);
+
+  useEffect(() => {
+    if (isSubmitSuccessful) {
+      setIsLoading(true);
+      reset();
+    }
+  }, [isSubmitSuccessful, reset]);
+
+  useEffect(() => {
+    if (state.message !== '') {
+      setIsLoading(false);
+      toast({ variant: 'destructive', description: state.message });
+    }
+  }, [state.message, toast]);
 
   return (
     <>
@@ -67,7 +85,7 @@ export default function ForgotPasswordForm({ handleFlowChange }: Props) {
 
       <Form {...form}>
         <form
-          onSubmit={(event) => void handleSubmit(handleFormSubmit)(event)}
+          onSubmit={(event) => void handleSubmit(formAction)(event)}
           className='flex w-full flex-col gap-4'
         >
           <FormField
@@ -88,6 +106,7 @@ export default function ForgotPasswordForm({ handleFlowChange }: Props) {
 
           <Button
             type='submit'
+            disabled={isLoading}
             className='w-full bg-primary-600 hover:bg-primary'
           >
             {isLoading ? <Loader size='sm' /> : <span>Reset Password</span>}
