@@ -16,7 +16,11 @@ import {
   RequestRecoverData,
   VerifyRecoverData,
 } from '../lib/types/auth';
-import { ProfileData, VerifyData } from '../lib/types/customer';
+import {
+  CustomerPasswordData,
+  ProfileData,
+  VerifyData,
+} from '../lib/types/customer';
 import { GenericResponse } from '@/lib/types/common';
 
 export async function logout() {
@@ -167,6 +171,27 @@ export async function resendCustomerVerification() {
 export async function updateProfile(prevState: any, data: ProfileData) {
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/customers/me/profile`,
+    {
+      method: 'PATCH',
+      headers: {
+        cookie: cookies().toString(),
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    },
+  );
+
+  const { message } = (await res.json()) as GenericResponse;
+
+  return { isSuccess: res.status === 200, message };
+}
+
+export async function changePassword(
+  prevState: any,
+  data: CustomerPasswordData,
+) {
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/customers/me/password`,
     {
       method: 'PATCH',
       headers: {

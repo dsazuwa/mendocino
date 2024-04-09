@@ -42,3 +42,9 @@ export type ProfileData = {
   phoneNumber: string;
   receiveStatusByText: boolean;
 };
+
+export type CustomerPasswordData = {
+  currentPassword: string;
+  newPassword: string;
+  confirmPassword: string;
+};
