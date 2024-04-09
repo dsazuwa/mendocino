@@ -61,11 +61,8 @@ export default function VerifyForm() {
   } = form;
 
   useEffect(() => {
-    if (isSubmitSuccessful) {
-      setIsLoading(true);
-      reset();
-    }
-  }, [isSubmitSuccessful, reset]);
+    if (isSubmitSuccessful) setIsLoading(true);
+  }, [isSubmitSuccessful]);
 
   useEffect(() => {
     const subscription = watch((data) => {
@@ -87,8 +84,9 @@ export default function VerifyForm() {
       router.push('/');
     } else {
       toast({ variant: 'destructive', description: verifyState.message });
+      reset();
     }
-  }, [verifyState, router, setIsLoading, toast]);
+  }, [verifyState, router, setIsLoading, toast, reset]);
 
   useEffect(() => {
     if (resendState.message === '') return;
