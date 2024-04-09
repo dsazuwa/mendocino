@@ -206,3 +206,17 @@ export async function changePassword(
 
   return { isSuccess: res.status === 200, message };
 }
+
+export async function closeAccount() {
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/customers/me/close`,
+    {
+      method: 'PATCH',
+      headers: { cookie: cookies().toString() },
+    },
+  );
+
+  const { message } = (await res.json()) as GenericResponse;
+
+  return { isSuccess: res.status === 200, message };
+}
