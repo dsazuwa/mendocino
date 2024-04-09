@@ -1,13 +1,12 @@
 import Link from 'next/link';
 
-import { AuthLayout } from '@/components/layout/auth';
 import { buttonVariants } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import LoginForm from './_components/login-form';
 
 export default function Login() {
   return (
-    <AuthLayout>
+    <>
       <h1 className='md-2 text-xl font-bold'>Welcome Back</h1>
 
       <LoginForm />
@@ -28,6 +27,6 @@ export default function Login() {
           Create an account
         </Link>
       </span>
-    </AuthLayout>
+    </>
   );
 }

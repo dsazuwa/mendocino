@@ -1,13 +1,12 @@
 import Link from 'next/link';
 
-import { AuthLayout } from '@/components/layout/auth';
 import { buttonVariants } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import RegisterForm from './_components/register-form';
 
 export default function Register() {
   return (
-    <AuthLayout>
+    <>
       <h1 className='md-2 text-xl font-bold'>Create an Account</h1>
 
       <RegisterForm />
@@ -28,6 +27,6 @@ export default function Register() {
           Login
         </Link>
       </span>
-    </AuthLayout>
+    </>
   );
 }

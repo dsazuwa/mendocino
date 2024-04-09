@@ -1,9 +1,11 @@
 import Link from 'next/link';
 import { ReactNode } from 'react';
 
-import Logo from '../../logo';
+import Logo from '@/components/logo';
 
-export default function AuthLayout({ children }: { children: ReactNode }) {
+type Props = { children: ReactNode };
+
+export default function Layout({ children }: Props) {
   return (
     <div className='mx-auto w-full max-w-screen-sm'>
       <div className='mt-[10vh] flex flex-col items-center gap-4 px-4'>
