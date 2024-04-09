@@ -21,8 +21,8 @@ export default async function AccountLayout({ children }: Props) {
 
   return (
     <div className='mx-auto flex w-full max-w-screen-xl flex-1 p-4 md:p-8'>
-      <div className='grid flex-1 grid-cols-12 gap-6'>
-        <div className='col-span-4 hidden md:inline lg:col-span-3'>
+      <div className='flex flex-1 gap-6 md:grid md:grid-cols-12'>
+        <div className='hidden md:col-span-4 md:inline lg:col-span-3'>
           <div className='h-20 border-b border-solid border-neutral-200 p-4 text-center'>
             <div className='space-x-1 truncate font-semibold text-primary-900'>
               <span>{firstName}</span>
@@ -54,9 +54,7 @@ export default async function AccountLayout({ children }: Props) {
           </div>
         </div>
 
-        <div className='col-span-12 md:col-span-8 lg:col-span-9'>
-          {children}
-        </div>
+        <div className='w-full md:col-span-8 lg:col-span-9'>{children}</div>
       </div>
     </div>
   );

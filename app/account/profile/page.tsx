@@ -17,24 +17,22 @@ export default function Profile() {
     <ClientLayout>
       <AccountLayout>
         <div className='flex h-full flex-col'>
-          <div className='flex h-auto flex-row items-center justify-between py-4 md:h-20'>
-            <span className='text-xl font-semibold'>Profile</span>
+          <div className='flex flex-row flex-wrap items-center gap-4 py-4 md:h-20'>
+            <span className='flex-1 text-xl font-semibold'>Profile</span>
 
-            <div className='space-x-4'>
-              <Link
-                href='/account/password'
-                className='text-xs font-semibold text-primary-500 transition-colors hover:text-primary-700'
-              >
-                Change Password
-              </Link>
+            <Link
+              href='/account/password'
+              className='text-xs font-semibold text-primary-500 transition-colors hover:text-primary-700'
+            >
+              Change Password
+            </Link>
 
-              <Link
-                href='/account/manage'
-                className='text-xs font-semibold text-primary-500 transition-colors hover:text-primary-700'
-              >
-                Manage Account
-              </Link>
-            </div>
+            <Link
+              href='/account/manage'
+              className='text-xs font-semibold text-primary-500 transition-colors hover:text-primary-700'
+            >
+              Manage Account
+            </Link>
           </div>
 
           <ProfileForm
