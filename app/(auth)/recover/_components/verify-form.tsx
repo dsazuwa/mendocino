@@ -66,11 +66,8 @@ export default function VerifyForm({ email, handleFlowChange }: Props) {
   } = form;
 
   useEffect(() => {
-    if (isSubmitSuccessful) {
-      setIsLoading(true);
-      reset();
-    }
-  }, [isSubmitSuccessful, reset]);
+    if (isSubmitSuccessful) setIsLoading(true);
+  }, [isSubmitSuccessful]);
 
   useEffect(() => {
     const subscription = watch((data) => {
@@ -85,15 +82,20 @@ export default function VerifyForm({ email, handleFlowChange }: Props) {
   useEffect(() => {
     setIsLoading(false);
 
+    if (verifyState.message === '') return;
+
     if (verifyState.isSuccess) {
       toast({ variant: 'success', description: verifyState.message });
       handleFlowChange(getValues('code'));
     } else {
+      reset();
       toast({ variant: 'destructive', description: verifyState.message });
     }
-  }, [verifyState, setIsLoading, toast, handleFlowChange, getValues]);
+  }, [verifyState, setIsLoading, toast, handleFlowChange, getValues, reset]);
 
   useEffect(() => {
+    if (resendState.message === '') return;
+
     if (resendState.isSuccess) {
       toast({ variant: 'info', description: resendState.message });
     } else {

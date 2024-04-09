@@ -11,7 +11,7 @@ export default function RecoveryFlow() {
   const [email, setEmail] = useState('');
   const [code, setPin] = useState('');
 
-  const handleForgott = (email: string) => {
+  const handleForgot = (email: string) => {
     setEmail(email);
     setStep(2);
   };
@@ -21,8 +21,7 @@ export default function RecoveryFlow() {
     setStep(3);
   };
 
-  if (step === 1)
-    return <ForgotPasswordForm handleFlowChange={handleForgott} />;
+  if (step === 1) return <ForgotPasswordForm handleFlowChange={handleForgot} />;
   if (step === 2)
     return <VerifyForm email={email} handleFlowChange={handleVerify} />;
   return <ChangePasswordForm email={email} code={code} />;

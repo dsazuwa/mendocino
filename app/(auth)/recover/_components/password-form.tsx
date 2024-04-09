@@ -61,6 +61,7 @@ export default function ChangePasswordForm({ email, code }: Props) {
     message: '',
   });
 
+  console.log(email, code);
   const form = useForm<FormSchema>({
     defaultValues: { email, code, password: '', confirm: '' },
     resolver: zodResolver(formSchema),
@@ -74,22 +75,22 @@ export default function ChangePasswordForm({ email, code }: Props) {
   } = form;
 
   useEffect(() => {
-    if (isSubmitSuccessful) {
-      setIsLoading(true);
-      reset();
-    }
-  }, [isSubmitSuccessful, reset]);
+    if (isSubmitSuccessful) setIsLoading(true);
+  }, [isSubmitSuccessful]);
 
   useEffect(() => {
     setIsLoading(false);
+
+    if (state.message === '') return;
 
     if (state.isSuccess) {
       toast({ variant: 'success', description: state.message });
       router.push('/');
     } else {
+      reset();
       toast({ variant: 'destructive', description: state.message });
     }
-  }, [state, router, setIsLoading, toast]);
+  }, [state, router, setIsLoading, toast, reset]);
 
   return (
     <>

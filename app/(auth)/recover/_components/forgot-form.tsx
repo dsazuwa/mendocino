@@ -48,11 +48,12 @@ export default function ForgotPasswordForm({ handleFlowChange }: Props) {
     control,
     handleSubmit,
     getValues,
-    reset,
     formState: { isSubmitSuccessful },
   } = form;
 
   useEffect(() => {
+    if (state.message === '') return;
+
     if (state.isSuccess) {
       handleFlowChange(getValues('email'));
     } else {
@@ -61,18 +62,8 @@ export default function ForgotPasswordForm({ handleFlowChange }: Props) {
   }, [state, toast, handleFlowChange, getValues]);
 
   useEffect(() => {
-    if (isSubmitSuccessful) {
-      setIsLoading(true);
-      reset();
-    }
-  }, [isSubmitSuccessful, reset]);
-
-  useEffect(() => {
-    if (state.message !== '') {
-      setIsLoading(false);
-      toast({ variant: 'destructive', description: state.message });
-    }
-  }, [state.message, toast]);
+    if (isSubmitSuccessful) setIsLoading(true);
+  }, [isSubmitSuccessful]);
 
   return (
     <>
