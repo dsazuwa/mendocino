@@ -70,6 +70,8 @@ export const register = async (
     res.status(200).json({
       message: messages.REGISTER_SUCCESS,
       user,
+      accessToken,
+      refreshToken,
     });
   } catch (e) {
     next(e);
@@ -128,6 +130,8 @@ export const login = async (
     return res.status(200).json({
       message: messages.LOGIN_SUCCESS,
       user,
+      accessToken,
+      refreshToken,
     });
   } catch (e) {
     next(e);
@@ -306,6 +310,8 @@ export const recoverPassword = async (
     res.status(200).json({
       message: messages.RECOVER_PASSWORD_SUCCESS,
       user: userWithNoId,
+      accessToken,
+      refreshToken,
     });
   } catch (e) {
     next(e);
@@ -455,7 +461,11 @@ export const refreshJwt = async (
 
     setAuthCookies(res, result.accessToken, result.refreshToken);
 
-    res.status(200).json({ message: messages.REFRESH_JWT_SUCCESS });
+    res.status(200).json({
+      accessToken: result.accessToken,
+      refreshToken: result.refreshToken,
+      message: messages.REFRESH_JWT_SUCCESS,
+    });
   } catch (e) {
     next(e);
   }
