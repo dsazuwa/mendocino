@@ -56,10 +56,10 @@ PATCH  /customers/me/close               deactivate account
 
                         **** ADDRESS ROUTER ****
 
-GET    /customers/me/address             get customer addresses
-POST   /customers/me/address             create address
-PATCH  /customers/me/address/:id         update address
-DELETE /customers/me/address/:id         delete address
+GET    /customers/me/addresses             get customer addresses
+POST   /customers/me/addresses             create address
+PATCH  /customers/me/addresses/:id         update address
+DELETE /customers/me/addresses/:id         delete address
 
                         **** CUSTOMER PHONE ROUTER ****
 

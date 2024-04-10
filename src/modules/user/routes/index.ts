@@ -17,7 +17,7 @@ userRouter.use('/admins/me', adminRouter);
 userRouter.use('/admins/me/phone', adminPhoneRouter);
 
 userRouter.use('/customers/me', customerRouter);
-userRouter.use('/customers/me/address', addressRouter);
+userRouter.use('/customers/me/addresses', addressRouter);
 userRouter.use('/customers/me/phone', customerPhoneRouter);
 
 userRouter.use('/users', usersRouter);

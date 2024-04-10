@@ -7,7 +7,7 @@ import { createCustomer } from '../helper-functions';
 
 import 'tests/db-setup';
 
-const BASE_URL = '/api/customers/me/address';
+const BASE_URL = '/api/customers/me/addresses';
 
 describe('Address management', () => {
   let customerId: number;
