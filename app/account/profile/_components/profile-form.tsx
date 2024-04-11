@@ -20,6 +20,8 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/components/ui/use-toast';
+import { ProfileInput, Profile as TProfile } from '@/lib/types/customer';
+import NumericalTextfield from './numerical-field';
 
 const formSchema = object({
   firstName: string().trim().min(1, 'First name required'),
@@ -28,17 +30,27 @@ const formSchema = object({
 
   email: string().email({ message: 'Invalid email address' }),
 
-  phoneNumber: string().trim().length(10, { message: 'Invalid phone number' }), // should be optional
+  phoneNumber: string()
+    .optional()
+    .refine((val) => !val || /^\d{10}$/.test(val), {
+      message: 'Invalid phone number',
+    }),
 
   receiveStatusByText: boolean(),
-}).refine((data) => data.phoneNumber === '' && data.receiveStatusByText, {
-  message: 'Phone number not provided',
-  path: ['receiveStatusByText'],
-});
+}).refine(
+  ({ phoneNumber, receiveStatusByText }) =>
+    !receiveStatusByText || (phoneNumber && phoneNumber.length > 0),
+  {
+    message: 'Phone number must be provided to receive status by text',
+    path: ['phoneNumber'],
+  },
+);
 
-type FormSchema = TypeOf<typeof formSchema>;
+export type ProfileFormSchema = TypeOf<typeof formSchema>;
 
-export default function ProfileForm(defaultValues: FormSchema) {
+type Props = { profile: TProfile };
+
+export default function ProfileForm({ profile }: Props) {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
 
@@ -47,7 +59,17 @@ export default function ProfileForm(defaultValues: FormSchema) {
     message: '',
   });
 
-  const form = useForm<FormSchema>({
+  const { firstName, lastName, email, phone } = profile;
+
+  const defaultValues = {
+    firstName,
+    lastName,
+    email: email.address,
+    phoneNumber: phone?.number || '',
+    receiveStatusByText: false,
+  };
+
+  const form = useForm<ProfileFormSchema>({
     defaultValues,
     resolver: zodResolver(formSchema),
   });
@@ -67,16 +89,25 @@ export default function ProfileForm(defaultValues: FormSchema) {
 
     setIsLoading(false);
 
-    if (state.isSuccess) {
-      // revalidate profile tag
-    } else {
+    if (!state.isSuccess) {
       toast({ variant: 'destructive', description: state.message });
     }
   }, [state, toast]);
 
+  const handleFormSubmit = (data: ProfileFormSchema) => {
+    const vals: ProfileInput = Object.fromEntries(
+      Object.entries(data).filter(
+        ([field, value]) =>
+          defaultValues[field as keyof ProfileInput] !== value,
+      ),
+    );
+
+    formAction(vals);
+  };
+
   return (
     <Form {...form}>
-      <form onSubmit={(event) => void handleSubmit(formAction)(event)}>
+      <form onSubmit={(event) => void handleSubmit(handleFormSubmit)(event)}>
         <div className='grid w-full grid-cols-2 gap-4'>
           <FormField
             control={control}
@@ -89,7 +120,7 @@ export default function ProfileForm(defaultValues: FormSchema) {
                   <Input {...field} className='w-full text-xs' />
                 </FormControl>
 
-                <FormMessage />
+                <FormMessage className='text-xs' />
               </FormItem>
             )}
           />
@@ -105,7 +136,7 @@ export default function ProfileForm(defaultValues: FormSchema) {
                   <Input {...field} className='w-full text-xs' />
                 </FormControl>
 
-                <FormMessage />
+                <FormMessage className='text-xs' />
               </FormItem>
             )}
           />
@@ -118,10 +149,10 @@ export default function ProfileForm(defaultValues: FormSchema) {
                 <FormLabel className='text-xs'>Email Address</FormLabel>
 
                 <FormControl>
-                  <Input {...field} className='w-full text-xs' />
+                  <Input {...field} disabled className='w-full text-xs' />
                 </FormControl>
 
-                <FormMessage />
+                <FormMessage className='text-xs' />
               </FormItem>
             )}
           />
@@ -134,10 +165,10 @@ export default function ProfileForm(defaultValues: FormSchema) {
                 <FormLabel className='text-xs'>Phone Number</FormLabel>
 
                 <FormControl>
-                  <Input {...field} className='w-full text-xs' />
+                  <NumericalTextfield field={field} />
                 </FormControl>
 
-                <FormMessage />
+                <FormMessage className='text-xs' />
               </FormItem>
             )}
           />
@@ -146,19 +177,21 @@ export default function ProfileForm(defaultValues: FormSchema) {
             control={control}
             name='receiveStatusByText'
             render={({ field }) => (
-              <FormItem className='col-span-2 flex items-center gap-3 space-y-0 pb-4'>
-                <FormControl>
-                  <Checkbox
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
-                  />
-                </FormControl>
+              <FormItem className='col-span-2 space-y-1 pb-4'>
+                <div className='flex items-center gap-3'>
+                  <FormControl>
+                    <Checkbox
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
 
-                <FormLabel className='text-xs'>
-                  Receive order status updates via text
-                </FormLabel>
+                  <FormLabel className='text-xs'>
+                    Receive order status updates via text
+                  </FormLabel>
+                </div>
 
-                <FormMessage />
+                <FormMessage className='ml-7 text-xs' />
               </FormItem>
             )}
           />
@@ -167,7 +200,10 @@ export default function ProfileForm(defaultValues: FormSchema) {
         <div className='flex justify-end md:mt-0'>
           <Button
             type='submit'
-            disabled={isLoading}
+            disabled={
+              isLoading ||
+              JSON.stringify(defaultValues) === JSON.stringify(form.getValues())
+            }
             className='bg-primary-600 px-6 hover:bg-primary'
           >
             {isLoading ? <Loader size='sm' /> : <span>Save</span>}

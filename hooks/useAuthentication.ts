@@ -12,6 +12,7 @@ export default async function useAuthentication() {
     method: 'GET',
     headers: { Authorization: `Bearer ${accessToken.value}` },
     cache: 'force-cache',
+    next: { tags: ['user'] },
   });
 
   const { user } = (await res.json()) as { user: User };

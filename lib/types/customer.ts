@@ -2,20 +2,36 @@ import { User } from './common';
 
 export type ProviderType = 'facebook' | 'google';
 
-export type CustomerProfile = {
+export type Profile = {
   firstName: string;
   lastName: string;
-  phoneNumber?: { phone: string; isVerified: boolean };
+  phone?: { number: string; isVerified: boolean };
   email: { address: string; isVerified: boolean };
   hasPassword: boolean;
   authProviders: ProviderType[];
-  addresses: {
-    addressLine1: string;
-    addressLine2: string;
-    city: string;
-    state: string;
-    postalCode: string;
-  }[];
+};
+
+export type ProfileInput = Partial<{
+  firstName: string;
+  lastName: string;
+  email: string;
+  phoneNumber: string;
+  receiveStatusByText: boolean;
+}>;
+
+export type VerifyResponse = {
+  user: User;
+  message: string;
+};
+
+export type VerifyInput = {
+  code: string;
+};
+
+export type PasswordInput = {
+  currentPassword: string;
+  newPassword: string;
+  confirmPassword: string;
 };
 
 export type Address = {
@@ -24,27 +40,4 @@ export type Address = {
   city: string;
   state: string;
   postalCode: string;
-};
-
-export type VerifyResponse = {
-  user: User;
-  message: string;
-};
-
-export type VerifyData = {
-  code: string;
-};
-
-export type ProfileData = {
-  firstName: string;
-  lastName: string;
-  email: string;
-  phoneNumber: string;
-  receiveStatusByText: boolean;
-};
-
-export type CustomerPasswordData = {
-  currentPassword: string;
-  newPassword: string;
-  confirmPassword: string;
 };

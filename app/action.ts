@@ -2,9 +2,11 @@
 
 /* eslint-disable  @typescript-eslint/no-explicit-any */
 
+import { revalidateTag } from 'next/cache';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 
+import { GenericResponse } from '@/lib/types/common';
 import { setAuthCookies } from '../lib/auth.utils';
 import {
   LoginInput,
@@ -17,11 +19,10 @@ import {
   VerifyRecoverData,
 } from '../lib/types/auth';
 import {
-  CustomerPasswordData,
-  ProfileData,
-  VerifyData,
+  PasswordInput,
+  ProfileInput,
+  VerifyInput,
 } from '../lib/types/customer';
-import { GenericResponse } from '@/lib/types/common';
 
 export async function logout() {
   await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/logout`, {
@@ -140,7 +141,7 @@ export async function recoverPassword(
   }
 }
 
-export async function verifyCustomer(prevState: any, data: VerifyData) {
+export async function verifyCustomer(prevState: any, data: VerifyInput) {
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/customers/me/verify/${data.code}`,
     {
@@ -168,7 +169,7 @@ export async function resendCustomerVerification() {
   return { isSuccess: res.status === 200, message };
 }
 
-export async function updateProfile(prevState: any, data: ProfileData) {
+export async function updateProfile(prevState: any, data: ProfileInput) {
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/customers/me/profile`,
     {
@@ -181,15 +182,16 @@ export async function updateProfile(prevState: any, data: ProfileData) {
     },
   );
 
-  const { message } = (await res.json()) as GenericResponse;
+  const x = (await res.json()) as GenericResponse;
 
-  return { isSuccess: res.status === 200, message };
+  const isSuccess = res.status === 200;
+
+  if (isSuccess) revalidateTag('user');
+
+  return { isSuccess, message: x.message };
 }
 
-export async function changePassword(
-  prevState: any,
-  data: CustomerPasswordData,
-) {
+export async function changePassword(prevState: any, data: PasswordInput) {
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/customers/me/password`,
     {
