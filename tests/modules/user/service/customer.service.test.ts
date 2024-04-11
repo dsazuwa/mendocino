@@ -53,7 +53,7 @@ describe('get customer profile', () => {
       email: { address: email, isVerified: true },
       hasPassword: true,
       authProviders: ['google', 'facebook'],
-      phoneNumber: { phone: null, isVerified: false },
+      phone: { number: null, isVerified: false },
       addresses: null,
     });
   });
@@ -78,7 +78,7 @@ describe('get customer profile', () => {
       email: { address: email, isVerified: true },
       hasPassword: false,
       authProviders: ['google', 'facebook'],
-      phoneNumber: { phone: null, isVerified: false },
+      phone: { number: null, isVerified: false },
       addresses: null,
     });
   });
@@ -102,7 +102,7 @@ describe('get customer profile', () => {
       email: { address: email, isVerified: false },
       hasPassword: true,
       authProviders: [],
-      phoneNumber: { phone: phoneNumber, isVerified: false },
+      phone: { number: phoneNumber, isVerified: false },
       addresses: null,
     });
 
@@ -118,7 +118,7 @@ describe('get customer profile', () => {
       email: { address: email, isVerified: false },
       hasPassword: true,
       authProviders: [],
-      phoneNumber: { phone: phoneNumber, isVerified: true },
+      phone: { number: phoneNumber, isVerified: true },
       addresses: null,
     });
   });
@@ -160,7 +160,7 @@ describe('get customer profile', () => {
       email: { address: email, isVerified: false },
       hasPassword: true,
       authProviders: [],
-      phoneNumber: { phone: phoneNumber, isVerified: false },
+      phone: { number: phoneNumber, isVerified: false },
       addresses: [
         {
           addressLine1: addresses[0].addressLine1,

@@ -386,7 +386,7 @@ CREATE OR REPLACE FUNCTION users.get_customer_profile(p_customer_id INTEGER)
 RETURNS TABLE (
   "firstName" VARCHAR,
   "lastName" VARCHAR,
-  "phoneNumber" JSONB,
+  "phone" JSONB,
   email JSONB,
   "hasPassword" BOOLEAN,
   "authProviders" users.enum_customer_identities_provider[],
@@ -402,9 +402,9 @@ BEGIN
     c.first_name as "firstName",
     c.last_name as "lastName",
     jsonb_build_object(
-      'phone', phone.phone_number,
+      'number', phone.phone_number,
       'isVerified', CASE WHEN c_phone.status = 'active' THEN true ELSE false END
-    ) AS "phoneNumber",
+    ) AS "phone",
     jsonb_build_object(
       'address', email.email,
       'isVerified', CASE WHEN c.status = 'pending' THEN false ELSE true END
@@ -446,7 +446,7 @@ END;
 $$ LANGUAGE plpgsql;
 -- #endregion
 
--- #region get_customer_profile
+-- #region get_customer_for_revoke_social_auth
 CREATE OR REPLACE FUNCTION users.get_customer_for_revoke_social_auth(p_customer_id INTEGER, p_provider users.enum_customer_identities_provider)
 RETURNS TABLE (
   email VARCHAR,

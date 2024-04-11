@@ -70,7 +70,7 @@ const customerService = {
       : (result[0] as {
           firstName: string;
           lastName: string;
-          phoneNumber: { phone: string; isVerified: boolean };
+          phone: { number: string; isVerified: boolean };
           email: { address: string; isVerified: boolean };
           hasPassword: boolean;
           authProviders: ProviderType[];

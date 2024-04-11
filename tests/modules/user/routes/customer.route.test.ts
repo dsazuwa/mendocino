@@ -42,7 +42,7 @@ describe(`GET ${BASE_URL}/profile`, () => {
       email: { address: email, isVerified: false },
       hasPassword: true,
       authProviders: [],
-      phoneNumber: { phone: null, isVerified: false },
+      phone: { number: null, isVerified: false },
       addresses: null,
     });
   });
