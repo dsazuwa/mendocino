@@ -1,3 +1,3 @@
-import AccountLayout from '@/components/layout/account/account-layout';
+import AccountLayout from './account-layout';
 
 export { AccountLayout };
