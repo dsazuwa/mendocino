@@ -16,6 +16,8 @@ import {
 } from '../models';
 import { JwtProviderType } from '../types';
 import { USER_SCHEMA } from '../utils/constants';
+import { ProfileFormSchema } from '../middleware/validators/users.validator';
+import customerPhoneService from './customer-phone.service';
 
 const deleteIdentity = (customerId: number, provider: ProviderType) =>
   CustomerIdentity.destroy({ where: { customerId, provider } });
@@ -83,6 +85,34 @@ const customerService = {
           }[];
         });
   },
+
+  updateProfile: async (customerId: number, data: ProfileFormSchema) =>
+    sequelize.transaction(async (transaction) => {
+      const { firstName, lastName, phoneNumber } = data;
+
+      if (firstName || lastName) {
+        const values: Partial<Customer> = {};
+
+        if (firstName && firstName.trim().length > 0)
+          values.firstName = firstName;
+
+        if (lastName && lastName.trim().length > 0) values.lastName = lastName;
+
+        await Customer.update(values, { where: { customerId } });
+      }
+
+      if (phoneNumber) {
+        const phoneResult = await customerPhoneService.createPhoneHelper(
+          customerId,
+          phoneNumber,
+          transaction,
+        );
+
+        return phoneResult;
+      }
+
+      return { otp: undefined, error: undefined };
+    }),
 
   verifyEmail: async (customerId: number) =>
     sequelize.transaction(async (transaction) => {

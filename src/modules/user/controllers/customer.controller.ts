@@ -25,6 +25,32 @@ export const getProfile = async (
   }
 };
 
+export const updateProfile = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const userId = req.user?.userId ?? -1;
+
+    const { otp, error } = await customerService.updateProfile(
+      userId,
+      req.body,
+    );
+
+    if (otp) {
+      // send email
+    }
+
+    if (error === undefined)
+      return res.status(200).json({ message: 'Successfully updated profile!' });
+
+    return res.status(400).json({ message: error });
+  } catch (e) {
+    next(e);
+  }
+};
+
 export const resendVerifyEmail = async (
   req: Request,
   res: Response,

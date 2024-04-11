@@ -1,10 +1,28 @@
-import { object, string } from 'zod';
+import { TypeOf, boolean, object, string } from 'zod';
 
 import { otpRules, passwordRules } from './common.validator';
 
 export const verifyEmailSchema = object({
   params: object({ otp: otpRules }),
 });
+
+export const updateCustomerProfile = object({
+  firstName: string().trim().min(1, 'First name required').optional(),
+
+  lastName: string().trim().min(1, 'Last name required').optional(),
+
+  email: string().email({ message: 'Invalid email address' }).optional(),
+
+  phoneNumber: string()
+    .optional()
+    .refine((val) => !val || /^\d{10}$/.test(val), {
+      message: 'Invalid phone number',
+    }),
+
+  receiveStatusByText: boolean().optional(),
+});
+
+export type ProfileFormSchema = TypeOf<typeof updateCustomerProfile>;
 
 export const updateUserNameSchema = object({
   body: object({
@@ -14,7 +32,7 @@ export const updateUserNameSchema = object({
     ({ firstName, lastName }) =>
       (!!firstName && firstName.length > 0) ||
       (!!lastName && lastName.length > 0),
-    { message: 'At least one of firstName or lastName is required' },
+    { message: 'At least one of firstName or lastName should be provided' },
   ),
 });
 

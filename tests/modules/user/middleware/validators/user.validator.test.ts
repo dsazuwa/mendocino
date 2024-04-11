@@ -2,6 +2,7 @@ import {
   changePasswordSchema,
   createPasswordSchema,
   revokeSocialAuthenticationSchema,
+  updateCustomerProfile,
   updateUserNameSchema,
   verifyEmailSchema,
 } from '@app/modules/user/middleware/validators/users.validator';
@@ -10,6 +11,80 @@ import { testOTPRules, testPasswordRules } from './common.validator';
 
 describe('verify email schema', () => {
   testOTPRules(verifyEmailSchema);
+});
+
+describe('update customer profile', () => {
+  it('should pass for valid data', () => {
+    const testData = [
+      {
+        firstName: 'John',
+        lastName: 'Doe',
+        email: 'john.doe@example.com',
+        phoneNumber: '1234567890',
+        receiveStatusByText: true,
+      },
+      {
+        firstName: 'John',
+        lastName: 'Doe',
+      },
+      {
+        email: 'john.doe@example.com',
+      },
+      {
+        phoneNumber: '1234567890',
+      },
+      {
+        phoneNumber: '1234567890',
+        receiveStatusByText: false,
+      },
+      {
+        phoneNumber: '1234567890',
+        receiveStatusByText: true,
+      },
+    ];
+
+    testData.forEach((data) => {
+      expect(updateCustomerProfile.safeParse(data).success).toBe(true);
+    });
+  });
+
+  it('should throw errors for invalid data', () => {
+    const invalidData = [
+      {
+        firstName: '', // Empty first name
+        lastName: 'Doe',
+        email: 'john.doe@example.com',
+        phoneNumber: '1234567890',
+        receiveStatusByText: true,
+      },
+      {
+        firstName: 'John',
+        lastName: '', // Empty last name
+        email: 'john.doe@example.com',
+        phoneNumber: '1234567890',
+        receiveStatusByText: true,
+      },
+      {
+        firstName: 'John',
+        lastName: 'Doe',
+        email: 'invalid-email', // Invalid email format
+        phoneNumber: '1234567890',
+        receiveStatusByText: true,
+      },
+      {
+        firstName: 'John',
+        lastName: 'Doe',
+        email: 'john.doe@example.com',
+        phoneNumber: '12345', // Invalid phone number length
+        receiveStatusByText: true,
+      },
+      {},
+    ];
+
+    invalidData.forEach((data) => {
+      expect(() => updateCustomerProfile.parse(data)).toThrow();
+    });
+  });
 });
 
 describe('update user name schema', () => {

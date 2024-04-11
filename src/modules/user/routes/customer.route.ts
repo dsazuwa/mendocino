@@ -8,6 +8,7 @@ import {
   getProfile,
   resendVerifyEmail,
   revokeSocialAuthentication,
+  updateProfile,
   updateUserName,
   verifyEmail,
 } from '../controllers/customer.controller';
@@ -17,6 +18,7 @@ import {
   changePasswordSchema,
   createPasswordSchema,
   revokeSocialAuthenticationSchema,
+  updateCustomerProfile,
   updateUserNameSchema,
   verifyEmailSchema,
 } from '../middleware/validators/users.validator';
@@ -26,6 +28,11 @@ const customerRouter = Router();
 customerRouter.use(authenticate, authorize(['customer']));
 
 customerRouter.get('/profile', getProfile);
+customerRouter.patch(
+  '/profile',
+  validate(updateCustomerProfile),
+  updateProfile,
+);
 
 customerRouter.post('/verify', permitPending, resendVerifyEmail);
 customerRouter.patch(
