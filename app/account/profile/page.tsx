@@ -13,7 +13,7 @@ async function getProfile() {
       headers: {
         Authorization: `Bearer ${cookies().get('access-token')?.value}`,
       },
-      next: { tags: ['user', 'profile'] },
+      next: { tags: ['user', 'profile'], revalidate: false },
     },
   );
 
