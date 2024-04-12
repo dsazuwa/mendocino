@@ -1,11 +1,8 @@
-import { ChevronRightIcon } from '@radix-ui/react-icons';
-import { headers } from 'next/headers';
-import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { ReactNode } from 'react';
 
+import NavLinks from '@/components/layout/account/nav-links';
 import useAuthentication from '@/hooks/useAuthentication';
-import { accountLinks } from '@/components/layout/client/client-constants';
 
 type Props = { children: ReactNode };
 
@@ -15,9 +12,6 @@ export default async function AccountLayout({ children }: Props) {
   if (!user) redirect('/');
 
   const { firstName, lastName, email } = user;
-
-  const headersList = headers();
-  const pathName = headersList.get('x-pathname');
 
   return (
     <div className='mx-auto flex w-full max-w-screen-xl flex-1 p-4 md:p-8'>
@@ -35,22 +29,7 @@ export default async function AccountLayout({ children }: Props) {
           </div>
 
           <div className='flex flex-col'>
-            {accountLinks.map(({ name, href, Icon }, i) => (
-              <Link
-                key={`account-link-${i}`}
-                href={href}
-                className='flex flex-row items-center justify-between p-4 pr-2'
-              >
-                <span className='flex flex-row items-center text-xs'>
-                  <Icon className='mr-4 w-5 fill-neutral-500' />
-                  {name}
-                </span>
-
-                {href === pathName && (
-                  <ChevronRightIcon className='w-3 fill-neutral-500' />
-                )}
-              </Link>
-            ))}
+            <NavLinks />
           </div>
         </div>
 
