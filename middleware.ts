@@ -48,9 +48,14 @@ export default async function middleware(request: NextRequest) {
   if (authCookies) {
     nextResponse.cookies.set(authCookies.accessToken);
     nextResponse.cookies.set(authCookies.refreshToken);
-
-    applySetCookie(request, nextResponse);
   }
+
+  if (response?.status !== 200) {
+    nextResponse.cookies.delete('access-token');
+    nextResponse.cookies.delete('refresh-token');
+  }
+
+  applySetCookie(request, nextResponse);
 
   return nextResponse;
 }
