@@ -7,8 +7,8 @@ import { publicLinks } from './client-constants';
 import ClientAppBarDrawer from './client-drawer';
 import ClientLink from './client-link';
 
-export default async function ClientAppBar() {
-  const { isAuthenticated } = await useAuthentication();
+export default function ClientAppBar() {
+  const { isAuthenticated } = useAuthentication();
 
   return (
     <nav id='client-app-bar' className='fixed z-50 h-12 w-full bg-white'>

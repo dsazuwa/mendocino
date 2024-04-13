@@ -1,13 +1,30 @@
+import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { ReactNode } from 'react';
 
 import NavLinks from '@/components/layout/account/nav-links';
-import useAuthentication from '@/hooks/useAuthentication';
+import { User } from '@/lib/types/common';
 
 type Props = { children: ReactNode };
 
+async function getUser() {
+  const accessToken = cookies().get('access-token');
+
+  if (!accessToken || accessToken.value === '') return { user: undefined };
+
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/me`, {
+    method: 'GET',
+    headers: { Authorization: `Bearer ${accessToken.value}` },
+    next: { tags: ['user'], revalidate: 600 },
+  });
+
+  const { user } = (await res.json()) as { user: User };
+
+  return { user: res.status === 200 ? user : undefined };
+}
+
 export default async function AccountLayout({ children }: Props) {
-  const { user } = await useAuthentication();
+  const { user } = await getUser();
 
   if (!user) redirect('/');
 
