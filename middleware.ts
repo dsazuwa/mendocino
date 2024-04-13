@@ -79,7 +79,9 @@ async function getNextResponse(
   const { origin, pathname } = request.nextUrl;
 
   const isPublicRoute = publicOnlyRoutes.includes(pathname);
-  const isProtectedRoute = protectedRoutes.includes(pathname);
+  const isProtectedRoute = protectedRoutes.some((route) =>
+    pathname.startsWith(route),
+  );
 
   if (!response) {
     if (isPublicRoute) return NextResponse.next();
