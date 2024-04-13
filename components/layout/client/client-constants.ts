@@ -1,16 +1,14 @@
 import { FC, SVGProps } from 'react';
 
-import {
-  Account,
-  AddPerson,
-  CircleUser,
-  History,
-  Home,
-  ImportContacts,
-  LogIn,
-  Menu,
-  Payments,
-} from '../../icons';
+import Account from '@/components/icons/account';
+import AddPerson from '@/components/icons/add-person';
+import CircleUser from '@/components/icons/circle-user';
+import History from '@/components/icons/history';
+import Home from '@/components/icons/home';
+import ImportContacts from '@/components/icons/import-contacts';
+import LogIn from '@/components/icons/log-in';
+import Menu from '@/components/icons/menu';
+import Payments from '@/components/icons/payments';
 
 export type ClientLink = {
   name: string;

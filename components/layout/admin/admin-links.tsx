@@ -1,13 +1,11 @@
 'use client';
 
-import {
-  Cutlery,
-  Home,
-  People,
-  Settings,
-  ShortReceipt,
-  Store,
-} from '@/components/icons';
+import Cutlery from '@/components/icons/cutlery';
+import Home from '@/components/icons/home';
+import People from '@/components/icons/people';
+import ShortReceipt from '@/components/icons/receipt-short';
+import Settings from '@/components/icons/settings';
+import Store from '@/components/icons/store';
 import { cn } from '@/lib/utils';
 import AdminLink from './admin-link';
 

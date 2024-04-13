@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { ReactNode } from 'react';
 
-import { LogOut } from '../../icons';
+import LogOut from '@/components/icons/log-out';
 import Logo from '../../logo';
 import { Button } from '../../ui/button';
 import AdminDrawer from './admin-drawer';

@@ -1,4 +1,4 @@
-import { Sandwich } from './icons';
+import Sandwich from '@/components/icons/sandwich';
 
 export default function Logo() {
   return (
