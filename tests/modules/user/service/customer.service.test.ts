@@ -142,14 +142,14 @@ describe('get customer profile', () => {
         addressLine2: 'off access road',
         city: 'Roselle',
         state: 'IL',
-        postalCode: '60172',
+        zipCode: '60172',
       },
       {
         customerId,
         addressLine1: '1561 Coburn Hollow Road',
         city: 'Peoria',
         state: 'IL',
-        postalCode: '61602',
+        zipCode: '61602',
       },
     ]);
 
@@ -167,14 +167,14 @@ describe('get customer profile', () => {
           addressLine2: addresses[0].addressLine2,
           city: addresses[0].city,
           state: addresses[0].state,
-          postalCode: addresses[0].postalCode,
+          zipCode: addresses[0].zipCode,
         },
         {
           addressLine1: addresses[1].addressLine1,
           addressLine2: '',
           city: addresses[1].city,
           state: addresses[1].state,
-          postalCode: addresses[1].postalCode,
+          zipCode: addresses[1].zipCode,
         },
       ],
     });
@@ -585,14 +585,14 @@ describe('close account', () => {
         addressLine2: 'off access road',
         city: 'Roselle',
         state: 'IL',
-        postalCode: '60172',
+        zipCode: '60172',
       },
       {
         customerId,
         addressLine1: '1561 Coburn Hollow Road',
         city: 'Peoria',
         state: 'IL',
-        postalCode: '61602',
+        zipCode: '61602',
       },
     ]);
 

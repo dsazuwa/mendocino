@@ -144,7 +144,7 @@ Table customer_addresses {
   address_line_2 varchar
   city varchar [not null]
   state varchar [not null]
-  postal_code varchar [not null]
+  zip_code varchar [not null]
   created_at timestamp [not null]
   updated_at timestamp [not null]
 }

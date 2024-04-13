@@ -13,14 +13,14 @@ describe('create address schema', () => {
         addressLine1: '123 Main St',
         city: 'Townsville',
         state: 'CA',
-        postalCode: '12345',
+        zipCode: '12345',
       },
       {
         addressLine1: '456 Elm Rd',
         addressLine2: 'Suite 789',
         city: 'Townsville',
         state: 'NY',
-        postalCode: '67890',
+        zipCode: '67890',
       },
     ];
 
@@ -36,24 +36,24 @@ describe('create address schema', () => {
       {
         city: 'Exampleville',
         state: 'CA',
-        postalCode: '12345',
+        zipCode: '12345',
       },
       {
         addressLine1: '456 Elm Rd',
         addressLine2: 'Suite 789',
         state: 'NY',
-        postalCode: '67890',
+        zipCode: '67890',
       },
       {
         addressLine1: '789 Pine Ave',
         city: 'Cityburg',
-        postalCode: '54321',
+        zipCode: '54321',
       },
       {
         addressLine1: '987 Oak Blvd',
         city: 'Villageville',
         state: 'FL',
-        postalCode: '123456',
+        zipCode: '123456',
       },
       {
         addressLine1: '246 Maple Ln',
@@ -65,14 +65,14 @@ describe('create address schema', () => {
         addressLine2: '',
         city: '',
         state: '',
-        postalCode: '',
+        zipCode: '',
       },
       {
         addressLine1: ' ',
         addressLine2: ' ',
         city: ' ',
         state: ' ',
-        postalCode: ' ',
+        zipCode: ' ',
       },
     ];
 
@@ -90,13 +90,13 @@ describe('update address', () => {
       { addressLine2: 'Suite 789' },
       { city: 'Townsville' },
       { state: 'CA' },
-      { postalCode: '12345' },
+      { zipCode: '12345' },
       {
         addressLine1: '456 Elm Rd',
         addressLine2: 'Suite 789',
         city: 'Townsville',
         state: 'NY',
-        postalCode: '67890',
+        zipCode: '67890',
       },
     ];
 

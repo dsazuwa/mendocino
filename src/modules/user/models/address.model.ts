@@ -27,7 +27,7 @@ class Address extends Model<
 
   declare state: string;
 
-  declare postalCode: string;
+  declare zipCode: string;
 
   declare createdAt: CreationOptional<Date>;
 
@@ -76,7 +76,7 @@ Address.init(
       type: DataTypes.STRING,
       allowNull: false,
     },
-    postalCode: {
+    zipCode: {
       type: DataTypes.STRING,
       allowNull: false,
       validate: {

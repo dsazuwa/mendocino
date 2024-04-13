@@ -8,7 +8,7 @@ export const createAddressSchema = object({
     addressLine2: string().trim().optional(),
     city: string().trim().nonempty('City is required.'),
     state: string().trim().nonempty('State is required.'),
-    postalCode: string()
+    zipCode: string()
       .trim()
       .nonempty('Postal code is required.')
       .refine((value) => /^\d{5}$/.test(value), {
@@ -28,7 +28,7 @@ export const updateAddressSchema = object({
     addressLine2: string().trim().optional(),
     city: string().trim().optional(),
     state: string().trim().optional(),
-    postalCode: string()
+    zipCode: string()
       .trim()
       .optional()
       .refine((value) => (value ? /^\d{5}$/.test(value) : true), {
@@ -36,12 +36,12 @@ export const updateAddressSchema = object({
           'Invalid postal code format. Postal code must be a 5-digit number.',
       }),
   }).refine(
-    ({ addressLine1, addressLine2, city, state, postalCode }) =>
+    ({ addressLine1, addressLine2, city, state, zipCode }) =>
       (!!addressLine1 && addressLine1.length > 0) ||
       (!!addressLine2 && addressLine2.length > 0) ||
       (!!city && city.length > 0) ||
       (!!state && state.length > 0) ||
-      (!!postalCode && postalCode.length > 0),
+      (!!zipCode && zipCode.length > 0),
     { message: 'Must provide a least one field' },
   ),
 });

@@ -6,20 +6,14 @@ type AddressType = {
   addressLine2: string | undefined;
   city: string;
   state: string;
-  postalCode: string;
+  zipCode: string;
 };
 
 const addressService = {
   getAddresses: (customerId: number) =>
     Address.findAll({
       where: { customerId },
-      attributes: [
-        'addressLine1',
-        'addressLine2',
-        'city',
-        'state',
-        'postalCode',
-      ],
+      attributes: ['addressLine1', 'addressLine2', 'city', 'state', 'zipCode'],
       raw: true,
     }),
 
@@ -50,7 +44,7 @@ const addressService = {
       'addressLine2',
       'city',
       'state',
-      'postalCode',
+      'zipCode',
     ] as (keyof Partial<AddressType>)[];
 
     fieldsToUpdate.forEach((field) => {

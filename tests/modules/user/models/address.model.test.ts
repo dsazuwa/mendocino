@@ -30,7 +30,7 @@ describe('Address Model', () => {
       addressLine1: '1957 Kembery Drive',
       city: 'Roselle',
       state: 'IL',
-      postalCode: '60172',
+      zipCode: '60172',
     };
 
     const address = await Address.create(data);
@@ -43,7 +43,7 @@ describe('Address Model', () => {
       addressLine1: '962 University Drive',
       city: 'Chicago',
       state: 'IL',
-      postalCode: '60605',
+      zipCode: '60605',
     };
 
     const promises = [];
@@ -69,7 +69,7 @@ describe('Address Model', () => {
       addressLine1: '1957 Kembery Drive',
       city: 'Roselle',
       state: 'IL',
-      postalCode: '60172',
+      zipCode: '60172',
     });
 
     const addresses = await Address.findAll({ where: { customerId }, raw });
@@ -86,7 +86,7 @@ describe('Address Model', () => {
       addressLine1: '1967 Orchid Road',
       city: oldCity,
       state: 'IL',
-      postalCode: '60074',
+      zipCode: '60074',
     });
 
     await address.update({ city: newCity });
@@ -115,7 +115,7 @@ describe('Address Model', () => {
       addressLine1: '1561 Coburn Hollow Road',
       city: 'Peoria',
       state: 'IL',
-      postalCode: '61602',
+      zipCode: '61602',
     };
 
     let address = await Address.create(data);
@@ -145,7 +145,7 @@ describe('Address Model', () => {
       addressLine1: '4921 Flinderation Road',
       city: 'Arlington Heights',
       state: 'IL',
-      postalCode: '60005',
+      zipCode: '60005',
     });
 
     await address.destroy();
@@ -160,7 +160,7 @@ describe('Address Model', () => {
       addressLine1: '962 University Drive',
       city: 'Chicago',
       state: 'IL',
-      postalCode: '60605',
+      zipCode: '60605',
     });
 
     await Customer.destroy({ where: { customerId } });

@@ -425,7 +425,7 @@ BEGIN
           'addressLine2', COALESCE(a.address_line2, ''),
           'city', a.city,
           'state', a.state,
-          'postalCode', a.postal_code
+          'zipCode', a.zip_code
         ))
       FROM users.customer_addresses a
       WHERE a.customer_id = p_customer_id

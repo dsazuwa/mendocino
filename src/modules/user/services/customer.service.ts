@@ -81,7 +81,7 @@ const customerService = {
             addressLine2: string;
             city: string;
             state: string;
-            postalCode: string;
+            zipCode: string;
           }[];
         });
   },

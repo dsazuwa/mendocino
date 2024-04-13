@@ -31,35 +31,35 @@ describe('address management', () => {
           addressLine2: null,
           city: 'Exampleville',
           state: 'CA',
-          postalCode: '12345',
+          zipCode: '12345',
         },
         {
           addressLine1: '456 Elm Rd',
           addressLine2: 'Suite 789',
           city: 'Townsville',
           state: 'NY',
-          postalCode: '67890',
+          zipCode: '67890',
         },
         {
           addressLine1: '789 Pine Ave',
           addressLine2: null,
           city: 'Cityburg',
           state: 'TX',
-          postalCode: '54321',
+          zipCode: '54321',
         },
         {
           addressLine1: '101 Maple St',
           addressLine2: 'Unit 202',
           city: 'Villageville',
           state: 'FL',
-          postalCode: '45678',
+          zipCode: '45678',
         },
         {
           addressLine1: '222 Oak Ln',
           addressLine2: null,
           city: 'Ruralville',
           state: 'KS',
-          postalCode: '98765',
+          zipCode: '98765',
         },
       ];
 
@@ -86,7 +86,7 @@ describe('address management', () => {
         addressLine2: undefined,
         city: 'Ruralville',
         state: 'KS',
-        postalCode: '98765',
+        zipCode: '98765',
       };
 
       const result = await addressService.createAddress(customerId, data);
@@ -109,7 +109,7 @@ describe('address management', () => {
           addressLine2: null,
           city: 'Exampleville',
           state: 'CA',
-          postalCode: '12345',
+          zipCode: '12345',
         },
         {
           customerId,
@@ -117,7 +117,7 @@ describe('address management', () => {
           addressLine2: 'Suite 789',
           city: 'Townsville',
           state: 'NY',
-          postalCode: '67890',
+          zipCode: '67890',
         },
         {
           customerId,
@@ -125,7 +125,7 @@ describe('address management', () => {
           addressLine2: null,
           city: 'Cityburg',
           state: 'TX',
-          postalCode: '54321',
+          zipCode: '54321',
         },
         {
           customerId,
@@ -133,7 +133,7 @@ describe('address management', () => {
           addressLine2: 'Unit 202',
           city: 'Villageville',
           state: 'FL',
-          postalCode: '45678',
+          zipCode: '45678',
         },
         {
           customerId,
@@ -141,7 +141,7 @@ describe('address management', () => {
           addressLine2: null,
           city: 'Ruralville',
           state: 'KS',
-          postalCode: '98765',
+          zipCode: '98765',
         },
       ]);
 
@@ -150,7 +150,7 @@ describe('address management', () => {
         addressLine2: undefined,
         city: 'Rock Island',
         state: 'KS',
-        postalCode: '98765',
+        zipCode: '98765',
       };
 
       const result = await addressService.createAddress(customerId, data);
@@ -176,7 +176,7 @@ describe('address management', () => {
         addressLine2: undefined,
         city: 'Ruralville',
         state: 'KS',
-        postalCode: '98765',
+        zipCode: '98765',
       });
 
       const state = 'CA';
@@ -230,7 +230,7 @@ describe('address management', () => {
         addressLine2: undefined,
         city: 'Ruralville',
         state: 'KS',
-        postalCode: '98765',
+        zipCode: '98765',
       });
 
       const result = await addressService.deleteAddress(customerId, addressId);
