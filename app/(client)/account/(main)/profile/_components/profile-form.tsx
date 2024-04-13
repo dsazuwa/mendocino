@@ -6,7 +6,7 @@ import { useFormState } from 'react-dom';
 import { useForm } from 'react-hook-form';
 import { TypeOf, boolean, object, string } from 'zod';
 
-import { Checkbox } from '@/_components/ui/checkbox';
+import { Checkbox } from '@/components/ui/checkbox';
 import { updateProfile } from '@/app/action';
 import Loader from '@/components/loader';
 import { Button } from '@/components/ui/button';
