@@ -141,6 +141,7 @@ CREATE TABLE users.customer_phones (
 CREATE TABLE users.customer_addresses (
   address_id SERIAL,
   customer_id INTEGER NOT NULL,
+  is_default BOOLEAN NOT NULL,
   address_line1 VARCHAR(255) NOT NULL,
   address_line2 VARCHAR(255),
   city VARCHAR(100) NOT NULL,

@@ -19,6 +19,8 @@ class Address extends Model<
 
   declare customerId: number;
 
+  declare isDefault: boolean;
+
   declare addressLine1: string;
 
   declare addressLine2: CreationOptional<string | null>;
@@ -62,6 +64,11 @@ Address.init(
     customerId: {
       type: DataTypes.INTEGER,
       allowNull: false,
+    },
+    isDefault: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
     },
     addressLine1: {
       type: DataTypes.STRING,
