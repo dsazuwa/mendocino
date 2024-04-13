@@ -34,9 +34,9 @@ export default function ClientAppBarDrawer({ isAuthenticated }: Props) {
         side='left'
         className='flex max-h-screen w-60 flex-col bg-white'
       >
-        <div className='h-12 border-b border-solid border-neutral-200' />
-
         <div className='flex flex-grow flex-col'>
+          <div className='h-12 border-b border-solid border-neutral-200' />
+
           {publicLinks.map(({ name, href, Icon }, i) => (
             <DrawerLink
               key={`public-link-${i}`}
