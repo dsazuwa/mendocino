@@ -1,10 +1,9 @@
-import { Cross2Icon } from '@radix-ui/react-icons';
-
-import { DialogClose, DialogContent } from '@/components/ui/dialog';
+import { DialogContent } from '@/components/ui/dialog';
 import { Address } from '@/lib/types/customer';
 import { cn } from '@/lib/utils';
 import Location from '../icons/location';
 import { Button } from '../ui/button';
+import DialogHeader from './dialog-header';
 import LocationInput from './location-input';
 
 type Props = { addresses: Address[] };
@@ -15,19 +14,11 @@ export default function ChooseAddressContent({ addresses }: Props) {
 
   return (
     <DialogContent className='left-[50%] top-0 flex h-screen w-full max-w-none translate-x-[-50%] translate-y-0 flex-col gap-2 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[10%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[10%] sm:top-[10%] sm:h-auto sm:max-h-[75vh] sm:max-w-lg'>
-      <div className='flex h-12 w-full flex-row items-center justify-between px-2'>
-        <span className='font-semibold text-neutral-800'>
-          {hasAddress ? 'Choose a delivery address' : 'Enter delivery address'}
-        </span>
-
-        <DialogClose asChild>
-          <Button variant='ghost' size='icon'>
-            <Cross2Icon className='h-4 w-4' />
-
-            <span className='sr-only'>Close</span>
-          </Button>
-        </DialogClose>
-      </div>
+      <DialogHeader
+        text={
+          hasAddress ? 'Choose a delivery address' : 'Enter delivery address'
+        }
+      />
 
       {hasAddress ? (
         <>
@@ -65,7 +56,7 @@ export default function ChooseAddressContent({ addresses }: Props) {
           </Button>
         </>
       ) : (
-        <LocationInput placeholder='Search for an address' />
+        <LocationInput type='search' />
       )}
     </DialogContent>
   );
