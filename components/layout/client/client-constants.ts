@@ -2,7 +2,6 @@ import { FC, SVGProps } from 'react';
 
 import Account from '@/components/icons/account';
 import AddPerson from '@/components/icons/add-person';
-import CircleUser from '@/components/icons/circle-user';
 import History from '@/components/icons/history';
 import Home from '@/components/icons/home';
 import ImportContacts from '@/components/icons/import-contacts';
@@ -31,12 +30,6 @@ export const unauthLinks: ClientLink[] = [
   { name: 'Log In', href: '/login', Icon: LogIn },
   { name: 'Sign Up', href: '/register', Icon: AddPerson },
 ];
-
-export const profileLink = {
-  name: 'Account',
-  href: '/account/profile',
-  Icon: CircleUser,
-};
 
 export const accountLinks: ClientLink[] = [
   { name: 'Profile', href: '/account/profile', Icon: Account },

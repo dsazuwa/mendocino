@@ -7,7 +7,7 @@ export default function DrawerLink({ name, href, Icon }: ClientLink) {
     <Link href={href} className='flex flex-row gap-4 p-4'>
       <Icon className='w-4 fill-neutral-600' />
 
-      <span className='text-xs font-medium'>{name}</span>
+      <span className='text-xs font-medium text-neutral-600'>{name}</span>
     </Link>
   );
 }

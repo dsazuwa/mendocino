@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
 
-import ClientAppBar from '@/components/layout/client/client-appbar';
+import ClientAppBar from '@/components/layout/client/client-app-bar';
 
 export default function ClientLayout({ children }: { children: ReactNode }) {
   return (

@@ -15,7 +15,7 @@ export default function NavLinks() {
         <Link
           key={`account-link-${i}`}
           href={href}
-          className='flex flex-row items-center justify-between p-4 pr-2'
+          className='flex flex-row items-center justify-between p-4'
         >
           <span className='flex flex-row items-center text-xs'>
             <Icon className='mr-4 w-5 fill-neutral-500' />

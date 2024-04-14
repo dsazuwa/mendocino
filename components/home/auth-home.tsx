@@ -1,7 +1,12 @@
-import { ChevronDownIcon } from '@radix-ui/react-icons';
+import { ChevronDownIcon, Cross2Icon } from '@radix-ui/react-icons';
 import { cookies } from 'next/headers';
 
-import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 import { Address } from '@/lib/types/customer';
 import UnauthenticatedHomePage from './unauth-home';
 
@@ -56,7 +61,18 @@ export default async function AuthenticatedHomePage() {
           <ChevronDownIcon />
         </DialogTrigger>
 
-        <DialogContent className='top-0 h-screen w-full max-w-none translate-y-0 sm:top-[10%] sm:h-auto sm:max-h-[75vh] sm:max-w-lg'></DialogContent>
+        <DialogContent className='left-[50%] top-0 h-screen w-full max-w-none translate-x-[-50%] translate-y-0 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[10%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[10%] sm:top-[10%] sm:h-auto sm:max-h-[75vh] sm:max-w-lg'>
+          <div className='flex h-12 flex-row items-center justify-between'>
+            <span className='font-semibold text-neutral-600'>
+              Choose a delivery address
+            </span>
+
+            <DialogClose className='rounded-full p-1 opacity-70 transition-opacity hover:opacity-100 focus:outline-none focus:ring-1 focus:ring-neutral-950 disabled:pointer-events-none data-[state=open]:bg-neutral-100 data-[state=open]:text-neutral-500 data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right dark:ring-offset-neutral-950 dark:focus:ring-neutral-300 dark:data-[state=open]:bg-neutral-800 dark:data-[state=open]:text-neutral-400'>
+              <Cross2Icon className='h-4 w-4' />
+              <span className='sr-only'>Close</span>
+            </DialogClose>
+          </div>
+        </DialogContent>
       </Dialog>
     </div>
   );

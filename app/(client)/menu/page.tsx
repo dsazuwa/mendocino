@@ -16,7 +16,7 @@ export default async function Menu() {
 
   return (
     <>
-      <main className='mx-auto w-full max-w-screen-md flex-1 gap-2 p-4 pb-4'>
+      <main className='mx-auto w-full max-w-screen-md flex-1 gap-2 p-4 pb-4 sm:px-8'>
         <h1 className='p-2 text-center text-3xl font-extrabold tracking-wider text-primary-900'>
           MENU
         </h1>
