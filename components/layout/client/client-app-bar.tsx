@@ -1,14 +1,16 @@
 import Link from 'next/link';
 
+import LocationDialog from '@/components/location/dialog';
 import Logo from '@/components/logo';
 import useAuthentication from '@/hooks/useAuthentication';
+import { getAddresses } from '@/lib/data';
 import { unauthLinks } from './client-constants';
 import ClientAppBarDrawer from './client-drawer';
-import LocationButton from './location-btn';
 import LogoutButton from './logout-btn';
 
-export default function ClientAppBar() {
+export default async function ClientAppBar() {
   const { isAuthenticated } = useAuthentication();
+  const { addresses } = await getAddresses();
 
   return (
     <nav id='client-app-bar' className='fixed z-50 h-12 w-full bg-white'>
@@ -19,7 +21,7 @@ export default function ClientAppBar() {
           <Logo />
         </Link>
 
-        <LocationButton />
+        <LocationDialog addresses={addresses} />
 
         <div className='ml-auto hidden gap-4 sm:flex'>
           {isAuthenticated ? (

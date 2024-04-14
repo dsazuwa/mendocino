@@ -1,4 +1,4 @@
-import LocationInput from './location-input';
+import LocationInput from '../location/location-input';
 
 export default function UnauthenticatedHomePage() {
   return (
