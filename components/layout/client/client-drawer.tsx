@@ -25,7 +25,7 @@ export default function ClientAppBarDrawer({ isAuthenticated }: Props) {
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
-        <Button variant='ghost' size='icon' className='ml-[-8px]'>
+        <Button variant='ghost' size='icon'>
           <HamburgerMenuIcon className='w-3.5' />
         </Button>
       </SheetTrigger>
