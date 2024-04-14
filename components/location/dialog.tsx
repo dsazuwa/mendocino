@@ -27,7 +27,7 @@ export default function LocationDialog({ addresses }: Props) {
           size='icon'
           className='ml-auto gap-1 p-1 transition-colors hover:bg-neutral-100 sm:ml-0 sm:mr-0 sm:h-auto sm:w-auto'
         >
-          <Location className='w-4 fill-neutral-600' />
+          {!hasAddress && <Location className='w-4 fill-neutral-600' />}
 
           <span
             className={cn(
