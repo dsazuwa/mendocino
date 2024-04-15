@@ -41,7 +41,7 @@ export default function LocationInput({ className, type }: Props) {
       <Input
         id='delivery-address-input'
         placeholder={placeholder}
-        className='border-white py-0 pl-0 text-xs shadow-none focus-visible:ring-white'
+        className='border-white py-0 pl-0 text-xs shadow-none focus-visible:border-none'
         onChange={handleChange}
         value={value}
       />

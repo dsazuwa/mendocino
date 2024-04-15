@@ -1,4 +1,4 @@
-import AddessDialog from '@/components/location/address-dialog';
+import EditAddess from '@/components/location/address-dialog-edit';
 import LocationInput from '@/components/location/location-input';
 import { getAddresses } from '@/lib/data';
 
@@ -15,7 +15,7 @@ export default async function Addresses() {
 
       <div className='flex flex-col gap-4'>
         {addresses.map((address, index) => (
-          <AddessDialog key={`addresses-${index}`} address={address} />
+          <EditAddess key={`addresses-${index}`} address={address} />
         ))}
       </div>
     </div>
