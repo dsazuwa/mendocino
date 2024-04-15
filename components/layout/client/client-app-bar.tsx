@@ -2,7 +2,7 @@ import Link from 'next/link';
 
 import LocationDialog from '@/components/location/dialog';
 import Logo from '@/components/logo';
-import useAuthentication from '@/hooks/useAuthentication';
+import useAuthentication from '@/hooks/use-auth';
 import { getAddresses } from '@/lib/data';
 import { unauthLinks } from './client-constants';
 import ClientAppBarDrawer from './client-drawer';

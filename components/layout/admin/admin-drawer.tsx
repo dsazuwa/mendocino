@@ -4,7 +4,7 @@ import { HamburgerMenuIcon } from '@radix-ui/react-icons';
 import { useEffect, useState } from 'react';
 
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import useWindowWidth from '@/hooks/useWindowWidth';
+import useWindowWidth from '@/hooks/use-window-width';
 import { Button } from '../../ui/button';
 import AdminLinks from './admin-links';
 

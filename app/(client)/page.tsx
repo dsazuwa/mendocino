@@ -1,7 +1,7 @@
 import AuthenticatedHomePage from '@/components/home/auth-home';
 import UnauthHome from '@/components/home/unauth-home';
 import Footer from '@/components/layout/footer';
-import useAuthentication from '@/hooks/useAuthentication';
+import useAuthentication from '@/hooks/use-auth';
 
 export default function Home() {
   const { isAuthenticated } = useAuthentication();

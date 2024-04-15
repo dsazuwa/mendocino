@@ -5,7 +5,7 @@
 import { ChevronLeftIcon, ChevronRightIcon } from '@radix-ui/react-icons';
 import { ReactNode, useCallback, useEffect, useRef, useState } from 'react';
 
-import useDebounce from '@/hooks/useDebounce';
+import useDebounce from '@/hooks/use-debounce';
 import { cn } from '@/lib/utils';
 
 function ownerDocument(node: Node | null) {
