@@ -1,33 +1,33 @@
-import { ArrowLeftIcon } from '@radix-ui/react-icons';
+import { Cross2Icon } from '@radix-ui/react-icons';
 
 import { DialogClose } from '@/components/ui/dialog';
 import { Address } from '@/lib/types/customer';
 import Delete from '../icons/delete';
 import { Button } from '../ui/button';
-import { DialogContent } from '../ui/dialog';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import { RadioGroup, RadioGroupItem, RadioLabel } from '../ui/radio-group';
+import { SheetClose } from '../ui/sheet';
 import { Textarea } from '../ui/textarea';
 import LocationInput from './location-input';
 
-export default function AddressDialogContent({
-  addressLine1,
-  addressLine2,
-  city,
-  state,
-  zipCode,
-}: Address) {
+type Props = { isDialog: boolean; address: Address };
+
+export default function AddressDialogContent({ isDialog, address }: Props) {
+  const { addressLine1, addressLine2, city, state, zipCode } = address;
+
+  const Comp = isDialog ? DialogClose : SheetClose;
+
   return (
-    <DialogContent className='left-[50%] flex h-screen w-full translate-x-[-50%] flex-col p-0 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[25%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[25%] sm:top-[25%] sm:h-auto sm:w-full sm:max-w-lg sm:translate-y-[-25%]'>
+    <>
       <div className='h-18 flex w-full flex-row items-center gap-4 border-b border-neutral-200 p-4 sm:h-20 sm:p-6'>
-        <DialogClose asChild>
+        <Comp asChild>
           <Button variant='ghost' size='icon'>
-            <ArrowLeftIcon className='h-4 w-4 fill-neutral-500' />
+            <Cross2Icon className='h-4 w-4 fill-neutral-500' />
 
             <span className='sr-only'>Close</span>
           </Button>
-        </DialogClose>
+        </Comp>
 
         <span className='flex-1 text-sm font-semibold text-neutral-800'>
           Edit Address
@@ -38,7 +38,7 @@ export default function AddressDialogContent({
         </Button>
       </div>
 
-      <div className='flex flex-1 flex-col space-y-4 p-4 sm:p-6'>
+      <div className='flex flex-1 flex-col space-y-4 overflow-y-auto p-4 sm:p-6'>
         <LocationInput type='search' className='' />
 
         <div className='aspect-video rounded-md bg-neutral-100'></div>
@@ -106,6 +106,6 @@ export default function AddressDialogContent({
           Save Address
         </Button>
       </div>
-    </DialogContent>
+    </>
   );
 }
