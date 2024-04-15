@@ -4,17 +4,17 @@ import { HamburgerMenuIcon } from '@radix-ui/react-icons';
 import { useEffect, useState } from 'react';
 
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import useWindowWidth from '@/hooks/use-window-width';
+import { useMediaQuery } from '@/hooks/use-media-query';
 import { Button } from '../../ui/button';
 import AdminLinks from './admin-links';
 
 export default function AdminDrawer() {
   const [open, setOpen] = useState(false);
-  const windowWidth = useWindowWidth();
+  const isMd = useMediaQuery('(min-width: 768px)');
 
   useEffect(() => {
-    if (windowWidth && windowWidth >= 768) setOpen(false);
-  }, [windowWidth]);
+    if (isMd) setOpen(false);
+  }, [isMd]);
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
