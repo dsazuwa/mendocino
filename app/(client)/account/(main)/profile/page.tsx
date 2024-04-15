@@ -1,7 +1,7 @@
 import { cookies } from 'next/headers';
 import Link from 'next/link';
 
-import { Profile as TProfile } from '@/lib/types/customer';
+import { Profile as TProfile } from '@/types/customer';
 import ProfileForm from './_components/profile-form';
 
 async function getProfile() {

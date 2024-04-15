@@ -1,6 +1,6 @@
 import { cookies } from 'next/headers';
 
-import { Address } from '@/lib/types/customer';
+import { Address } from '@/types/customer';
 
 export async function getAddresses(): Promise<{ addresses: Address[] }> {
   const accessToken = cookies().get('access-token')?.value;

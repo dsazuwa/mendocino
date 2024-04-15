@@ -1,5 +1,5 @@
 import { cn } from '@/lib/utils';
-import { SubCategory } from '@/lib/types/menu';
+import { SubCategory } from '@/types/menu';
 import Items from './items';
 import TagBar from './tag-bar';
 

@@ -20,7 +20,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/components/ui/use-toast';
-import { ProfileInput, Profile as TProfile } from '@/lib/types/customer';
+import { ProfileInput, Profile as TProfile } from '@/types/customer';
 import NumericalTextfield from './numerical-field';
 
 const formSchema = object({

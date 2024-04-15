@@ -1,7 +1,7 @@
 import { Cross2Icon } from '@radix-ui/react-icons';
 
 import { DialogClose } from '@/components/ui/dialog';
-import { Address } from '@/lib/types/customer';
+import { Address } from '@/types/customer';
 import Delete from '../icons/delete';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';

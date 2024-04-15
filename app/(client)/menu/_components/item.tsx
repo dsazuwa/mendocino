@@ -1,5 +1,5 @@
 import { cn } from '@/lib/utils';
-import { MenuItem } from '@/lib/types/menu';
+import { MenuItem } from '@/types/menu';
 import ItemImage from './item-image';
 import ItemTag from './item-tag';
 

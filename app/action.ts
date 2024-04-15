@@ -6,8 +6,6 @@ import { revalidateTag } from 'next/cache';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 
-import { GenericResponse } from '@/lib/types/common';
-import { setAuthCookies } from '../lib/auth.utils';
 import {
   LoginInput,
   LoginResponse,
@@ -17,12 +15,10 @@ import {
   RegisterResponse,
   RequestRecoverData,
   VerifyRecoverData,
-} from '../lib/types/auth';
-import {
-  PasswordInput,
-  ProfileInput,
-  VerifyInput,
-} from '../lib/types/customer';
+} from '@/types/auth';
+import { GenericResponse } from '@/types/common';
+import { PasswordInput, ProfileInput, VerifyInput } from '@/types/customer';
+import { setAuthCookies } from '../lib/auth.utils';
 
 export async function logout() {
   await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/logout`, {

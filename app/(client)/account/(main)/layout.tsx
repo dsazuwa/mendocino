@@ -3,7 +3,7 @@ import { redirect } from 'next/navigation';
 import { ReactNode } from 'react';
 
 import NavLinks from '@/components/layout/account/nav-links';
-import { User } from '@/lib/types/common';
+import { User } from '@/types/common';
 
 type Props = { children: ReactNode };
 

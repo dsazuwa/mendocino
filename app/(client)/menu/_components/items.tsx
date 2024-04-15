@@ -1,4 +1,4 @@
-import { MenuItem } from '@/lib/types/menu';
+import { MenuItem } from '@/types/menu';
 import Item from './item';
 
 export default function Items({ items }: { items: MenuItem[] }) {

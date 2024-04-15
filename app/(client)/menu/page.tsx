@@ -1,6 +1,6 @@
 import CategoryToggle from '@/components/category-toggle';
 import Footer from '@/components/layout/footer';
-import { GroupedMenuResponse } from '@/lib/types/menu';
+import { GroupedMenuResponse } from '@/types/menu';
 import Category from './_components/category';
 
 async function getData() {

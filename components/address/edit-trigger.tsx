@@ -1,6 +1,6 @@
 import Edit from '@/components/icons/edit';
 import Location from '@/components/icons/location';
-import { Address } from '@/lib/types/customer';
+import { Address } from '@/types/customer';
 import { cn } from '@/lib/utils';
 import { DialogTrigger } from '../ui/dialog';
 import { SheetTrigger } from '../ui/sheet';

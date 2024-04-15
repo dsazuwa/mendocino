@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation';
 import Location from '@/components/icons/location';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogTrigger } from '@/components/ui/dialog';
-import { Address } from '@/lib/types/customer';
+import { Address } from '@/types/customer';
 import { cn } from '@/lib/utils';
 import ChooseAddressContent from './dialog-content';
 

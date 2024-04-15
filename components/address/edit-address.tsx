@@ -4,7 +4,7 @@ import { useState } from 'react';
 
 import { DialogContent } from '@/components/ui/dialog';
 import { useMediaQuery } from '@/hooks/use-media-query';
-import { Address } from '@/lib/types/customer';
+import { Address } from '@/types/customer';
 import { Dialog } from '../ui/dialog';
 import { Sheet, SheetContent } from '../ui/sheet';
 import Content from './edit-content';
