@@ -1,6 +1,6 @@
 import Link from 'next/link';
 
-import LocationDialog from '@/components/location/dialog';
+import LocationDialog from '@/components/address/dialog';
 import Logo from '@/components/logo';
 import useAuthentication from '@/hooks/use-auth';
 import { getAddresses } from '@/lib/data';

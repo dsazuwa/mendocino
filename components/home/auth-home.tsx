@@ -2,7 +2,7 @@ import { ChevronDownIcon } from '@radix-ui/react-icons';
 
 import { Dialog, DialogTrigger } from '@/components/ui/dialog';
 import { getAddresses } from '@/lib/data';
-import ChooseAddressContent from '../location/dialog-content';
+import ChooseAddressContent from '../address/dialog-content';
 import UnauthenticatedHomePage from './unauth-home';
 
 export default async function AuthenticatedHomePage() {

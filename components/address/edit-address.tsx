@@ -7,8 +7,8 @@ import { useMediaQuery } from '@/hooks/use-media-query';
 import { Address } from '@/lib/types/customer';
 import { Dialog } from '../ui/dialog';
 import { Sheet, SheetContent } from '../ui/sheet';
-import Content from './address-dialog-content';
-import Button from './edit-address-btn';
+import Content from './edit-content';
+import Button from './edit-trigger';
 
 export default function EditAddess({ address }: { address: Address }) {
   const [open, setOpen] = useState(false);

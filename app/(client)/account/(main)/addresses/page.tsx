@@ -1,5 +1,5 @@
-import EditAddess from '@/components/location/address-dialog-edit';
-import LocationInput from '@/components/location/location-input';
+import EditAddess from '@/components/address/edit-address';
+import LocationInput from '@/components/address/location-input';
 import { getAddresses } from '@/lib/data';
 
 export default async function Addresses() {
