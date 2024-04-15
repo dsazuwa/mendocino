@@ -2,6 +2,8 @@ import { Cross2Icon } from '@radix-ui/react-icons';
 
 import { DialogClose } from '@/components/ui/dialog';
 import { Address } from '@/types/customer';
+import ContentFooter from '../content-footer';
+import ContentHeader from '../content-header';
 import Delete from '../icons/delete';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
@@ -9,18 +11,18 @@ import { Label } from '../ui/label';
 import { RadioGroup, RadioGroupItem, RadioLabel } from '../ui/radio-group';
 import { SheetClose } from '../ui/sheet';
 import { Textarea } from '../ui/textarea';
-import LocationInput from './location-input';
+import AddressInput from './address-input';
 
 type Props = { isDialog: boolean; address: Address };
 
-export default function AddressDialogContent({ isDialog, address }: Props) {
+export default function EditContent({ isDialog, address }: Props) {
   const { addressLine1, addressLine2, city, state, zipCode } = address;
 
   const Comp = isDialog ? DialogClose : SheetClose;
 
   return (
     <>
-      <div className='h-18 flex w-full flex-row items-center gap-4 border-b border-neutral-200 p-4 sm:h-20 sm:p-6'>
+      <ContentHeader>
         <Comp asChild>
           <Button variant='ghost' size='icon'>
             <Cross2Icon className='h-4 w-4 fill-neutral-500' />
@@ -36,10 +38,10 @@ export default function AddressDialogContent({ isDialog, address }: Props) {
         <Button variant='ghost' size='icon'>
           <Delete className='h-4 w-4 fill-neutral-500' />
         </Button>
-      </div>
+      </ContentHeader>
 
       <div className='flex flex-1 flex-col space-y-4 overflow-y-auto p-4 sm:p-6'>
-        <LocationInput type='search' className='' />
+        <AddressInput type='search' className='' />
 
         <div className='aspect-video rounded-md bg-neutral-100'></div>
 
@@ -101,11 +103,11 @@ export default function AddressDialogContent({ isDialog, address }: Props) {
         </div>
       </div>
 
-      <div className='border-t border-neutral-200 p-4 sm:p-6'>
+      <ContentFooter>
         <Button variant='primary' className='w-full'>
           Save Address
         </Button>
-      </div>
+      </ContentFooter>
     </>
   );
 }

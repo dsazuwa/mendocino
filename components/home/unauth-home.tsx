@@ -1,4 +1,4 @@
-import LocationInput from '../address/location-input';
+import AddressInput from '../address/address-input';
 
 export default function UnauthenticatedHomePage() {
   return (
@@ -7,7 +7,7 @@ export default function UnauthenticatedHomePage() {
         Order delivery near you!
       </div>
 
-      <LocationInput />
+      <AddressInput />
     </>
   );
 }

@@ -12,7 +12,7 @@ type Props = {
   type?: 'search' | 'map';
 };
 
-export default function LocationInput({ className, type }: Props) {
+export default function AddressInput({ className, type }: Props) {
   const [value, setValue] = useState('');
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {

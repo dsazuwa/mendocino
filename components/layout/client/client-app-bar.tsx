@@ -1,6 +1,6 @@
 import Link from 'next/link';
 
-import LocationDialog from '@/components/address/dialog';
+import AddressButton from '@/components/address/choose';
 import Logo from '@/components/logo';
 import useAuthentication from '@/hooks/use-auth';
 import { getAddresses } from '@/lib/data';
@@ -21,7 +21,7 @@ export default async function ClientAppBar() {
           <Logo />
         </Link>
 
-        <LocationDialog addresses={addresses} />
+        <AddressButton addresses={addresses} />
 
         <div className='ml-auto hidden gap-4 sm:flex'>
           {isAuthenticated ? (
