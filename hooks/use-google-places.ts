@@ -1,4 +1,4 @@
-import { Libraries } from '@react-google-maps/api';
+import { Libraries, useLoadScript } from '@react-google-maps/api';
 import { ChangeEvent, KeyboardEvent, useState } from 'react';
 
 type Address = {
@@ -12,6 +12,12 @@ type Address = {
 
 export default function useGooglePlaces(defaultAddress?: string) {
   const [libraries] = useState<Libraries>(['places']);
+
+  const { isLoaded, loadError } = useLoadScript({
+    googleMapsApiKey: process.env.NEXT_PUBLIC_PLACES_API_KEY as string,
+    libraries,
+    region: 'us',
+  });
 
   const [value, setValue] = useState(defaultAddress || '');
 
@@ -37,12 +43,12 @@ export default function useGooglePlaces(defaultAddress?: string) {
     setAutocomplete(obj);
   };
 
-  const isCompleteAddress = (address: Partial<Address>): address is Address =>
-    address.streetNumber !== undefined &&
-    address.street !== undefined &&
-    address.city !== undefined &&
-    address.state !== undefined &&
-    address.zipCode !== undefined;
+  // const isCompleteAddress = (address: Partial<Address>): address is Address =>
+  //   address.streetNumber !== undefined &&
+  //   address.street !== undefined &&
+  //   address.city !== undefined &&
+  //   address.state !== undefined &&
+  //   address.zipCode !== undefined;
 
   const onPlaceChanged = () => {
     if (autocomplete) {
@@ -84,13 +90,16 @@ export default function useGooglePlaces(defaultAddress?: string) {
           });
         });
 
-        console.log(address, isCompleteAddress(address));
+        console.log(address);
       }
     }
   };
 
+  if (loadError) throw new Error('failed to load Google Places Api');
+
   return {
-    libraries,
+    isLoaded,
+    autocomplete,
     value,
     clearValue,
     handleChange,

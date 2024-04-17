@@ -11,7 +11,7 @@ import { Label } from '../ui/label';
 import { RadioGroup, RadioGroupItem, RadioLabel } from '../ui/radio-group';
 import { SheetClose } from '../ui/sheet';
 import { Textarea } from '../ui/textarea';
-import AddressInput from './address-input';
+import SearchMap from './search-map';
 
 type Props = { isDialog: boolean; address: Address };
 
@@ -41,9 +41,11 @@ export default function EditContent({ isDialog, address }: Props) {
       </ContentHeader>
 
       <div className='flex flex-1 flex-col space-y-4 overflow-y-auto p-4 sm:p-6'>
-        <AddressInput type='search' className='' />
-
-        <div className='aspect-video rounded-md bg-neutral-100'></div>
+        <SearchMap
+          defaultValue={Object.values(address)
+            .filter((x) => typeof x !== 'boolean')
+            .join(', ')}
+        />
 
         <div className='flex-1 space-y-4'>
           <div className='flex flex-col items-start gap-1 text-neutral-600'>
