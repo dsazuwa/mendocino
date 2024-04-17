@@ -1,4 +1,4 @@
-import AddressInput from '@/components/address/address-input';
+import CreateAddressModal from '@/components/address/create';
 import EditAddess from '@/components/address/edit';
 import { getAddresses } from '@/lib/data';
 
@@ -7,10 +7,10 @@ export default async function Addresses() {
 
   return (
     <div className='flex h-full flex-col gap-4'>
-      <div className='flex flex-col flex-wrap gap-4 md:h-20 md:flex-row md:items-center'>
+      <div className='flex flex-row flex-wrap items-center gap-4 md:h-20'>
         <span className='flex-1 text-xl font-semibold'>Addresses</span>
 
-        <AddressInput type='search' className='md:w-2/3' />
+        <CreateAddressModal />
       </div>
 
       <div className='flex flex-col gap-4'>

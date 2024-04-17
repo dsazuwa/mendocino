@@ -1,16 +1,45 @@
+import { Cross2Icon } from '@radix-ui/react-icons';
+
 import { cn } from '@/lib/utils';
 import { Address } from '@/types/customer';
 import ContentFooter from '../content-footer';
+import ContentHeader from '../content-header';
 import Location from '../icons/location';
 import { Button } from '../ui/button';
+import { DialogClose } from '../ui/dialog';
+import { SheetClose } from '../ui/sheet';
 
-type Props = { addresses: Address[] };
+type Props = {
+  isDialog: boolean;
+  addresses: Address[];
+  handleAddAddress: () => void;
+};
 
-export default function AddressSelector({ addresses }: Props) {
+export default function AddressSelector({
+  isDialog,
+  addresses,
+  handleAddAddress,
+}: Props) {
   const selected = 0;
+
+  const Close = isDialog ? DialogClose : SheetClose;
 
   return (
     <>
+      <ContentHeader>
+        <span className='flex-1 font-semibold text-neutral-800'>
+          Choose a delivery address
+        </span>
+
+        <Close asChild>
+          <Button variant='ghost' size='icon'>
+            <Cross2Icon className='h-4 w-4' />
+
+            <span className='sr-only'>Close</span>
+          </Button>
+        </Close>
+      </ContentHeader>
+
       <div className='flex flex-1 flex-col gap-4 p-4 sm:p-6'>
         {addresses.map(({ addressLine1, city, state, zipCode }, index) => (
           <button
@@ -38,7 +67,7 @@ export default function AddressSelector({ addresses }: Props) {
       </div>
 
       <ContentFooter>
-        <Button variant='primary' className='w-full'>
+        <Button variant='primary' className='w-full' onClick={handleAddAddress}>
           Add Address
         </Button>
       </ContentFooter>
