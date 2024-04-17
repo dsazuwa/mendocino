@@ -1,8 +1,9 @@
 import { cookies } from 'next/headers';
-import Link from 'next/link';
+// import Link from 'next/link';
 
 import { Profile as TProfile } from '@/types/customer';
 import ProfileForm from './_components/profile-form';
+import Link from '@/components/link';
 
 async function getProfile() {
   const res = await fetch(
@@ -28,17 +29,11 @@ export default async function Profile() {
       <div className='flex flex-row flex-wrap items-center gap-4 md:h-20'>
         <span className='flex-1 text-xl font-semibold'>Profile</span>
 
-        <Link
-          href='/account/password'
-          className='text-xs font-semibold text-primary-500 transition-colors hover:text-primary-700'
-        >
+        <Link href='/account/password' noDecoration={true}>
           Change Password
         </Link>
 
-        <Link
-          href='/account/manage'
-          className='text-xs font-semibold text-primary-500 transition-colors hover:text-primary-700'
-        >
+        <Link href='/account/manage' noDecoration={true}>
           Manage Account
         </Link>
       </div>

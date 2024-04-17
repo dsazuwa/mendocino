@@ -4,7 +4,7 @@ import { useState } from 'react';
 
 import { DialogContent } from '@/components/ui/dialog';
 import { useMediaQuery } from '@/hooks/use-media-query';
-import { Button } from '../ui/button';
+import LinkButton from '../link-button';
 import { Dialog, DialogTrigger } from '../ui/dialog';
 import { Sheet, SheetContent, SheetTrigger } from '../ui/sheet';
 import CreateContent from './create-content';
@@ -43,7 +43,7 @@ export function Trigger({ isDialog }: TriggerProps) {
 
   return (
     <Comp asChild>
-      <Button variant='primary'>Add</Button>
+      <LinkButton className='sm:px-2'>Create Address</LinkButton>
     </Comp>
   );
 }

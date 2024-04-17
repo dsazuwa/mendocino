@@ -1,7 +1,4 @@
-import Link from 'next/link';
-
-import { buttonVariants } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
+import Link from '@/components/link';
 import RegisterForm from './_components/register-form';
 
 export default function Register() {
@@ -14,18 +11,7 @@ export default function Register() {
       <span className='flex flex-row gap-1 text-xs'>
         <span>Already have an account?</span>
 
-        <Link
-          href='/login'
-          className={cn(
-            buttonVariants({
-              variant: 'primaryLink',
-              size: 'none',
-              className: 'ml-auto text-xs',
-            }),
-          )}
-        >
-          Login
-        </Link>
+        <Link href='/login'>Login</Link>
       </span>
     </>
   );

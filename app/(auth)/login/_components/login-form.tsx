@@ -1,15 +1,15 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useFormState } from 'react-dom';
 import { useForm } from 'react-hook-form';
 import { TypeOf, object, string } from 'zod';
 
 import { login } from '@/app/action';
+import Link from '@/components/link';
 import Loader from '@/components/loader';
-import { Button, buttonVariants } from '@/components/ui/button';
+import { Button } from '@/components/ui/button';
 import {
   Form,
   FormControl,
@@ -20,7 +20,6 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/components/ui/use-toast';
-import { cn } from '@/lib/utils';
 
 const formSchema = object({
   email: string().email({ message: 'Invalid email address' }),
@@ -101,16 +100,7 @@ export default function LoginForm() {
           />
         </div>
 
-        <Link
-          href='/recover'
-          className={cn(
-            buttonVariants({
-              variant: 'primaryLink',
-              size: 'none',
-              className: 'ml-auto text-xs',
-            }),
-          )}
-        >
+        <Link href='/recover' className='ml-auto'>
           Forgot Password?
         </Link>
 

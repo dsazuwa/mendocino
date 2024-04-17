@@ -22,6 +22,7 @@ import {
   InputOTPSlot,
 } from '@/components/ui/input-otp';
 import { useToast } from '@/components/ui/use-toast';
+import LinkButton from '@/components/link-button';
 
 const formSchema = object({
   email: string().email({ message: 'Invalid email address' }),
@@ -150,15 +151,12 @@ export default function VerifyForm({ email, handleFlowChange }: Props) {
         <span className='space-x-1'>
           <span className='text-xs'>Didn&apos;t receive the email?</span>
 
-          <Button
+          <LinkButton
             type='submit'
-            variant='primaryLink'
-            size='none'
-            className='text-xs'
             onClick={() => void resendAction({ email })}
           >
             Click to resend
-          </Button>
+          </LinkButton>
         </span>
       </Form>
     </>

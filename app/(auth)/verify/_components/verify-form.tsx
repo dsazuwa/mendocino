@@ -8,6 +8,7 @@ import { useForm } from 'react-hook-form';
 import { TypeOf, object, string } from 'zod';
 
 import { resendCustomerVerification, verifyCustomer } from '@/app/action';
+import LinkButton from '@/components/link-button';
 import Loader from '@/components/loader';
 import { Button } from '@/components/ui/button';
 import {
@@ -140,15 +141,9 @@ export default function VerifyForm() {
       <span className='space-x-1'>
         <span className='text-xs'>Didn&apos;t receive the email?</span>
 
-        <Button
-          type='submit'
-          variant='primaryLink'
-          size='none'
-          className='text-xs'
-          onClick={() => void resendAction()}
-        >
+        <LinkButton type='submit' onClick={() => void resendAction()}>
           Click to resend
-        </Button>
+        </LinkButton>
       </span>
     </>
   );
