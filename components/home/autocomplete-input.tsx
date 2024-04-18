@@ -112,7 +112,11 @@ export default function AutocompleteInput({
       };
 
       service.getPlacePredictions(
-        { input: inputValue, sessionToken, region: 'us ' },
+        {
+          input: inputValue,
+          sessionToken,
+          componentRestrictions: { country: 'US' },
+        },
         handlePredictions,
       );
     },
