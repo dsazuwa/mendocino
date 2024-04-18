@@ -12,15 +12,15 @@ import Search from '../icons/search';
 import InputContainer from '../input-container';
 import { Input } from '../ui/input';
 
-// type Address = {
-//   suite?: string;
-//   id: string;
-//   name: string;
-//   address: string;
-//   zipCode: string;
-//   lat: string;
-//   lng: string;
-// };
+type Address = {
+  suite?: string;
+  id: string;
+  name: string;
+  address: string;
+  zipCode: string;
+  lat: string;
+  lng: string;
+};
 
 type Suggestion = {
   id: string;
@@ -34,16 +34,21 @@ type SearchResult = {
 };
 
 type Props = {
+  defaultValue?: Address;
   service: google.maps.places.AutocompleteService;
   sessionToken: google.maps.places.AutocompleteSessionToken;
 };
 
-export default function AutocompleteInput({ service, sessionToken }: Props) {
+export default function AutocompleteInput({
+  service,
+  sessionToken,
+  defaultValue,
+}: Props) {
   const placeholder = 'Search';
 
   const [isOpen, setOpen] = useState(false);
   const [searchResult, setSearchResult] = useState<SearchResult>({
-    autocompleteSuggestions: [],
+    autocompleteSuggestions: defaultValue ? [defaultValue] : [],
     status: '',
   });
 
@@ -92,6 +97,8 @@ export default function AutocompleteInput({ service, sessionToken }: Props) {
 
       return [item.name, item.address].filter(Boolean).join(', ');
     },
+
+    initialSelectedItem: defaultValue,
   });
 
   const { onBlur: onInputBlur, ...inputProps } = getInputProps();
