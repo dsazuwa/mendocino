@@ -3,7 +3,7 @@
 /* eslint-disable @typescript-eslint/no-floating-promises */
 
 import { useCombobox } from 'downshift';
-import { FocusEvent, useState } from 'react';
+import { useState } from 'react';
 
 import { cn } from '@/lib/utils';
 import Check from '../icons/check';
@@ -18,8 +18,8 @@ type Address = {
   name: string;
   address: string;
   zipCode: string;
-  lat: string;
-  lng: string;
+  lat: number;
+  lng: number;
 };
 
 type Suggestion = {
@@ -46,24 +46,31 @@ export default function AutocompleteInput({
 }: Props) {
   const placeholder = 'Search';
 
-  const [isOpen, setOpen] = useState(false);
   const [searchResult, setSearchResult] = useState<SearchResult>({
     autocompleteSuggestions: defaultValue ? [defaultValue] : [],
     status: '',
   });
 
   const {
+    isOpen,
     getInputProps,
     getItemProps,
     getMenuProps,
     selectedItem: selected,
   } = useCombobox({
+    initialSelectedItem: defaultValue,
     items: searchResult.autocompleteSuggestions,
+
+    itemToKey: (item) => item?.id,
+
+    itemToString: (item) => {
+      if (item === null) return '';
+      return [item.name, item.address].filter(Boolean).join(', ');
+    },
 
     onInputValueChange: ({ inputValue }) => {
       if (inputValue.trim() === '') {
         setSearchResult({ autocompleteSuggestions: [], status: '' });
-        setOpen(false);
         return;
       }
 
@@ -81,7 +88,6 @@ export default function AutocompleteInput({
             : [];
 
         setSearchResult({ autocompleteSuggestions, status });
-        setOpen(true);
       };
 
       service.getPlacePredictions(
@@ -89,28 +95,7 @@ export default function AutocompleteInput({
         handlePredictions,
       );
     },
-
-    itemToKey: (item) => item?.id,
-
-    itemToString: (item) => {
-      if (item === null) return '';
-
-      return [item.name, item.address].filter(Boolean).join(', ');
-    },
-
-    initialSelectedItem: defaultValue,
   });
-
-  const { onBlur: onInputBlur, ...inputProps } = getInputProps();
-
-  const onFocus = () => {
-    setOpen(true);
-  };
-
-  const onBlur = (e: FocusEvent<HTMLInputElement, Element>) => {
-    onInputBlur?.(e);
-    setOpen(false);
-  };
 
   return (
     <>
@@ -119,9 +104,7 @@ export default function AutocompleteInput({
           className='h-9 w-full border-none py-0 pl-0 text-xs shadow-none focus-visible:border-none'
           placeholder={placeholder}
           type='search'
-          onFocus={onFocus}
-          onBlur={onBlur}
-          {...inputProps}
+          {...getInputProps()}
         />
       </InputContainer>
 
