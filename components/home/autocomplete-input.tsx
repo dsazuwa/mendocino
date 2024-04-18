@@ -1,6 +1,7 @@
 'use client';
 
 /* eslint-disable @typescript-eslint/no-floating-promises */
+/* eslint-disable  @typescript-eslint/no-unsafe-enum-comparison */
 
 import { useCombobox } from 'downshift';
 import { useState } from 'react';
@@ -18,8 +19,17 @@ type Address = {
   name: string;
   address: string;
   zipCode: string;
-  lat: number;
-  lng: number;
+  lat: string;
+  lng: string;
+};
+
+type StructuredAddress = {
+  suite?: string | undefined;
+  streetNumber: string;
+  street: string;
+  city: string;
+  state: string;
+  zipCode: string;
 };
 
 type Suggestion = {
@@ -39,12 +49,23 @@ type Props = {
   sessionToken: google.maps.places.AutocompleteSessionToken;
 };
 
+const isValidAddress = (
+  address: Partial<StructuredAddress>,
+): address is StructuredAddress =>
+  address.streetNumber !== undefined &&
+  address.street !== undefined &&
+  address.city !== undefined &&
+  address.state !== undefined &&
+  address.zipCode !== undefined;
+
 export default function AutocompleteInput({
   service,
   sessionToken,
   defaultValue,
 }: Props) {
   const placeholder = 'Search';
+
+  const geocoder = new window.google.maps.Geocoder();
 
   const [searchResult, setSearchResult] = useState<SearchResult>({
     autocompleteSuggestions: defaultValue ? [defaultValue] : [],
@@ -94,6 +115,82 @@ export default function AutocompleteInput({
         { input: inputValue, sessionToken, region: 'us ' },
         handlePredictions,
       );
+    },
+
+    stateReducer: (state, actionAndChanges) => {
+      const { type, changes } = actionAndChanges;
+
+      switch (type) {
+        case useCombobox.stateChangeTypes.ItemClick: {
+          const { selectedItem } = changes;
+
+          if (selectedItem) {
+            geocoder.geocode(
+              { placeId: selectedItem.id },
+              (results, status) => {
+                if (status === 'OK' && results !== null && results.length > 0) {
+                  const address: Partial<StructuredAddress> = {};
+                  const result = results[0];
+
+                  result.address_components.forEach((component) => {
+                    component.types.forEach((type) => {
+                      switch (type) {
+                        case 'subpremise':
+                          address.suite = component.long_name;
+                          break;
+
+                        case 'street_number':
+                          address.streetNumber = component.long_name;
+                          break;
+
+                        case 'route':
+                          address.street = component.long_name;
+                          break;
+
+                        case 'locality':
+                          address.city = component.long_name;
+                          break;
+
+                        case 'administrative_area_level_1':
+                          address.state = component.short_name;
+                          break;
+
+                        case 'postal_code':
+                          address.zipCode = component.long_name;
+                          break;
+
+                        default:
+                          break;
+                      }
+                    });
+                  });
+
+                  if (isValidAddress(address)) {
+                    const x = {
+                      suite: address.suite,
+                      id: selectedItem.id,
+                      name: selectedItem.name,
+                      address: selectedItem.address,
+                      zipCode: address.zipCode,
+                      lat: `${result.geometry.location.lat()}`,
+                      lng: `${result.geometry.location.lng()}`,
+                    };
+                    console.log(x);
+                  } else {
+                    console.log(address, 'invalid address');
+                    // handle invalid delivery address
+                  }
+                }
+              },
+            );
+          }
+
+          return { ...changes };
+        }
+
+        default:
+          return changes;
+      }
     },
   });
 
