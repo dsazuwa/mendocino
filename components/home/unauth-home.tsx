@@ -1,4 +1,4 @@
-import AddressInput from '../address/address-input';
+import Autocomplete from './autocomplete';
 
 export default function UnauthenticatedHomePage() {
   return (
@@ -7,7 +7,7 @@ export default function UnauthenticatedHomePage() {
         Order delivery near you!
       </div>
 
-      <AddressInput />
+      <Autocomplete />
     </>
   );
 }
