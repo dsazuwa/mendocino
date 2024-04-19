@@ -6,7 +6,6 @@ import {
   CustomerIdentity,
   CustomerOTP,
   CustomerPassword,
-  Email,
 } from '@app/modules/user/models';
 import tokenService from '@app/modules/user/services/token.service';
 
@@ -204,87 +203,6 @@ describe(`PATCH ${BASE_URL}/verify/:otp`, () => {
 
     const customer = await Customer.findByPk(customerId, { raw });
     expect(customer?.status).toEqual('active');
-  });
-});
-
-describe(`PATCH ${BASE_URL}/name`, () => {
-  let customerId: number;
-  let jwt: string;
-
-  const firstName = 'Janet';
-  const lastName = 'Doe';
-
-  const newFirst = 'Janette';
-  const newLast = 'Dough';
-
-  beforeEach(async () => {
-    await Email.destroy({ where: {} });
-    await Customer.destroy({ where: {} });
-
-    const { customer, email } = await createCustomer(
-      firstName,
-      lastName,
-      'janetdoe@gmail.com',
-      'JanetD0ePa$$',
-      'active',
-    );
-
-    customerId = customer.customerId;
-    jwt = tokenService.generateAccessToken(email.email, 'email');
-  });
-
-  const testUpdatecustomer = async (
-    fName: string | undefined,
-    lName: string | undefined,
-    expectedFirst: string,
-    expectedLast: string,
-    status: 200 | 400,
-  ) => {
-    await request
-      .patch(`${BASE_URL}/name`)
-      .send({ firstName: fName, lastName: lName })
-      .auth(jwt, { type: 'bearer' })
-      .expect(status);
-
-    const customer = await Customer.findOne({
-      where: { customerId, firstName: expectedFirst, lastName: expectedLast },
-      raw,
-    });
-    expect(customer).not.toBeNull();
-  };
-
-  it('should update customer if both firstName and lastName are provided', async () => {
-    await testUpdatecustomer(newFirst, newLast, newFirst, newLast, 200);
-  });
-
-  describe('should update customer if firstName is provided', () => {
-    it('but lastName is an empty string', async () => {
-      await testUpdatecustomer(newFirst, '', newFirst, lastName, 200);
-    });
-
-    it('but lastName is undefined', async () => {
-      await testUpdatecustomer(newFirst, undefined, newFirst, lastName, 200);
-    });
-  });
-
-  describe('should update customer if lastName is provided', () => {
-    it('but firstName is an empty string', async () => {
-      await testUpdatecustomer('', newLast, firstName, newLast, 200);
-    });
-
-    it('but firstName is undefined', async () => {
-      await testUpdatecustomer(undefined, newLast, firstName, newLast, 200);
-    });
-  });
-
-  describe('should not update customer', () => {
-    it('if both firstName and lastName are empty strings', async () => {
-      await testUpdatecustomer('', ' ', firstName, lastName, 400);
-    });
-
-    it('if both firstName and lastName are undefined', async () => {
-      await testUpdatecustomer(undefined, undefined, firstName, lastName, 400);
-    });
   });
 });
 

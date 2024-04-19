@@ -124,21 +124,6 @@ const customerService = {
       );
     }),
 
-  updateName: async (
-    customerId: number,
-    firstName: string | undefined,
-    lastName: string | undefined,
-  ) => {
-    const values: Partial<Customer> = {};
-
-    if (firstName && firstName.trim().length > 0) values.firstName = firstName;
-    if (lastName && lastName.trim().length > 0) values.lastName = lastName;
-
-    const result = await Customer.update(values, { where: { customerId } });
-
-    return result[0] === 1;
-  },
-
   createPassword: async (customerId: number, password: string) => {
     const existingPassword = await CustomerPassword.findOne({
       where: { customerId },

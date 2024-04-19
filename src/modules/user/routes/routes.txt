@@ -45,10 +45,10 @@ PATCH  /customers/:id/status             update customer status
 
                         **** CUSTOMER ROUTER ****
 
-GET    /customers/me/profile             get customer profile
+GET    /customers/me/profile             get profile
+PATCH  /customers/me/profile             update profile
 POST   /customers/me/verify              request new verify otp
 PATCH  /customers/me/verify/:otp         verify email
-PATCH  /customers/me/name                update name
 POST   /customers/me/password            create password
 PATCH  /customers/me/password            change password
 PATCH  /customers/me/revoke-social-auth  revoke social auth

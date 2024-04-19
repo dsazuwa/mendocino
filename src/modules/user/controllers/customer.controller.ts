@@ -59,6 +59,8 @@ export const resendVerifyEmail = async (
   try {
     const userId = req.user?.userId ?? -1;
 
+    // return error if user isnt pending
+
     await otpService.createOTP(userId, {
       isAdmin: false,
       otpType: 'email',
@@ -92,25 +94,6 @@ export const verifyEmail = async (
     const user = await userService.getUserWithoutId(userId, false);
 
     res.status(200).json({ user, message: messages.VERIFY_EMAIL_SUCCESS });
-  } catch (e) {
-    next(e);
-  }
-};
-
-export const updateUserName = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
-  try {
-    const userId = req.user?.userId ?? -1;
-    const { firstName, lastName } = req.body;
-
-    await customerService.updateName(userId, firstName, lastName);
-
-    const user = await userService.getUserWithoutId(userId, false);
-
-    res.status(200).json({ user, message: messages.UPDATE_USER_NAME });
   } catch (e) {
     next(e);
   }

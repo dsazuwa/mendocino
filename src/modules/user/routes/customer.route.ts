@@ -9,7 +9,6 @@ import {
   resendVerifyEmail,
   revokeSocialAuthentication,
   updateProfile,
-  updateUserName,
   verifyEmail,
 } from '../controllers/customer.controller';
 import { authenticate, authorize } from '../middleware/auth';
@@ -19,7 +18,6 @@ import {
   createPasswordSchema,
   revokeSocialAuthenticationSchema,
   updateCustomerProfile,
-  updateUserNameSchema,
   verifyEmailSchema,
 } from '../middleware/validators/users.validator';
 
@@ -40,13 +38,6 @@ customerRouter.patch(
   validate(verifyEmailSchema),
   permitPending,
   verifyEmail,
-);
-
-customerRouter.patch(
-  '/name',
-  trimRequestBody,
-  validate(updateUserNameSchema),
-  updateUserName,
 );
 
 customerRouter.post(
