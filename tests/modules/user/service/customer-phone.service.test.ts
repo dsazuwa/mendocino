@@ -31,7 +31,7 @@ describe('customer phone number management', () => {
   it('should create a new phone number', async () => {
     const phoneNumber = oldPhoneNumber;
 
-    const password = await customerPhoneService.createPhone(
+    const result = await customerPhoneService.createPhone(
       customerId,
       phoneNumber,
     );
@@ -39,17 +39,17 @@ describe('customer phone number management', () => {
     const phone = await Phone.findOne({ where: { phoneNumber }, raw: true });
     expect(phone).not.toBeNull();
 
-    const adminPhone = await CustomerPhone.findOne({
+    const customerPhone = await CustomerPhone.findOne({
       where: { customerId, phoneId: phone?.phoneId, status: 'pending' },
       raw: true,
     });
-    expect(adminPhone).not.toBeNull();
+    expect(customerPhone).not.toBeNull();
 
     const otp = await CustomerOTP.findOne({
       where: { customerId, type: 'phone' },
     });
     expect(otp).not.toBeNull();
-    expect(otp?.comparePasswords(password)).toBe(true);
+    expect(otp?.comparePasswords(result.otp || '')).toBe(true);
   });
 
   it('should destroy previous phone number and create a new one', async () => {
@@ -66,7 +66,7 @@ describe('customer phone number management', () => {
     });
     expect(previousPhone).not.toBeNull();
 
-    const password = await customerPhoneService.createPhone(
+    const result = await customerPhoneService.createPhone(
       customerId,
       newPhoneNumber,
     );
@@ -83,17 +83,17 @@ describe('customer phone number management', () => {
     });
     expect(newPhone).not.toBeNull();
 
-    const newAdminPhone = await CustomerPhone.findOne({
+    const newCPhone = await CustomerPhone.findOne({
       where: { customerId, phoneId: newPhone?.phoneId, status: 'pending' },
       raw: true,
     });
-    expect(newAdminPhone).not.toBeNull();
+    expect(newCPhone).not.toBeNull();
 
     const otp = await CustomerOTP.findOne({
       where: { customerId, type: 'phone' },
     });
     expect(otp).not.toBeNull();
-    expect(otp?.comparePasswords(password)).toBe(true);
+    expect(otp?.comparePasswords(result.otp || '')).toBe(true);
   });
 
   it('should update phone number status to active', async () => {
