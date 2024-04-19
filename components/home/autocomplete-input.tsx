@@ -7,30 +7,12 @@ import { useCombobox } from 'downshift';
 import { useState } from 'react';
 
 import { cn } from '@/lib/utils';
+import { Address, StructuredAddress } from '@/types/common';
 import Check from '../icons/check';
 import Location from '../icons/location';
 import Search from '../icons/search';
 import InputContainer from '../input-container';
 import { Input } from '../ui/input';
-
-type Address = {
-  suite?: string;
-  id: string;
-  name: string;
-  address: string;
-  zipCode: string;
-  lat: string;
-  lng: string;
-};
-
-type StructuredAddress = {
-  suite?: string | undefined;
-  streetNumber: string;
-  street: string;
-  city: string;
-  state: string;
-  zipCode: string;
-};
 
 type Suggestion = {
   id: string;

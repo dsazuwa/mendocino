@@ -1,7 +1,7 @@
 import { Cross2Icon } from '@radix-ui/react-icons';
 
 import { cn } from '@/lib/utils';
-import { Address } from '@/types/customer';
+import { Address } from '@/types/common';
 import ContentFooter from '../content-footer';
 import ContentHeader from '../content-header';
 import Location from '../icons/location';
@@ -41,7 +41,7 @@ export default function AddressSelector({
       </ContentHeader>
 
       <div className='flex flex-1 flex-col gap-4 p-4 sm:p-6'>
-        {addresses.map(({ addressLine1, city, state, zipCode }, index) => (
+        {addresses.map(({ name, address, zipCode }, index) => (
           <button
             key={`address-${index}`}
             className='inline-flex items-center gap-4 rounded-lg p-4 px-2 transition-colors duration-100 hover:bg-neutral-50'
@@ -57,9 +57,9 @@ export default function AddressSelector({
                 'text-primary-700': selected === index,
               })}
             >
-              <span className='text-xs font-semibold'>{addressLine1}</span>
+              <span className='text-xs font-semibold'>{name}</span>
               <span className='text-[0.65rem]'>
-                {[city, state, zipCode].join(', ')}
+                {[address, zipCode].filter(Boolean).join(', ')}
               </span>
             </span>
           </button>

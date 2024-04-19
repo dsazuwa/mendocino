@@ -1,14 +1,7 @@
 import { Libraries, useLoadScript } from '@react-google-maps/api';
 import { ChangeEvent, KeyboardEvent, useState } from 'react';
 
-type Address = {
-  suite?: string;
-  streetNumber: string;
-  street: string;
-  city: string;
-  state: string;
-  zipCode: string;
-};
+import { StructuredAddress } from '@/types/common';
 
 export default function useGooglePlaces(defaultAddress?: string) {
   const [libraries] = useState<Libraries>(['places']);
@@ -55,7 +48,7 @@ export default function useGooglePlaces(defaultAddress?: string) {
       const place = autocomplete.getPlace();
 
       if (place && place.address_components) {
-        const address: Partial<Address> = {};
+        const address: Partial<StructuredAddress> = {};
 
         place.address_components.forEach((component) => {
           component.types.forEach((type) => {

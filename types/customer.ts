@@ -33,12 +33,3 @@ export type PasswordInput = {
   newPassword: string;
   confirmPassword: string;
 };
-
-export type Address = {
-  addressLine1: string;
-  addressLine2?: string;
-  city: string;
-  state: string;
-  zipCode: string;
-  isDefault: boolean;
-};

@@ -2,7 +2,7 @@ import { ChevronDownIcon } from '@radix-ui/react-icons';
 
 import Location from '@/components/icons/location';
 import { cn } from '@/lib/utils';
-import { Address } from '@/types/customer';
+import { Address } from '@/types/common';
 import { Button } from '../ui/button';
 import { DialogTrigger } from '../ui/dialog';
 import { SheetTrigger } from '../ui/sheet';
@@ -31,7 +31,7 @@ export default function ChooseTrigger({ isDialog, addresses }: Props) {
             { 'font-semibold': hasAddress },
           )}
         >
-          {hasAddress ? addresses[0].addressLine1 : 'Enter delivery address'}
+          {hasAddress ? addresses[0].name : 'Enter delivery address'}
         </span>
 
         <ChevronDownIcon className='ml-auto hidden w-3 sm:inline' />

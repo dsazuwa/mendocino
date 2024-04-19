@@ -1,13 +1,13 @@
 import Edit from '@/components/icons/edit';
 import Location from '@/components/icons/location';
-import { Address } from '@/types/customer';
+import { Address } from '@/types/common';
 import { DialogTrigger } from '../ui/dialog';
 import { SheetTrigger } from '../ui/sheet';
 
 type Props = { isDialog: boolean; address: Address };
 
-export default function EditTrigger({ isDialog, address }: Props) {
-  const { addressLine1, addressLine2, city, state, zipCode } = address;
+export default function EditTrigger({ isDialog, address: addressProp }: Props) {
+  const { name, address, zipCode } = addressProp;
 
   const Comp = isDialog ? DialogTrigger : SheetTrigger;
 
@@ -17,10 +17,10 @@ export default function EditTrigger({ isDialog, address }: Props) {
         <Location className='max-w-4 fill-neutral-600' />
 
         <span className='flex flex-col items-start text-neutral-600'>
-          <span className='text-xs font-semibold'>{addressLine1}</span>
+          <span className='text-xs font-semibold'>{name}</span>
 
           <span className='text-[0.65rem]'>
-            {[addressLine2, city, state, zipCode].filter(Boolean).join(', ')}
+            {[address, zipCode].join(', ')}
           </span>
         </span>
 

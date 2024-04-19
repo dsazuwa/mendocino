@@ -1,7 +1,7 @@
 import { Cross2Icon } from '@radix-ui/react-icons';
 
 import { DialogClose } from '@/components/ui/dialog';
-import { Address } from '@/types/customer';
+import { Address } from '@/types/common';
 import ContentFooter from '../content-footer';
 import ContentHeader from '../content-header';
 import Delete from '../icons/delete';
@@ -15,8 +15,8 @@ import SearchMap from './search-map';
 
 type Props = { isDialog: boolean; address: Address };
 
-export default function EditContent({ isDialog, address }: Props) {
-  const { addressLine1, addressLine2, city, state, zipCode } = address;
+export default function EditContent({ isDialog, address: addressProp }: Props) {
+  const { name, address, zipCode } = addressProp;
 
   const Comp = isDialog ? DialogClose : SheetClose;
 
@@ -49,11 +49,9 @@ export default function EditContent({ isDialog, address }: Props) {
 
         <div className='flex-1 space-y-4'>
           <div className='flex flex-col items-start gap-1 text-neutral-600'>
-            <span className='text-xs font-semibold'>{addressLine1}</span>
+            <span className='text-xs font-semibold'>{name}</span>
 
-            <span className='text-xxs'>
-              {[addressLine2, city, state, zipCode].filter(Boolean).join(', ')}
-            </span>
+            <span className='text-xxs'>{[address, zipCode].join(', ')}</span>
           </div>
 
           <div className='flex flex-row items-center gap-2 text-neutral-600'>

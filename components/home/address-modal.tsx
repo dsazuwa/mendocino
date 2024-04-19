@@ -5,7 +5,7 @@ import { useState } from 'react';
 
 import { DialogContent } from '@/components/ui/dialog';
 import { useMediaQuery } from '@/hooks/use-media-query';
-import { Address } from '@/types/customer';
+import { Address } from '@/types/common';
 import Content from '../address/choose-content';
 import { Dialog, DialogTrigger } from '../ui/dialog';
 import { Sheet, SheetContent, SheetTrigger } from '../ui/sheet';
@@ -46,9 +46,7 @@ export function AddressTrigger({ isDialog, addresses }: TriggerProps) {
 
   return (
     <Comp className='inline-flex items-center gap-2'>
-      <span className='text-lg font-bold sm:text-xl'>
-        {addresses[0].addressLine1}
-      </span>
+      <span className='text-lg font-bold sm:text-xl'>{addresses[0].name}</span>
 
       <ChevronDownIcon />
     </Comp>

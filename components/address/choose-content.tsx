@@ -1,7 +1,7 @@
 import { ArrowLeftIcon, Cross2Icon } from '@radix-ui/react-icons';
 import { useState } from 'react';
 
-import { Address } from '@/types/customer';
+import { Address } from '@/types/common';
 import ContentHeader from '../content-header';
 import { Button } from '../ui/button';
 import { DialogClose } from '../ui/dialog';
