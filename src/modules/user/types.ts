@@ -10,3 +10,13 @@ export type UserType = {
   status: string;
   roles: string[];
 };
+
+export type AddressType = {
+  placeId: string;
+  suite?: string;
+  name: string;
+  address: string;
+  zipCode: string;
+  lat: string;
+  lng: string;
+};

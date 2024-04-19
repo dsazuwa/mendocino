@@ -6,6 +6,7 @@ import adminRouter from './admin.route';
 import authRouter from './auth.route';
 import customerPhoneRouter from './customer-phone.route';
 import customerRouter from './customer.route';
+import guestRouter from './guest.route';
 import testRouter from './test.route';
 import usersRouter from './users.route';
 
@@ -20,6 +21,7 @@ userRouter.use('/customers/me', customerRouter);
 userRouter.use('/customers/me/addresses', addressRouter);
 userRouter.use('/customers/me/phone', customerPhoneRouter);
 
+userRouter.use('/guests', guestRouter);
 userRouter.use('/users', usersRouter);
 userRouter.use('/test', testRouter);
 

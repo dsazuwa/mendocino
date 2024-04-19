@@ -1,11 +1,11 @@
 import { QueryTypes } from 'sequelize';
 
 import sequelize from '../../../db';
-import { Address, CustomerAddress } from '../models';
+import { Address, Guest, GuestAddress } from '../models';
 import { AddressType } from '../types';
 
-const addressService = {
-  getAddresses: async (customerId: number) => {
+const guestService = {
+  getAddresses: async (guestId: string) => {
     const query = `
       SELECT 
         jsonb_agg(jsonb_build_object(
@@ -19,12 +19,12 @@ const addressService = {
           'lng', a.lng
         )) AS addresses
       FROM users.addresses a 
-      JOIN users.customer_addresses c ON c.address_id = a.address_id
-      WHERE c.customer_id = $id;`;
+      JOIN users.guest_addresses g ON g.address_id = a.address_id
+      WHERE g.guest_id = $id;`;
 
     const result = (await sequelize.query(query, {
       type: QueryTypes.SELECT,
-      bind: { id: customerId },
+      bind: { id: guestId },
     })) as { addresses?: AddressType & { id: number }[] }[];
 
     const { addresses } = result[0];
@@ -32,35 +32,37 @@ const addressService = {
     return addresses || [];
   },
 
-  createAddress: (customerId: number, address: AddressType) =>
+  createAddress: (guestId: string | undefined, address: AddressType) =>
     sequelize.transaction(async (transaction) => {
-      const addressCount = await CustomerAddress.count({
-        where: { customerId },
+      const addressCount = await GuestAddress.count({
+        where: { guestId },
         transaction,
       });
 
-      if (addressCount >= 5) return false;
+      if (addressCount >= 5) return null;
 
       const { addressId } = await Address.create(
         { ...address },
         { transaction },
       );
 
-      await CustomerAddress.create({ customerId, addressId }, { transaction });
+      const id = guestId || (await Guest.create({}, { transaction })).guestId;
 
-      return true;
+      await GuestAddress.create({ guestId: id, addressId }, { transaction });
+
+      return id;
     }),
 
   updateAddress: async (
-    customerId: number,
+    guestId: string,
     addressId: number,
     address: AddressType,
   ) => {
-    const customerAddress = await CustomerAddress.findOne({
-      where: { addressId, customerId },
+    const guestAddress = await GuestAddress.findOne({
+      where: { addressId, guestId },
     });
 
-    if (customerAddress === null) return 0;
+    if (guestAddress === null) return 0;
 
     const result = await Address.update(address, {
       where: { addressId },
@@ -69,15 +71,15 @@ const addressService = {
     return result[0];
   },
 
-  deleteAddress: async (customerId: number, addressId: number) => {
-    const customerAddress = await CustomerAddress.findOne({
-      where: { addressId, customerId },
+  deleteAddress: async (guestId: string, addressId: number) => {
+    const guestAddress = await GuestAddress.findOne({
+      where: { addressId, guestId },
     });
 
-    if (customerAddress === null) return 0;
+    if (guestAddress === null) return 0;
 
     return Address.destroy({ where: { addressId } });
   },
 };
 
-export default addressService;
+export default guestService;
