@@ -27,10 +27,12 @@ describe('Address Model', () => {
   it('should create address', async () => {
     const data = {
       customerId,
-      addressLine1: '1957 Kembery Drive',
-      city: 'Roselle',
-      state: 'IL',
+      placeId: '25353232532',
+      name: '1957 Kembery Drive',
+      address: 'Roselle, IL',
       zipCode: '60172',
+      lat: '-90',
+      lng: '-40',
     };
 
     const address = await Address.create(data);
@@ -40,21 +42,25 @@ describe('Address Model', () => {
   it('should throw error on create if customer has reached address limit', async () => {
     const data = {
       customerId,
-      addressLine1: '962 University Drive',
-      city: 'Chicago',
-      state: 'IL',
-      zipCode: '60605',
+      name: '1957 Kembery Drive',
+      address: 'Roselle, IL',
+      zipCode: '60172',
+      lat: '-90',
+      lng: '-40',
     };
 
-    const promises = [];
-    for (let i = 1; i <= 5; i += 1) promises.push(Address.create(data));
-    await Promise.all(promises);
+    await Address.bulkCreate(
+      Array.from({ length: 5 }, () => ({
+        ...data,
+        placeId: `${Math.random() * 84728947292}`,
+      })),
+    );
 
     let count = await Address.count({ where: { customerId } });
     expect(count).toBe(5);
 
     try {
-      await Address.create(data);
+      await Address.create({ ...data, placeId: '48284149729731' });
 
       expect(true).toBe(false);
     } catch (e) {
@@ -66,10 +72,12 @@ describe('Address Model', () => {
   it('should retrieve address', async () => {
     await Address.create({
       customerId,
-      addressLine1: '1957 Kembery Drive',
-      city: 'Roselle',
-      state: 'IL',
+      placeId: '34839083205237',
+      name: '1957 Kembery Drive',
+      address: 'Roselle, IL',
       zipCode: '60172',
+      lat: '-90',
+      lng: '-40',
     });
 
     const addresses = await Address.findAll({ where: { customerId }, raw });
@@ -78,31 +86,22 @@ describe('Address Model', () => {
   });
 
   it('should update address', async () => {
-    const oldCity = 'Roselle';
-    const newCity = 'Rock Island';
+    const oldAddress = 'Roselle, IL';
+    const newAddress = 'Rock Island, IL';
 
     const address = await Address.create({
       customerId,
-      addressLine1: '1967 Orchid Road',
-      city: oldCity,
-      state: 'IL',
-      zipCode: '60074',
+      placeId: '932u531985732895',
+      name: '1957 Kembery Drive',
+      address: oldAddress,
+      zipCode: '60172',
+      lat: '-90',
+      lng: '-40',
     });
 
-    await address.update({ city: newCity });
+    await address.update({ address: newAddress });
 
-    let retrievedAddress = await Address.findOne({
-      where: { addressId: address.addressId },
-      raw,
-    });
-    expect(retrievedAddress).not.toBeNull();
-
-    await Address.update(
-      { city: newCity },
-      { where: { addressId: address.addressId } },
-    );
-
-    retrievedAddress = await Address.findOne({
+    const retrievedAddress = await Address.findOne({
       where: { addressId: address.addressId },
       raw,
     });
@@ -112,10 +111,12 @@ describe('Address Model', () => {
   it('should delete address', async () => {
     const data = {
       customerId,
-      addressLine1: '1561 Coburn Hollow Road',
-      city: 'Peoria',
-      state: 'IL',
-      zipCode: '61602',
+      placeId: '7876764778676',
+      name: '1957 Kembery Drive',
+      address: 'Roselle, IL',
+      zipCode: '60172',
+      lat: '-90',
+      lng: '-40',
     };
 
     let address = await Address.create(data);
@@ -142,10 +143,12 @@ describe('Address Model', () => {
   it('should not delete Customer on address delete', async () => {
     const address = await Address.create({
       customerId,
-      addressLine1: '4921 Flinderation Road',
-      city: 'Arlington Heights',
-      state: 'IL',
-      zipCode: '60005',
+      placeId: '84w98472942',
+      name: '1957 Kembery Drive',
+      address: 'Roselle, IL',
+      zipCode: '60172',
+      lat: '-90',
+      lng: '-40',
     });
 
     await address.destroy();
@@ -157,10 +160,12 @@ describe('Address Model', () => {
   it('should delete Address on Customer delete', async () => {
     const address = await Address.create({
       customerId,
-      addressLine1: '962 University Drive',
-      city: 'Chicago',
-      state: 'IL',
-      zipCode: '60605',
+      placeId: '84w98427978942',
+      name: '1957 Kembery Drive',
+      address: 'Roselle, IL',
+      zipCode: '60172',
+      lat: '-90',
+      lng: '-40',
     });
 
     await Customer.destroy({ where: { customerId } });

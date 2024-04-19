@@ -421,11 +421,14 @@ BEGIN
     (
       SELECT 
         jsonb_agg(jsonb_build_object(
-          'addressLine1', a.address_line1,
-          'addressLine2', COALESCE(a.address_line2, ''),
-          'city', a.city,
-          'state', a.state,
-          'zipCode', a.zip_code
+          'id', a.address_id,
+          'placeId', a.place_id,
+          'suite', a.suite,
+          'name', a.name,
+          'address', a.address,
+          'zipCode', a.zip_code,
+          'lat', a.lat,
+          'lng', a.lng
         ))
       FROM users.customer_addresses a
       WHERE a.customer_id = p_customer_id

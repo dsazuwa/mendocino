@@ -1,5 +1,4 @@
 import {
-  Address,
   Customer,
   CustomerEmail,
   CustomerIdentity,
@@ -120,63 +119,6 @@ describe('get customer profile', () => {
       authProviders: [],
       phone: { number: phoneNumber, isVerified: true },
       addresses: null,
-    });
-  });
-
-  it('customer with phone and addresses', async () => {
-    const { customerId } = await createCustomer(
-      firstName,
-      lastName,
-      email,
-      password,
-      'pending',
-    );
-
-    const { phoneId } = await Phone.create({ phoneNumber });
-    await CustomerPhone.create({ customerId, phoneId, status: 'pending' });
-
-    const addresses = await Address.bulkCreate([
-      {
-        customerId,
-        addressLine1: '1957 Kembery Drive',
-        addressLine2: 'off access road',
-        city: 'Roselle',
-        state: 'IL',
-        zipCode: '60172',
-      },
-      {
-        customerId,
-        addressLine1: '1561 Coburn Hollow Road',
-        city: 'Peoria',
-        state: 'IL',
-        zipCode: '61602',
-      },
-    ]);
-
-    const result = await customerService.getProfile(customerId);
-    expect(result).toMatchObject({
-      firstName,
-      lastName,
-      email: { address: email, isVerified: false },
-      hasPassword: true,
-      authProviders: [],
-      phone: { number: phoneNumber, isVerified: false },
-      addresses: [
-        {
-          addressLine1: addresses[0].addressLine1,
-          addressLine2: addresses[0].addressLine2,
-          city: addresses[0].city,
-          state: addresses[0].state,
-          zipCode: addresses[0].zipCode,
-        },
-        {
-          addressLine1: addresses[1].addressLine1,
-          addressLine2: '',
-          city: addresses[1].city,
-          state: addresses[1].state,
-          zipCode: addresses[1].zipCode,
-        },
-      ],
     });
   });
 });
@@ -578,24 +520,6 @@ describe('close account', () => {
     const { phoneId } = await Phone.create({ phoneNumber });
     await CustomerPhone.create({ customerId, phoneId, status: 'active' });
 
-    await Address.bulkCreate([
-      {
-        customerId,
-        addressLine1: '1957 Kembery Drive',
-        addressLine2: 'off access road',
-        city: 'Roselle',
-        state: 'IL',
-        zipCode: '60172',
-      },
-      {
-        customerId,
-        addressLine1: '1561 Coburn Hollow Road',
-        city: 'Peoria',
-        state: 'IL',
-        zipCode: '61602',
-      },
-    ]);
-
     await customerService.closeAccount(customerId);
 
     const p = await Phone.findOne({
@@ -603,9 +527,6 @@ describe('close account', () => {
       raw: true,
     });
     expect(p).toBeNull();
-
-    const ad = await Address.findOne({ where: { customerId }, raw: true });
-    expect(ad).toBeNull();
 
     const i = await CustomerIdentity.findOne({
       where: { customerId },

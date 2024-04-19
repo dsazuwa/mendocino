@@ -19,17 +19,19 @@ class Address extends Model<
 
   declare customerId: number;
 
-  declare isDefault: boolean;
+  declare placeId: string;
 
-  declare addressLine1: string;
+  declare suite: CreationOptional<string | null>;
 
-  declare addressLine2: CreationOptional<string | null>;
+  declare name: string;
 
-  declare city: string;
-
-  declare state: string;
+  declare address: string;
 
   declare zipCode: string;
+
+  declare lat: string;
+
+  declare lng: string;
 
   declare createdAt: CreationOptional<Date>;
 
@@ -61,39 +63,52 @@ Address.init(
       primaryKey: true,
       autoIncrement: true,
     },
+
     customerId: {
       type: DataTypes.INTEGER,
       allowNull: false,
     },
-    isDefault: {
-      type: DataTypes.BOOLEAN,
-      allowNull: false,
-      defaultValue: false,
-    },
-    addressLine1: {
+
+    placeId: {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    addressLine2: DataTypes.STRING,
-    city: {
+
+    suite: DataTypes.STRING,
+
+    name: {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    state: {
+
+    address: {
       type: DataTypes.STRING,
       allowNull: false,
     },
+
     zipCode: {
       type: DataTypes.STRING,
       allowNull: false,
-      validate: {
-        len: [5, 5],
-      },
+      validate: { len: [5, 5] },
     },
+
+    lat: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: { max: 32 },
+    },
+
+    lng: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: { max: 32 },
+    },
+
     createdAt: {
       type: DataTypes.DATE,
       allowNull: false,
     },
+
     updatedAt: {
       type: DataTypes.DATE,
       allowNull: false,

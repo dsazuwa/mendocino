@@ -1,21 +1,44 @@
+import { QueryTypes } from 'sequelize';
+
 import sequelize from '../../../db';
 import { Address } from '../models';
 
 type AddressType = {
-  addressLine1: string;
-  addressLine2: string | undefined;
-  city: string;
-  state: string;
+  placeId: string;
+  suite?: string;
+  name: string;
+  address: string;
   zipCode: string;
+  lat: string;
+  lng: string;
 };
 
 const addressService = {
-  getAddresses: (customerId: number) =>
-    Address.findAll({
-      where: { customerId },
-      attributes: ['addressLine1', 'addressLine2', 'city', 'state', 'zipCode'],
-      raw: true,
-    }),
+  getAddresses: async (customerId: number) => {
+    const query = `
+      SELECT 
+        jsonb_agg(jsonb_build_object(
+          'id', a.address_id,
+          'placeId', a.place_id,
+          'suite', a.suite,
+          'name', a.name,
+          'address', a.address,
+          'zipCode', a.zip_code,
+          'lat', a.lat,
+          'lng', a.lng
+        )) AS addresses
+      FROM users.customer_addresses a
+      WHERE a.customer_id = $id;`;
+
+    const result = (await sequelize.query(query, {
+      type: QueryTypes.SELECT,
+      bind: { id: customerId },
+    })) as { addresses?: AddressType & { id: number }[] }[];
+
+    const { addresses } = result[0];
+
+    return addresses || [];
+  },
 
   createAddress: (customerId: number, address: AddressType) =>
     sequelize.transaction(async (transaction) => {
@@ -24,36 +47,18 @@ const addressService = {
         transaction,
       });
 
-      if (addressCount <= 4) {
-        await Address.create({ customerId, ...address }, { transaction });
-        return true;
-      }
+      if (addressCount >= 5) return false;
 
-      return false;
+      await Address.create({ customerId, ...address }, { transaction });
+      return true;
     }),
 
   updateAddress: async (
     customerId: number,
     addressId: number,
-    address: Partial<AddressType>,
+    address: AddressType,
   ) => {
-    const changes: Partial<AddressType> = {};
-
-    const fieldsToUpdate = [
-      'addressLine1',
-      'addressLine2',
-      'city',
-      'state',
-      'zipCode',
-    ] as (keyof Partial<AddressType>)[];
-
-    fieldsToUpdate.forEach((field) => {
-      if (address[field]) changes[field] = address[field];
-    });
-
-    if (Object.keys(changes).length === 0) return 0;
-
-    const result = await Address.update(changes, {
+    const result = await Address.update(address, {
       where: { customerId, addressId },
     });
 

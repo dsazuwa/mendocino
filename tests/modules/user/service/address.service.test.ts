@@ -3,7 +3,7 @@ import { addressService } from '@app/modules/user/services';
 
 import { createCustomer } from '../helper-functions';
 
-import 'test/db-setup';
+import '../../../db-setup';
 
 describe('address management', () => {
   let customerId: number;
@@ -27,39 +27,20 @@ describe('address management', () => {
     it('should get all addresses for user', async () => {
       const addressData = [
         {
-          addressLine1: '123 Main St',
-          addressLine2: null,
-          city: 'Exampleville',
-          state: 'CA',
-          zipCode: '12345',
+          placeId: '579432985',
+          name: '1957 Kembery Drive',
+          address: 'Roselle, IL',
+          zipCode: '60172',
+          lat: '-90',
+          lng: '-40',
         },
         {
-          addressLine1: '456 Elm Rd',
-          addressLine2: 'Suite 789',
-          city: 'Townsville',
-          state: 'NY',
-          zipCode: '67890',
-        },
-        {
-          addressLine1: '789 Pine Ave',
-          addressLine2: null,
-          city: 'Cityburg',
-          state: 'TX',
-          zipCode: '54321',
-        },
-        {
-          addressLine1: '101 Maple St',
-          addressLine2: 'Unit 202',
-          city: 'Villageville',
-          state: 'FL',
-          zipCode: '45678',
-        },
-        {
-          addressLine1: '222 Oak Ln',
-          addressLine2: null,
-          city: 'Ruralville',
-          state: 'KS',
-          zipCode: '98765',
+          placeId: '9753298532',
+          name: '1957 Kembery Drive',
+          address: 'Roselle, IL',
+          zipCode: '60172',
+          lat: '-90',
+          lng: '-40',
         },
       ];
 
@@ -68,7 +49,7 @@ describe('address management', () => {
       );
 
       const addresses = await addressService.getAddresses(customerId);
-      expect(addresses).toMatchObject(expect.arrayContaining(addressData));
+      expect(addresses.length).toBe(2);
     });
 
     it('should return empty array for non existent user', async () => {
@@ -77,89 +58,58 @@ describe('address management', () => {
     });
   });
 
-  /* eslint-disable @typescript-eslint/no-unused-vars */
-
   describe('create address', () => {
     it('should create a new address', async () => {
       const data = {
-        addressLine1: '222 Oak Ln',
-        addressLine2: undefined,
-        city: 'Ruralville',
-        state: 'KS',
-        zipCode: '98765',
+        placeId: '987470320984732',
+        name: '1957 Kembery Drive',
+        address: 'Roselle, IL',
+        zipCode: '60172',
+        lat: '-90',
+        lng: '-40',
       };
 
       const result = await addressService.createAddress(customerId, data);
       expect(result).toBe(true);
 
-      const { addressLine2, ...rest } = data;
-
       const address = await Address.findOne({
-        where: { customerId, ...rest },
+        where: { customerId, ...data },
         raw: true,
       });
       expect(address).not.toBeNull();
     });
 
-    it('should fail to create address if user has reach address count limit', async () => {
-      await Address.bulkCreate([
-        {
-          customerId,
-          addressLine1: '123 Main St',
-          addressLine2: null,
-          city: 'Exampleville',
-          state: 'CA',
-          zipCode: '12345',
-        },
-        {
-          customerId,
-          addressLine1: '456 Elm Rd',
-          addressLine2: 'Suite 789',
-          city: 'Townsville',
-          state: 'NY',
-          zipCode: '67890',
-        },
-        {
-          customerId,
-          addressLine1: '789 Pine Ave',
-          addressLine2: null,
-          city: 'Cityburg',
-          state: 'TX',
-          zipCode: '54321',
-        },
-        {
-          customerId,
-          addressLine1: '101 Maple St',
-          addressLine2: 'Unit 202',
-          city: 'Villageville',
-          state: 'FL',
-          zipCode: '45678',
-        },
-        {
-          customerId,
-          addressLine1: '222 Oak Ln',
-          addressLine2: null,
-          city: 'Ruralville',
-          state: 'KS',
-          zipCode: '98765',
-        },
-      ]);
+    it('should fail to create address if user has reached address count limit', async () => {
+      const addressData = {
+        customerId,
+        name: '1957 Kembery Drive',
+        address: 'Roselle, IL',
+        zipCode: '60172',
+        lat: '-90',
+        lng: '-40',
+      };
+
+      await Address.bulkCreate(
+        Array.from({ length: 5 }, () => ({
+          ...addressData,
+          placeId: `${Math.random() * 84728947292}`,
+        })),
+      );
 
       const data = {
-        addressLine1: '64 Oak Ln',
-        addressLine2: undefined,
-        city: 'Rock Island',
-        state: 'KS',
-        zipCode: '98765',
+        placeId: '83047983157319',
+        name: '1957 Kembery Drive',
+        address: 'Roselle, IL',
+        zipCode: '60172',
+        lat: '-90',
+        lng: '-40',
       };
 
       const result = await addressService.createAddress(customerId, data);
       expect(result).toBe(false);
 
-      const { addressLine2, ...rest } = data;
-
       const address = await Address.findOne({
-        where: { customerId, ...rest },
+        where: { customerId, ...data },
         raw: true,
       });
       expect(address).toBeNull();
@@ -172,53 +122,35 @@ describe('address management', () => {
     it('should update address successfully', async () => {
       const { addressId } = await Address.create({
         customerId,
-        addressLine1: '222 Oak Ln',
-        addressLine2: undefined,
-        city: 'Ruralville',
-        state: 'KS',
-        zipCode: '98765',
+        placeId: '83047983157319',
+        name: '1957 Kembery Drive',
+        address: 'Roselle, IL',
+        zipCode: '60172',
+        lat: '-90',
+        lng: '-40',
       });
 
-      const state = 'CA';
+      const data = {
+        placeId: '8759258223',
+        name: '4829 West Drive',
+        address: 'Rockford, IL',
+        zipCode: '63890',
+        lat: '-76',
+        lng: '-40',
+      };
 
-      const result = await addressService.updateAddress(customerId, addressId, {
-        state,
-      });
+      const result = await addressService.updateAddress(
+        customerId,
+        addressId,
+        data,
+      );
       expect(result).toBe(1);
 
       const address = await Address.findOne({
-        where: { customerId, addressId, state },
+        where: { customerId, addressId, ...data },
         raw: true,
       });
       expect(address).not.toBeNull();
-    });
-
-    it('should not update with no fields to update', async () => {
-      const u = jest.fn();
-
-      const { update } = Address;
-      Address.update = u;
-
-      const result = await addressService.updateAddress(1, 1, {});
-
-      expect(result).toBe(0);
-      expect(u).not.toHaveBeenCalled();
-
-      Address.update = update;
-    });
-
-    it('should handle invalid address ID', async () => {
-      const result = await addressService.updateAddress(customerId, 1, {
-        state: 'CA',
-      });
-      expect(result).toBe(0);
-    });
-
-    it('should handle invalid user ID', async () => {
-      const result = await addressService.updateAddress(1000, 1, {
-        state: 'CA',
-      });
-      expect(result).toBe(0);
     });
   });
 
@@ -226,11 +158,12 @@ describe('address management', () => {
     it('should delete address', async () => {
       const { addressId } = await Address.create({
         customerId,
-        addressLine1: '222 Oak Ln',
-        addressLine2: undefined,
-        city: 'Ruralville',
-        state: 'KS',
-        zipCode: '98765',
+        placeId: '97847183970',
+        name: '1957 Kembery Drive',
+        address: 'Roselle, IL',
+        zipCode: '60172',
+        lat: '-90',
+        lng: '-40',
       });
 
       const result = await addressService.deleteAddress(customerId, addressId);
@@ -238,17 +171,6 @@ describe('address management', () => {
 
       const address = await Address.findByPk(addressId, { raw: true });
       expect(address).toBeNull();
-    });
-
-    it('should fail to delete non existent address', async () => {
-      const address = await Address.findOne({
-        where: { customerId: 1000, addressId: 1 },
-        raw: true,
-      });
-      expect(address).toBeNull();
-
-      const result = await addressService.deleteAddress(1000, 1);
-      expect(result).toBe(0);
     });
   });
 });

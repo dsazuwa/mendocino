@@ -1,8 +1,8 @@
 import { QueryTypes } from 'sequelize';
 
 import sequelize from '../../../db';
+import { ProfileFormSchema } from '../middleware/validators/users.validator';
 import {
-  Address,
   Customer,
   CustomerEmail,
   CustomerIdentity,
@@ -16,7 +16,6 @@ import {
 } from '../models';
 import { JwtProviderType } from '../types';
 import { USER_SCHEMA } from '../utils/constants';
-import { ProfileFormSchema } from '../middleware/validators/users.validator';
 import customerPhoneService from './customer-phone.service';
 
 const deleteIdentity = (customerId: number, provider: ProviderType) =>
@@ -37,8 +36,6 @@ const deactivate = (customerId: number) =>
 
 const deleteCustomer = async (customerId: number) =>
   sequelize.transaction(async (transaction) => {
-    await Address.destroy({ where: { customerId }, transaction });
-
     const phone = await CustomerPhone.findOne({
       where: { customerId },
       transaction,

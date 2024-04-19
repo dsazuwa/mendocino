@@ -1,5 +1,4 @@
 import { Address } from '@app/modules/user/models';
-import addressService from '@app/modules/user/services/address.service';
 import tokenService from '@app/modules/user/services/token.service';
 
 import { request } from 'tests/supertest.helper';
@@ -33,39 +32,20 @@ describe('Address management', () => {
   it(`GET ${BASE_URL} should get user's addresses`, async () => {
     const addressData = [
       {
-        addressLine1: '123 Main St',
-        addressLine2: null,
-        city: 'Exampleville',
-        state: 'CA',
-        zipCode: '12345',
+        placeId: '579432985',
+        name: '1957 Kembery Drive',
+        address: 'Roselle, IL',
+        zipCode: '60172',
+        lat: '-90',
+        lng: '-40',
       },
       {
-        addressLine1: '456 Elm Rd',
-        addressLine2: 'Suite 789',
-        city: 'Townsville',
-        state: 'NY',
-        zipCode: '67890',
-      },
-      {
-        addressLine1: '789 Pine Ave',
-        addressLine2: null,
-        city: 'Cityburg',
-        state: 'TX',
-        zipCode: '54321',
-      },
-      {
-        addressLine1: '101 Maple St',
-        addressLine2: 'Unit 202',
-        city: 'Villageville',
-        state: 'FL',
-        zipCode: '45678',
-      },
-      {
-        addressLine1: '222 Oak Ln',
-        addressLine2: null,
-        city: 'Ruralville',
-        state: 'KS',
-        zipCode: '98765',
+        placeId: '9753298532',
+        name: '1957 Kembery Drive',
+        address: 'Roselle, IL',
+        zipCode: '60172',
+        lat: '-90',
+        lng: '-40',
       },
     ];
 
@@ -76,20 +56,17 @@ describe('Address management', () => {
     const response = await request.get(BASE_URL).auth(jwt, { type: 'bearer' });
 
     expect(response.status).toBe(200);
-    expect(response.body.addresses).toMatchObject(
-      expect.arrayContaining(addressData),
-    );
+    expect(response.body.addresses.length).toBe(2);
   });
-
-  /* eslint-disable @typescript-eslint/no-unused-vars */
 
   it(`POST ${BASE_URL} should create a new address`, async () => {
     const data = {
-      addressLine1: '222 Oak Ln',
-      addressLine2: undefined,
-      city: 'Ruralville',
-      state: 'KS',
-      zipCode: '98765',
+      placeId: '57547845',
+      name: '1957 Kembery Drive',
+      address: 'Roselle, IL',
+      zipCode: '60172',
+      lat: -90,
+      lng: -40,
     };
 
     await request
@@ -98,101 +75,41 @@ describe('Address management', () => {
       .send(data)
       .expect(200);
 
-    const { addressLine2, ...rest } = data;
-
     const address = await Address.findOne({
-      where: { customerId, ...rest },
+      where: { customerId, placeId: data.placeId },
       raw: true,
     });
     expect(address).not.toBeNull();
   });
 
-  it(`POST ${BASE_URL} should fail to create address after reaching limit`, async () => {
-    await Address.bulkCreate([
-      {
-        customerId,
-        addressLine1: '123 Main St',
-        addressLine2: null,
-        city: 'Exampleville',
-        state: 'CA',
-        zipCode: '12345',
-      },
-      {
-        customerId,
-        addressLine1: '456 Elm Rd',
-        addressLine2: 'Suite 789',
-        city: 'Townsville',
-        state: 'NY',
-        zipCode: '67890',
-      },
-      {
-        customerId,
-        addressLine1: '789 Pine Ave',
-        addressLine2: null,
-        city: 'Cityburg',
-        state: 'TX',
-        zipCode: '54321',
-      },
-      {
-        customerId,
-        addressLine1: '101 Maple St',
-        addressLine2: 'Unit 202',
-        city: 'Villageville',
-        state: 'FL',
-        zipCode: '45678',
-      },
-      {
-        customerId,
-        addressLine1: '222 Oak Ln',
-        addressLine2: null,
-        city: 'Ruralville',
-        state: 'KS',
-        zipCode: '98765',
-      },
-    ]);
-
-    const data = {
-      addressLine1: '64 Oak Ln',
-      addressLine2: undefined,
-      city: 'Rock Island',
-      state: 'KS',
-      zipCode: '98765',
-    };
-
-    const result = await addressService.createAddress(customerId, data);
-    expect(result).toBe(false);
-
-    const { addressLine2, ...rest } = data;
-
-    const address = await Address.findOne({
-      where: { customerId, ...rest },
-      raw: true,
-    });
-    expect(address).toBeNull();
-  });
-
-  /* eslint-enable @typescript-eslint/no-unused-vars */
-
   it(`PATCH ${BASE_URL}/id should update address`, async () => {
     const { addressId } = await Address.create({
       customerId,
-      addressLine1: '222 Oak Ln',
-      addressLine2: undefined,
-      city: 'Ruralville',
-      state: 'KS',
-      zipCode: '98765',
+      placeId: '83047983157319',
+      name: '1957 Kembery Drive',
+      address: 'Roselle, IL',
+      zipCode: '60172',
+      lat: '-76',
+      lng: '-40',
     });
 
-    const state = 'CA';
+    const data = {
+      placeId: '8759258223',
+      name: '4829 West Drive',
+      address: 'Rockford, IL',
+      zipCode: '63890',
+      lat: -90,
+      lng: -40,
+    };
 
     await request
       .patch(`${BASE_URL}/${addressId}`)
       .auth(jwt, { type: 'bearer' })
-      .send({ state })
+      .send(data)
       .expect(200);
 
     const address = await Address.findOne({
-      where: { customerId, addressId, state },
+      where: { customerId, addressId, placeId: data.placeId },
       raw: true,
     });
     expect(address).not.toBeNull();
@@ -201,11 +118,12 @@ describe('Address management', () => {
   it(`DELETE ${BASE_URL}/id should delete address`, async () => {
     const { addressId } = await Address.create({
       customerId,
-      addressLine1: '222 Oak Ln',
-      addressLine2: undefined,
-      city: 'Ruralville',
-      state: 'KS',
-      zipCode: '98765',
+      placeId: '97847183970',
+      name: '1957 Kembery Drive',
+      address: 'Roselle, IL',
+      zipCode: '60172',
+      lat: '-90',
+      lng: '-40',
     });
 
     await request

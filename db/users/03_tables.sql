@@ -141,17 +141,28 @@ CREATE TABLE users.customer_phones (
 CREATE TABLE users.customer_addresses (
   address_id SERIAL,
   customer_id INTEGER NOT NULL,
-  is_default BOOLEAN NOT NULL,
-  address_line1 VARCHAR(255) NOT NULL,
-  address_line2 VARCHAR(255),
-  city VARCHAR(100) NOT NULL,
-  state VARCHAR(50) NOT NULL,
+  place_id VARCHAR(255) NOT NULL,
+  suite VARCHAR(50),
+  name VARCHAR(100) NOT NULL,
+  address VARCHAR(100) NOT NULL,
   zip_code VARCHAR(5) NOT NULL,
+  lat VARCHAR(32) NOT NULL,
+  lng VARCHAR(32) NOT NULL,
   created_at TIMESTAMP NOT NULL,
   updated_at TIMESTAMP NOT NULL,
   PRIMARY KEY (address_id),
   CONSTRAINT fk_customer_id FOREIGN KEY (customer_id) REFERENCES users.customers (customer_id) ON DELETE CASCADE ON UPDATE NO ACTION
 );
+
+-- CREATE TABLE users.default_customer_addresses (
+--   customer_id INTEGER NOT NULL,
+--   address_id INTEGER NOT NULL,
+--   created_at TIMESTAMP NOT NULL,
+--   updated_at TIMESTAMP NOT NULL,
+--   PRIMARY KEY (customer_id),
+--   CONSTRAINT fk_customer_id FOREIGN KEY (customer_id) REFERENCES users.customers (customer_id) ON DELETE CASCADE ON UPDATE NO ACTION,
+--   CONSTRAINT fk_address_id FOREIGN KEY (address_id) REFERENCES users.customer_addresses (address_id) ON DELETE CASCADE ON UPDATE NO ACTION
+-- );
 
 CREATE TABLE users.admin_refresh_tokens (
   token_id SERIAL,
