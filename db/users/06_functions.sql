@@ -430,8 +430,9 @@ BEGIN
           'lat', a.lat,
           'lng', a.lng
         ))
-      FROM users.customer_addresses a
-      WHERE a.customer_id = p_customer_id
+      FROM users.addresses a 
+      JOIN users.customer_addresses c ON c.address_id = a.address_id
+      WHERE c.customer_id = p_customer_id
     ) AS addresses
   FROM
     users.customers c

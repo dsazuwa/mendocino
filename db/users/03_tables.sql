@@ -1,8 +1,17 @@
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
 -- Create sequences
 CREATE SEQUENCE users.customer_id_seq START 1 INCREMENT 2;
+
 CREATE SEQUENCE users.admin_id_seq START 2 INCREMENT 2;
 
 -- Create tables
+CREATE TABLE users.guests (
+  guest_id UUID DEFAULT uuid_generate_v4(),
+  created_at TIMESTAMP NOT NULL,
+  PRIMARY KEY (guest_id)
+);
+
 CREATE TABLE users.emails (
   email_id SERIAL,
   email VARCHAR(255) NOT NULL,
@@ -14,7 +23,7 @@ CREATE TABLE users.admins (
   admin_id INTEGER DEFAULT nextval('users.admin_id_seq'),
   first_name VARCHAR(50) NOT NULL,
   last_name VARCHAR(50) NOT NULL,
-  status users.enum_admin_status NOT NULL,
+  STATUS users.enum_admin_status NOT NULL,
   created_at TIMESTAMP NOT NULL,
   updated_at TIMESTAMP NOT NULL,
   CHECK (admin_id % 2 = 0),
@@ -25,7 +34,7 @@ CREATE TABLE users.customers (
   customer_id INTEGER DEFAULT nextval('users.customer_id_seq'),
   first_name VARCHAR(50) NOT NULL,
   last_name VARCHAR(50) NOT NULL,
-  status users.enum_customer_status NOT NULL,
+  STATUS users.enum_customer_status NOT NULL,
   created_at TIMESTAMP NOT NULL,
   updated_at TIMESTAMP NOT NULL,
   CHECK (customer_id % 2 = 1),
@@ -35,7 +44,7 @@ CREATE TABLE users.customers (
 CREATE TABLE users.admin_accounts (
   admin_id INTEGER NOT NULL,
   email_id INTEGER NOT NULL UNIQUE,
-  password VARCHAR(255) NOT NULL,
+  PASSWORD VARCHAR(255) NOT NULL,
   created_at TIMESTAMP NOT NULL,
   updated_at TIMESTAMP NOT NULL,
   PRIMARY KEY (admin_id),
@@ -54,7 +63,7 @@ CREATE TABLE users.customer_emails (
 
 CREATE TABLE users.customer_passwords (
   customer_id INTEGER NOT NULL,
-  password VARCHAR(255) NOT NULL,
+  PASSWORD VARCHAR(255) NOT NULL,
   created_at TIMESTAMP NOT NULL,
   updated_at TIMESTAMP NOT NULL,
   PRIMARY KEY (customer_id),
@@ -64,22 +73,22 @@ CREATE TABLE users.customer_passwords (
 CREATE TABLE users.admin_otps (
   otp_id SERIAL,
   admin_id INTEGER NOT NULL,
-  type users.enum_admin_otps_type NOT NULL,
-  password VARCHAR(100) NOT NULL,
+  TYPE users.enum_admin_otps_type NOT NULL,
+  PASSWORD VARCHAR(100) NOT NULL,
   expires_at TIMESTAMP WITH TIME ZONE NOT NULL,
   PRIMARY KEY (otp_id),
-  UNIQUE (admin_id, type),
+  UNIQUE (admin_id, TYPE),
   CONSTRAINT fk_admin_id FOREIGN KEY (admin_id) REFERENCES users.admins (admin_id) ON DELETE CASCADE ON UPDATE NO ACTION
 );
 
 CREATE TABLE users.customer_otps (
   otp_id SERIAL,
   customer_id INTEGER NOT NULL,
-  type users.enum_customer_otps_type NOT NULL,
-  password VARCHAR(100) NOT NULL,
+  TYPE users.enum_customer_otps_type NOT NULL,
+  PASSWORD VARCHAR(100) NOT NULL,
   expires_at TIMESTAMP WITH TIME ZONE NOT NULL,
   PRIMARY KEY (otp_id),
-  UNIQUE (customer_id, type),
+  UNIQUE (customer_id, TYPE),
   CONSTRAINT fk_customer_id FOREIGN KEY (customer_id) REFERENCES users.customers (customer_id) ON DELETE CASCADE ON UPDATE NO ACTION
 );
 
@@ -119,7 +128,7 @@ CREATE TABLE users.phones (
 CREATE TABLE users.admin_phones (
   admin_id INTEGER,
   phone_id INTEGER UNIQUE NOT NULL,
-  status users.enum_admin_phones_status NOT NULL,
+  STATUS users.enum_admin_phones_status NOT NULL,
   created_at TIMESTAMP NOT NULL,
   updated_at TIMESTAMP NOT NULL,
   PRIMARY KEY (admin_id),
@@ -130,7 +139,7 @@ CREATE TABLE users.admin_phones (
 CREATE TABLE users.customer_phones (
   customer_id INTEGER NOT NULL,
   phone_id INTEGER UNIQUE NOT NULL,
-  status users.enum_customer_phones_status NOT NULL,
+  STATUS users.enum_customer_phones_status NOT NULL,
   created_at TIMESTAMP NOT NULL,
   updated_at TIMESTAMP NOT NULL,
   PRIMARY KEY (customer_id),
@@ -138,9 +147,8 @@ CREATE TABLE users.customer_phones (
   CONSTRAINT fk_phone_id FOREIGN KEY (phone_id) REFERENCES users.phones (phone_id) ON DELETE CASCADE ON UPDATE NO ACTION
 );
 
-CREATE TABLE users.customer_addresses (
+CREATE TABLE users.addresses (
   address_id SERIAL,
-  customer_id INTEGER NOT NULL,
   place_id VARCHAR(255) NOT NULL,
   suite VARCHAR(50),
   name VARCHAR(100) NOT NULL,
@@ -148,21 +156,30 @@ CREATE TABLE users.customer_addresses (
   zip_code VARCHAR(5) NOT NULL,
   lat VARCHAR(32) NOT NULL,
   lng VARCHAR(32) NOT NULL,
+  drop_off_option users.enum_drop_off_option NOT NULL DEFAULT 'Leave it at my door' :: users.enum_drop_off_option,
+  instructions TEXT,
   created_at TIMESTAMP NOT NULL,
   updated_at TIMESTAMP NOT NULL,
-  PRIMARY KEY (address_id),
-  CONSTRAINT fk_customer_id FOREIGN KEY (customer_id) REFERENCES users.customers (customer_id) ON DELETE CASCADE ON UPDATE NO ACTION
+  PRIMARY KEY (address_id)
 );
 
--- CREATE TABLE users.default_customer_addresses (
---   customer_id INTEGER NOT NULL,
---   address_id INTEGER NOT NULL,
---   created_at TIMESTAMP NOT NULL,
---   updated_at TIMESTAMP NOT NULL,
---   PRIMARY KEY (customer_id),
---   CONSTRAINT fk_customer_id FOREIGN KEY (customer_id) REFERENCES users.customers (customer_id) ON DELETE CASCADE ON UPDATE NO ACTION,
---   CONSTRAINT fk_address_id FOREIGN KEY (address_id) REFERENCES users.customer_addresses (address_id) ON DELETE CASCADE ON UPDATE NO ACTION
--- );
+CREATE TABLE users.guest_addresses (
+  guest_id UUID NOT NULL,
+  address_id INTEGER NOT NULL,
+  created_at TIMESTAMP NOT NULL,
+  PRIMARY KEY (guest_id, address_id),
+  CONSTRAINT fk_guest_id FOREIGN KEY (guest_id) REFERENCES users.guests (guest_id) ON DELETE CASCADE ON UPDATE NO ACTION,
+  CONSTRAINT fk_address_id FOREIGN KEY (address_id) REFERENCES users.addresses (address_id) ON DELETE CASCADE ON UPDATE NO ACTION
+);
+
+CREATE TABLE users.customer_addresses (
+  customer_id INTEGER NOT NULL,
+  address_id INTEGER NOT NULL,
+  created_at TIMESTAMP NOT NULL,
+  PRIMARY KEY (customer_id, address_id),
+  CONSTRAINT fk_customer_id FOREIGN KEY (customer_id) REFERENCES users.customers (customer_id) ON DELETE CASCADE ON UPDATE NO ACTION,
+  CONSTRAINT fk_address_id FOREIGN KEY (address_id) REFERENCES users.addresses (address_id) ON DELETE CASCADE ON UPDATE NO ACTION
+);
 
 CREATE TABLE users.admin_refresh_tokens (
   token_id SERIAL,

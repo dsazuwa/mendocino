@@ -44,11 +44,14 @@ ALTER TABLE IF EXISTS users.customer_otps DROP CONSTRAINT fk_customer_id;
 ALTER TABLE IF EXISTS users.customer_identities DROP CONSTRAINT fk_customer_id;
 ALTER TABLE IF EXISTS users.admins_roles DROP CONSTRAINT fk_admin_id;
 ALTER TABLE IF EXISTS users.admins_roles DROP CONSTRAINT fk_role_id;
-ALTER TABLE IF EXISTS users.customer_addresses DROP CONSTRAINT fk_customer_id;
 ALTER TABLE IF EXISTS users.admin_phones DROP CONSTRAINT fk_admin_id;
 ALTER TABLE IF EXISTS users.admin_phones DROP CONSTRAINT fk_phone_id;
 ALTER TABLE IF EXISTS users.customer_phones DROP CONSTRAINT fk_customer_id;
 ALTER TABLE IF EXISTS users.customer_phones DROP CONSTRAINT fk_phone_id;
+ALTER TABLE IF EXISTS users.guest_addresses DROP CONSTRAINT fk_guest_id;
+ALTER TABLE IF EXISTS users.guest_addresses DROP CONSTRAINT fk_address_id;
+ALTER TABLE IF EXISTS users.customer_addresses DROP CONSTRAINT fk_customer_id;
+ALTER TABLE IF EXISTS users.customer_addresses DROP CONSTRAINT fk_address_id;
 ALTER TABLE IF EXISTS users.admin_refresh_tokens DROP CONSTRAINT fk_admin_id;
 ALTER TABLE IF EXISTS users.customer_refresh_tokens DROP CONSTRAINT fk_customer_id;
 
@@ -56,6 +59,8 @@ ALTER TABLE IF EXISTS users.customer_refresh_tokens DROP CONSTRAINT fk_customer_
 DROP TABLE IF EXISTS users.customer_refresh_tokens;
 DROP TABLE IF EXISTS users.admin_refresh_tokens;
 DROP TABLE IF EXISTS users.customer_addresses;
+DROP TABLE IF EXISTS users.guest_addresses;
+DROP TABLE IF EXISTS users.addresses;
 DROP TABLE IF EXISTS users.customer_phones;
 DROP TABLE IF EXISTS users.admin_phones;
 DROP TABLE IF EXISTS users.phones;
@@ -70,12 +75,16 @@ DROP TABLE IF EXISTS users.admin_accounts;
 DROP TABLE IF EXISTS users.customers;
 DROP TABLE IF EXISTS users.admins;
 DROP TABLE IF EXISTS users.emails;
+DROP TABLE IF EXISTS users.guests;
 
 -- Drop sequences
 DROP SEQUENCE IF EXISTS users.admin_id_seq;
 DROP SEQUENCE IF EXISTS users.customer_id_seq;
 
+DROP EXTENSION IF EXISTS "uuid-ossp";
+
 -- Drop enums
+DROP TYPE IF EXISTS users.enum_drop_off_option;
 DROP TYPE IF EXISTS users.enum_customer_phones_status;
 DROP TYPE IF EXISTS users.enum_admin_phones_status;
 DROP TYPE IF EXISTS users.enum_customer_identities_provider;

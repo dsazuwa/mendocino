@@ -4,20 +4,18 @@ import {
   InferAttributes,
   InferCreationAttributes,
   Model,
-  SaveOptions,
-  ValidationError,
 } from 'sequelize';
 
 import sequelize from '../../../db';
 import { TABLENAMES, USER_SCHEMA } from '../utils/constants';
+
+export type DropOffType = 'Hand it to me' | 'Leave it at my door';
 
 class Address extends Model<
   InferAttributes<Address>,
   InferCreationAttributes<Address>
 > {
   declare addressId: CreationOptional<number>;
-
-  declare customerId: number;
 
   declare placeId: string;
 
@@ -33,27 +31,13 @@ class Address extends Model<
 
   declare lng: string;
 
+  declare dropOffOption: CreationOptional<DropOffType>;
+
+  declare instructions: CreationOptional<string>;
+
   declare createdAt: CreationOptional<Date>;
 
   declare updatedAt: CreationOptional<Date>;
-
-  public static async enforceAddressLimit(
-    address: Address,
-    options?: SaveOptions,
-  ) {
-    const { transaction } = options || {};
-
-    const addressCount = await Address.count({
-      where: { customerId: address.customerId },
-      transaction,
-    });
-
-    if (addressCount === 5)
-      throw new ValidationError(
-        'User has reached the maximum address limit',
-        [],
-      );
-  }
 }
 
 Address.init(
@@ -62,11 +46,6 @@ Address.init(
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,
-    },
-
-    customerId: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
     },
 
     placeId: {
@@ -104,6 +83,14 @@ Address.init(
       validate: { max: 32 },
     },
 
+    dropOffOption: {
+      type: DataTypes.ENUM('Hand it to me', 'Leave it at my door'),
+      allowNull: false,
+      defaultValue: 'Leave it at my door',
+    },
+
+    instructions: DataTypes.TEXT,
+
     createdAt: {
       type: DataTypes.DATE,
       allowNull: false,
@@ -119,9 +106,6 @@ Address.init(
     underscored: true,
     schema: USER_SCHEMA,
     tableName: TABLENAMES.ADDRESS,
-    hooks: {
-      beforeSave: Address.enforceAddressLimit,
-    },
   },
 );
 

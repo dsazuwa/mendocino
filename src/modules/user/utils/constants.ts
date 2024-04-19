@@ -3,6 +3,7 @@ export const USER_SCHEMA = 'users';
 export const TABLENAMES = {
   EMAIL: 'emails',
   PHONE: 'phones',
+  GUEST: 'guests',
 
   ROLE: 'roles',
   ADMIN_ROLE: 'admins_roles',
@@ -20,7 +21,10 @@ export const TABLENAMES = {
   CUSTOMER_OTP: 'customer_otps',
   CUSTOMER_REFRESH_TOKEN: 'customer_refresh_tokens',
   CUSTOMER_PHONE: 'customer_phones',
-  ADDRESS: 'customer_addresses',
+
+  ADDRESS: 'addresses',
+  CUSTOMER_ADDRESS: 'customer_addresses',
+  GUEST_ADDRESS: 'guest_addresses',
 };
 
 export const ROLES = {

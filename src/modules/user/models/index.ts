@@ -1,18 +1,21 @@
-import Address from './address.model';
+import Address, { DropOffType } from './address.model';
 import AdminAccount from './admin-account.model';
 import AdminOTP, { AdminOTPType } from './admin-otp.model';
 import AdminPhone, { AdminPhoneStatusType } from './admin-phone.model';
 import AdminRefreshToken from './admin-refresh-token.model';
 import AdminRole from './admin-role.model';
 import Admin, { AdminStatusType } from './admin.model';
+import CustomerAddress from './customer-address';
 import CustomerEmail from './customer-email.model';
 import CustomerIdentity, { ProviderType } from './customer-identity.model';
 import CustomerOTP, { CustomerOTPType } from './customer-otp.model';
+import CustomerPassword from './customer-password.model';
 import CustomerPhone, { CustomerPhoneStatusType } from './customer-phone.model';
 import CustomerRefreshToken from './customer-refresh-token.model';
 import Customer, { CustomerStatusType } from './customer.model';
 import Email from './email.model';
-import CustomerPassword from './customer-password.model';
+import Guest from './guest';
+import GuestAddress from './guest-address.model';
 import Phone from './phone.model';
 import Role from './role.model';
 
@@ -126,8 +129,32 @@ Customer.hasOne(CustomerPhone, {
   onDelete: 'CASCADE',
 });
 
-Customer.hasMany(Address, { foreignKey: 'customerId', onDelete: 'CASCADE' });
-Address.belongsTo(Customer, { foreignKey: 'customerId', onDelete: 'CASCADE' });
+Customer.hasMany(CustomerAddress, {
+  foreignKey: 'customerId',
+  onDelete: 'CASCADE',
+});
+CustomerAddress.belongsTo(Customer, {
+  foreignKey: 'customerId',
+  onDelete: 'CASCADE',
+});
+
+Address.hasMany(CustomerAddress, {
+  foreignKey: 'addressId',
+  onDelete: 'CASCADE',
+});
+CustomerAddress.belongsTo(Address, {
+  foreignKey: 'addressId',
+  onDelete: 'CASCADE',
+});
+
+Guest.hasMany(GuestAddress, { foreignKey: 'guestId', onDelete: 'CASCADE' });
+GuestAddress.belongsTo(Guest, { foreignKey: 'guestId', onDelete: 'CASCADE' });
+
+Address.hasMany(GuestAddress, { foreignKey: 'addressId', onDelete: 'CASCADE' });
+GuestAddress.belongsTo(Address, {
+  foreignKey: 'addressId',
+  onDelete: 'CASCADE',
+});
 
 Admin.hasMany(AdminRefreshToken, {
   foreignKey: 'adminId',
@@ -159,6 +186,7 @@ export {
   AdminRole,
   AdminStatusType,
   Customer,
+  CustomerAddress,
   CustomerEmail,
   CustomerIdentity,
   CustomerOTP,
@@ -168,7 +196,10 @@ export {
   CustomerPhoneStatusType,
   CustomerRefreshToken,
   CustomerStatusType,
+  DropOffType,
   Email,
+  Guest,
+  GuestAddress,
   Phone,
   ProviderType,
   Role,
