@@ -1,9 +1,9 @@
-import { Address } from '@app/modules/user/models';
+import { Address, CustomerAddress } from '@app/modules/user/models';
 import { addressService } from '@app/modules/user/services';
 
 import { createCustomer } from '../helper-functions';
 
-import '../../../db-setup';
+import 'tests/db-setup';
 
 describe('address management', () => {
   let customerId: number;
@@ -25,31 +25,23 @@ describe('address management', () => {
 
   describe('get addresses', () => {
     it('should get all addresses for user', async () => {
-      const addressData = [
-        {
-          placeId: '579432985',
+      const result = await Address.bulkCreate(
+        Array.from({ length: 3 }, () => ({
+          placeId: `${Math.random() * 84728947292}`,
           name: '1957 Kembery Drive',
           address: 'Roselle, IL',
           zipCode: '60172',
           lat: '-90',
           lng: '-40',
-        },
-        {
-          placeId: '9753298532',
-          name: '1957 Kembery Drive',
-          address: 'Roselle, IL',
-          zipCode: '60172',
-          lat: '-90',
-          lng: '-40',
-        },
-      ];
+        })),
+      );
 
-      await Address.bulkCreate(
-        addressData.map((data) => ({ customerId, ...data })),
+      await CustomerAddress.bulkCreate(
+        result.map(({ addressId }) => ({ customerId, addressId })),
       );
 
       const addresses = await addressService.getAddresses(customerId);
-      expect(addresses.length).toBe(2);
+      expect(addresses.length).toBe(3);
     });
 
     it('should return empty array for non existent user', async () => {
@@ -73,10 +65,16 @@ describe('address management', () => {
       expect(result).toBe(true);
 
       const address = await Address.findOne({
-        where: { customerId, ...data },
+        where: { ...data },
         raw: true,
       });
       expect(address).not.toBeNull();
+
+      const customerAddress = await CustomerAddress.findOne({
+        where: { addressId: address?.addressId, customerId },
+        raw: true,
+      });
+      expect(customerAddress).not.toBeNull();
     });
 
     it('should fail to create address if user has reached address count limit', async () => {
@@ -89,11 +87,15 @@ describe('address management', () => {
         lng: '-40',
       };
 
-      await Address.bulkCreate(
+      const createResult = await Address.bulkCreate(
         Array.from({ length: 5 }, () => ({
           ...addressData,
           placeId: `${Math.random() * 84728947292}`,
         })),
+      );
+
+      await CustomerAddress.bulkCreate(
+        createResult.map(({ addressId }) => ({ customerId, addressId })),
       );
 
       const data = {
@@ -109,19 +111,16 @@ describe('address management', () => {
       expect(result).toBe(false);
 
       const address = await Address.findOne({
-        where: { customerId, ...data },
+        where: { ...data },
         raw: true,
       });
       expect(address).toBeNull();
     });
   });
 
-  /* eslint-enable @typescript-eslint/no-unused-vars */
-
   describe('update address', () => {
     it('should update address successfully', async () => {
       const { addressId } = await Address.create({
-        customerId,
         placeId: '83047983157319',
         name: '1957 Kembery Drive',
         address: 'Roselle, IL',
@@ -129,6 +128,8 @@ describe('address management', () => {
         lat: '-90',
         lng: '-40',
       });
+
+      await CustomerAddress.create({ customerId, addressId });
 
       const data = {
         placeId: '8759258223',
@@ -147,7 +148,7 @@ describe('address management', () => {
       expect(result).toBe(1);
 
       const address = await Address.findOne({
-        where: { customerId, addressId, ...data },
+        where: { addressId, ...data },
         raw: true,
       });
       expect(address).not.toBeNull();
@@ -157,7 +158,6 @@ describe('address management', () => {
   describe('delete address', () => {
     it('should delete address', async () => {
       const { addressId } = await Address.create({
-        customerId,
         placeId: '97847183970',
         name: '1957 Kembery Drive',
         address: 'Roselle, IL',
@@ -165,6 +165,8 @@ describe('address management', () => {
         lat: '-90',
         lng: '-40',
       });
+
+      await CustomerAddress.create({ customerId, addressId });
 
       const result = await addressService.deleteAddress(customerId, addressId);
       expect(result).toBe(1);

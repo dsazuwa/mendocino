@@ -1,4 +1,4 @@
-import { Address } from '@app/modules/user/models';
+import { Address, CustomerAddress } from '@app/modules/user/models';
 import tokenService from '@app/modules/user/services/token.service';
 
 import { request } from 'tests/supertest.helper';
@@ -26,7 +26,7 @@ describe('Address management', () => {
   });
 
   beforeEach(async () => {
-    await Address.destroy({ where: { customerId } });
+    await Address.destroy({ where: {} });
   });
 
   it(`GET ${BASE_URL} should get user's addresses`, async () => {
@@ -49,8 +49,12 @@ describe('Address management', () => {
       },
     ];
 
-    await Address.bulkCreate(
+    const result = await Address.bulkCreate(
       addressData.map((data) => ({ customerId, ...data })),
+    );
+
+    await CustomerAddress.bulkCreate(
+      result.map(({ addressId }) => ({ customerId, addressId })),
     );
 
     const response = await request.get(BASE_URL).auth(jwt, { type: 'bearer' });
@@ -76,7 +80,7 @@ describe('Address management', () => {
       .expect(200);
 
     const address = await Address.findOne({
-      where: { customerId, placeId: data.placeId },
+      where: { placeId: data.placeId },
       raw: true,
     });
     expect(address).not.toBeNull();
@@ -84,14 +88,15 @@ describe('Address management', () => {
 
   it(`PATCH ${BASE_URL}/id should update address`, async () => {
     const { addressId } = await Address.create({
-      customerId,
       placeId: '83047983157319',
       name: '1957 Kembery Drive',
       address: 'Roselle, IL',
       zipCode: '60172',
-      lat: '-76',
+      lat: '-90',
       lng: '-40',
     });
+
+    await CustomerAddress.create({ customerId, addressId });
 
     const data = {
       placeId: '8759258223',
@@ -109,7 +114,7 @@ describe('Address management', () => {
       .expect(200);
 
     const address = await Address.findOne({
-      where: { customerId, addressId, placeId: data.placeId },
+      where: { addressId, placeId: data.placeId },
       raw: true,
     });
     expect(address).not.toBeNull();
@@ -117,7 +122,6 @@ describe('Address management', () => {
 
   it(`DELETE ${BASE_URL}/id should delete address`, async () => {
     const { addressId } = await Address.create({
-      customerId,
       placeId: '97847183970',
       name: '1957 Kembery Drive',
       address: 'Roselle, IL',
@@ -125,6 +129,8 @@ describe('Address management', () => {
       lat: '-90',
       lng: '-40',
     });
+
+    await CustomerAddress.create({ customerId, addressId });
 
     await request
       .delete(`${BASE_URL}/${addressId}`)

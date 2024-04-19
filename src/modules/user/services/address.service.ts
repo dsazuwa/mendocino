@@ -1,7 +1,7 @@
 import { QueryTypes } from 'sequelize';
 
 import sequelize from '../../../db';
-import { Address } from '../models';
+import { Address, CustomerAddress } from '../models';
 
 type AddressType = {
   placeId: string;
@@ -27,8 +27,9 @@ const addressService = {
           'lat', a.lat,
           'lng', a.lng
         )) AS addresses
-      FROM users.customer_addresses a
-      WHERE a.customer_id = $id;`;
+      FROM users.addresses a 
+      JOIN users.customer_addresses c ON c.address_id = a.address_id
+      WHERE c.customer_id = $id;`;
 
     const result = (await sequelize.query(query, {
       type: QueryTypes.SELECT,
@@ -42,14 +43,20 @@ const addressService = {
 
   createAddress: (customerId: number, address: AddressType) =>
     sequelize.transaction(async (transaction) => {
-      const addressCount = await Address.count({
+      const addressCount = await CustomerAddress.count({
         where: { customerId },
         transaction,
       });
 
       if (addressCount >= 5) return false;
 
-      await Address.create({ customerId, ...address }, { transaction });
+      const { addressId } = await Address.create(
+        { ...address },
+        { transaction },
+      );
+
+      await CustomerAddress.create({ customerId, addressId }, { transaction });
+
       return true;
     }),
 
@@ -58,15 +65,28 @@ const addressService = {
     addressId: number,
     address: AddressType,
   ) => {
+    const customerAddress = await CustomerAddress.findOne({
+      where: { addressId, customerId },
+    });
+
+    if (customerAddress === null) return 0;
+
     const result = await Address.update(address, {
-      where: { customerId, addressId },
+      where: { addressId },
     });
 
     return result[0];
   },
 
-  deleteAddress: (customerId: number, addressId: number) =>
-    Address.destroy({ where: { customerId, addressId } }),
+  deleteAddress: async (customerId: number, addressId: number) => {
+    const customerAddress = await CustomerAddress.findOne({
+      where: { addressId, customerId },
+    });
+
+    if (customerAddress === null) return 0;
+
+    return Address.destroy({ where: { addressId } });
+  },
 };
 
 export default addressService;
