@@ -15,10 +15,10 @@ export default function NavLinks() {
         <Link
           key={`account-link-${i}`}
           href={href}
-          className='flex flex-row items-center justify-between p-4'
+          className='inline-flex items-center justify-between p-4 transition-colors hover:bg-neutral-100'
         >
-          <span className='flex flex-row items-center text-xs'>
-            <Icon className='mr-4 w-5 fill-neutral-500' />
+          <span className='inline-flex items-center text-xs'>
+            <Icon className='mr-4 w-5 shrink-0 fill-neutral-500' />
             {name}
           </span>
 
