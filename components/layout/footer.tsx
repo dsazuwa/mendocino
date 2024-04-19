@@ -36,7 +36,7 @@ function FooterIcon({ children }: { children: ReactNode }) {
 export default function Footer() {
   return (
     <div className='mt-auto border-t border-neutral-100'>
-      <div className='mx-auto flex max-w-screen-xl flex-col justify-between gap-4 px-4 py-8 sm:flex-row sm:px-8'>
+      <div className='mx-auto flex max-w-screen-2xl flex-col justify-between gap-4 px-4 py-8 sm:flex-row sm:px-8'>
         <div className='flex flex-col gap-4'>
           <Logo />
 
