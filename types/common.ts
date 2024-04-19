@@ -11,6 +11,7 @@ export type GenericResponse = { message: string };
 export type Address = {
   suite?: string;
   id: string;
+  placeId: string;
   name: string;
   address: string;
   zipCode: string;

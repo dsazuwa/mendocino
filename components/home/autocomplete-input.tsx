@@ -15,7 +15,7 @@ import InputContainer from '../input-container';
 import { Input } from '../ui/input';
 
 type Suggestion = {
-  id: string;
+  placeId: string;
   name: string;
   address: string;
 };
@@ -64,7 +64,7 @@ export default function AutocompleteInput({
     initialSelectedItem: defaultValue,
     items: searchResult.autocompleteSuggestions,
 
-    itemToKey: (item) => item?.id,
+    itemToKey: (item) => item?.placeId,
 
     itemToString: (item) => {
       if (item === null) return '';
@@ -84,7 +84,7 @@ export default function AutocompleteInput({
         const autocompleteSuggestions =
           predictions && status === 'OK'
             ? predictions.map((prediction) => ({
-                id: prediction.place_id,
+                placeId: prediction.place_id,
                 name: prediction.structured_formatting.main_text,
                 address: prediction.structured_formatting.secondary_text,
               }))
@@ -112,7 +112,7 @@ export default function AutocompleteInput({
 
           if (selectedItem) {
             geocoder.geocode(
-              { placeId: selectedItem.id },
+              { placeId: selectedItem.placeId },
               (results, status) => {
                 if (status === 'OK' && results !== null && results.length > 0) {
                   const address: Partial<StructuredAddress> = {};
@@ -154,7 +154,7 @@ export default function AutocompleteInput({
                   if (isValidAddress(address)) {
                     const x = {
                       suite: address.suite,
-                      id: selectedItem.id,
+                      placeId: selectedItem.placeId,
                       name: selectedItem.name,
                       address: selectedItem.address,
                       zipCode: address.zipCode,
@@ -202,12 +202,12 @@ export default function AutocompleteInput({
             {isOpen && (
               <>
                 {searchResult.autocompleteSuggestions.map((item, index) => {
-                  const isSelected = selected?.id === item.id;
+                  const isSelected = selected?.placeId === item.placeId;
                   const ItemIcon = isSelected ? Check : Location;
 
                   return (
                     <li
-                      key={item.id}
+                      key={item.placeId}
                       {...getItemProps({ item, index })}
                       className='inline-flex w-full items-center gap-2 px-2 py-1'
                     >
