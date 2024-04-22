@@ -1,6 +1,7 @@
 DO $$
 BEGIN
   PERFORM menu.insert_restaurant_and_hours(
+    'Eik1Mjk0IEJlbHQgTGluZSBSb2FkIHN1aXRlIDEwNSwgRGFsbGFzLCBUWCIlGiMKFgoUChIJkdedXjwhTIYRgj2ohiR6ZNUSCXN1aXRlIDEwNQ',
     'Addison',
     '9723543924',
     '5294 Belt Line Road, Suite 105',
@@ -19,6 +20,7 @@ BEGIN
   );
 
   PERFORM menu.insert_restaurant_and_hours(
+    'ChIJyVuB7SOZToYRdrNSExLgAQc',
     'Downtown Dallas',
     '2143791490',
     '2000 Ross Ave',
@@ -35,6 +37,7 @@ BEGIN
   );
 
   PERFORM menu.insert_restaurant_and_hours(
+    'ChIJkXooua88TIYRPzm0F5AvSs4',
     'Plano',
     '2144405788',
     '7700 Windrose Avenue',
@@ -53,6 +56,7 @@ BEGIN
   );
 
   PERFORM menu.insert_restaurant_and_hours(
+    'ChIJ-8cuV50gTIYRhrGIzNlrxWU',
     'Preston Hollow',
     '9723549386',
     '10720 Preston Road',
@@ -71,6 +75,7 @@ BEGIN
   );
 
   PERFORM menu.insert_restaurant_and_hours(
+    'ChIJdZ0EXtSeToYRt1ePNBG-Odw',
     'West Village',
     '9729932792',
     '3700 McKinney Avenue',
@@ -89,6 +94,7 @@ BEGIN
   );
 
   PERFORM menu.insert_restaurant_and_hours(
+    'ChIJ3Rc39bNqkFQRY1u-FyfO2uA',
     'Downtown (Rainier Square)',
     '2067411329',
     '1350 4th Ave',
@@ -107,6 +113,7 @@ BEGIN
   );
 
   PERFORM menu.insert_restaurant_and_hours(
+    'ChIJDVwrH0oVkFQRjVs7ZPR5AcU',
     'South Lake Union',
     '2065082374',
     '2118 Westlake Ave',
@@ -123,6 +130,8 @@ BEGIN
       "Sunday": {"open": "11:00", "close": "21:00"}
     }'
   );
+
+  REFRESH MATERIALIZED VIEW menu.location_view;
 END $$;
 
 -- #region CATEGORIES

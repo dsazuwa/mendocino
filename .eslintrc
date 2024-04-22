@@ -24,7 +24,7 @@
   },
   "overrides": [
     {
-      "files": ["**/controllers/**/*"],
+      "files": ["**/controllers/**/*", "**.controller.ts"],
       "rules": {
         "consistent-return": "off"
       }

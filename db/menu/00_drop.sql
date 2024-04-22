@@ -9,7 +9,7 @@ DROP FUNCTION IF EXISTS menu.insert_modifier_option(INTEGER, VARCHAR(50), DECIMA
 DROP FUNCTION IF EXISTS menu.insert_modifier_options(INTEGER, JSONB[]);
 DROP FUNCTION IF EXISTS menu.insert_modifiers_and_options(VARCHAR(100), INTEGER, DECIMAL(10, 2), BOOLEAN, INTEGER, INTEGER, INTEGER, JSONB[]);
 DROP FUNCTION IF EXISTS menu.insert_item_modifier(INTEGER, INTEGER, INTEGER);
-DROP FUNCTION IF EXISTS menu.insert_restaurant_and_hours(VARCHAR(100), VARCHAR(10), VARCHAR(255), VARCHAR(100), VARCHAR(50), VARCHAR(5), JSONB);
+DROP FUNCTION IF EXISTS menu.insert_restaurant_and_hours(VARCHAR(255), VARCHAR(100), VARCHAR(10), VARCHAR(255), VARCHAR(100), VARCHAR(50), VARCHAR(5), JSONB);
 
 -- Drop functions
 DROP FUNCTION IF EXISTS menu.get_menu();
@@ -20,6 +20,7 @@ DROP FUNCTION IF EXISTS menu.get_child_modifiers(INTEGER);
 DROP FUNCTION IF EXISTS menu.get_modifier(INTEGER);
 
 -- Drop views
+DROP VIEW IF EXISTS menu.location_view;
 DROP VIEW IF EXISTS menu.menu_view;
 DROP VIEW IF EXISTS menu.modifier_groups_options_view;
 DROP VIEW IF EXISTS menu.item_modifier_groups_options_view;

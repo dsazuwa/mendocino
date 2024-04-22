@@ -15,6 +15,8 @@ class Location extends Model<
 > {
   declare locationId: CreationOptional<number>;
 
+  declare placeId: string;
+
   declare name: string;
 
   declare phoneNumber: string;
@@ -38,6 +40,12 @@ Location.init(
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,
+    },
+
+    placeId: {
+      type: DataTypes.STRING,
+      unique: true,
+      allowNull: false,
     },
 
     name: {

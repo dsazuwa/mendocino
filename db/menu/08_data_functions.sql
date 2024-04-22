@@ -1,5 +1,6 @@
 -- #region insert_restaurant_and_hours
 CREATE OR REPLACE FUNCTION menu.insert_restaurant_and_hours(
+  place_id VARCHAR(255),
   name VARCHAR(100),
   phone_number VARCHAR(10),
   address VARCHAR(255),
@@ -17,6 +18,7 @@ DECLARE
 BEGIN
   INSERT INTO menu.locations
     (
+      "place_id",
       "name",
       "phone_number",
       "address",
@@ -28,6 +30,7 @@ BEGIN
     )
   VALUES 
     (
+      place_id,
       name,
       phone_number,
       address,

@@ -13,6 +13,7 @@ import {
 } from './middleware';
 import logger from './utils/logger';
 
+import locationsRouter from './modules/location/routes';
 import { menuRouter } from './modules/menu';
 import {
   configureGoogleStrategy,
@@ -61,6 +62,7 @@ const createApp = () => {
 
   app.use('/api', userRouter);
   app.use('/api/menu', menuRouter);
+  app.use('/api/locations', locationsRouter);
 
   app.use(redirectToApiOnRootGet);
   app.use(notFoundHandler);

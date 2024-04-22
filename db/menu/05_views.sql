@@ -1,3 +1,13 @@
+CREATE MATERIALIZED VIEW menu.location_view AS
+  SELECT 
+    place_id AS "placeId",
+    name,
+    address,
+    city,
+    state,
+    zip_code AS "zipCode"
+  FROM menu.locations;
+    
 CREATE VIEW menu.menu_view AS
 SELECT
   m.item_id,

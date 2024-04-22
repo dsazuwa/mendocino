@@ -1,6 +1,7 @@
 CREATE TABLE menu.locations (
   location_id SERIAL,
-  name VARCHAR(100) NOT NULL,
+  place_id VARCHAR(255) UNIQUE NOT NULL,
+  name VARCHAR(100) UNIQUE NOT NULL,
   phone_number VARCHAR(10) NOT NULL,
   address VARCHAR(255) NOT NULL,
   city VARCHAR(100) NOT NULL,
