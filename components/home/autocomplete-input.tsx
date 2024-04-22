@@ -194,11 +194,15 @@ export default function AutocompleteInput({
       <div className='relative mt-1'>
         <div
           className={cn(
-            'rounded-xl absolute top-0 z-10 w-full bg-stone-50 outline-none animate-in fade-in-0 zoom-in-95',
+            'rounded-xl absolute top-0 z-10 w-full bg-neutral-50 outline-none animate-in fade-in-0 zoom-in-95',
             { hidden: !isOpen },
           )}
         >
-          <ul className='rounded-lg ring-1 ring-slate-200' {...getMenuProps()}>
+          <ul
+            className='flex flex-col rounded-lg ring-1 ring-slate-200'
+            {...getMenuProps()}
+            tabIndex={1}
+          >
             {isOpen && (
               <>
                 {searchResult.autocompleteSuggestions.map((item, index) => {
@@ -209,7 +213,7 @@ export default function AutocompleteInput({
                     <li
                       key={item.placeId}
                       {...getItemProps({ item, index })}
-                      className='inline-flex w-full items-center gap-2 px-2 py-1'
+                      className='mx-2 inline-flex items-center gap-2 px-2 py-1 hover:bg-neutral-100 aria-selected:bg-neutral-100'
                     >
                       <ItemIcon className='w-8 shrink-0 fill-neutral-600 p-2' />
 
