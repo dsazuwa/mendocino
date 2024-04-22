@@ -13,7 +13,7 @@ export default async function ClientAppBar() {
   const { addresses } = await getAddresses();
 
   return (
-    <nav id='client-app-bar' className='fixed z-50 h-12 w-full bg-white'>
+    <nav id='client-app-bar' className='fixed z-50 h-16 w-full bg-white'>
       <div className='mx-auto flex h-full w-full max-w-screen-2xl flex-row items-center gap-2 border-b border-solid border-neutral-100 px-2 sm:gap-4 sm:px-8'>
         <ClientAppBarDrawer isAuthenticated={isAuthenticated} />
 

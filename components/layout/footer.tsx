@@ -1,7 +1,6 @@
 import { ReactNode } from 'react';
 
 import { Button } from '../ui/button';
-import Logo from '../logo';
 
 function FooterLink({ label }: { label: string }) {
   return (
@@ -37,8 +36,12 @@ export default function Footer() {
   return (
     <div className='mt-auto border-t border-neutral-100'>
       <div className='mx-auto flex max-w-screen-2xl flex-col justify-between gap-4 px-4 py-8 sm:flex-row sm:px-8'>
-        <div className='flex flex-col gap-4'>
-          <Logo />
+        <div className='space-y-4'>
+          <img
+            src='mendo_logo.png'
+            alt='Mendocino Farms Logo'
+            className='h-8'
+          />
 
           <p className='max-w-80 text-xs leading-5 text-neutral-500'>
             Excepteur sint occaecat cupidatat non proident, sunt in culpa qui
