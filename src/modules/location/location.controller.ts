@@ -1,8 +1,9 @@
+import { Client } from '@googlemaps/google-maps-services-js';
 import { QueryTypes } from 'sequelize';
 
 import sequelize from '@app/db';
 import { NextFunction, Request, Response } from 'express';
-import { DistanceMatrixResponse, LocationView } from './types';
+import { LocationView } from './types';
 
 export const getClosestLocations = async (
   req: Request,
@@ -23,14 +24,17 @@ export const getClosestLocations = async (
       .map((location) => `place_id:${location.placeId}`)
       .join('|');
 
-    const url = encodeURIComponent(
-      `https://maps.googleapis.com/maps/api/distancematrix/json?origins=${origins}&destinations=${destinations}&key=${process.env.GOOGLE_PLACES_API_KEY}&departure_time=now&units=imperial`,
-    );
+    const client = new Client({});
 
-    const response = await fetch(url);
-
-    const { rows, error_message: errorMessage } =
-      (await response.json()) as DistanceMatrixResponse;
+    const {
+      data: { rows, error_message: errorMessage },
+    } = await client.distancematrix({
+      params: {
+        key: process.env.GOOGLE_PLACES_API_KEY as string,
+        origins: [origins],
+        destinations: [destinations],
+      },
+    });
 
     if (errorMessage || rows.length === 0)
       res.status(200).json({ locations: [] });
