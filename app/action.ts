@@ -18,6 +18,7 @@ import {
 } from '@/types/auth';
 import { GenericResponse } from '@/types/common';
 import { PasswordInput, ProfileInput, VerifyInput } from '@/types/customer';
+import { LocationType } from '@/types/location';
 import { setAuthCookies } from '../lib/auth.utils';
 
 export async function logout() {
@@ -217,4 +218,18 @@ export async function closeAccount() {
   const { message } = (await res.json()) as GenericResponse;
 
   return { isSuccess: res.status === 200, message };
+}
+
+export async function getClosestLocations(placeId: string) {
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/locations/distance/${placeId}`,
+  );
+
+  const result = (await res.json()) as { locations: LocationType[] };
+
+  console.log(result);
+
+  // redirect('/locations/search')
+
+  return { isSuccess: res.status === 200 };
 }

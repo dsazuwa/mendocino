@@ -4,10 +4,10 @@
 /* eslint-disable  @typescript-eslint/no-unsafe-enum-comparison */
 
 import { useCombobox } from 'downshift';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { cn } from '@/lib/utils';
-import { Address, StructuredAddress } from '@/types/common';
+import { Address } from '@/types/common';
 import Check from '../icons/check';
 import Location from '../icons/location';
 import Search from '../icons/search';
@@ -29,25 +29,16 @@ type Props = {
   defaultValue?: Address;
   service: google.maps.places.AutocompleteService;
   sessionToken: google.maps.places.AutocompleteSessionToken;
+  handler: (placeId: string) => void;
 };
-
-const isValidAddress = (
-  address: Partial<StructuredAddress>,
-): address is StructuredAddress =>
-  address.streetNumber !== undefined &&
-  address.street !== undefined &&
-  address.city !== undefined &&
-  address.state !== undefined &&
-  address.zipCode !== undefined;
 
 export default function AutocompleteInput({
   service,
   sessionToken,
   defaultValue,
+  handler,
 }: Props) {
   const placeholder = 'Search';
-
-  const geocoder = new window.google.maps.Geocoder();
 
   const [searchResult, setSearchResult] = useState<SearchResult>({
     autocompleteSuggestions: defaultValue ? [defaultValue] : [],
@@ -102,83 +93,13 @@ export default function AutocompleteInput({
         handlePredictions,
       );
     },
-
-    stateReducer: (state, actionAndChanges) => {
-      const { type, changes } = actionAndChanges;
-
-      switch (type) {
-        case useCombobox.stateChangeTypes.ItemClick: {
-          const { selectedItem } = changes;
-
-          if (selectedItem) {
-            geocoder.geocode(
-              { placeId: selectedItem.placeId },
-              (results, status) => {
-                if (status === 'OK' && results !== null && results.length > 0) {
-                  const address: Partial<StructuredAddress> = {};
-                  const result = results[0];
-
-                  result.address_components.forEach((component) => {
-                    component.types.forEach((type) => {
-                      switch (type) {
-                        case 'subpremise':
-                          address.suite = component.long_name;
-                          break;
-
-                        case 'street_number':
-                          address.streetNumber = component.long_name;
-                          break;
-
-                        case 'route':
-                          address.street = component.long_name;
-                          break;
-
-                        case 'locality':
-                          address.city = component.long_name;
-                          break;
-
-                        case 'administrative_area_level_1':
-                          address.state = component.short_name;
-                          break;
-
-                        case 'postal_code':
-                          address.zipCode = component.long_name;
-                          break;
-
-                        default:
-                          break;
-                      }
-                    });
-                  });
-
-                  if (isValidAddress(address)) {
-                    const x = {
-                      suite: address.suite,
-                      placeId: selectedItem.placeId,
-                      name: selectedItem.name,
-                      address: selectedItem.address,
-                      zipCode: address.zipCode,
-                      lat: `${result.geometry.location.lat()}`,
-                      lng: `${result.geometry.location.lng()}`,
-                    };
-                    console.log(x);
-                  } else {
-                    console.log(address, 'invalid address');
-                    // handle invalid delivery address
-                  }
-                }
-              },
-            );
-          }
-
-          return { ...changes };
-        }
-
-        default:
-          return changes;
-      }
-    },
   });
+
+  useEffect(() => {
+    if (selected === null) return;
+
+    handler(selected.placeId);
+  }, [selected]);
 
   return (
     <>
