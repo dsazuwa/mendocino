@@ -28,7 +28,7 @@ SELECT
     FROM cte
   ) AS tags,
   p.base_price AS price,
-  m.status AS menu_status,
+  m.status,
   m.photo_url,
   m.notes
 FROM menu.items m

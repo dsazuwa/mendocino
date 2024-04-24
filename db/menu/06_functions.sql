@@ -55,7 +55,7 @@ BEGIN
         ) ORDER BY v.item_sort_order
       ) AS items
     FROM menu.menu_view v
-    WHERE is_public IS TRUE AND menu_status = 'active'
+    WHERE is_public IS TRUE AND status = 'active'
     GROUP BY v.category, sub_category
   )
   SELECT 
@@ -89,7 +89,7 @@ BEGIN
     c.order_description AS notes,
     ARRAY_AGG(
       jsonb_build_object(
-        'itemId', item_id,
+        'itemId', v.item_id,
         'name', v.name,
         'description', description,
         'subCategory', sub_category,
@@ -102,7 +102,7 @@ BEGIN
   FROM menu.menu_view v
   JOIN menu.order_menu_items o ON o.item_id = v.item_id
   JOIN menu.categories c ON c.name = v.category
-  WHERE menu_status = 'active' AND order_status = 'available' AND o.location_id = p_location_id
+  WHERE v.status = 'active' AND o.status = 'available' AND o.location_id = p_location_id
   GROUP BY c.name, c.category_id
   ORDER BY c.sort_order;
 END;

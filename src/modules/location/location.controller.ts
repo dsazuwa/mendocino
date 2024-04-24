@@ -1,9 +1,5 @@
-import { Client } from '@googlemaps/google-maps-services-js';
-import { QueryTypes } from 'sequelize';
-
-import sequelize from '@app/db';
 import { NextFunction, Request, Response } from 'express';
-import { LocationView } from './types';
+import locationService from './services/location.service';
 
 export const getClosestLocations = async (
   req: Request,
@@ -13,37 +9,44 @@ export const getClosestLocations = async (
   try {
     const { placeId } = req.params;
 
-    const query = 'SELECT * FROM menu.location_view;';
+    const locations = await locationService.getAllLocations();
 
-    const result = (await sequelize.query(query, {
-      type: QueryTypes.SELECT,
-    })) as LocationView;
+    const result = await locationService.getClosestLocations(
+      placeId,
+      locations,
+    );
 
-    const origins = `place_id:${placeId}`;
-    const destinations = result
-      .map((location) => `place_id:${location.placeId}`)
-      .join('|');
+    res.status(200).json({ locations: result });
+  } catch (e) {
+    next(e);
+  }
+};
 
-    const client = new Client({});
+export const getLocations = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const locations = await locationService.getAllLocations();
 
-    const {
-      data: { rows, error_message: errorMessage },
-    } = await client.distancematrix({
-      params: {
-        key: process.env.GOOGLE_PLACES_API_KEY as string,
-        origins: [origins],
-        destinations: [destinations],
-      },
-    });
+    return res.status(200).json({ locations });
+  } catch (e) {
+    next(e);
+  }
+};
 
-    if (errorMessage || rows.length === 0)
-      res.status(200).json({ locations: [] });
+export const getLocationMenu = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { id } = req.params;
 
-    const locations = rows[0].elements
-      .map((element, i) => ({ ...result[i], ...element }))
-      .filter((element) => element.distance.value <= 56326.9); // within 35 miles
+    const menu = await locationService.getLocationMenu(parseInt(id, 10));
 
-    res.status(200).json({ locations });
+    res.status(200).json({ menu });
   } catch (e) {
     next(e);
   }

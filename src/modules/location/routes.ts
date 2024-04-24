@@ -1,9 +1,15 @@
 import { Router } from 'express';
 
-import { getClosestLocations } from './location.controller';
+import {
+  getClosestLocations,
+  getLocationMenu,
+  getLocations,
+} from './location.controller';
 
 const locationsRouter = Router();
 
+locationsRouter.get('/', getLocations);
 locationsRouter.get('/distance/:placeId', getClosestLocations);
+locationsRouter.get('/:id/menu', getLocationMenu);
 
 export default locationsRouter;
