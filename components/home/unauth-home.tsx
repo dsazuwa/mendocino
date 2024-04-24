@@ -1,13 +1,13 @@
-import Autocomplete from './autocomplete';
+import { getGuestAddresses } from '@/lib/data';
+import AddressInput from './address-input';
+import AddressSelector from './address-selector';
 
-export default function UnauthenticatedHomePage() {
-  return (
-    <>
-      <div className='text-lg font-bold sm:text-xl'>
-        Order delivery near you!
-      </div>
+export default async function UnauthenticatedHomePage() {
+  const { sessionId, addresses } = await getGuestAddresses();
 
-      <Autocomplete />
-    </>
+  return addresses.length === 0 ? (
+    <AddressInput sessionId={sessionId} />
+  ) : (
+    <AddressSelector addresses={addresses} />
   );
 }

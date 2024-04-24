@@ -16,6 +16,7 @@ import {
   RequestRecoverData,
   VerifyRecoverData,
 } from '@/types/auth';
+import { Address } from '@/types/address';
 import { GenericResponse } from '@/types/common';
 import { PasswordInput, ProfileInput, VerifyInput } from '@/types/customer';
 import { LocationType } from '@/types/location';
@@ -48,9 +49,7 @@ export async function login(prevState: any, data: LoginInput) {
     setAuthCookies(accessToken, refreshToken);
 
     redirect(user.roles[0] === 'customer' ? '/' : '/admin');
-  }
-  // TODO: handle case where user is deactivated if ('user' in body)
-  else {
+  } else {
     const { message } = (await res.json()) as GenericResponse;
     return { message };
   }
@@ -225,11 +224,27 @@ export async function getClosestLocations(placeId: string) {
     `${process.env.NEXT_PUBLIC_API_URL}/locations/distance/${placeId}`,
   );
 
-  const result = (await res.json()) as { locations: LocationType[] };
+  if (res.status !== 200) throw new Error('Failed to retrieve locations');
 
-  console.log(result);
+  const { locations } = (await res.json()) as { locations: LocationType[] };
 
-  // redirect('/locations/search')
+  return locations;
+}
 
-  return { isSuccess: res.status === 200 };
+export async function createGuestAddress(
+  guestId: string,
+  address: { placeId: string; name: string; address: string },
+) {
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/guests/${guestId}/addresses`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(address),
+    },
+  );
+
+  const addresses = (await res.json()) as { addresses: Address[] };
+
+  return { isSuccess: res.status === 200, addresses };
 }

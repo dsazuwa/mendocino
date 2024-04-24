@@ -20,3 +20,19 @@ export async function getAddresses(): Promise<{ addresses: Address[] }> {
 
   return response.json() as Promise<{ addresses: Address[] }>;
 }
+
+export async function getGuestAddresses() {
+  const sessionId = cookies().get('guest-session')?.value;
+
+  if (!sessionId) throw new Error('No guest session');
+
+  const req = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/guests/${sessionId}/addresses`,
+  );
+
+  const { addresses } = (await req.json()) as {
+    addresses: Address[];
+  };
+
+  return { sessionId, addresses };
+}

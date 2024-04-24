@@ -46,7 +46,7 @@ export function AddressTrigger({ isDialog, addresses }: TriggerProps) {
 
   return (
     <Comp className='inline-flex items-center gap-2'>
-      <span className='text-lg font-bold sm:text-xl'>{addresses[0].name}</span>
+      <span className='text-lg font-bold'>{addresses[0].name}</span>
 
       <ChevronDownIcon />
     </Comp>

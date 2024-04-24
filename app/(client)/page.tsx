@@ -8,7 +8,7 @@ export default function Home() {
 
   return (
     <>
-      <main className='mx-auto w-full max-w-screen-sm flex-1 space-y-3 px-4 py-16 sm:px-8'>
+      <main className='mx-auto w-full max-w-screen-sm flex-1 space-y-3 px-4 py-8'>
         {isAuthenticated ? <AuthenticatedHomePage /> : <UnauthHome />}
       </main>
 

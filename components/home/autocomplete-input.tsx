@@ -7,6 +7,7 @@ import { useCombobox } from 'downshift';
 import { useEffect, useState } from 'react';
 
 import { cn } from '@/lib/utils';
+import { SearchResult, Suggestion } from '@/types/address';
 import { Address } from '@/types/common';
 import Check from '../icons/check';
 import Location from '../icons/location';
@@ -14,29 +15,18 @@ import Search from '../icons/search';
 import InputContainer from '../input-container';
 import { Input } from '../ui/input';
 
-type Suggestion = {
-  placeId: string;
-  name: string;
-  address: string;
-};
-
-type SearchResult = {
-  autocompleteSuggestions: Suggestion[];
-  status: string;
-};
-
 type Props = {
   defaultValue?: Address;
   service: google.maps.places.AutocompleteService;
   sessionToken: google.maps.places.AutocompleteSessionToken;
-  handler: (placeId: string) => void;
+  onSelect: (address: Suggestion) => void;
 };
 
 export default function AutocompleteInput({
   service,
   sessionToken,
   defaultValue,
-  handler,
+  onSelect,
 }: Props) {
   const placeholder = 'Search';
 
@@ -98,8 +88,8 @@ export default function AutocompleteInput({
   useEffect(() => {
     if (selected === null) return;
 
-    handler(selected.placeId);
-  }, [selected]);
+    onSelect(selected);
+  }, [selected, onSelect]);
 
   return (
     <>

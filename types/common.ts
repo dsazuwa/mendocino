@@ -15,8 +15,6 @@ export type Address = {
   name: string;
   address: string;
   zipCode: string;
-  lat: string;
-  lng: string;
 };
 
 export type StructuredAddress = {
