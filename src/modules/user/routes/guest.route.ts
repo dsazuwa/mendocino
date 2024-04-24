@@ -3,6 +3,7 @@ import { Router } from 'express';
 import { trimRequestBody, validate } from '../../../middleware';
 import {
   createAddress,
+  createGuest,
   deleteAddress,
   getAddress,
   updateAddress,
@@ -15,9 +16,11 @@ import {
 
 const guestRouter = Router();
 
-guestRouter.get('/address', getAddress);
+guestRouter.post('/', createGuest);
+
+guestRouter.get('/:id/addresses', getAddress);
 guestRouter.post(
-  '/address',
+  '/:id/addresses',
   trimRequestBody,
   validate(createAddressSchema),
   createAddress,

@@ -16,7 +16,7 @@ export type AddressType = {
   suite?: string;
   name: string;
   address: string;
-  zipCode: string;
-  lat: string;
-  lng: string;
+  // zipCode: string;
+  // lat: string;
+  // lng: string;
 };

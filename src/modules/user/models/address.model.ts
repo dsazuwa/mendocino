@@ -25,11 +25,11 @@ class Address extends Model<
 
   declare address: string;
 
-  declare zipCode: string;
+  declare zipCode: CreationOptional<string | null>;
 
-  declare lat: string;
+  declare lat: CreationOptional<string | null>;
 
-  declare lng: string;
+  declare lng: CreationOptional<string | null>;
 
   declare dropOffOption: CreationOptional<DropOffType>;
 
@@ -67,19 +67,16 @@ Address.init(
 
     zipCode: {
       type: DataTypes.STRING,
-      allowNull: false,
       validate: { len: [5, 5] },
     },
 
     lat: {
       type: DataTypes.STRING,
-      allowNull: false,
       validate: { max: 32 },
     },
 
     lng: {
       type: DataTypes.STRING,
-      allowNull: false,
       validate: { max: 32 },
     },
 

@@ -30,9 +30,6 @@ describe('address management', () => {
           placeId: `${Math.random() * 84728947292}`,
           name: '1957 Kembery Drive',
           address: 'Roselle, IL',
-          zipCode: '60172',
-          lat: '-90',
-          lng: '-40',
         })),
       );
 
@@ -56,9 +53,6 @@ describe('address management', () => {
         placeId: '987470320984732',
         name: '1957 Kembery Drive',
         address: 'Roselle, IL',
-        zipCode: '60172',
-        lat: '-90',
-        lng: '-40',
       };
 
       const result = await addressService.createAddress(customerId, data);
@@ -82,9 +76,6 @@ describe('address management', () => {
         customerId,
         name: '1957 Kembery Drive',
         address: 'Roselle, IL',
-        zipCode: '60172',
-        lat: '-90',
-        lng: '-40',
       };
 
       const createResult = await Address.bulkCreate(
@@ -102,9 +93,6 @@ describe('address management', () => {
         placeId: '83047983157319',
         name: '1957 Kembery Drive',
         address: 'Roselle, IL',
-        zipCode: '60172',
-        lat: '-90',
-        lng: '-40',
       };
 
       const result = await addressService.createAddress(customerId, data);
@@ -124,9 +112,6 @@ describe('address management', () => {
         placeId: '83047983157319',
         name: '1957 Kembery Drive',
         address: 'Roselle, IL',
-        zipCode: '60172',
-        lat: '-90',
-        lng: '-40',
       });
 
       await CustomerAddress.create({ customerId, addressId });
@@ -135,9 +120,6 @@ describe('address management', () => {
         placeId: '8759258223',
         name: '4829 West Drive',
         address: 'Rockford, IL',
-        zipCode: '63890',
-        lat: '-76',
-        lng: '-40',
       };
 
       const result = await addressService.updateAddress(
@@ -161,9 +143,6 @@ describe('address management', () => {
         placeId: '97847183970',
         name: '1957 Kembery Drive',
         address: 'Roselle, IL',
-        zipCode: '60172',
-        lat: '-90',
-        lng: '-40',
       });
 
       await CustomerAddress.create({ customerId, addressId });

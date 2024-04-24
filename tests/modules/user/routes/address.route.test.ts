@@ -35,17 +35,11 @@ describe('Address management', () => {
         placeId: '579432985',
         name: '1957 Kembery Drive',
         address: 'Roselle, IL',
-        zipCode: '60172',
-        lat: '-90',
-        lng: '-40',
       },
       {
         placeId: '9753298532',
         name: '1957 Kembery Drive',
         address: 'Roselle, IL',
-        zipCode: '60172',
-        lat: '-90',
-        lng: '-40',
       },
     ];
 
@@ -68,9 +62,6 @@ describe('Address management', () => {
       placeId: '57547845',
       name: '1957 Kembery Drive',
       address: 'Roselle, IL',
-      zipCode: '60172',
-      lat: -90,
-      lng: -40,
     };
 
     await request
@@ -91,9 +82,6 @@ describe('Address management', () => {
       placeId: '83047983157319',
       name: '1957 Kembery Drive',
       address: 'Roselle, IL',
-      zipCode: '60172',
-      lat: '-90',
-      lng: '-40',
     });
 
     await CustomerAddress.create({ customerId, addressId });
@@ -102,9 +90,6 @@ describe('Address management', () => {
       placeId: '8759258223',
       name: '4829 West Drive',
       address: 'Rockford, IL',
-      zipCode: '63890',
-      lat: -90,
-      lng: -40,
     };
 
     await request
@@ -125,9 +110,6 @@ describe('Address management', () => {
       placeId: '97847183970',
       name: '1957 Kembery Drive',
       address: 'Roselle, IL',
-      zipCode: '60172',
-      lat: '-90',
-      lng: '-40',
     });
 
     await CustomerAddress.create({ customerId, addressId });

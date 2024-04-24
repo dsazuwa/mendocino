@@ -5,6 +5,8 @@ import { Address, Guest, GuestAddress } from '../models';
 import { AddressType } from '../types';
 
 const guestService = {
+  createGuest: async () => (await Guest.create({})).guestId,
+
   getAddresses: async (guestId: string) => {
     const query = `
       SELECT 
@@ -29,7 +31,7 @@ const guestService = {
 
     const { addresses } = result[0];
 
-    return addresses || [];
+    return addresses?.length ? addresses : [];
   },
 
   createAddress: (guestId: string | undefined, address: AddressType) =>

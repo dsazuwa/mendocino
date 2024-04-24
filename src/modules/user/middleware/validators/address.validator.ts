@@ -1,23 +1,12 @@
-import { number, object, string } from 'zod';
+import { object, string } from 'zod';
 
 import { idRules } from './common.validator';
 
 const bodyRules = object({
   placeId: string().trim().nonempty(),
-  suite: string().trim().optional(),
   name: string().trim().nonempty(),
   address: string().trim().nonempty(),
-
-  zipCode: string()
-    .trim()
-    .nonempty('Postal code is required.')
-    .refine((value) => /^\d{5}$/.test(value), {
-      message:
-        'Invalid postal code format. Postal code must be a 5-digit number.',
-    }),
-
-  lat: number(),
-  lng: number(),
+  suite: string().trim().optional(),
 });
 
 export const createAddressSchema = object({

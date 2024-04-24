@@ -3,24 +3,18 @@ import { NextFunction, Request, Response } from 'express';
 import guestService from '../services/guest.service';
 import messages from '../utils/messages';
 
-const getGuestId = (req: Request) => {
-  const { cookie } = req.headers;
+export const createGuest = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const sessionId = await guestService.createGuest();
 
-  if (cookie) {
-    const cookies = cookie.split(';');
-
-    const guestCookie = cookies.find((cookieStr) => {
-      const [name] = cookieStr.trim().split('=');
-      return name === 'guest-session';
-    });
-
-    if (guestCookie) {
-      const [, value] = guestCookie.trim().split('=');
-      return value;
-    }
+    res.status(200).json({ sessionId });
+  } catch (e) {
+    next(e);
   }
-
-  return undefined;
 };
 
 export const getAddress = async (
@@ -29,11 +23,9 @@ export const getAddress = async (
   next: NextFunction,
 ) => {
   try {
-    const guestId = getGuestId(req);
+    const { id } = req.params;
 
-    if (guestId === undefined) return res.status(400);
-
-    const addresses = await guestService.getAddresses(guestId);
+    const addresses = await guestService.getAddresses(id);
 
     res.status(200).json({ addresses });
   } catch (e) {
@@ -47,18 +39,15 @@ export const createAddress = async (
   next: NextFunction,
 ) => {
   try {
-    const guestId = getGuestId(req);
+    const { id } = req.params;
 
-    const { suite, placeId, name, address, zipCode, lat, lng } = req.body;
+    const { suite, placeId, name, address } = req.body;
 
-    const result = await guestService.createAddress(guestId, {
+    const result = await guestService.createAddress(id, {
       suite,
       placeId,
       name,
       address,
-      zipCode,
-      lat,
-      lng,
     });
 
     if (result)
@@ -80,21 +69,16 @@ export const updateAddress = async (
   next: NextFunction,
 ) => {
   try {
-    const guestId = getGuestId(req);
-
-    if (guestId === undefined) return res.status(400);
+    const { guestId } = req.body;
 
     const { id } = req.params;
-    const { suite, placeId, name, address, zipCode, lat, lng } = req.body;
+    const { suite, placeId, name, address } = req.body;
 
     const result = await guestService.updateAddress(guestId, parseInt(id, 10), {
       suite,
       placeId,
       name,
       address,
-      zipCode,
-      lat,
-      lng,
     });
 
     if (result === 1)
@@ -111,10 +95,8 @@ export const deleteAddress = async (
   next: NextFunction,
 ) => {
   try {
-    const guestId = getGuestId(req);
     const { id } = req.params;
-
-    if (guestId === undefined) return res.status(400);
+    const { guestId } = req.body;
 
     const result = await guestService.deleteAddress(guestId, parseInt(id, 10));
 
