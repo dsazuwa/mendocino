@@ -28,6 +28,7 @@ export async function getGuestAddresses() {
 
   const req = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/guests/${sessionId}/addresses`,
+    { next: { tags: ['Address'] } },
   );
 
   const { addresses } = (await req.json()) as {

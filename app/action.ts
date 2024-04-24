@@ -246,5 +246,7 @@ export async function createGuestAddress(
 
   const addresses = (await res.json()) as { addresses: Address[] };
 
+  revalidateTag('Address');
+
   return { isSuccess: res.status === 200, addresses };
 }
