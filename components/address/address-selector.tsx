@@ -52,11 +52,7 @@ export default function AddressSelector({
               })}
             />
 
-            <span
-              className={cn('flex flex-col items-start text-neutral-600', {
-                'text-primary-700': selected === index,
-              })}
-            >
+            <span className='flex flex-col items-start text-neutral-600'>
               <span className='text-xs font-semibold'>{name}</span>
               <span className='text-[0.65rem]'>
                 {[address, zipCode].filter(Boolean).join(', ')}
