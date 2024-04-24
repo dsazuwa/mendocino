@@ -20,7 +20,7 @@ DROP FUNCTION IF EXISTS menu.get_child_modifiers(INTEGER);
 DROP FUNCTION IF EXISTS menu.get_modifier(INTEGER);
 
 -- Drop views
-DROP VIEW IF EXISTS menu.location_view;
+DROP MATERIALIZED VIEW IF EXISTS menu.location_view;
 DROP VIEW IF EXISTS menu.menu_view;
 DROP VIEW IF EXISTS menu.modifier_groups_options_view;
 DROP VIEW IF EXISTS menu.item_modifier_groups_options_view;
