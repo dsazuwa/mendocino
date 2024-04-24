@@ -13,34 +13,16 @@ const publicOnlyRoutes = ['/login', '/register', '/recover'];
 
 // TODO: store the return path in query params. Eg- /login?redirect=%2Faccount
 export default async function middleware(request: NextRequest) {
-  const hasAccessToken = cookies().get('access-token') !== undefined;
-  const hasRefreshToken = cookies().get('refresh-token') !== undefined;
+  const refreshToken = cookies().get('refresh-token')?.value;
+  const guestSession = cookies().get('guest-session')?.value;
 
+  let accessToken = cookies().get('access-token')?.value;
   let authCookies: AuthCookies | undefined = undefined;
 
-  if (!hasAccessToken && hasRefreshToken) {
-    const refreshResponse = await refreshAuthTokens();
+  if (!accessToken && refreshToken) authCookies = await refreshAuthTokens();
 
-    if (refreshResponse.status === 200) {
-      const { accessToken, refreshToken } = (await refreshResponse.json()) as {
-        accessToken: string;
-        refreshToken: string;
-      };
-
-      authCookies = getAuthCookieObject(accessToken, refreshToken);
-    }
-  }
-
-  const accessToken =
-    cookies().get('access-token')?.value || authCookies?.accessToken.value;
-
-  const response = accessToken
-    ? await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/me`, {
-        method: 'GET',
-        headers: { Authorization: `Bearer ${accessToken}` },
-        cache: 'force-cache',
-      })
-    : undefined;
+  accessToken = accessToken || authCookies?.accessToken.value;
+  const response = accessToken ? await getUser(accessToken) : undefined;
 
   const nextResponse = await getNextResponse(request, response);
   nextResponse.headers.set('x-pathname', request.nextUrl.pathname);
@@ -48,11 +30,19 @@ export default async function middleware(request: NextRequest) {
   if (authCookies) {
     nextResponse.cookies.set(authCookies.accessToken);
     nextResponse.cookies.set(authCookies.refreshToken);
+    nextResponse.cookies.delete('guest-session');
   }
 
   if (response?.status !== 200) {
     nextResponse.cookies.delete('access-token');
     nextResponse.cookies.delete('refresh-token');
+  }
+
+  accessToken = cookies().get('access-token')?.value;
+
+  if (!accessToken && !guestSession) {
+    const guestSession = await createGuestSession();
+    nextResponse.cookies.set(guestSession);
   }
 
   applySetCookie(request, nextResponse);
@@ -62,14 +52,54 @@ export default async function middleware(request: NextRequest) {
 
 async function refreshAuthTokens() {
   try {
-    return await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/refresh`, {
-      method: 'POST',
-      headers: { cookie: cookies().toString() },
+    const refreshResponse = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/auth/refresh`,
+      {
+        method: 'POST',
+        headers: { cookie: cookies().toString() },
+      },
+    );
+
+    if (refreshResponse.status === 200) {
+      const { accessToken, refreshToken } = (await refreshResponse.json()) as {
+        accessToken: string;
+        refreshToken: string;
+      };
+
+      return getAuthCookieObject(accessToken, refreshToken);
+    }
+  } catch (error) {
+    console.error('Error refreshing token: ', error);
+    throw error;
+  }
+}
+
+async function getUser(accessToken: string) {
+  try {
+    return fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/me`, {
+      method: 'GET',
+      headers: { Authorization: `Bearer ${accessToken}` },
+      cache: 'force-cache',
     });
   } catch (error) {
     console.error('Error refreshing token: ', error);
     throw error;
   }
+}
+
+async function createGuestSession() {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/guests`, {
+    method: 'POST',
+  });
+
+  const { sessionId } = (await response.json()) as { sessionId: string };
+
+  return {
+    name: 'guest-session',
+    value: sessionId,
+    secure: true,
+    httpOnly: true,
+  };
 }
 
 async function getNextResponse(
