@@ -74,7 +74,7 @@ export default function Footer() {
 
       <div className='bg-neutral-100'>
         <div className='mx-auto flex max-w-screen-xl flex-col-reverse justify-between gap-2 p-4 sm:flex-row sm:items-center sm:px-8'>
-          <span className='text-xs text-neutral-500'>{`© SPOONS ${new Date().getFullYear()}. All rights reserved.`}</span>
+          <span className='text-xxs text-neutral-500'>{`© MENDOCINO FARMS ${new Date().getFullYear()}. All rights reserved.`}</span>
 
           <span className='ml-[-0.25rem] space-x-1 sm:ml-0'>
             <FooterIcon>
