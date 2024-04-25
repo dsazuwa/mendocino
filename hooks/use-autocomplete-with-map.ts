@@ -87,9 +87,13 @@ export default function useAutocompleteWithMap(
             : undefined;
 
         const map = new window.google.maps.Map(mapElement, {
-          zoom: 16,
+          zoom: 15,
           center,
           mapId: process.env.NEXT_PUBLIC_MAP_ID,
+          disableDefaultUI: true,
+          keyboardShortcuts: false,
+          clickableIcons: false,
+          gestureHandling: 'none',
         });
 
         (
