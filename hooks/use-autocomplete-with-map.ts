@@ -3,7 +3,7 @@
 import { Libraries, Loader } from '@googlemaps/js-api-loader';
 import { useEffect, useMemo, useState } from 'react';
 
-import { Address } from '@/types/address';
+import { AddressData } from '@/types/address';
 
 type GoogleMapsState = {
   service: google.maps.places.AutocompleteService | null;
@@ -34,7 +34,7 @@ type NotLoadedState = {
 type AutocompleteState = LoadedState | NotLoadedState;
 
 export default function useAutocompleteWithMap(
-  defaultAddress?: Address & { lat?: string; lng?: string },
+  defaultAddress?: AddressData,
 ): AutocompleteState {
   const [libraries] = useState<Libraries>(['places']);
   const [isLoaded, setIsLoaded] = useState(false);
@@ -78,17 +78,15 @@ export default function useAutocompleteWithMap(
             'Autocomplete with map must be used with a valid map element. Make sure to include a <div id="map"> element in your HTML.',
           );
 
-        const center =
-          defaultAddress && defaultAddress.lat && defaultAddress.lng
-            ? {
-                lat: parseFloat(defaultAddress.lat),
-                lng: parseFloat(defaultAddress.lng),
-              }
-            : undefined;
+        const props = defaultAddress
+          ? {
+              center: { lat: defaultAddress.lat, lng: defaultAddress.lng },
+              zoom: 16,
+            }
+          : { center: { lat: 39.8283, lng: -98.5795 }, zoom: 5 };
 
         const map = new window.google.maps.Map(mapElement, {
-          zoom: 15,
-          center,
+          ...props,
           mapId: process.env.NEXT_PUBLIC_MAP_ID,
           disableDefaultUI: true,
           keyboardShortcuts: false,
@@ -106,7 +104,7 @@ export default function useAutocompleteWithMap(
             map,
             geocoder: new google.maps.Geocoder(),
             marker: new AdvancedMarkerElement({
-              position: center,
+              position: defaultAddress ? props.center : undefined,
               map,
             }),
           }));

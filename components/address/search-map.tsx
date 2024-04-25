@@ -9,7 +9,7 @@ import InputContainer from '../input-container';
 type Props = { defaultValue?: AddressData };
 
 export default function SearchMap({ defaultValue }: Props) {
-  const { isLoaded, service, sessionToken, map, geocoder } =
+  const { isLoaded, service, sessionToken, map, marker, geocoder } =
     useAutocompleteWithMap();
 
   const [selected, setSelected] = useState<AddressData | undefined>(
@@ -17,11 +17,14 @@ export default function SearchMap({ defaultValue }: Props) {
   );
 
   useEffect(() => {
-    if (!map || !selected) return;
+    if (!map || !marker || !selected) return;
 
     const { lat, lng } = selected;
 
     map.setCenter({ lat, lng });
+    map.setZoom(16);
+
+    marker.position = { lat, lng };
   }, [selected]);
 
   return (
