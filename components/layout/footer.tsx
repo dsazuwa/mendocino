@@ -38,7 +38,7 @@ export default function Footer() {
       <div className='mx-auto flex max-w-screen-2xl flex-col justify-between gap-4 px-4 py-8 sm:flex-row sm:px-8'>
         <div className='space-y-4'>
           <img
-            src='mendo_logo.png'
+            src='/mendo_logo.png'
             alt='Mendocino Farms Logo'
             className='h-8'
           />
