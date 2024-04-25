@@ -1,69 +1,44 @@
-import { GoogleMap } from '@react-google-maps/api';
 import { useEffect, useState } from 'react';
 
-import useGooglePlaces from '@/hooks/use-google-places';
-import AutocompleteInput from './autocomplete-input';
+import useAutocompleteWithMap from '@/hooks/use-autocomplete-with-map';
+import { AddressData } from '@/types/address';
+import AutocompleteInput from '../home/autocomplete-input';
+import Search from '../icons/search';
+import InputContainer from '../input-container';
 
-export default function SearchMap({ defaultValue }: { defaultValue?: string }) {
-  const {
-    isLoaded,
-    autocomplete,
-    value,
-    clearValue,
-    handleChange,
-    onKeyDown,
-    onLoad,
-    onPlaceChanged,
-  } = useGooglePlaces(defaultValue);
+type Props = { defaultValue?: AddressData };
 
-  const [map, setMap] = useState<google.maps.Map | null>(null);
+export default function SearchMap({ defaultValue }: Props) {
+  const { isLoaded, service, sessionToken, map, geocoder } =
+    useAutocompleteWithMap();
+
+  const [selected, setSelected] = useState<AddressData | undefined>(
+    defaultValue,
+  );
 
   useEffect(() => {
-    const selectedPlace = autocomplete?.getPlace();
-    const placeId = selectedPlace?.place_id;
+    if (!map || !selected) return;
 
-    if (selectedPlace && placeId && map !== null) {
-      const placeService = new window.google.maps.places.PlacesService(map);
+    const { lat, lng } = selected;
 
-      placeService.getDetails({ placeId }, (result, status) => {
-        if (
-          status === window.google.maps.places.PlacesServiceStatus.OK &&
-          result !== null
-        ) {
-          const { geometry } = result;
-
-          const lat = geometry?.location?.lat();
-          const lng = geometry?.location?.lng();
-
-          if (lat !== undefined && lng !== undefined)
-            map.setCenter({ lat, lng });
-        } else {
-          console.error('Error fetching place details:', status);
-        }
-      });
-    }
-  }, [map, value]);
+    map.setCenter({ lat, lng });
+  }, [selected]);
 
   return (
     <>
-      <AutocompleteInput
-        isLoaded={isLoaded}
-        onLoad={onLoad}
-        onPlaceChanged={onPlaceChanged}
-        type='map'
-        value={value}
-        clearValue={clearValue}
-        onChange={handleChange}
-        onKeyDown={onKeyDown}
-      />
-
-      {isLoaded && (
-        <GoogleMap
-          mapContainerClassName='aspect-video rounded-md'
-          onLoad={(mapInstance) => setMap(mapInstance)}
-          options={{ zoom: 100 }}
+      {isLoaded ? (
+        <AutocompleteInput
+          service={service}
+          sessionToken={sessionToken}
+          geocoder={geocoder}
+          onSelect={(address: AddressData) => void setSelected(address)}
+          defaultValue={defaultValue}
         />
+      ) : (
+        <InputContainer Icon={Search} />
       )}
+
+      <div id='map' className='aspect-video' />
     </>
   );
 }

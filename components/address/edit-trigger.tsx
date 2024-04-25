@@ -1,10 +1,10 @@
 import Edit from '@/components/icons/edit';
 import Location from '@/components/icons/location';
-import { Address } from '@/types/common';
+import { AddressData } from '@/types/address';
 import { DialogTrigger } from '../ui/dialog';
 import { SheetTrigger } from '../ui/sheet';
 
-type Props = { isDialog: boolean; address: Address };
+type Props = { isDialog: boolean; address: AddressData };
 
 export default function EditTrigger({ isDialog, address: addressProp }: Props) {
   const { name, address, zipCode } = addressProp;

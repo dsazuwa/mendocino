@@ -1,7 +1,7 @@
 import { Cross2Icon } from '@radix-ui/react-icons';
 
 import { DialogClose } from '@/components/ui/dialog';
-import { Address } from '@/types/common';
+import { AddressData } from '@/types/address';
 import ContentFooter from '../content-footer';
 import ContentHeader from '../content-header';
 import Delete from '../icons/delete';
@@ -13,7 +13,7 @@ import { SheetClose } from '../ui/sheet';
 import { Textarea } from '../ui/textarea';
 import SearchMap from './search-map';
 
-type Props = { isDialog: boolean; address: Address };
+type Props = { isDialog: boolean; address: AddressData };
 
 export default function EditContent({ isDialog, address: addressProp }: Props) {
   const { name, address, zipCode } = addressProp;
@@ -41,11 +41,7 @@ export default function EditContent({ isDialog, address: addressProp }: Props) {
       </ContentHeader>
 
       <div className='flex flex-1 flex-col space-y-4 overflow-y-auto p-4 sm:p-6'>
-        <SearchMap
-          defaultValue={Object.values(address)
-            .filter((x) => typeof x !== 'boolean')
-            .join(', ')}
-        />
+        <SearchMap defaultValue={addressProp} />
 
         <div className='flex-1 space-y-4'>
           <div className='flex flex-col items-start gap-1 text-neutral-600'>

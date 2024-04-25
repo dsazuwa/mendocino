@@ -6,9 +6,9 @@ import { useState } from 'react';
 import { DialogContent } from '@/components/ui/dialog';
 import { useMediaQuery } from '@/hooks/use-media-query';
 import { Address } from '@/types/common';
-import Content from '../address/choose-content';
 import { Dialog, DialogTrigger } from '../ui/dialog';
 import { Sheet, SheetContent, SheetTrigger } from '../ui/sheet';
+import Content from './address-selector-content';
 
 type Props = { addresses: Address[] };
 
