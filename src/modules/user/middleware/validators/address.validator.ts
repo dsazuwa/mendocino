@@ -1,4 +1,4 @@
-import { object, string } from 'zod';
+import { number, object, string } from 'zod';
 
 import { idRules } from './common.validator';
 
@@ -7,6 +7,21 @@ const bodyRules = object({
   name: string().trim().nonempty(),
   address: string().trim().nonempty(),
   suite: string().trim().optional(),
+
+  streetNumber: string().trim().optional(),
+  street: string().trim().optional(),
+  city: string().trim().optional(),
+  state: string().trim().optional(),
+
+  zipCode: string()
+    .trim()
+    .optional()
+    .refine((value) => (value === undefined ? true : /^\d{5}$/.test(value)), {
+      message: 'Invalid zip code, must be a 5-digit number.',
+    }),
+
+  lat: number(),
+  lng: number(),
 });
 
 export const createAddressSchema = object({

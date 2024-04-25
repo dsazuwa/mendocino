@@ -26,14 +26,8 @@ export const createAddress = async (
 ) => {
   try {
     const userId = req.user?.userId ?? -1;
-    const { suite, placeId, name, address } = req.body;
 
-    const result = await addressService.createAddress(userId, {
-      suite,
-      placeId,
-      name,
-      address,
-    });
+    const result = await addressService.createAddress(userId, req.body);
 
     if (result)
       res.status(200).json({ message: messages.CREATE_ADDRESS_SUCCESS });
@@ -51,17 +45,11 @@ export const updateAddress = async (
   try {
     const userId = req.user?.userId ?? -1;
     const { id } = req.params;
-    const { suite, placeId, name, address } = req.body;
 
     const result = await addressService.updateAddress(
       userId,
       parseInt(id, 10),
-      {
-        suite,
-        placeId,
-        name,
-        address,
-      },
+      req.body,
     );
 
     if (result === 1)

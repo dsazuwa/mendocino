@@ -41,14 +41,7 @@ export const createAddress = async (
   try {
     const { id } = req.params;
 
-    const { suite, placeId, name, address } = req.body;
-
-    const result = await guestService.createAddress(id, {
-      suite,
-      placeId,
-      name,
-      address,
-    });
+    const result = await guestService.createAddress(id, req.body);
 
     if (result)
       res
@@ -72,14 +65,12 @@ export const updateAddress = async (
     const { guestId } = req.body;
 
     const { id } = req.params;
-    const { suite, placeId, name, address } = req.body;
 
-    const result = await guestService.updateAddress(guestId, parseInt(id, 10), {
-      suite,
-      placeId,
-      name,
-      address,
-    });
+    const result = await guestService.updateAddress(
+      guestId,
+      parseInt(id, 10),
+      req.body,
+    );
 
     if (result === 1)
       res.status(200).json({ message: messages.UPDATE_ADDRESS_SUCCESS });

@@ -25,11 +25,19 @@ class Address extends Model<
 
   declare address: string;
 
+  declare streetNumber: CreationOptional<string | null>;
+
+  declare street: CreationOptional<string | null>;
+
+  declare city: CreationOptional<string | null>;
+
+  declare state: CreationOptional<string | null>;
+
   declare zipCode: CreationOptional<string | null>;
 
-  declare lat: CreationOptional<string | null>;
+  declare lat: number;
 
-  declare lng: CreationOptional<string | null>;
+  declare lng: number;
 
   declare dropOffOption: CreationOptional<DropOffType>;
 
@@ -65,19 +73,27 @@ Address.init(
       allowNull: false,
     },
 
+    streetNumber: DataTypes.STRING,
+
+    street: DataTypes.STRING,
+
+    city: DataTypes.STRING,
+
+    state: DataTypes.STRING,
+
     zipCode: {
       type: DataTypes.STRING,
       validate: { len: [5, 5] },
     },
 
     lat: {
-      type: DataTypes.STRING,
-      validate: { max: 32 },
+      type: DataTypes.DECIMAL(8, 6),
+      allowNull: false,
     },
 
     lng: {
-      type: DataTypes.STRING,
-      validate: { max: 32 },
+      type: DataTypes.DECIMAL(9, 6),
+      allowNull: false,
     },
 
     dropOffOption: {
