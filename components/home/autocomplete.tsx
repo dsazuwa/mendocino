@@ -1,6 +1,6 @@
 'use client';
 
-import { createGuestAddress } from '@/app/action';
+import { createCustomerAddress, createGuestAddress } from '@/app/action';
 import useAutocomplete from '@/hooks/use-autocomplete';
 import { Address, AddressData } from '@/types/address';
 import Search from '../icons/search';
@@ -17,7 +17,7 @@ export default function Autocomplete({ sessionId, defaultValue }: Props) {
 
   const handleSelect = (address: AddressData) => {
     if (sessionId) void createGuestAddress(sessionId, address);
-    // else // create authenticated user address
+    else void createCustomerAddress(address);
   };
 
   return isLoaded ? (

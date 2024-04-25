@@ -6,6 +6,7 @@ import { revalidateTag } from 'next/cache';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 
+import { AddressData } from '@/types/address';
 import {
   LoginInput,
   LoginResponse,
@@ -16,7 +17,6 @@ import {
   RequestRecoverData,
   VerifyRecoverData,
 } from '@/types/auth';
-import { Address, AddressData } from '@/types/address';
 import { GenericResponse } from '@/types/common';
 import { PasswordInput, ProfileInput, VerifyInput } from '@/types/customer';
 import { LocationType } from '@/types/location';
@@ -245,10 +245,24 @@ export async function createGuestAddress(
   );
 
   if (res.status === 200) {
-    const addresses = (await res.json()) as { addresses: Address[] };
-
     revalidateTag('Address');
+  }
+}
 
-    return addresses;
+export async function createCustomerAddress(address: AddressData) {
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/customers/me/addresses`,
+    {
+      method: 'POST',
+      headers: {
+        cookie: cookies().toString(),
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(address),
+    },
+  );
+
+  if (res.status === 200) {
+    revalidateTag('Address');
   }
 }
