@@ -7,8 +7,7 @@ import { useCombobox } from 'downshift';
 import { useEffect, useState } from 'react';
 
 import { cn } from '@/lib/utils';
-import { SearchResult, Suggestion } from '@/types/address';
-import { Address } from '@/types/common';
+import { AddressData, SearchResult } from '@/types/address';
 import Check from '../icons/check';
 import Location from '../icons/location';
 import Search from '../icons/search';
@@ -16,15 +15,17 @@ import InputContainer from '../input-container';
 import { Input } from '../ui/input';
 
 type Props = {
-  defaultValue?: Address;
+  defaultValue?: AddressData;
   service: google.maps.places.AutocompleteService;
   sessionToken: google.maps.places.AutocompleteSessionToken;
-  onSelect: (address: Suggestion) => void;
+  geocoder: google.maps.Geocoder;
+  onSelect: (address: AddressData) => void;
 };
 
 export default function AutocompleteInput({
   service,
   sessionToken,
+  geocoder,
   defaultValue,
   onSelect,
 }: Props) {
@@ -88,8 +89,55 @@ export default function AutocompleteInput({
   useEffect(() => {
     if (selected === null) return;
 
-    onSelect(selected);
-  }, [selected, onSelect]);
+    geocoder.geocode({ placeId: selected.placeId }, (results, status) => {
+      if (status === 'OK' && results !== null && results.length > 0) {
+        const { geometry, address_components } = results[0];
+
+        const address: AddressData = {
+          placeId: selected.placeId,
+          name: selected.name,
+          address: selected.address,
+          lat: geometry.location.lat(),
+          lng: geometry.location.lng(),
+        };
+
+        address_components.forEach((component) => {
+          component.types.forEach((type) => {
+            switch (type) {
+              case 'subpremise':
+                address.suite = component.long_name;
+                break;
+
+              case 'street_number':
+                address.streetNumber = component.long_name;
+                break;
+
+              case 'route':
+                address.street = component.long_name;
+                break;
+
+              case 'locality':
+                address.city = component.long_name;
+                break;
+
+              case 'administrative_area_level_1':
+                address.state = component.short_name;
+                break;
+
+              case 'postal_code':
+                address.zipCode = component.long_name;
+                break;
+
+              default:
+                break;
+            }
+          });
+        });
+
+        onSelect(address);
+      }
+    });
+  }, [selected]);
 
   return (
     <>

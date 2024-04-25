@@ -1,10 +1,17 @@
-export type Address = {
-  suite?: string;
-  id: string;
+export type Address = AddressData & { id: number };
+
+export type AddressData = {
   placeId: string;
   name: string;
   address: string;
-  zipCode: string;
+  suite?: string | undefined;
+  streetNumber?: string;
+  street?: string;
+  city?: string;
+  state?: string;
+  zipCode?: string;
+  lat: number;
+  lng: number;
 };
 
 export type Suggestion = {

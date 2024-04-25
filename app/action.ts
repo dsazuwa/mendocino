@@ -16,7 +16,7 @@ import {
   RequestRecoverData,
   VerifyRecoverData,
 } from '@/types/auth';
-import { Address } from '@/types/address';
+import { Address, AddressData } from '@/types/address';
 import { GenericResponse } from '@/types/common';
 import { PasswordInput, ProfileInput, VerifyInput } from '@/types/customer';
 import { LocationType } from '@/types/location';
@@ -233,7 +233,7 @@ export async function getClosestLocations(placeId: string) {
 
 export async function createGuestAddress(
   guestId: string,
-  address: { placeId: string; name: string; address: string },
+  address: AddressData,
 ) {
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/guests/${guestId}/addresses`,
@@ -244,9 +244,11 @@ export async function createGuestAddress(
     },
   );
 
-  const addresses = (await res.json()) as { addresses: Address[] };
+  if (res.status === 200) {
+    const addresses = (await res.json()) as { addresses: Address[] };
 
-  revalidateTag('Address');
+    revalidateTag('Address');
 
-  return { isSuccess: res.status === 200, addresses };
+    return addresses;
+  }
 }
