@@ -40,7 +40,7 @@ export default async function middleware(request: NextRequest) {
 
   accessToken = cookies().get('access-token')?.value;
 
-  if (!accessToken && !guestSession) {
+  if ((!accessToken || !refreshToken) && !guestSession) {
     const guestSession = await createGuestSession();
     nextResponse.cookies.set(guestSession);
   }
