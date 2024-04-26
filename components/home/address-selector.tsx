@@ -1,5 +1,5 @@
 import { getClosestLocations } from '@/app/action';
-import { Address } from '@/types/common';
+import { Address } from '@/types/address';
 import AddressModal from './address-modal';
 import Locations from './locations';
 

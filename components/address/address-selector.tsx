@@ -1,7 +1,7 @@
 import { Cross2Icon } from '@radix-ui/react-icons';
 
 import { cn } from '@/lib/utils';
-import { Address } from '@/types/common';
+import { Address } from '@/types/address';
 import ContentFooter from '../content-footer';
 import ContentHeader from '../content-header';
 import Location from '../icons/location';

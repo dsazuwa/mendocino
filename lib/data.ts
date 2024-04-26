@@ -1,8 +1,8 @@
 import { cookies } from 'next/headers';
 
-import { Address } from '@/types/common';
+import { Address } from '@/types/address';
 
-export async function getAddresses(): Promise<{ addresses: Address[] }> {
+export async function getAddresses() {
   const accessToken = cookies().get('access-token')?.value;
 
   if (accessToken === '') return { addresses: [] as Address[] };

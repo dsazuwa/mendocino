@@ -2,7 +2,7 @@ import { ChevronDownIcon } from '@radix-ui/react-icons';
 
 import Location from '@/components/icons/location';
 import { cn } from '@/lib/utils';
-import { Address } from '@/types/common';
+import { Address } from '@/types/address';
 import { Button } from '../ui/button';
 import { DialogTrigger } from '../ui/dialog';
 import { SheetTrigger } from '../ui/sheet';

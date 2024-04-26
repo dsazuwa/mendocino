@@ -1,7 +1,14 @@
 import { Libraries, useLoadScript } from '@react-google-maps/api';
 import { ChangeEvent, KeyboardEvent, useState } from 'react';
 
-import { StructuredAddress } from '@/types/common';
+type StructuredAddress = {
+  suite?: string | undefined;
+  streetNumber: string;
+  street: string;
+  city: string;
+  state: string;
+  zipCode: string;
+};
 
 export default function useGooglePlaces(defaultAddress?: string) {
   const [libraries] = useState<Libraries>(['places']);

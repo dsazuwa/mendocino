@@ -1,7 +1,7 @@
 import { ArrowLeftIcon } from '@radix-ui/react-icons';
 import { useState } from 'react';
 
-import { Address } from '@/types/common';
+import { Address } from '@/types/address';
 import ContentHeader from '../content-header';
 import { Button } from '../ui/button';
 import AddressSelector from '../address/address-selector';
