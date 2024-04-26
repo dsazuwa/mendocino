@@ -1,6 +1,6 @@
 'use client';
 
-import { Cross2Icon } from '@radix-ui/react-icons';
+import { ArrowLeftIcon, Cross2Icon } from '@radix-ui/react-icons';
 import { useState } from 'react';
 
 import Edit from '@/components/icons/edit';
@@ -15,7 +15,9 @@ import { Dialog, DialogTrigger } from '../ui/dialog';
 import { Sheet, SheetClose, SheetContent, SheetTrigger } from '../ui/sheet';
 import AddressForm from './address-form';
 
-export default function EditAddess({ address }: { address: AddressData }) {
+type Props = { address: AddressData; handleReturn?: () => void };
+
+export default function EditAddess({ address, handleReturn }: Props) {
   const [open, setOpen] = useState(false);
   const isDesktop = useMediaQuery('(min-width: 640px)');
 
@@ -25,7 +27,11 @@ export default function EditAddess({ address }: { address: AddressData }) {
         <Trigger isDialog={true} address={address} />
 
         <DialogContent className='flex max-w-lg flex-col'>
-          <Content isDialog={true} address={address} />
+          <EditContent
+            isDialog={true}
+            address={address}
+            handleReturn={handleReturn}
+          />
         </DialogContent>
       </Dialog>
     );
@@ -36,15 +42,23 @@ export default function EditAddess({ address }: { address: AddressData }) {
       <Trigger isDialog={false} address={address} />
 
       <SheetContent className='flex h-screen w-full flex-col' side='left'>
-        <Content isDialog={false} address={address} />
+        <EditContent
+          isDialog={false}
+          address={address}
+          handleReturn={handleReturn}
+        />
       </SheetContent>
     </Sheet>
   );
 }
 
-type Props = { isDialog: boolean; address: AddressData };
-
-function Trigger({ isDialog, address: addressProp }: Props) {
+function Trigger({
+  isDialog,
+  address: addressProp,
+}: {
+  isDialog: boolean;
+  address: AddressData;
+}) {
   const { name, address, zipCode } = addressProp;
 
   const Comp = isDialog ? DialogTrigger : SheetTrigger;
@@ -68,19 +82,35 @@ function Trigger({ isDialog, address: addressProp }: Props) {
   );
 }
 
-function Content({ isDialog, address }: Props) {
+export function EditContent({
+  isDialog,
+  address,
+  handleReturn,
+}: {
+  isDialog: boolean;
+  address: AddressData;
+  handleReturn?: () => void;
+}) {
   const Comp = isDialog ? DialogClose : SheetClose;
 
   return (
     <>
       <ContentHeader>
-        <Comp asChild>
-          <Button variant='ghost' size='icon'>
-            <Cross2Icon className='h-4 w-4 fill-neutral-500' />
+        {handleReturn === undefined ? (
+          <Comp asChild>
+            <Button variant='ghost' size='icon'>
+              <Cross2Icon className='h-4 w-4 fill-neutral-500' />
 
-            <span className='sr-only'>Close</span>
+              <span className='sr-only'>Close</span>
+            </Button>
+          </Comp>
+        ) : (
+          <Button variant='ghost' size='icon' onClick={handleReturn}>
+            <ArrowLeftIcon className='h-4 w-4 fill-neutral-500' />
+
+            <span className='sr-only'>Return to address selector</span>
           </Button>
-        </Comp>
+        )}
 
         <span className='flex-1 text-sm font-semibold'>Edit Address</span>
 

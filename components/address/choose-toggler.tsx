@@ -3,28 +3,48 @@ import { useState } from 'react';
 import { Address } from '@/types/address';
 import { CreateContent } from './create';
 import AddressSelector from './selector';
+import { EditContent } from './edit';
 
 type Props = { isDialog: boolean; addresses: Address[] };
 
 export default function ChooseToggler({ isDialog, addresses }: Props) {
-  const [contentType, setContentType] = useState<1 | 2>(1);
+  const [contentType, setContentType] = useState<'choose' | 'create' | 'edit'>(
+    'choose',
+  );
+  const [index, setIndex] = useState<number>(0);
 
-  const handleAddAddress = () => setContentType(2);
+  const handleCreate = () => {
+    setContentType('create');
+  };
 
-  const handleReturn = () => setContentType(1);
+  const handleEdit = (i: number) => {
+    setIndex(i);
+    setContentType('edit');
+  };
+
+  const handleReturn = () => setContentType('choose');
 
   return (
     <>
-      {contentType === 1 && (
+      {contentType === 'choose' && (
         <AddressSelector
           isDialog={isDialog}
           addresses={addresses}
-          handleAddAddress={handleAddAddress}
+          handleCreate={handleCreate}
+          handleEdit={handleEdit}
         />
       )}
 
-      {contentType === 2 && (
+      {contentType === 'create' && (
         <CreateContent isDialog={isDialog} handleReturn={handleReturn} />
+      )}
+
+      {contentType === 'edit' && (
+        <EditContent
+          isDialog={isDialog}
+          address={addresses[index]}
+          handleReturn={handleReturn}
+        />
       )}
     </>
   );
