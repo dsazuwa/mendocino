@@ -18,13 +18,15 @@ export default function Locations({ locations }: Props) {
         >
           <div className='flex flex-col items-center gap-2'>
             <Location className='w-6 flex-shrink-0 fill-primary-500' />
-            <div className='whitespace-nowrap text-xxs'>{distance.text}</div>
+            <div className='whitespace-nowrap text-[0.5rem] font-medium text-gray-600'>
+              {distance.text}
+            </div>
           </div>
 
-          <div>
-            <div className='text-sm font-semibold'>{name}</div>
-            <div className='mt-1 text-xs'>{address}</div>
-            <div className='text-xxs'>{[city, state, zipCode].join(', ')}</div>
+          <div className='text-xxs'>
+            <div className='text-xs font-semibold'>{name}</div>
+            <div className='mt-1'>{address}</div>
+            <div className='mt-0.5'>{[city, state, zipCode].join(', ')}</div>
           </div>
 
           <Button variant='outline' className='ml-auto text-xxs'>

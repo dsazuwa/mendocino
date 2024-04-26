@@ -54,7 +54,7 @@ function Trigger({ isDialog, address: addressProp }: Props) {
       <button className='inline-flex items-center gap-2 rounded-lg p-4 px-0 transition-colors duration-100 hover:bg-neutral-50 sm:gap-4 sm:px-2'>
         <Location className='max-w-4 fill-neutral-600' />
 
-        <span className='flex flex-col items-start text-neutral-600'>
+        <span className='flex flex-col items-start'>
           <span className='text-xs font-semibold'>{name}</span>
 
           <span className='text-[0.65rem]'>
@@ -82,9 +82,7 @@ function Content({ isDialog, address }: Props) {
           </Button>
         </Comp>
 
-        <span className='flex-1 text-sm font-semibold text-neutral-800'>
-          Edit Address
-        </span>
+        <span className='flex-1 text-sm font-semibold'>Edit Address</span>
 
         <Button variant='ghost' size='icon'>
           <Delete className='h-4 w-4 fill-neutral-500' />

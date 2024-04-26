@@ -8,7 +8,7 @@ export default function Register() {
 
       <RegisterForm />
 
-      <span className='flex flex-row gap-1 text-xs'>
+      <span className='inline-flex gap-1 text-xs'>
         <span>Already have an account?</span>
 
         <Link href='/login'>Login</Link>

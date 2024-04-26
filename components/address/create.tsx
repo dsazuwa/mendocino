@@ -75,9 +75,7 @@ export function CreateContent({ isDialog, handleReturn }: ContentProps) {
           </Button>
         )}
 
-        <span className='flex-1 text-sm font-semibold text-neutral-800'>
-          Create Address
-        </span>
+        <span className='flex-1 text-sm font-semibold'>Create Address</span>
       </ContentHeader>
 
       <AddressForm />

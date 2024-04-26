@@ -17,13 +17,13 @@ export default function NavLinks() {
           href={href}
           className='inline-flex items-center justify-between p-4 transition-colors hover:bg-neutral-100'
         >
-          <span className='inline-flex items-center text-xs'>
-            <Icon className='mr-4 w-5 shrink-0 fill-neutral-500' />
+          <span className='inline-flex items-center text-xs font-medium'>
+            <Icon className='mr-4 w-5 shrink-0 fill-neutral-600' />
             {name}
           </span>
 
           {pathName === href && (
-            <ChevronRightIcon className='w-3 fill-neutral-500' />
+            <ChevronRightIcon className='w-3 fill-neutral-600' />
           )}
         </Link>
       ))}

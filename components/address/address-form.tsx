@@ -36,7 +36,7 @@ export default function AddressForm({ defaultAddress }: Props) {
 
         <div className='flex-1 space-y-4'>
           {defaultAddress && (
-            <div className='flex flex-col items-start gap-1 text-neutral-600'>
+            <div className='flex flex-col items-start gap-1'>
               <span className='text-xs font-semibold'>
                 {defaultAddress.name}
               </span>
@@ -47,8 +47,8 @@ export default function AddressForm({ defaultAddress }: Props) {
             </div>
           )}
 
-          <div className='flex flex-row items-center gap-2 text-neutral-600'>
-            <span className='text-xs font-semibold text-neutral-600'>Apt</span>
+          <div className='inline-flex items-center gap-2'>
+            <span className='text-xs font-semibold'>Apt</span>
 
             <Input
               className='h-[46px] text-xxs'
@@ -57,9 +57,7 @@ export default function AddressForm({ defaultAddress }: Props) {
           </div>
 
           <div className='space-y-2'>
-            <span className='text-xs font-semibold text-neutral-600'>
-              Drop-off Options
-            </span>
+            <span className='text-xs font-semibold'>Drop-off Options</span>
 
             <RadioGroup defaultValue='1' className='gap-0'>
               <div className='flex items-center gap-4'>
@@ -81,7 +79,7 @@ export default function AddressForm({ defaultAddress }: Props) {
           <div className='space-y-4'>
             <Label
               htmlFor='drop-off-instructions'
-              className='text-xs font-semibold text-neutral-600'
+              className='text-xs font-semibold'
             >
               Drop-off Instructions
             </Label>
@@ -103,7 +101,7 @@ export default function AddressForm({ defaultAddress }: Props) {
           disabled={loading || !selected}
           onClick={createAddress}
         >
-          {loading ? <Loader /> : 'Save'}
+          {loading ? <Loader size='sm' /> : 'Save'}
         </Button>
       </ContentFooter>
     </form>

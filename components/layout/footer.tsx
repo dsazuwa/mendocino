@@ -6,9 +6,9 @@ function FooterLink({ label }: { label: string }) {
   return (
     <Button
       asChild={true}
-      variant='ghost'
+      variant='link'
       size='none'
-      className='rounded-none cursor-pointer justify-start py-1 text-xs text-neutral-700 hover:bg-neutral-100 sm:justify-end'
+      className='rounded-none cursor-pointer justify-start py-1 text-xs sm:justify-end'
     >
       <a>{label}</a>
     </Button>
@@ -24,7 +24,7 @@ function FooterIcon({ children }: { children: ReactNode }) {
       className='rounded-full p-1'
     >
       <a>
-        <svg className='w-3.5 fill-neutral-500' viewBox='0 0 24 24'>
+        <svg className='w-3.5 fill-neutral-600' viewBox='0 0 24 24'>
           {children}
         </svg>
       </a>
@@ -43,7 +43,7 @@ export default function Footer() {
             className='h-8'
           />
 
-          <p className='max-w-80 text-xs leading-5 text-neutral-500'>
+          <p className='max-w-80 text-xs leading-5'>
             Excepteur sint occaecat cupidatat non proident, sunt in culpa qui
             officia deserunt mollit anim id est laborum
           </p>
@@ -74,7 +74,7 @@ export default function Footer() {
 
       <div className='bg-neutral-100'>
         <div className='mx-auto flex max-w-screen-xl flex-col-reverse justify-between gap-2 p-4 sm:flex-row sm:items-center sm:px-8'>
-          <span className='text-xxs text-neutral-500'>{`© MENDOCINO FARMS ${new Date().getFullYear()}. All rights reserved.`}</span>
+          <span className='text-xxs'>{`© MENDOCINO FARMS ${new Date().getFullYear()}. All rights reserved.`}</span>
 
           <span className='ml-[-0.25rem] space-x-1 sm:ml-0'>
             <FooterIcon>

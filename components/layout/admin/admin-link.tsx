@@ -18,7 +18,7 @@ export default function AdminLink({ name, href, Icon }: Props) {
     <Link
       href={href}
       className={cn(
-        'flex flex-row items-center gap-2 p-4 pl-8 transition-colors hover:bg-neutral-50',
+        'inline-flex items-center gap-2 p-4 pl-8 transition-colors hover:bg-neutral-50',
         { 'border-l-4 border-solid border-primary-600 pl-7': isSelected },
       )}
     >

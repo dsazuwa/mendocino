@@ -29,7 +29,7 @@ export default async function ClientAppBar() {
           ) : (
             unauthLinks.map(({ name, href }) => (
               <Link
-                className='text-xs font-semibold text-neutral-600'
+                className='text-xs font-semibold'
                 key={`${name}-link`}
                 href={href}
               >

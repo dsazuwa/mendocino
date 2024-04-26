@@ -194,7 +194,7 @@ export default function Tabs({ className, children, value }: Props) {
     <div
       id='category-toggle'
       className={cn(
-        'flex flex-row items-center justify-center overflow-hidden',
+        'inline-flex items-center justify-center overflow-hidden',
         className,
       )}
     >
@@ -209,7 +209,7 @@ export default function Tabs({ className, children, value }: Props) {
         style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         ref={tabsRef}
       >
-        <div className='flex flex-row' ref={tabListRef}>
+        <div className='inline-flex' ref={tabListRef}>
           {children}
         </div>
 

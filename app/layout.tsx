@@ -26,7 +26,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang='en'>
-      <body className={cn(font.className, 'flex min-h-screen flex-col')}>
+      <body
+        className={cn(
+          font.className,
+          'flex min-h-screen flex-col text-neutral-600',
+        )}
+      >
         {children}
         <Toaster />
       </body>

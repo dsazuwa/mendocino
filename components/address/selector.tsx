@@ -27,9 +27,7 @@ export default function AddressSelector({
   return (
     <>
       <ContentHeader>
-        <span className='flex-1 font-semibold text-neutral-800'>
-          Choose a delivery address
-        </span>
+        <span className='flex-1 font-semibold'>Choose a delivery address</span>
 
         <Close asChild>
           <Button variant='ghost' size='icon'>
@@ -52,7 +50,7 @@ export default function AddressSelector({
               })}
             />
 
-            <span className='flex flex-col items-start text-neutral-600'>
+            <span className='flex flex-col items-start'>
               <span className='text-xs font-semibold'>{name}</span>
               <span className='text-[0.65rem]'>
                 {[address, zipCode].filter(Boolean).join(', ')}

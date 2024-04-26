@@ -71,7 +71,7 @@ function Trigger({ isDialog, addresses }: ContentProps) {
 
         <span
           className={cn(
-            'hidden text-xs font-medium text-neutral-600 sm:inline sm:text-[0.7rem]/[0.75rem]',
+            'hidden text-xs font-medium sm:inline sm:text-[0.7rem]/[0.75rem]',
             { 'font-semibold': hasAddress },
           )}
         >

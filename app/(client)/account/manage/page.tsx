@@ -12,7 +12,7 @@ export default function ManageAccount() {
         <div className='space-y-4 border-b border-solid border-neutral-200 pb-4 pt-2'>
           <h2 className='text-sm font-bold'>Account Data</h2>
 
-          <p className='text-xs leading-5 text-neutral-500'>
+          <p className='text-xs leading-5'>
             You can request an archive of your personal information. We&apos;`ll
             notify when it&apos;`s ready to download.
           </p>
@@ -23,13 +23,13 @@ export default function ManageAccount() {
         <div className='space-y-4 pt-2'>
           <h2 className='text-sm font-bold'>Delete Account</h2>
 
-          <p className='text-xs leading-5 text-neutral-500'>
+          <p className='text-xs leading-5'>
             You can request to have your account deleted and personal
             information removed. Any credits and gift card balances will be
             forfeited.
           </p>
 
-          <p className='space-x-1 text-[0.65rem] leading-3 text-neutral-500'>
+          <p className='space-x-1 text-[0.65rem] leading-3'>
             <span>
               For more information on how we collect and use customer data,
               visit our

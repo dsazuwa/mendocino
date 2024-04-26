@@ -20,10 +20,10 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
 
           <Button
             variant='ghost'
-            className='ml-auto flex flex-row gap-1 rounded-full p-2 sm:hover:bg-white'
+            className='ml-auto inline-flex gap-1 rounded-full p-2 sm:hover:bg-white'
           >
             <LogOut className='h-4 w-4 fill-neutral-600 sm:hidden' />
-            <span className='hidden text-xs font-semibold text-neutral-600 sm:inline'>
+            <span className='hidden text-xs font-semibold sm:inline'>
               Log out
             </span>
           </Button>

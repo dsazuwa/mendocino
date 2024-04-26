@@ -154,7 +154,7 @@ export default function ChangePasswordForm() {
           />
         </div>
 
-        <div className='space-y-2 text-xs leading-5 text-neutral-500'>
+        <div className='space-y-2 text-xs leading-5'>
           <p>We recommend choosing a password that:</p>
 
           <ul className='ml-4 list-outside list-disc'>

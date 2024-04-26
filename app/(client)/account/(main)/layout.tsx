@@ -40,9 +40,7 @@ export default async function AccountLayout({ children }: Props) {
               <span>{lastName}</span>
             </div>
 
-            <div className='truncate text-xs font-medium text-neutral-500'>
-              {email}
-            </div>
+            <div className='truncate text-xs font-medium'>{email}</div>
           </div>
 
           <div className='flex flex-col'>

@@ -8,7 +8,7 @@ export default function Login() {
 
       <LoginForm />
 
-      <span className='flex flex-row gap-1 text-xs'>
+      <span className='inline-flex gap-1 text-xs'>
         <span>Don&apos;t have an account?</span>
 
         <Link href='/register' className='ml-auto'>
