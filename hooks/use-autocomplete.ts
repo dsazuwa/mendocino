@@ -3,6 +3,12 @@
 import { Libraries, Loader } from '@googlemaps/js-api-loader';
 import { useEffect, useMemo, useState } from 'react';
 
+type GoogleMapsState = {
+  service: google.maps.places.AutocompleteService | null;
+  sessionToken: google.maps.places.AutocompleteSessionToken | null;
+  geocoder: google.maps.Geocoder | null;
+};
+
 type LoadedState = {
   isLoaded: true;
   service: google.maps.places.AutocompleteService;
@@ -19,18 +25,21 @@ type NotLoadedState = {
 
 type AutocompleteState = LoadedState | NotLoadedState;
 
-export default function useAutocomplete(): AutocompleteState {
+export default function useAutocompleteWithMap(): AutocompleteState {
   const [libraries] = useState<Libraries>(['places']);
   const [isLoaded, setIsLoaded] = useState(false);
 
-  const [service, setService] =
-    useState<google.maps.places.AutocompleteService | null>(null);
-  const [sessionToken, setSessionToken] =
-    useState<google.maps.places.AutocompleteSessionToken | null>(null);
-  const [geocoder, setGeocoder] = useState<google.maps.Geocoder | null>(null);
+  const [googleMaps, setGoogleMaps] = useState<GoogleMapsState>({
+    service: null,
+    sessionToken: null,
+    geocoder: null,
+  });
 
-  const memoizedService = useMemo(() => service, [isLoaded]);
-  const memoizedSessionToken = useMemo(() => sessionToken, [isLoaded]);
+  const memoizedService = useMemo(() => googleMaps.service, [isLoaded]);
+  const memoizedSessionToken = useMemo(
+    () => googleMaps.sessionToken,
+    [isLoaded],
+  );
 
   useEffect(() => {
     const loadPlaces = () => {
@@ -44,9 +53,13 @@ export default function useAutocomplete(): AutocompleteState {
       loader.load().then(() => {
         const google = window.google;
 
-        setService(new google.maps.places.AutocompleteService());
-        setSessionToken(new google.maps.places.AutocompleteSessionToken());
-        setGeocoder(new google.maps.Geocoder());
+        setGoogleMaps((state) => ({
+          ...state,
+          service: new google.maps.places.AutocompleteService(),
+          sessionToken: new google.maps.places.AutocompleteSessionToken(),
+          geocoder: new google.maps.Geocoder(),
+        }));
+
         setIsLoaded(true);
       });
     };
@@ -54,12 +67,12 @@ export default function useAutocomplete(): AutocompleteState {
     loadPlaces();
   }, []);
 
-  return memoizedService && memoizedSessionToken && geocoder
+  return memoizedService && memoizedSessionToken && googleMaps.geocoder
     ? {
         isLoaded: true,
         service: memoizedService,
         sessionToken: memoizedSessionToken,
-        geocoder,
+        geocoder: googleMaps.geocoder,
       }
     : {
         isLoaded: false,

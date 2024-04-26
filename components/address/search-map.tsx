@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-import useAutocompleteWithMap from '@/hooks/use-autocomplete-with-map';
+import useAutocomplete from '@/hooks/use-autocomplete';
 import { AddressData } from '@/types/address';
 import AutocompleteInput from '../home/autocomplete-input';
 import Search from '../icons/search';
@@ -9,22 +9,35 @@ import InputContainer from '../input-container';
 type Props = { defaultValue?: AddressData };
 
 export default function SearchMap({ defaultValue }: Props) {
-  const { isLoaded, service, sessionToken, map, marker, geocoder } =
-    useAutocompleteWithMap();
+  const { isLoaded, service, sessionToken, geocoder } = useAutocomplete();
 
   const [selected, setSelected] = useState<AddressData | undefined>(
     defaultValue,
   );
 
+  const getMapURL = (address: AddressData) => {
+    const { lat, lng } = address;
+
+    const apiKey = process.env.NEXT_PUBLIC_PLACES_API_KEY;
+    const mapCenter = `center=${lat},${lng}`;
+    const mapSize = 'size=600x300';
+    const mapZoom = 'zoom=16';
+    const marker = `markers=color:red%7C${lat},${lng}`;
+    const mapType = 'maptype=roadmap';
+
+    return `https://maps.googleapis.com/maps/api/staticmap?${mapCenter}&${mapSize}&${mapZoom}&${marker}&${mapType}&key=${apiKey}`;
+  };
+
+  const [mapURL, setMapURL] = useState(
+    defaultValue
+      ? getMapURL(defaultValue)
+      : 'https://www.adampack.com/wp-content/plugins/complianz-gdpr/assets/images/placeholder-google-maps.jpg',
+  );
+
   useEffect(() => {
-    if (!map || !marker || !selected) return;
+    if (!selected) return;
 
-    const { lat, lng } = selected;
-
-    map.setCenter({ lat, lng });
-    map.setZoom(16);
-
-    marker.position = { lat, lng };
+    setMapURL(getMapURL(selected));
   }, [selected]);
 
   return (
@@ -41,7 +54,7 @@ export default function SearchMap({ defaultValue }: Props) {
         <InputContainer Icon={Search} />
       )}
 
-      <div id='map' className='aspect-video' />
+      <img src={mapURL} alt='map' className='aspect-video rounded-md' />
     </>
   );
 }
