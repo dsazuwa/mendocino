@@ -1,18 +1,52 @@
+import { useState } from 'react';
+
+import { AddressData } from '@/types/address';
 import ContentFooter from '../content-footer';
+import Loader from '../loader';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import { RadioGroup, RadioGroupItem, RadioLabel } from '../ui/radio-group';
 import { Textarea } from '../ui/textarea';
-import SearchMap from './search-map';
+import AutocompleteMap from './autocomplete-map';
 
-export default function CreateForm() {
+type Props = { defaultAddress?: AddressData };
+
+export default function AddressForm({ defaultAddress }: Props) {
+  const [loading, setLoading] = useState(false);
+  const [selected, setSelected] = useState<AddressData | undefined>(
+    defaultAddress,
+  );
+
+  const createAddress = () => {
+    setLoading(true);
+
+    // isGuest || isAuth
+
+    setLoading(false);
+  };
+
   return (
-    <>
+    <form>
       <div className='flex flex-1 flex-col space-y-4 overflow-y-auto p-4 sm:p-6'>
-        <SearchMap />
+        <AutocompleteMap
+          selected={selected}
+          onSelect={(address: AddressData) => setSelected(address)}
+        />
 
         <div className='flex-1 space-y-4'>
+          {defaultAddress && (
+            <div className='flex flex-col items-start gap-1 text-neutral-600'>
+              <span className='text-xs font-semibold'>
+                {defaultAddress.name}
+              </span>
+
+              <span className='text-xxs'>
+                {[defaultAddress.address, defaultAddress.zipCode].join(', ')}
+              </span>
+            </div>
+          )}
+
           <div className='flex flex-row items-center gap-2 text-neutral-600'>
             <span className='text-xs font-semibold text-neutral-600'>Apt</span>
 
@@ -63,10 +97,15 @@ export default function CreateForm() {
       </div>
 
       <ContentFooter>
-        <Button variant='primary' className='w-full'>
-          Save
+        <Button
+          variant='primary'
+          className='w-full'
+          disabled={loading || !selected}
+          onClick={createAddress}
+        >
+          {loading ? <Loader /> : 'Save'}
         </Button>
       </ContentFooter>
-    </>
+    </form>
   );
 }

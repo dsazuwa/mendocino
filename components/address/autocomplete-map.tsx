@@ -2,26 +2,25 @@ import { useEffect, useState } from 'react';
 
 import useAutocomplete from '@/hooks/use-autocomplete';
 import { AddressData } from '@/types/address';
-import AutocompleteInput from '../home/autocomplete-input';
+import AutocompleteInput from './autocomplete-input';
 import Search from '../icons/search';
 import InputContainer from '../input-container';
 
-type Props = { defaultValue?: AddressData };
+type Props = {
+  selected?: AddressData;
+  onSelect: (address: AddressData) => void;
+};
 
-export default function SearchMap({ defaultValue }: Props) {
+export default function AutocompleteMap({ selected, onSelect }: Props) {
   const { isLoaded, service, sessionToken, geocoder } = useAutocomplete();
-
-  const [selected, setSelected] = useState<AddressData | undefined>(
-    defaultValue,
-  );
 
   const getMapURL = (address: AddressData) => {
     const { lat, lng } = address;
 
     const apiKey = process.env.NEXT_PUBLIC_PLACES_API_KEY;
     const mapCenter = `center=${lat},${lng}`;
-    const mapSize = 'size=600x300';
-    const mapZoom = 'zoom=16';
+    const mapSize = 'size=1024x576';
+    const mapZoom = 'zoom=17';
     const marker = `markers=color:red%7C${lat},${lng}`;
     const mapType = 'maptype=roadmap';
 
@@ -29,8 +28,8 @@ export default function SearchMap({ defaultValue }: Props) {
   };
 
   const [mapURL, setMapURL] = useState(
-    defaultValue
-      ? getMapURL(defaultValue)
+    selected
+      ? getMapURL(selected)
       : 'https://www.adampack.com/wp-content/plugins/complianz-gdpr/assets/images/placeholder-google-maps.jpg',
   );
 
@@ -47,14 +46,18 @@ export default function SearchMap({ defaultValue }: Props) {
           service={service}
           sessionToken={sessionToken}
           geocoder={geocoder}
-          onSelect={(address: AddressData) => void setSelected(address)}
-          defaultValue={defaultValue}
+          onSelect={onSelect}
+          defaultValue={selected}
         />
       ) : (
         <InputContainer Icon={Search} />
       )}
 
-      <img src={mapURL} alt='map' className='aspect-video rounded-md' />
+      <img
+        src={mapURL}
+        alt='map'
+        className='aspect-video rounded-md object-cover'
+      />
     </>
   );
 }

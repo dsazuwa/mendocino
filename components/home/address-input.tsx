@@ -1,4 +1,4 @@
-import Autocomplete from './autocomplete';
+import Autocomplete from '../address/autocomplete';
 
 type Props = { sessionId?: string };
 

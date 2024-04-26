@@ -6,9 +6,9 @@ import { useState } from 'react';
 import { DialogContent } from '@/components/ui/dialog';
 import { useMediaQuery } from '@/hooks/use-media-query';
 import { Address } from '@/types/address';
+import ChooseToggler from '../address/choose-toggler';
 import { Dialog, DialogTrigger } from '../ui/dialog';
 import { Sheet, SheetContent, SheetTrigger } from '../ui/sheet';
-import Content from './address-selector-content';
 
 type Props = { addresses: Address[] };
 
@@ -22,7 +22,7 @@ export default function AddressModal({ addresses }: Props) {
         <AddressTrigger isDialog={true} addresses={addresses} />
 
         <DialogContent className='flex max-w-lg flex-col'>
-          <Content isDialog={true} addresses={addresses} />
+          <ChooseToggler isDialog={true} addresses={addresses} />
         </DialogContent>
       </Dialog>
     );
@@ -33,7 +33,7 @@ export default function AddressModal({ addresses }: Props) {
       <AddressTrigger isDialog={true} addresses={addresses} />
 
       <SheetContent className='flex h-screen w-full flex-col' side='right'>
-        <Content isDialog={false} addresses={addresses} />
+        <ChooseToggler isDialog={false} addresses={addresses} />
       </SheetContent>
     </Sheet>
   );

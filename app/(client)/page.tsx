@@ -1,5 +1,5 @@
-import AuthenticatedHomePage from '@/components/home/auth-home';
-import UnauthHome from '@/components/home/unauth-home';
+import AuthenticatedHomePage from '@/components/home/home-auth';
+import UnauthHome from '@/components/home/home-unauth';
 import Footer from '@/components/layout/footer';
 import useAuthentication from '@/hooks/use-auth';
 

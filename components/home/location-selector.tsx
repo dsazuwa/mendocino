@@ -5,7 +5,7 @@ import Locations from './locations';
 
 type Props = { addresses: Address[] };
 
-export default async function AddressSelector({ addresses }: Props) {
+export default async function LocationSelector({ addresses }: Props) {
   const defaultAddress = addresses[0];
 
   const locations = await getClosestLocations(defaultAddress.placeId);
