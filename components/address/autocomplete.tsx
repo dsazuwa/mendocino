@@ -1,23 +1,19 @@
 'use client';
 
-import { createCustomerAddress, createGuestAddress } from '@/app/action';
+import { createAddress } from '@/app/action';
 import useAutocomplete from '@/hooks/use-autocomplete';
 import { Address, AddressData } from '@/types/address';
 import Search from '../icons/search';
-import InputContainer from '../input-container';
 import AutocompleteInput from './autocomplete-input';
+import InputContainer from './autocomplete-input-container';
 
-type Props = {
-  sessionId?: string;
-  defaultValue?: Address;
-};
+type Props = { defaultValue?: Address };
 
-export default function Autocomplete({ sessionId, defaultValue }: Props) {
+export default function Autocomplete({ defaultValue }: Props) {
   const { isLoaded, service, sessionToken, geocoder } = useAutocomplete();
 
   const handleSelect = (address: AddressData) => {
-    if (sessionId) void createGuestAddress(sessionId, address);
-    else void createCustomerAddress(address);
+    void createAddress(null, address);
   };
 
   return isLoaded ? (

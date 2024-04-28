@@ -30,8 +30,6 @@ export default function AddressSelector({
   return (
     <>
       <ContentHeader>
-        <span className='flex-1 font-semibold'>Delivery Address</span>
-
         <Close asChild>
           <Button variant='ghost' size='icon'>
             <Cross2Icon className='h-4 w-4' />
@@ -39,6 +37,8 @@ export default function AddressSelector({
             <span className='sr-only'>Close</span>
           </Button>
         </Close>
+
+        <span className='flex-1 text-sm font-semibold'>Delivery Address</span>
       </ContentHeader>
 
       <div className='flex flex-1 flex-col gap-4 p-4 sm:p-6'>

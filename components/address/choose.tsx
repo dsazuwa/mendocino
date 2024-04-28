@@ -28,13 +28,19 @@ function AddressButton({ addresses }: Props) {
   const [open, setOpen] = useState(false);
   const isDesktop = useMediaQuery('(min-width: 640px)');
 
+  const handleClose = () => setOpen(false);
+
   if (isDesktop) {
     return (
       <Dialog open={open} onOpenChange={setOpen}>
         <Trigger isDialog={true} addresses={addresses} />
 
         <DialogContent className='flex max-w-lg flex-col'>
-          <Content isDialog={true} addresses={addresses} />
+          <Content
+            isDialog={true}
+            addresses={addresses}
+            handleClose={handleClose}
+          />
         </DialogContent>
       </Dialog>
     );
@@ -45,7 +51,11 @@ function AddressButton({ addresses }: Props) {
       <Trigger isDialog={true} addresses={addresses} />
 
       <SheetContent className='flex h-screen w-full flex-col' side='right'>
-        <Content isDialog={false} addresses={addresses} />
+        <Content
+          isDialog={false}
+          addresses={addresses}
+          handleClose={handleClose}
+        />
       </SheetContent>
     </Sheet>
   );
@@ -84,12 +94,22 @@ function Trigger({ isDialog, addresses }: ContentProps) {
   );
 }
 
-function Content({ isDialog, addresses }: ContentProps) {
+function Content({
+  isDialog,
+  addresses,
+  handleClose,
+}: ContentProps & {
+  handleClose: () => void;
+}) {
   const hasAddress = addresses.length > 0;
 
   return hasAddress ? (
-    <ChooseToggler isDialog={isDialog} addresses={addresses} />
+    <ChooseToggler
+      isDialog={isDialog}
+      addresses={addresses}
+      handleClose={handleClose}
+    />
   ) : (
-    <CreateContent isDialog={isDialog} />
+    <CreateContent isDialog={isDialog} handleClose={handleClose} />
   );
 }

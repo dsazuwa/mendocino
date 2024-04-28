@@ -16,13 +16,19 @@ export default function AddressModal({ addresses }: Props) {
   const [open, setOpen] = useState(false);
   const isDesktop = useMediaQuery('(min-width: 640px)');
 
+  const handleClose = () => setOpen(false);
+
   if (isDesktop) {
     return (
       <Dialog open={open} onOpenChange={setOpen}>
         <AddressTrigger isDialog={true} addresses={addresses} />
 
         <DialogContent className='flex max-w-lg flex-col'>
-          <ChooseToggler isDialog={true} addresses={addresses} />
+          <ChooseToggler
+            isDialog={true}
+            addresses={addresses}
+            handleClose={handleClose}
+          />
         </DialogContent>
       </Dialog>
     );
@@ -33,7 +39,11 @@ export default function AddressModal({ addresses }: Props) {
       <AddressTrigger isDialog={true} addresses={addresses} />
 
       <SheetContent className='flex h-screen w-full flex-col' side='right'>
-        <ChooseToggler isDialog={false} addresses={addresses} />
+        <ChooseToggler
+          isDialog={false}
+          addresses={addresses}
+          handleClose={handleClose}
+        />
       </SheetContent>
     </Sheet>
   );

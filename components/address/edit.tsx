@@ -14,12 +14,15 @@ import { Button } from '../ui/button';
 import { Dialog, DialogTrigger } from '../ui/dialog';
 import { Sheet, SheetClose, SheetContent, SheetTrigger } from '../ui/sheet';
 import AddressForm from './address-form';
+import { updateAddress } from '@/app/action';
 
 type Props = { address: AddressData; handleReturn?: () => void };
 
 export default function EditAddess({ address, handleReturn }: Props) {
   const [open, setOpen] = useState(false);
   const isDesktop = useMediaQuery('(min-width: 640px)');
+
+  const handleClose = () => setOpen(false);
 
   if (isDesktop) {
     return (
@@ -31,6 +34,7 @@ export default function EditAddess({ address, handleReturn }: Props) {
             isDialog={true}
             address={address}
             handleReturn={handleReturn}
+            handleClose={handleClose}
           />
         </DialogContent>
       </Dialog>
@@ -46,6 +50,7 @@ export default function EditAddess({ address, handleReturn }: Props) {
           isDialog={false}
           address={address}
           handleReturn={handleReturn}
+          handleClose={handleClose}
         />
       </SheetContent>
     </Sheet>
@@ -86,10 +91,12 @@ export function EditContent({
   isDialog,
   address,
   handleReturn,
+  handleClose,
 }: {
   isDialog: boolean;
   address: AddressData;
   handleReturn?: () => void;
+  handleClose: () => void;
 }) {
   const Comp = isDialog ? DialogClose : SheetClose;
 
@@ -119,7 +126,11 @@ export function EditContent({
         </Button>
       </ContentHeader>
 
-      <AddressForm defaultAddress={address} />
+      <AddressForm
+        defaultAddress={address}
+        action={updateAddress}
+        handleClose={handleClose}
+      />
     </>
   );
 }

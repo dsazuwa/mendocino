@@ -6,7 +6,10 @@ export default function ContentFooter({
 }: React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={cn('border-t border-neutral-200 p-4 sm:p-6', className)}
+      className={cn(
+        'mt-auto border-t border-neutral-200 p-4 sm:p-6',
+        className,
+      )}
       {...props}
     />
   );

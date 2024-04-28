@@ -12,7 +12,7 @@ export default async function LocationSelector({ addresses }: Props) {
 
   return (
     <>
-      <div className='inline-flex flex-wrap items-center justify-center gap-2'>
+      <div className='inline-flex w-full flex-wrap items-center justify-center gap-2'>
         <span className='text-lg font-medium'>Delivering to</span>
 
         <AddressModal addresses={addresses} />

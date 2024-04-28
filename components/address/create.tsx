@@ -11,10 +11,13 @@ import { Button } from '../ui/button';
 import { Dialog, DialogTrigger } from '../ui/dialog';
 import { Sheet, SheetClose, SheetContent, SheetTrigger } from '../ui/sheet';
 import AddressForm from './address-form';
+import { createAddress } from '@/app/action';
 
 export default function CreateAddressModal() {
   const [open, setOpen] = useState(false);
   const isDesktop = useMediaQuery('(min-width: 640px)');
+
+  const handleClose = () => setOpen(false);
 
   if (isDesktop) {
     return (
@@ -22,7 +25,7 @@ export default function CreateAddressModal() {
         <Trigger isDialog={true} />
 
         <DialogContent className='flex max-w-lg flex-col'>
-          <CreateContent isDialog={false} />
+          <CreateContent isDialog={false} handleClose={handleClose} />
         </DialogContent>
       </Dialog>
     );
@@ -33,7 +36,7 @@ export default function CreateAddressModal() {
       <Trigger isDialog={true} />
 
       <SheetContent className='flex h-screen w-full flex-col' side='right'>
-        <CreateContent isDialog={false} />
+        <CreateContent isDialog={false} handleClose={handleClose} />
       </SheetContent>
     </Sheet>
   );
@@ -51,9 +54,17 @@ export function Trigger({ isDialog }: TriggerProps) {
   );
 }
 
-type ContentProps = { isDialog: boolean; handleReturn?: () => void };
+type ContentProps = {
+  isDialog: boolean;
+  handleClose: () => void;
+  handleReturn?: () => void;
+};
 
-export function CreateContent({ isDialog, handleReturn }: ContentProps) {
+export function CreateContent({
+  isDialog,
+  handleClose,
+  handleReturn,
+}: ContentProps) {
   const Comp = isDialog ? DialogClose : SheetClose;
 
   return (
@@ -78,7 +89,7 @@ export function CreateContent({ isDialog, handleReturn }: ContentProps) {
         <span className='flex-1 text-sm font-semibold'>Create Address</span>
       </ContentHeader>
 
-      <AddressForm />
+      <AddressForm action={createAddress} handleClose={handleClose} />
     </>
   );
 }

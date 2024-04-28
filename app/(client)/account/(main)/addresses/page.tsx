@@ -1,9 +1,9 @@
 import CreateAddressModal from '@/components/address/create';
 import EditAddess from '@/components/address/edit';
-import { getAddresses } from '@/lib/data';
+import { getCustomerAddresses } from '@/lib/data';
 
 export default async function Addresses() {
-  const { addresses } = await getAddresses();
+  const { addresses } = await getCustomerAddresses();
 
   return (
     <div className='flex h-full flex-col gap-4'>

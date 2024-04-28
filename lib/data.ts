@@ -3,9 +3,15 @@ import { cookies } from 'next/headers';
 import { Address } from '@/types/address';
 
 export async function getAddresses() {
+  return cookies().get('access-token')?.value
+    ? getCustomerAddresses()
+    : getGuestAddresses();
+}
+
+export async function getCustomerAddresses() {
   const accessToken = cookies().get('access-token')?.value;
 
-  if (accessToken === '') return { addresses: [] as Address[] };
+  if (!accessToken) return { addresses: [] };
 
   const response = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/customers/me/addresses`,
@@ -26,12 +32,14 @@ export async function getGuestAddresses() {
 
   if (!sessionId) throw new Error('No guest session');
 
-  const req = await fetch(
+  const response = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/guests/${sessionId}/addresses`,
     { next: { tags: ['Address'] } },
   );
 
-  const { addresses } = (await req.json()) as {
+  if (!response.ok) throw new Error('Failed to fetch addresses');
+
+  const { addresses } = (await response.json()) as {
     addresses: Address[];
   };
 

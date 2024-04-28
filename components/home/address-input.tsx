@@ -1,13 +1,11 @@
 import Autocomplete from '../address/autocomplete';
 
-type Props = { sessionId?: string };
-
-export default function AddressInput({ sessionId }: Props) {
+export default function AddressInput() {
   return (
     <>
       <div className='text-lg font-bold'>Order delivery near you!</div>
 
-      <Autocomplete sessionId={sessionId} />
+      <Autocomplete />
     </>
   );
 }

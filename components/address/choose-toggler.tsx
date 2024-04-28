@@ -5,9 +5,17 @@ import { CreateContent } from './create';
 import AddressSelector from './selector';
 import { EditContent } from './edit';
 
-type Props = { isDialog: boolean; addresses: Address[] };
+type Props = {
+  isDialog: boolean;
+  addresses: Address[];
+  handleClose: () => void;
+};
 
-export default function ChooseToggler({ isDialog, addresses }: Props) {
+export default function ChooseToggler({
+  isDialog,
+  addresses,
+  handleClose,
+}: Props) {
   const [contentType, setContentType] = useState<'choose' | 'create' | 'edit'>(
     'choose',
   );
@@ -36,7 +44,11 @@ export default function ChooseToggler({ isDialog, addresses }: Props) {
       )}
 
       {contentType === 'create' && (
-        <CreateContent isDialog={isDialog} handleReturn={handleReturn} />
+        <CreateContent
+          isDialog={isDialog}
+          handleReturn={handleReturn}
+          handleClose={handleClose}
+        />
       )}
 
       {contentType === 'edit' && (
@@ -44,6 +56,7 @@ export default function ChooseToggler({ isDialog, addresses }: Props) {
           isDialog={isDialog}
           address={addresses[index]}
           handleReturn={handleReturn}
+          handleClose={handleClose}
         />
       )}
     </>

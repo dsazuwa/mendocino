@@ -231,11 +231,37 @@ export async function getClosestLocations(placeId: string) {
   return locations;
 }
 
-export async function createGuestAddress(
-  guestId: string,
-  address: AddressData,
-) {
-  const res = await fetch(
+export async function createAddress(prevState: any, address: AddressData) {
+  try {
+    const accessToken = cookies().get('access-token')?.value;
+
+    const res = await (accessToken
+      ? createCustomerAddress(address)
+      : createGuestAddress(address));
+
+    const { message } = (await res.json()) as { message: string };
+
+    if (res.status === 200) {
+      revalidateTag('Address');
+
+      return { isSuccess: true, message };
+    }
+
+    return { isSuccess: false, message };
+  } catch (e) {
+    return {
+      isSuccess: false,
+      message: 'Error creating address',
+    };
+  }
+}
+
+function createGuestAddress(address: AddressData) {
+  const guestId = cookies().get('guest-session')?.value;
+
+  if (!guestId) throw new Error('No active guest session');
+
+  return fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/guests/${guestId}/addresses`,
     {
       method: 'POST',
@@ -243,26 +269,63 @@ export async function createGuestAddress(
       body: JSON.stringify(address),
     },
   );
+}
 
-  if (res.status === 200) {
-    revalidateTag('Address');
+function createCustomerAddress(address: AddressData) {
+  return fetch(`${process.env.NEXT_PUBLIC_API_URL}/customers/me/addresses`, {
+    method: 'POST',
+    headers: {
+      cookie: cookies().toString(),
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(address),
+  });
+}
+
+export async function updateAddress(prevState: any, address: AddressData) {
+  try {
+    const accessToken = cookies().get('access-token')?.value;
+
+    const res = await (accessToken
+      ? updateCustomerAddress(address)
+      : updateGuestAddress(address));
+
+    const { message } = (await res.json()) as { message: string };
+
+    if (res.status === 200) {
+      revalidateTag('Address');
+
+      return { isSuccess: true, message };
+    }
+
+    return { isSuccess: false, message };
+  } catch (e) {
+    return { isSuccess: false, message: 'Error updating address' };
   }
 }
 
-export async function createCustomerAddress(address: AddressData) {
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/customers/me/addresses`,
+function updateGuestAddress(address: AddressData) {
+  const guestId = cookies().get('guest-session')?.value;
+
+  if (!guestId) throw new Error('No active guest session');
+
+  return fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/guests/${guestId}/addresses`,
     {
-      method: 'POST',
-      headers: {
-        cookie: cookies().toString(),
-        'Content-Type': 'application/json',
-      },
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(address),
     },
   );
+}
 
-  if (res.status === 200) {
-    revalidateTag('Address');
-  }
+function updateCustomerAddress(address: AddressData) {
+  return fetch(`${process.env.NEXT_PUBLIC_API_URL}/customers/me/addresses`, {
+    method: 'PATCH',
+    headers: {
+      cookie: cookies().toString(),
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(address),
+  });
 }

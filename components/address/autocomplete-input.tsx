@@ -11,8 +11,8 @@ import { AddressData, SearchResult } from '@/types/address';
 import Check from '../icons/check';
 import Location from '../icons/location';
 import Search from '../icons/search';
-import InputContainer from '../input-container';
 import { Input } from '../ui/input';
+import InputContainer from './autocomplete-input-container';
 
 type Props = {
   defaultValue?: AddressData;

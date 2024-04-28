@@ -2,9 +2,9 @@ import { useEffect, useState } from 'react';
 
 import useAutocomplete from '@/hooks/use-autocomplete';
 import { AddressData } from '@/types/address';
-import AutocompleteInput from './autocomplete-input';
 import Search from '../icons/search';
-import InputContainer from '../input-container';
+import AutocompleteInput from './autocomplete-input';
+import InputContainer from './autocomplete-input-container';
 
 type Props = {
   selected?: AddressData;

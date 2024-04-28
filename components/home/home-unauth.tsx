@@ -1,12 +1,12 @@
-import { getGuestAddresses } from '@/lib/data';
+import { getAddresses } from '@/lib/data';
 import AddressInput from './address-input';
 import LocationSelector from './location-selector';
 
 export default async function UnauthenticatedHomePage() {
-  const { sessionId, addresses } = await getGuestAddresses();
+  const { addresses } = await getAddresses();
 
   return addresses.length === 0 ? (
-    <AddressInput sessionId={sessionId} />
+    <AddressInput />
   ) : (
     <LocationSelector addresses={addresses} />
   );
