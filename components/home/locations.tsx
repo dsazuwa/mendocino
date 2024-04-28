@@ -6,8 +6,16 @@ type Props = { locations: LocationType[] };
 
 export default function Locations({ locations }: Props) {
   return locations.length === 0 ? (
-    <div className='text-sm font-semibold text-neutral-400'>
-      No resturants near you
+    <div className='inline-flex w-full items-center justify-center gap-2 pt-4 font-semibold text-neutral-300'>
+      <Location className='w-10 flex-shrink-0 fill-neutral-200 sm:w-12' />
+
+      <div>
+        <p className=''>Oh no!</p>
+        <p className='max-w-md text-sm'>
+          It looks like there are no restaurants near the address you provided.
+          Please try again with a different address.
+        </p>
+      </div>
     </div>
   ) : (
     <div className='flex flex-col flex-wrap gap-6 pt-4'>
