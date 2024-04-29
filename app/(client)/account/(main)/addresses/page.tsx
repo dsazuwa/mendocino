@@ -6,7 +6,7 @@ import Loader from '@/components/loader';
 import { useGetAddresses } from '@/hooks/use-addresses';
 
 export default function Addresses() {
-  const { addresses, isLoading } = useGetAddresses(undefined);
+  const { addresses, isLoading } = useGetAddresses();
 
   return (
     <div className='flex h-full flex-col gap-4'>

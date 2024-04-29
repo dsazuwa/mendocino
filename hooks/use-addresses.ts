@@ -2,8 +2,11 @@ import {
   useGetAddressesQuery,
   useGetClosestLocationsQuery,
 } from '@/store/api/address';
+import useAuthContext from './use-auth-context';
 
-export function useGetAddresses(guestSession?: string) {
+export function useGetAddresses() {
+  const { guestSession } = useAuthContext();
+
   const { data, isLoading, isFetching } = useGetAddressesQuery({
     guestSession,
   });

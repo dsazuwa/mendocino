@@ -8,7 +8,7 @@ import ClientAppBarDrawer from './client-drawer';
 import LogoutButton from './logout-btn';
 
 export default function ClientAppBar() {
-  const { isAuthenticated, guestSession } = useAuthentication();
+  const { isAuthenticated } = useAuthentication();
 
   return (
     <nav id='client-app-bar' className='fixed z-50 h-16 w-full bg-white'>
@@ -19,7 +19,7 @@ export default function ClientAppBar() {
           <Logo />
         </Link>
 
-        <AddressButton guestSession={guestSession} />
+        <AddressButton />
 
         <div className='ml-auto hidden gap-4 sm:flex'>
           {isAuthenticated ? (

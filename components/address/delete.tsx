@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 
+import useAuthContext from '@/hooks/use-auth-context';
 import { useDeleteAddressMutation } from '@/store/api/address';
-import { useAppSelector } from '@/store/hooks';
 import Delete from '../icons/delete';
 import Loader from '../loader';
 import { Button } from '../ui/button';
@@ -12,9 +12,7 @@ type Props = { id: number; placeId: string; handleSuccess: () => void };
 export default function DeleteAddress({ id, placeId, handleSuccess }: Props) {
   const { toast } = useToast();
 
-  const guestSession = useAppSelector(
-    (state) => state.addressState.guestSession,
-  );
+  const { guestSession } = useAuthContext();
 
   const [deleteAddress, { isLoading, isSuccess, isError, error }] =
     useDeleteAddressMutation();

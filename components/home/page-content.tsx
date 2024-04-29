@@ -4,10 +4,8 @@ import { useGetAddresses } from '@/hooks/use-addresses';
 import AddressInput from './address-input';
 import LocationSelector from './location-selector';
 
-type Props = { guestSession?: string };
-
-export default function HomePageContent({ guestSession }: Props) {
-  const { addresses, isLoading } = useGetAddresses(guestSession);
+export default function HomePageContent() {
+  const { addresses, isLoading } = useGetAddresses();
 
   if (isLoading) return <></>;
 

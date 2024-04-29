@@ -4,7 +4,6 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
 import { Address, AddressData } from '@/types/address';
 import { LocationType } from '@/types/location';
-import { setGuestSession } from '../slices/address';
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL as string;
 
@@ -58,10 +57,6 @@ export const addressApi = createApi({
             : '/customers/me/addresses',
           credentials: 'include',
         };
-      },
-
-      onQueryStarted({ guestSession }, api) {
-        api.dispatch(setGuestSession(guestSession));
       },
 
       providesTags: ['Address'],

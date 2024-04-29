@@ -5,11 +5,11 @@ import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { TypeOf, literal, number, object, string, union } from 'zod';
 
+import useAuthContext from '@/hooks/use-auth-context';
 import {
   useCreateAddressMutation,
   useUpdateAddressMutation,
 } from '@/store/api/address';
-import { useAppSelector } from '@/store/hooks';
 import { Address, AddressData } from '@/types/address';
 import ContentFooter from '../content-footer';
 import Loader from '../loader';
@@ -71,9 +71,7 @@ export default function AddressForm({ defaultAddress, handleClose }: Props) {
     defaultAddress,
   );
 
-  const guestSession = useAppSelector(
-    (state) => state.addressState.guestSession,
-  );
+  const { guestSession } = useAuthContext();
 
   const useMutation = defaultAddress
     ? useUpdateAddressMutation

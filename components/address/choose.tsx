@@ -16,19 +16,17 @@ import { Sheet, SheetContent, SheetTrigger } from '../ui/sheet';
 import ChooseToggler from './choose-toggler';
 import { CreateContent } from './create';
 
-type Props = { guestSession?: string };
-
-export default function AddressButton({ guestSession }: Props) {
+export default function AddressButton() {
   const pathname = usePathname();
 
   if (pathname === '/') return <></>;
-  return <ChooseAddress guestSession={guestSession} />;
+  return <ChooseAddress />;
 }
 
-function ChooseAddress({ guestSession }: Props) {
+function ChooseAddress() {
   const [open, setOpen] = useState(false);
   const isDesktop = useMediaQuery('(min-width: 640px)');
-  const { addresses, isLoading } = useGetAddresses(guestSession);
+  const { addresses, isLoading } = useGetAddresses();
 
   const handleClose = () => setOpen(false);
 
