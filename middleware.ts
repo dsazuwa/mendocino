@@ -110,28 +110,21 @@ async function getNextResponse(
     pathname.startsWith(route),
   );
 
-  if (!response) {
-    if (isPublicRoute) return NextResponse.next();
+  const isAuthenticated = response?.status === 200;
 
-    if (isProtectedRoute) {
+  if (isAuthenticated) {
+    if (isPublicRoute)
       return NextResponse.redirect(new URL('/', origin).toString());
-    }
-  } else {
-    if (response.status === 200 && isPublicRoute) {
-      return NextResponse.redirect(new URL('/', origin).toString());
-    }
-
-    if (response.status !== 200 && isProtectedRoute) {
-      return NextResponse.redirect(new URL('/', origin).toString());
-    }
 
     if (pathname === '/verify') {
       const body = (await response.json()) as { user: { status: string } };
 
-      if (body.user.status !== 'pending') {
+      if (body.user.status !== 'pending')
         return NextResponse.redirect(new URL('/', origin).toString());
-      }
     }
+  } else {
+    if (isProtectedRoute)
+      return NextResponse.redirect(new URL('/', origin).toString());
   }
 
   return NextResponse.next();
