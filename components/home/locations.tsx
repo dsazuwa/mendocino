@@ -1,3 +1,5 @@
+import { ValueNoneIcon } from '@radix-ui/react-icons';
+
 import { LocationType } from '@/types/location';
 import Location from '../icons/location';
 import { Button } from '../ui/button';
@@ -7,10 +9,10 @@ type Props = { locations: LocationType[] };
 export default function Locations({ locations }: Props) {
   return locations.length === 0 ? (
     <div className='inline-flex w-full items-center justify-center gap-2 pt-4 font-semibold text-neutral-300'>
-      <Location className='w-10 flex-shrink-0 fill-neutral-200 sm:w-12' />
+      <ValueNoneIcon className='h-10 w-10  flex-shrink-0 fill-neutral-200 sm:w-12' />
 
       <div>
-        <p className=''>Oh no!</p>
+        <p className='text-lg'>Oh no!</p>
         <p className='max-w-md text-sm'>
           It looks like there are no restaurants near the address you provided.
           Please try again with a different address.
