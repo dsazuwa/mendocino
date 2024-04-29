@@ -18,19 +18,23 @@ const guestRouter = Router();
 
 guestRouter.post('/', createGuest);
 
-guestRouter.get('/:id/addresses', getAddress);
+guestRouter.get('/:session/addresses', getAddress);
 guestRouter.post(
-  '/:id/addresses',
+  '/:session/addresses',
   trimRequestBody,
   validate(createAddressSchema),
   createAddress,
 );
 guestRouter.patch(
-  '/:id',
+  '/:session/addresses/:id',
   trimRequestBody,
   validate(updateAddressSchema),
   updateAddress,
 );
-guestRouter.delete('/:id', validate(deleteAddressSchema), deleteAddress);
+guestRouter.delete(
+  '/:session/addresses/:id',
+  validate(deleteAddressSchema),
+  deleteAddress,
+);
 
 export default guestRouter;

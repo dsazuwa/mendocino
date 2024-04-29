@@ -23,9 +23,9 @@ export const getAddress = async (
   next: NextFunction,
 ) => {
   try {
-    const { id } = req.params;
+    const { session } = req.params;
 
-    const addresses = await guestService.getAddresses(id);
+    const addresses = await guestService.getAddresses(session);
 
     res.status(200).json({ addresses });
   } catch (e) {
@@ -39,9 +39,9 @@ export const createAddress = async (
   next: NextFunction,
 ) => {
   try {
-    const { id } = req.params;
+    const { session } = req.params;
 
-    const result = await guestService.createAddress(id, req.body);
+    const result = await guestService.createAddress(session, req.body);
 
     if (result)
       res
@@ -62,12 +62,10 @@ export const updateAddress = async (
   next: NextFunction,
 ) => {
   try {
-    const { guestId } = req.body;
-
-    const { id } = req.params;
+    const { id, session } = req.params;
 
     const result = await guestService.updateAddress(
-      guestId,
+      session,
       parseInt(id, 10),
       req.body,
     );
@@ -86,10 +84,9 @@ export const deleteAddress = async (
   next: NextFunction,
 ) => {
   try {
-    const { id } = req.params;
-    const { guestId } = req.body;
+    const { id, session } = req.params;
 
-    const result = await guestService.deleteAddress(guestId, parseInt(id, 10));
+    const result = await guestService.deleteAddress(session, parseInt(id, 10));
 
     if (result === 1)
       res.status(200).json({ message: messages.DELETE_ADDRESS_SUCCESS });
