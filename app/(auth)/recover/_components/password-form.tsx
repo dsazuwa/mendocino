@@ -61,7 +61,6 @@ export default function ChangePasswordForm({ email, code }: Props) {
     message: '',
   });
 
-  console.log(email, code);
   const form = useForm<FormSchema>({
     defaultValues: { email, code, password: '', confirm: '' },
     resolver: zodResolver(formSchema),

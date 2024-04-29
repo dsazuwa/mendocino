@@ -137,7 +137,7 @@ export default function AutocompleteInput({
         onSelect(address);
       }
     });
-  }, [selected]);
+  }, [selected, geocoder, onSelect]);
 
   return (
     <>

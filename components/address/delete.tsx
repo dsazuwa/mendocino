@@ -23,12 +23,12 @@ export default function DeleteAddress({ id, placeId, handleSuccess }: Props) {
 
   useEffect(() => {
     if (isSuccess) handleSuccess();
-  }, [isSuccess]);
+  }, [isSuccess, handleSuccess]);
 
   useEffect(() => {
     if (isError)
       toast({ variant: 'destructive', description: error as string });
-  }, [isError, error]);
+  }, [isError, error, toast]);
 
   return (
     <Button variant='ghost' size='icon' onClick={handleDelete}>
