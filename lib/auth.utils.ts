@@ -26,9 +26,11 @@ export const getAuthCookieObject = (
     },
   };
 };
+
 export const setAuthCookies = (accessToken: string, refreshToken: string) => {
   const authCookies = getAuthCookieObject(accessToken, refreshToken);
 
   cookies().set(authCookies.accessToken);
   cookies().set(authCookies.refreshToken);
+  cookies().delete('guest-session');
 };

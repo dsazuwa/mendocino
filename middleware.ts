@@ -7,6 +7,7 @@ import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 
 import { AuthCookies, getAuthCookieObject } from '@/lib/auth.utils';
+import { createGuestSession } from './app/action';
 
 const protectedRoutes = ['/account', '/verify'];
 const publicOnlyRoutes = ['/login', '/register', '/recover'];
@@ -85,21 +86,6 @@ async function getUser(accessToken: string) {
     console.error('Error refreshing token: ', error);
     throw error;
   }
-}
-
-async function createGuestSession() {
-  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/guests`, {
-    method: 'POST',
-  });
-
-  const { sessionId } = (await response.json()) as { sessionId: string };
-
-  return {
-    name: 'guest-session',
-    value: sessionId,
-    secure: true,
-    httpOnly: true,
-  };
 }
 
 async function getNextResponse(

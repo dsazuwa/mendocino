@@ -22,6 +22,21 @@ import { PasswordInput, ProfileInput, VerifyInput } from '@/types/customer';
 import { LocationType } from '@/types/location';
 import { setAuthCookies } from '../lib/auth.utils';
 
+export async function createGuestSession() {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/guests`, {
+    method: 'POST',
+  });
+
+  const { sessionId } = (await response.json()) as { sessionId: string };
+
+  return {
+    name: 'guest-session',
+    value: sessionId,
+    secure: true,
+    httpOnly: true,
+  };
+}
+
 export async function logout() {
   await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/logout`, {
     method: 'POST',
@@ -30,6 +45,9 @@ export async function logout() {
 
   cookies().delete('access-token');
   cookies().delete('refresh-token');
+
+  const session = await createGuestSession();
+  cookies().set(session);
 }
 
 export async function login(prevState: any, data: LoginInput) {
