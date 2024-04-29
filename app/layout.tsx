@@ -5,6 +5,7 @@ import { ReactNode } from 'react';
 import { Toaster } from '@/components/ui/toaster';
 import { cn } from '@/lib/utils';
 import './globals.css';
+import StoreProvider from './providers/store-provider';
 
 const font = Montserrat({
   weight: ['100', '200', '300', '400', '500', '600', '700', '800', '900'],
@@ -19,11 +20,9 @@ export const metadata: Metadata = {
   description: 'A food delivery app',
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: ReactNode;
-}>) {
+type Props = Readonly<{ children: ReactNode }>;
+
+export default function RootLayout({ children }: Props) {
   return (
     <html lang='en'>
       <body
@@ -32,7 +31,7 @@ export default function RootLayout({
           'flex min-h-screen flex-col text-neutral-600',
         )}
       >
-        {children}
+        <StoreProvider>{children}</StoreProvider>
         <Toaster />
       </body>
     </html>

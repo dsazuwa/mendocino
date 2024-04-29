@@ -3,14 +3,12 @@ import Link from 'next/link';
 import AddressButton from '@/components/address/choose';
 import Logo from '@/components/logo';
 import useAuthentication from '@/hooks/use-auth';
-import { getAddresses } from '@/lib/data';
 import { unauthLinks } from './client-constants';
 import ClientAppBarDrawer from './client-drawer';
 import LogoutButton from './logout-btn';
 
-export default async function ClientAppBar() {
-  const { isAuthenticated } = useAuthentication();
-  const { addresses } = await getAddresses();
+export default function ClientAppBar() {
+  const { isAuthenticated, guestSession } = useAuthentication();
 
   return (
     <nav id='client-app-bar' className='fixed z-50 h-16 w-full bg-white'>
@@ -21,7 +19,7 @@ export default async function ClientAppBar() {
           <Logo />
         </Link>
 
-        <AddressButton addresses={addresses} />
+        <AddressButton guestSession={guestSession} />
 
         <div className='ml-auto hidden gap-4 sm:flex'>
           {isAuthenticated ? (

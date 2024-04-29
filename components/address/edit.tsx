@@ -1,5 +1,3 @@
-'use client';
-
 import { ArrowLeftIcon, Cross2Icon } from '@radix-ui/react-icons';
 import { useState } from 'react';
 
@@ -7,16 +5,15 @@ import Edit from '@/components/icons/edit';
 import Location from '@/components/icons/location';
 import { DialogClose, DialogContent } from '@/components/ui/dialog';
 import { useMediaQuery } from '@/hooks/use-media-query';
-import { AddressData } from '@/types/address';
+import { Address, AddressData } from '@/types/address';
 import ContentHeader from '../content-header';
-import Delete from '../icons/delete';
 import { Button } from '../ui/button';
 import { Dialog, DialogTrigger } from '../ui/dialog';
 import { Sheet, SheetClose, SheetContent, SheetTrigger } from '../ui/sheet';
 import AddressForm from './address-form';
-import { updateAddress } from '@/app/action';
+import DeleteAddress from './delete';
 
-type Props = { address: AddressData; handleReturn?: () => void };
+type Props = { address: Address; handleReturn?: () => void };
 
 export default function EditAddess({ address, handleReturn }: Props) {
   const [open, setOpen] = useState(false);
@@ -94,7 +91,7 @@ export function EditContent({
   handleClose,
 }: {
   isDialog: boolean;
-  address: AddressData;
+  address: Address;
   handleReturn?: () => void;
   handleClose: () => void;
 }) {
@@ -121,16 +118,14 @@ export function EditContent({
 
         <span className='flex-1 text-sm font-semibold'>Edit Address</span>
 
-        <Button variant='ghost' size='icon'>
-          <Delete className='h-4 w-4 fill-neutral-500' />
-        </Button>
+        <DeleteAddress
+          id={address.id}
+          placeId={address.placeId}
+          handleSuccess={handleClose}
+        />
       </ContentHeader>
 
-      <AddressForm
-        defaultAddress={address}
-        action={updateAddress}
-        handleClose={handleClose}
-      />
+      <AddressForm defaultAddress={address} handleClose={handleClose} />
     </>
   );
 }

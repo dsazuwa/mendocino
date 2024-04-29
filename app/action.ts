@@ -6,7 +6,6 @@ import { revalidateTag } from 'next/cache';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 
-import { AddressData } from '@/types/address';
 import {
   LoginInput,
   LoginResponse,
@@ -19,7 +18,6 @@ import {
 } from '@/types/auth';
 import { GenericResponse } from '@/types/common';
 import { PasswordInput, ProfileInput, VerifyInput } from '@/types/customer';
-import { LocationType } from '@/types/location';
 import { setAuthCookies } from '../lib/auth.utils';
 
 export async function createGuestSession() {
@@ -235,115 +233,4 @@ export async function closeAccount() {
   const { message } = (await res.json()) as GenericResponse;
 
   return { isSuccess: res.status === 200, message };
-}
-
-export async function getClosestLocations(placeId: string) {
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/locations/distance/${placeId}`,
-  );
-
-  if (res.status !== 200) throw new Error('Failed to retrieve locations');
-
-  const { locations } = (await res.json()) as { locations: LocationType[] };
-
-  return locations;
-}
-
-export async function createAddress(prevState: any, address: AddressData) {
-  try {
-    const accessToken = cookies().get('access-token')?.value;
-
-    const res = await (accessToken
-      ? createCustomerAddress(address)
-      : createGuestAddress(address));
-
-    const { message } = (await res.json()) as { message: string };
-
-    if (res.status === 200) {
-      revalidateTag('Address');
-
-      return { isSuccess: true, message };
-    }
-
-    return { isSuccess: false, message };
-  } catch (e) {
-    return {
-      isSuccess: false,
-      message: 'Error creating address',
-    };
-  }
-}
-
-function createGuestAddress(address: AddressData) {
-  const guestId = cookies().get('guest-session')?.value;
-
-  if (!guestId) throw new Error('No active guest session');
-
-  return fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/guests/${guestId}/addresses`,
-    {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(address),
-    },
-  );
-}
-
-function createCustomerAddress(address: AddressData) {
-  return fetch(`${process.env.NEXT_PUBLIC_API_URL}/customers/me/addresses`, {
-    method: 'POST',
-    headers: {
-      cookie: cookies().toString(),
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(address),
-  });
-}
-
-export async function updateAddress(prevState: any, address: AddressData) {
-  try {
-    const accessToken = cookies().get('access-token')?.value;
-
-    const res = await (accessToken
-      ? updateCustomerAddress(address)
-      : updateGuestAddress(address));
-
-    const { message } = (await res.json()) as { message: string };
-
-    if (res.status === 200) {
-      revalidateTag('Address');
-
-      return { isSuccess: true, message };
-    }
-
-    return { isSuccess: false, message };
-  } catch (e) {
-    return { isSuccess: false, message: 'Error updating address' };
-  }
-}
-
-function updateGuestAddress(address: AddressData) {
-  const guestId = cookies().get('guest-session')?.value;
-
-  if (!guestId) throw new Error('No active guest session');
-
-  return fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/guests/${guestId}/addresses`,
-    {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(address),
-    },
-  );
-}
-
-function updateCustomerAddress(address: AddressData) {
-  return fetch(`${process.env.NEXT_PUBLIC_API_URL}/customers/me/addresses`, {
-    method: 'PATCH',
-    headers: {
-      cookie: cookies().toString(),
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(address),
-  });
 }

@@ -6,6 +6,7 @@ import { useState } from 'react';
 
 import Location from '@/components/icons/location';
 import { DialogContent } from '@/components/ui/dialog';
+import { useGetAddresses } from '@/hooks/use-addresses';
 import { useMediaQuery } from '@/hooks/use-media-query';
 import { cn } from '@/lib/utils';
 import { Address } from '@/types/address';
@@ -15,20 +16,23 @@ import { Sheet, SheetContent, SheetTrigger } from '../ui/sheet';
 import ChooseToggler from './choose-toggler';
 import { CreateContent } from './create';
 
-type Props = { addresses: Address[] };
+type Props = { guestSession?: string };
 
-export default function AddressButtonWrapper({ addresses }: Props) {
+export default function AddressButton({ guestSession }: Props) {
   const pathname = usePathname();
 
   if (pathname === '/') return <></>;
-  return <AddressButton addresses={addresses} />;
+  return <ChooseAddress guestSession={guestSession} />;
 }
 
-function AddressButton({ addresses }: Props) {
+function ChooseAddress({ guestSession }: Props) {
   const [open, setOpen] = useState(false);
   const isDesktop = useMediaQuery('(min-width: 640px)');
+  const { addresses, isLoading } = useGetAddresses(guestSession);
 
   const handleClose = () => setOpen(false);
+
+  if (isLoading) return <></>;
 
   if (isDesktop) {
     return (

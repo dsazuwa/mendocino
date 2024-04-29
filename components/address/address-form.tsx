@@ -2,11 +2,15 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect, useState } from 'react';
-import { useFormState } from 'react-dom';
 import { useForm } from 'react-hook-form';
 import { TypeOf, literal, number, object, string, union } from 'zod';
 
-import { AddressData } from '@/types/address';
+import {
+  useCreateAddressMutation,
+  useUpdateAddressMutation,
+} from '@/store/api/address';
+import { useAppSelector } from '@/store/hooks';
+import { Address, AddressData } from '@/types/address';
 import ContentFooter from '../content-footer';
 import Loader from '../loader';
 import { Button } from '../ui/button';
@@ -21,6 +25,7 @@ import {
 import { Input } from '../ui/input';
 import { RadioGroup, RadioGroupItem } from '../ui/radio-group';
 import { Textarea } from '../ui/textarea';
+import { useToast } from '../ui/use-toast';
 import AutocompleteMap from './autocomplete-map';
 
 const formSchema = object({
@@ -58,27 +63,24 @@ const formSchema = object({
 
 type FormSchema = TypeOf<typeof formSchema>;
 
-type Props = {
-  defaultAddress?: AddressData;
-  action: (
-    prevState: any,
-    data: AddressData,
-  ) => Promise<{
-    isSuccess: boolean;
-    message: string;
-  }>;
-  handleClose: () => void;
-};
+type Props = { defaultAddress?: Address; handleClose: () => void };
 
-export default function AddressForm({
-  defaultAddress,
-  action,
-  handleClose,
-}: Props) {
-  const [isLoading, setIsLoading] = useState(false);
+export default function AddressForm({ defaultAddress, handleClose }: Props) {
+  const { toast } = useToast();
   const [address, setAddress] = useState<AddressData | undefined>(
     defaultAddress,
   );
+
+  const guestSession = useAppSelector(
+    (state) => state.addressState.guestSession,
+  );
+
+  const useMutation = defaultAddress
+    ? useUpdateAddressMutation
+    : useCreateAddressMutation;
+
+  const [mutateAddress, { isLoading, isSuccess, isError, error }] =
+    useMutation();
 
   const form = useForm<FormSchema>({
     defaultValues: {
@@ -88,42 +90,36 @@ export default function AddressForm({
     resolver: zodResolver(formSchema),
   });
 
-  const {
-    control,
-    handleSubmit,
-    formState: { isSubmitSuccessful },
-    setValue,
-  } = form;
+  const { control, handleSubmit, setValue } = form;
 
   const handleSelect = (address: AddressData) => {
     setAddress(address);
     setValue('address', address);
   };
 
-  const [state, formAction] = useFormState(action, {
-    isSuccess: false,
-    message: '',
-  });
+  useEffect(() => {
+    if (isSuccess) handleClose();
+  }, [isSuccess, handleClose]);
 
   useEffect(() => {
-    if (isSubmitSuccessful) setIsLoading(true);
-  }, [isSubmitSuccessful]);
-
-  useEffect(() => {
-    if (state.message === '' || !isLoading) return;
-
-    setIsLoading(false);
-    handleClose();
-  }, [state]);
+    if (isError)
+      toast({ variant: 'destructive', description: error as string });
+  }, [isError, error, toast]);
 
   const handleFormSubmit = (data: FormSchema) => {
-    formAction(data.address);
+    void mutateAddress({
+      guestSession,
+      address: {
+        ...data.address,
+        id: defaultAddress ? defaultAddress.id : -1,
+      },
+    });
   };
 
   return (
     <Form {...form}>
       <form
-        className='flex flex-1 flex-col overflow-y-auto'
+        className='flex flex-1 flex-col'
         onSubmit={(event) => void handleSubmit(handleFormSubmit)(event)}
       >
         <div className='flex flex-col space-y-4 p-4 sm:p-6'>
@@ -230,7 +226,11 @@ export default function AddressForm({
             type='submit'
             variant='primary'
             className='w-full'
-            disabled={isLoading || !address}
+            disabled={
+              isLoading ||
+              !address ||
+              address.placeId === defaultAddress?.placeId
+            }
           >
             {isLoading ? <Loader size='sm' /> : 'Save'}
           </Button>

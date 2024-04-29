@@ -1,5 +1,3 @@
-'use client';
-
 import { ArrowLeftIcon, Cross2Icon } from '@radix-ui/react-icons';
 import { useState } from 'react';
 
@@ -11,9 +9,8 @@ import { Button } from '../ui/button';
 import { Dialog, DialogTrigger } from '../ui/dialog';
 import { Sheet, SheetClose, SheetContent, SheetTrigger } from '../ui/sheet';
 import AddressForm from './address-form';
-import { createAddress } from '@/app/action';
 
-export default function CreateAddressModal() {
+export default function CreateAddress() {
   const [open, setOpen] = useState(false);
   const isDesktop = useMediaQuery('(min-width: 640px)');
 
@@ -89,7 +86,7 @@ export function CreateContent({
         <span className='flex-1 text-sm font-semibold'>Create Address</span>
       </ContentHeader>
 
-      <AddressForm action={createAddress} handleClose={handleClose} />
+      <AddressForm handleClose={handleClose} />
     </>
   );
 }
