@@ -1,34 +1,20 @@
-import { cookies } from 'next/headers';
+import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { ReactNode } from 'react';
 
 import NavLinks from '@/components/layout/account/nav-links';
-import { User } from '@/types/common';
+import useAuthentication from '@/hooks/use-auth';
 
 type Props = { children: ReactNode };
 
-async function getUser() {
-  const accessToken = cookies().get('access-token');
+export default function AccountLayout({ children }: Props) {
+  const { isAuthenticated } = useAuthentication();
 
-  if (!accessToken || accessToken.value === '') return { user: undefined };
+  if (!isAuthenticated) redirect('/');
 
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/me`, {
-    method: 'GET',
-    headers: { Authorization: `Bearer ${accessToken.value}` },
-    next: { tags: ['user'], revalidate: 600 },
-  });
-
-  const { user } = (await res.json()) as { user: User };
-
-  return { user: res.status === 200 ? user : undefined };
-}
-
-export default async function AccountLayout({ children }: Props) {
-  const { user } = await getUser();
-
-  if (!user) redirect('/');
-
-  const { firstName, lastName, email } = user;
+  const headerList = headers();
+  const username = headerList.get('x-username');
+  const email = headerList.get('x-email');
 
   return (
     <div className='mx-auto flex w-full max-w-screen-xl flex-1 p-4 sm:p-8 md:px-4 md:pr-8'>
@@ -36,8 +22,7 @@ export default async function AccountLayout({ children }: Props) {
         <div className='hidden md:col-span-4 md:inline lg:col-span-3'>
           <div className='mx-4 h-20 border-b border-solid border-neutral-200 p-4 text-center'>
             <div className='space-x-1 truncate font-semibold text-primary-900'>
-              <span>{firstName}</span>
-              <span>{lastName}</span>
+              {username}
             </div>
 
             <div className='truncate text-xs font-medium'>{email}</div>

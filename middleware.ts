@@ -8,6 +8,7 @@ import { NextResponse } from 'next/server';
 
 import { AuthCookies, getAuthCookieObject } from '@/lib/auth.utils';
 import { createGuestSession } from './app/action';
+import { User } from './types/common';
 
 const protectedRoutes = ['/account', '/verify'];
 const publicOnlyRoutes = ['/login', '/register', '/recover'];
@@ -27,6 +28,16 @@ export default async function middleware(request: NextRequest) {
 
   const nextResponse = await getNextResponse(request, response);
   nextResponse.headers.set('x-pathname', request.nextUrl.pathname);
+
+  if (response) {
+    const { user } = (await response.json()) as { user: User };
+
+    nextResponse.headers.set(
+      'x-username',
+      user.firstName + ' ' + user.lastName,
+    );
+    nextResponse.headers.set('x-email', user.email);
+  }
 
   if (authCookies) {
     nextResponse.cookies.set(authCookies.accessToken);
