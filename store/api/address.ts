@@ -1,11 +1,10 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { createApi } from '@reduxjs/toolkit/query/react';
 
 import { Address, AddressData } from '@/types/address';
 import { LocationType } from '@/types/location';
-
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL as string;
+import baseQueryWithReauth from '../base.query';
 
 type MutationResponse = { message: string };
 
@@ -29,9 +28,7 @@ export const addressApi = createApi({
   reducerPath: 'addressApi',
   tagTypes: ['Address', 'Location'],
 
-  baseQuery: fetchBaseQuery({
-    baseUrl: `${BASE_URL}`,
-  }),
+  baseQuery: baseQueryWithReauth,
 
   endpoints: (build) => ({
     getClosestLocations: build.query<{ locations: LocationType[] }, string>({

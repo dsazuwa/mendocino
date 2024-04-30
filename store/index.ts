@@ -1,17 +1,26 @@
 import { configureStore } from '@reduxjs/toolkit';
 
 import { addressApi } from './api/address';
-import { addressReducer } from './slices/address';
+import { userReducer } from './slices/user';
+import { authApi } from './api/auth';
+import { userApi } from './api/user';
 
 export const makeStore = () => {
   return configureStore({
     reducer: {
+      [authApi.reducerPath]: authApi.reducer,
       [addressApi.reducerPath]: addressApi.reducer,
-      addressState: addressReducer,
+      [userApi.reducerPath]: userApi.reducer,
+
+      userState: userReducer,
     },
 
     middleware: (getDefaultMiddleware) =>
-      getDefaultMiddleware({}).concat([addressApi.middleware]),
+      getDefaultMiddleware({}).concat([
+        authApi.middleware,
+        addressApi.middleware,
+        userApi.middleware,
+      ]),
   });
 };
 

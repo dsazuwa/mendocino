@@ -1,14 +1,32 @@
 'use client';
 
-import { logout } from '@/app/action';
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
+
 import LogOut from '@/components/icons/log-out';
+import useAuthContext from '@/hooks/use-auth-context';
+import { useLogoutMutation } from '@/store/api/auth';
 
 export default function LogoutButton({ onClick }: { onClick?: () => void }) {
+  const [logout, { data, isSuccess }] = useLogoutMutation();
+
+  const router = useRouter();
+  const { setGuestSession } = useAuthContext();
+
   const handleClick = () => {
     if (onClick) onClick();
 
     void logout();
   };
+
+  useEffect(() => {
+    if (isSuccess && data) {
+      setGuestSession(data.guestSession);
+
+      router.push('/');
+      router.refresh();
+    }
+  }, [isSuccess, data, router, setGuestSession]);
 
   return (
     <button

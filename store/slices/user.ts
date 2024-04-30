@@ -8,8 +8,8 @@ const initialState: State = {
   selectedAddress: undefined,
 };
 
-export const addressSlice = createSlice({
-  name: 'addressSlice',
+export const userSlice = createSlice({
+  name: 'userSlice',
   initialState,
   reducers: {
     setSelected: (state, action: PayloadAction<number>) => {
@@ -19,6 +19,6 @@ export const addressSlice = createSlice({
   },
 });
 
-export const addressReducer = addressSlice.reducer;
+export const userReducer = userSlice.reducer;
 
-export const { setSelected } = addressSlice.actions;
+export const { setSelected } = userSlice.actions;

@@ -20,6 +20,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/components/ui/use-toast';
+import useAuthContext from '@/hooks/use-auth-context';
 
 const formSchema = object({
   email: string().email({ message: 'Invalid email address' }),
@@ -54,6 +55,7 @@ type Props = {
 export default function ChangePasswordForm({ email, code }: Props) {
   const router = useRouter();
   const { toast } = useToast();
+  const { setGuestSession } = useAuthContext();
   const [isLoading, setIsLoading] = useState(false);
 
   const [state, formAction] = useFormState(recoverPassword, {
@@ -84,12 +86,15 @@ export default function ChangePasswordForm({ email, code }: Props) {
 
     if (state.isSuccess) {
       toast({ variant: 'success', description: state.message });
+
+      setGuestSession(undefined);
       router.push('/');
+      router.refresh();
     } else {
       reset();
       toast({ variant: 'destructive', description: state.message });
     }
-  }, [state, router, setIsLoading, toast, reset]);
+  }, [state, router, setGuestSession, setIsLoading, toast, reset]);
 
   return (
     <>

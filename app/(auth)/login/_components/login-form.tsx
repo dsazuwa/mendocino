@@ -1,12 +1,11 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useEffect, useState } from 'react';
-import { useFormState } from 'react-dom';
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { TypeOf, object, string } from 'zod';
 
-import { login } from '@/app/action';
 import Link from '@/components/link';
 import Loader from '@/components/loader';
 import { Button } from '@/components/ui/button';
@@ -20,6 +19,8 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/components/ui/use-toast';
+import useAuthContext from '@/hooks/use-auth-context';
+import { useLoginMutation } from '@/store/api/auth';
 
 const formSchema = object({
   email: string().email({ message: 'Invalid email address' }),
@@ -30,9 +31,11 @@ type FormSchema = TypeOf<typeof formSchema>;
 
 export default function LoginForm() {
   const { toast } = useToast();
-  const [isLoading, setIsLoading] = useState(false);
+  const { setGuestSession } = useAuthContext();
+  const router = useRouter();
 
-  const [state, formAction] = useFormState(login, { message: '' });
+  const [login, { data, isLoading, isSuccess, isError, error }] =
+    useLoginMutation();
 
   const form = useForm<FormSchema>({
     defaultValues: { email: '', password: '' },
@@ -48,22 +51,33 @@ export default function LoginForm() {
 
   useEffect(() => {
     if (isSubmitSuccessful) {
-      setIsLoading(true);
       reset();
     }
   }, [isSubmitSuccessful, reset]);
 
   useEffect(() => {
-    if (state.message !== '') {
-      setIsLoading(false);
-      toast({ variant: 'destructive', description: state.message });
+    if (isSuccess && data) {
+      toast({ variant: 'success', description: data?.message });
+
+      setGuestSession(undefined);
+      router.push(data.user.roles[0] === 'customer' ? '/' : '/admin');
+      router.refresh();
     }
-  }, [state.message, toast]);
+  }, [data, isSuccess, router, setGuestSession, toast]);
+
+  useEffect(() => {
+    if (isError)
+      toast({ variant: 'destructive', description: error as string });
+  }, [isError, error, toast]);
+
+  const handleFormSubmit = (data: FormSchema) => {
+    void login(data);
+  };
 
   return (
     <Form {...form}>
       <form
-        onSubmit={(event) => void handleSubmit(formAction)(event)}
+        onSubmit={(event) => void handleSubmit(handleFormSubmit)(event)}
         className='flex w-full flex-col gap-4'
       >
         <div className='flex w-full flex-col gap-2'>
