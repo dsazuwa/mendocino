@@ -6,7 +6,7 @@ import { useFormState } from 'react-dom';
 import { useForm } from 'react-hook-form';
 import { TypeOf, object, string } from 'zod';
 
-import { requestRecovery, verifyRecoveryCode } from '@/app/action';
+import { requestRecovery, verifyRecoveryCode } from '@/app/actions/auth';
 import Loader from '@/components/loader';
 import { Button } from '@/components/ui/button';
 import {

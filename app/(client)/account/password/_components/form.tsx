@@ -7,7 +7,7 @@ import { useFormState } from 'react-dom';
 import { useForm } from 'react-hook-form';
 import { TypeOf, object, string } from 'zod';
 
-import { changePassword } from '@/app/action';
+import { changePassword } from '@/app/actions/customer';
 import Loader from '@/components/loader';
 import { Button } from '@/components/ui/button';
 import {

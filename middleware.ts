@@ -7,7 +7,7 @@ import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 
 import { AuthCookies, getAuthCookieObject } from '@/lib/auth.utils';
-import { createGuestSession } from './app/action';
+import { createGuestSession } from './app/actions/auth';
 
 const protectedRoutes = ['/account', '/verify'];
 const publicOnlyRoutes = ['/login', '/register', '/recover'];

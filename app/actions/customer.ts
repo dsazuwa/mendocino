@@ -5,89 +5,8 @@
 import { revalidateTag } from 'next/cache';
 import { cookies } from 'next/headers';
 
-import {
-  RecoverData,
-  RecoverResponse,
-  RequestRecoverData,
-  VerifyRecoverData,
-} from '@/types/auth';
 import { GenericResponse } from '@/types/common';
 import { PasswordInput, ProfileInput, VerifyInput } from '@/types/customer';
-import { setAuthCookies } from '../lib/auth.utils';
-
-export async function createGuestSession() {
-  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/guests`, {
-    method: 'POST',
-  });
-
-  const { sessionId } = (await response.json()) as { sessionId: string };
-
-  return {
-    name: 'guest-session',
-    value: sessionId,
-    secure: true,
-    httpOnly: true,
-  };
-}
-
-export async function requestRecovery(
-  prevState: any,
-  data: RequestRecoverData,
-) {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/recover`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data),
-  });
-
-  const { message } = (await res.json()) as GenericResponse;
-
-  return { isSuccess: res.status === 200, message };
-}
-
-export async function verifyRecoveryCode(
-  prevState: any,
-  { code, ...data }: VerifyRecoverData,
-) {
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/auth/recover/${code}`,
-    {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data),
-    },
-  );
-
-  const { message } = (await res.json()) as GenericResponse;
-
-  return { isSuccess: res.status === 200, message };
-}
-
-export async function recoverPassword(
-  prevState: any,
-  { code, ...data }: RecoverData,
-) {
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/auth/recover/${code}`,
-    {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data),
-    },
-  );
-
-  if (res.status === 200) {
-    const { refreshToken, accessToken, message } =
-      (await res.json()) as RecoverResponse;
-
-    setAuthCookies(accessToken, refreshToken);
-
-    return { isSuccess: true, message };
-  } else {
-    const { message } = (await res.json()) as GenericResponse;
-    return { isSuccess: false, message };
-  }
-}
 
 export async function verifyCustomer(prevState: any, data: VerifyInput) {
   const res = await fetch(

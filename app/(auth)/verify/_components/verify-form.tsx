@@ -7,7 +7,10 @@ import { useFormState } from 'react-dom';
 import { useForm } from 'react-hook-form';
 import { TypeOf, object, string } from 'zod';
 
-import { resendCustomerVerification, verifyCustomer } from '@/app/action';
+import {
+  resendCustomerVerification,
+  verifyCustomer,
+} from '@/app/actions/customer';
 import LinkButton from '@/components/link-button';
 import Loader from '@/components/loader';
 import { Button } from '@/components/ui/button';
