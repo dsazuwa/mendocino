@@ -8,7 +8,6 @@ import { NextResponse } from 'next/server';
 
 import { AuthCookies, getAuthCookieObject } from '@/lib/auth.utils';
 import { createGuestSession } from './app/action';
-import { User } from './types/common';
 
 const protectedRoutes = ['/account', '/verify'];
 const publicOnlyRoutes = ['/login', '/register', '/recover'];
@@ -18,26 +17,15 @@ export default async function middleware(request: NextRequest) {
   const refreshToken = cookies().get('refresh-token')?.value;
   const guestSession = cookies().get('guest-session')?.value;
 
-  let accessToken = cookies().get('access-token')?.value;
+  const accessToken = cookies().get('access-token')?.value;
   let authCookies: AuthCookies | undefined = undefined;
 
   if (!accessToken && refreshToken) authCookies = await refreshAuthTokens();
 
-  accessToken = accessToken || authCookies?.accessToken.value;
-  const response = accessToken ? await getUser(accessToken) : undefined;
+  const hasAccessToken = !!authCookies || !!accessToken;
 
-  const nextResponse = await getNextResponse(request, response);
+  const nextResponse = getNextResponse(request, hasAccessToken);
   nextResponse.headers.set('x-pathname', request.nextUrl.pathname);
-
-  if (response) {
-    const { user } = (await response.json()) as { user: User };
-
-    nextResponse.headers.set(
-      'x-username',
-      user.firstName + ' ' + user.lastName,
-    );
-    nextResponse.headers.set('x-email', user.email);
-  }
 
   if (authCookies) {
     nextResponse.cookies.set(authCookies.accessToken);
@@ -45,14 +33,7 @@ export default async function middleware(request: NextRequest) {
     nextResponse.cookies.delete('guest-session');
   }
 
-  if (response?.status !== 200) {
-    nextResponse.cookies.delete('access-token');
-    nextResponse.cookies.delete('refresh-token');
-  }
-
-  accessToken = cookies().get('access-token')?.value;
-
-  if (!accessToken && !guestSession) {
+  if (!hasAccessToken && !guestSession) {
     const guestSession = await createGuestSession();
     nextResponse.cookies.set(guestSession);
   }
@@ -82,27 +63,10 @@ async function refreshAuthTokens() {
     }
   } catch (error) {
     console.error('Error refreshing token: ', error);
-    throw error;
   }
 }
 
-async function getUser(accessToken: string) {
-  try {
-    return fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/me`, {
-      method: 'GET',
-      headers: { Authorization: `Bearer ${accessToken}` },
-      cache: 'force-cache',
-    });
-  } catch (error) {
-    console.error('Error refreshing token: ', error);
-    throw error;
-  }
-}
-
-async function getNextResponse(
-  request: NextRequest,
-  response: Response | undefined,
-) {
+function getNextResponse(request: NextRequest, isAuthenticated: boolean) {
   const { origin, pathname } = request.nextUrl;
 
   const isPublicRoute = publicOnlyRoutes.includes(pathname);
@@ -110,21 +74,10 @@ async function getNextResponse(
     pathname.startsWith(route),
   );
 
-  const isAuthenticated = response?.status === 200;
-
-  if (isAuthenticated) {
-    if (isPublicRoute)
-      return NextResponse.redirect(new URL('/', origin).toString());
-
-    if (pathname === '/verify') {
-      const body = (await response.json()) as { user: { status: string } };
-
-      if (body.user.status !== 'pending')
-        return NextResponse.redirect(new URL('/', origin).toString());
-    }
-  } else {
-    if (isProtectedRoute)
-      return NextResponse.redirect(new URL('/', origin).toString());
+  if (isAuthenticated && isPublicRoute) {
+    return NextResponse.redirect(new URL('/', origin));
+  } else if (!isAuthenticated && isProtectedRoute) {
+    return NextResponse.redirect(new URL('/', origin));
   }
 
   return NextResponse.next();

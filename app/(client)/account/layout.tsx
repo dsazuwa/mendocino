@@ -1,14 +1,16 @@
 import { redirect } from 'next/navigation';
 import { ReactNode } from 'react';
 
-import useAuthentication from '@/hooks/use-auth';
+import getUser from '@/lib/data';
 
 type Props = { children: ReactNode };
 
-export default function Layout({ children }: Props) {
-  const { isAuthenticated } = useAuthentication();
+export default async function Layout({ children }: Props) {
+  const { user } = await getUser();
 
-  if (!isAuthenticated) redirect('/');
+  if (!user) {
+    redirect('/');
+  }
 
   return <>{children}</>;
 }
