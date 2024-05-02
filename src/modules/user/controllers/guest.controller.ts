@@ -23,7 +23,12 @@ export const getAddress = async (
   next: NextFunction,
 ) => {
   try {
-    const { session } = req.params;
+    const session = req.cookies['guest-session'];
+
+    if (typeof session !== 'string')
+      return res
+        .status(400)
+        .json({ message: 'Invalid guest session provided' });
 
     const addresses = await guestService.getAddresses(session);
 
@@ -39,7 +44,12 @@ export const createAddress = async (
   next: NextFunction,
 ) => {
   try {
-    const { session } = req.params;
+    const session = req.cookies['guest-session'];
+
+    if (typeof session !== 'string')
+      return res
+        .status(400)
+        .json({ message: 'Invalid guest session provided' });
 
     const result = await guestService.createAddress(session, req.body);
 
@@ -62,7 +72,14 @@ export const updateAddress = async (
   next: NextFunction,
 ) => {
   try {
-    const { id, session } = req.params;
+    const { id } = req.params;
+
+    const session = req.cookies['guest-session'];
+
+    if (typeof session !== 'string')
+      return res
+        .status(400)
+        .json({ message: 'Invalid guest session provided' });
 
     const result = await guestService.updateAddress(
       session,
@@ -84,7 +101,14 @@ export const deleteAddress = async (
   next: NextFunction,
 ) => {
   try {
-    const { id, session } = req.params;
+    const { id } = req.params;
+
+    const session = req.cookies['guest-session'];
+
+    if (typeof session !== 'string')
+      return res
+        .status(400)
+        .json({ message: 'Invalid guest session provided' });
 
     const result = await guestService.deleteAddress(session, parseInt(id, 10));
 
