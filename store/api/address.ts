@@ -48,10 +48,10 @@ export const addressApi = createApi({
       { guestSession?: string }
     >({
       query({ guestSession }) {
+        const baseUrl = guestSession ? 'guests' : 'customers';
+
         return {
-          url: guestSession
-            ? `/guests/${guestSession}/addresses`
-            : '/customers/me/addresses',
+          url: `/${baseUrl}/me/addresses`,
           credentials: 'include',
         };
       },
@@ -61,11 +61,10 @@ export const addressApi = createApi({
 
     createAddress: build.mutation<string, MutationBody>({
       query({ address, guestSession }) {
-        return {
-          url: guestSession
-            ? `/guests/${guestSession}/addresses`
-            : '/customers/me/addresses',
+        const baseUrl = guestSession ? 'guests' : 'customers';
 
+        return {
+          url: `/${baseUrl}/me/addresses`,
           method: 'POST',
           credentials: 'include',
           body: address,
@@ -86,11 +85,10 @@ export const addressApi = createApi({
 
     updateAddress: build.mutation<string, UpdateBody>({
       query({ address, guestSession }) {
-        return {
-          url: guestSession
-            ? `/guests/${guestSession}/addresses/${address.id}`
-            : `/customers/me/addresses/${address.id}`,
+        const baseUrl = guestSession ? 'guests' : 'customers';
 
+        return {
+          url: `/${baseUrl}/me/addresses/${address.id}`,
           method: 'PATCH',
           credentials: 'include',
           body: address,
@@ -111,11 +109,10 @@ export const addressApi = createApi({
 
     deleteAddress: build.mutation<string, DeleteBody>({
       query({ id, guestSession }) {
-        return {
-          url: guestSession
-            ? `/guests/${guestSession}/addresses/${id}`
-            : `/customers/me/addresses/${id}`,
+        const baseUrl = guestSession ? 'guests' : 'customers';
 
+        return {
+          url: `/${baseUrl}/me/addresses/${id}`,
           method: 'DELETE',
           credentials: 'include',
         };
