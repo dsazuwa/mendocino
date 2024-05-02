@@ -5,7 +5,7 @@ import Edit from '@/components/icons/edit';
 import Location from '@/components/icons/location';
 import { DialogClose, DialogContent } from '@/components/ui/dialog';
 import { useMediaQuery } from '@/hooks/use-media-query';
-import { Address, AddressData } from '@/types/address';
+import { Address } from '@/types/address';
 import ContentHeader from '../content-header';
 import { Button } from '../ui/button';
 import { Dialog, DialogTrigger } from '../ui/dialog';
@@ -59,7 +59,7 @@ function Trigger({
   address: addressProp,
 }: {
   isDialog: boolean;
-  address: AddressData;
+  address: Address;
 }) {
   const { name, address, zipCode } = addressProp;
 
