@@ -35,7 +35,7 @@ export default function LogoutButton({ onClick }: { onClick?: () => void }) {
     >
       <LogOut className='w-4 fill-red-500 sm:hidden sm:fill-neutral-600' />
 
-      <span className='text-xs font-medium max-sm:text-red-500 sm:font-semibold'>
+      <span className='text-xs font-medium max-sm:text-red-500 sm:text-xxs sm:font-semibold'>
         Log Out
       </span>
     </button>
