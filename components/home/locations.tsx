@@ -1,8 +1,10 @@
 import { ValueNoneIcon } from '@radix-ui/react-icons';
+import Link from 'next/link';
 
+import { cn } from '@/lib/utils';
 import { LocationType } from '@/types/location';
 import Location from '../icons/location';
-import { Button } from '../ui/button';
+import { buttonVariants } from '../ui/button';
 
 type Props = { locations: LocationType[] };
 
@@ -39,9 +41,15 @@ export default function Locations({ locations }: Props) {
             <div className='mt-0.5'>{[city, state, zipCode].join(', ')}</div>
           </div>
 
-          <Button variant='outline' className='ml-auto text-xxs'>
+          <Link
+            href={`/locations/${encodeURIComponent(name)}`}
+            className={cn(
+              buttonVariants({ variant: 'outline' }),
+              'ml-auto text-xxs',
+            )}
+          >
             Order
-          </Button>
+          </Link>
         </div>
       ))}
     </div>
