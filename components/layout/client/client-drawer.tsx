@@ -1,13 +1,18 @@
 'use client';
 
 import { HamburgerMenuIcon } from '@radix-ui/react-icons';
+import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { accountLinks, publicLinks, unauthLinks } from './client-constants';
-import DrawerLink from './client-drawer-link';
+import {
+  ClientLink,
+  accountLinks,
+  publicLinks,
+  unauthLinks,
+} from './client-constants';
 import { DrawerLogout } from './logout-btn';
 
 type Props = { isAuthenticated: boolean };
@@ -75,5 +80,18 @@ export default function ClientAppBarDrawer({ isAuthenticated }: Props) {
         </div>
       </SheetContent>
     </Sheet>
+  );
+}
+
+function DrawerLink({ name, href, Icon }: ClientLink) {
+  return (
+    <Link
+      href={href}
+      className='inline-flex gap-4 p-4 transition-colors hover:bg-neutral-100'
+    >
+      <Icon className='w-4 shrink-0 fill-neutral-600' />
+
+      <span className='text-xs font-medium'>{name}</span>
+    </Link>
   );
 }
