@@ -1,6 +1,7 @@
 import Link from 'next/link';
 
 import AddressButton from '@/components/address/choose';
+import CartDrawer from '@/components/cart/drawer';
 import Logo from '@/components/logo';
 import getUser, { getAddresses } from '@/lib/data';
 import { unauthLinks } from './client-constants';
@@ -23,6 +24,8 @@ export default async function ClientAppBar() {
         <AddressButton addresses={addresses} />
 
         <div className='inline-flex gap-2 sm:ml-auto'>
+          {addresses.length > 0 && <CartDrawer />}
+
           <div className='space-x-4 max-sm:hidden'>
             {user ? (
               <AppBarLogout />
