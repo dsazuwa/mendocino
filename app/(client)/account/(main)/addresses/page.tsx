@@ -1,12 +1,9 @@
-'use client';
-
 import CreateAddress from '@/components/address/create';
 import EditAddess from '@/components/address/edit';
-import Loader from '@/components/loader';
-import { useGetAddresses } from '@/hooks/use-addresses';
+import { getAddresses } from '@/lib/data';
 
-export default function Addresses() {
-  const { addresses, isLoading } = useGetAddresses();
+export default async function Addresses() {
+  const { addresses } = await getAddresses();
 
   return (
     <div className='flex h-full flex-col gap-4'>
@@ -15,8 +12,6 @@ export default function Addresses() {
 
         <CreateAddress />
       </div>
-
-      {isLoading && <Loader size='md' className='mt-4' />}
 
       {addresses.length > 0 && (
         <div className='flex flex-col gap-4'>

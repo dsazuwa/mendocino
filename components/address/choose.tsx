@@ -6,7 +6,6 @@ import { useState } from 'react';
 
 import Location from '@/components/icons/location';
 import { DialogContent } from '@/components/ui/dialog';
-import { useGetAddresses } from '@/hooks/use-addresses';
 import { useMediaQuery } from '@/hooks/use-media-query';
 import { cn } from '@/lib/utils';
 import { Address } from '@/types/address';
@@ -16,21 +15,20 @@ import { Sheet, SheetContent, SheetTrigger } from '../ui/sheet';
 import ChooseToggler from './choose-toggler';
 import { CreateContent } from './create';
 
-export default function AddressButton() {
+type Props = { addresses: Address[] };
+
+export default function AddressButton({ addresses }: Props) {
   const pathname = usePathname();
 
   if (pathname === '/') return <></>;
-  return <ChooseAddress />;
+  return <ChooseAddress addresses={addresses} />;
 }
 
-function ChooseAddress() {
+function ChooseAddress({ addresses }: Props) {
   const [open, setOpen] = useState(false);
   const isDesktop = useMediaQuery('(min-width: 640px)');
-  const { addresses, isLoading } = useGetAddresses();
 
   const handleClose = () => setOpen(false);
-
-  if (isLoading) return <></>;
 
   if (isDesktop) {
     return (
@@ -78,7 +76,7 @@ function Trigger({ isDialog, addresses }: ContentProps) {
         className='ml-auto gap-1 p-1 transition-colors hover:bg-neutral-100 sm:ml-0 sm:mr-0 sm:h-auto sm:w-auto'
       >
         <Location
-          className={cn('w-4 fill-neutral-600', { 'sm:hidden': hasAddress })}
+          className={cn('w-3.5 fill-neutral-600', { 'sm:hidden': hasAddress })}
         />
 
         <span

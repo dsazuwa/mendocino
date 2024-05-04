@@ -1,14 +1,13 @@
-import { useGetLocations } from '@/hooks/use-addresses';
+import { getClosestLocations } from '@/lib/data';
 import { Address } from '@/types/address';
 import AddressModal from './address-modal';
 import Locations from './locations';
-import Loader from '../loader';
 
 type Props = { addresses: Address[] };
 
-export default function LocationSelector({ addresses }: Props) {
+export default async function LocationSelector({ addresses }: Props) {
   const defaultAddress = addresses[0];
-  const { locations, isLoading } = useGetLocations(defaultAddress.placeId);
+  const locations = await getClosestLocations(defaultAddress.placeId);
 
   return (
     <>
@@ -18,9 +17,7 @@ export default function LocationSelector({ addresses }: Props) {
         <AddressModal addresses={addresses} />
       </div>
 
-      {isLoading && <Loader className='py-8' />}
-
-      {locations && <Locations locations={locations} />}
+      <Locations locations={locations} />
     </>
   );
 }

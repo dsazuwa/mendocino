@@ -87,7 +87,7 @@ export default function AutocompleteInput({
   });
 
   useEffect(() => {
-    if (selected === null) return;
+    if (selected === null || selected.placeId === defaultValue?.placeId) return;
 
     geocoder.geocode({ placeId: selected.placeId }, (results, status) => {
       if (status === 'OK' && results !== null && results.length > 0) {
@@ -137,7 +137,7 @@ export default function AutocompleteInput({
         onSelect(address);
       }
     });
-  }, [selected, geocoder, onSelect]);
+  }, [selected, defaultValue, geocoder, onSelect]);
 
   return (
     <>

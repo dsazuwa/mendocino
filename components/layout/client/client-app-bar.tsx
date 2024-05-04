@@ -2,13 +2,14 @@ import Link from 'next/link';
 
 import AddressButton from '@/components/address/choose';
 import Logo from '@/components/logo';
-import getUser from '@/lib/data';
+import getUser, { getAddresses } from '@/lib/data';
 import { unauthLinks } from './client-constants';
 import ClientAppBarDrawer from './client-drawer';
 import { AppBarLogout } from './logout-btn';
 
 export default async function ClientAppBar() {
   const { user } = await getUser();
+  const { addresses } = await getAddresses();
 
   return (
     <nav id='client-app-bar' className='fixed z-50 h-16 w-full bg-white'>
@@ -19,22 +20,24 @@ export default async function ClientAppBar() {
           <Logo />
         </Link>
 
-        <AddressButton />
+        <AddressButton addresses={addresses} />
 
-        <div className='ml-auto hidden gap-4 sm:flex'>
-          {user ? (
-            <AppBarLogout />
-          ) : (
-            unauthLinks.map(({ name, href }) => (
-              <Link
-                className='text-xxs font-semibold'
-                key={`${name}-link`}
-                href={href}
-              >
-                {name}
-              </Link>
-            ))
-          )}
+        <div className='inline-flex gap-2 sm:ml-auto'>
+          <div className='space-x-4 max-sm:hidden'>
+            {user ? (
+              <AppBarLogout />
+            ) : (
+              unauthLinks.map(({ name, href }) => (
+                <Link
+                  className='text-xxs font-semibold'
+                  key={`${name}-link`}
+                  href={href}
+                >
+                  {name}
+                </Link>
+              ))
+            )}
+          </div>
         </div>
       </div>
     </nav>

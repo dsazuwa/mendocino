@@ -2,14 +2,11 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect, useState } from 'react';
+import { useFormState } from 'react-dom';
 import { useForm } from 'react-hook-form';
 import { TypeOf, literal, number, object, string, union } from 'zod';
 
-import useAuthContext from '@/hooks/use-auth-context';
-import {
-  useCreateAddressMutation,
-  useUpdateAddressMutation,
-} from '@/store/api/address';
+import { createAddress, updateAddress } from '@/app/actions/address';
 import { Address, AddressData } from '@/types/address';
 import ContentFooter from '../content-footer';
 import Loader from '../loader';
@@ -67,18 +64,17 @@ type Props = { defaultAddress?: Address; handleClose: () => void };
 
 export default function AddressForm({ defaultAddress, handleClose }: Props) {
   const { toast } = useToast();
+
   const [address, setAddress] = useState<AddressData | undefined>(
     defaultAddress,
   );
 
-  const { guestSession } = useAuthContext();
+  const [isLoading, setIsLoading] = useState(false);
 
-  const useMutation = defaultAddress
-    ? useUpdateAddressMutation
-    : useCreateAddressMutation;
-
-  const [mutateAddress, { isLoading, isSuccess, isError, error }] =
-    useMutation();
+  const [state, formAction] = useFormState(
+    defaultAddress ? updateAddress : createAddress,
+    { isSuccess: false, message: '' },
+  );
 
   const form = useForm<FormSchema>({
     defaultValues: {
@@ -96,21 +92,23 @@ export default function AddressForm({ defaultAddress, handleClose }: Props) {
   };
 
   useEffect(() => {
-    if (isSuccess) handleClose();
-  }, [isSuccess, handleClose]);
+    if (state.message === '') return;
 
-  useEffect(() => {
-    if (isError)
-      toast({ variant: 'destructive', description: error as string });
-  }, [isError, error, toast]);
+    setIsLoading(false);
+
+    if (state.isSuccess) {
+      handleClose();
+    } else {
+      toast({ variant: 'destructive', description: state.message });
+    }
+  }, [state, handleClose, toast]);
 
   const handleFormSubmit = (data: FormSchema) => {
-    void mutateAddress({
-      guestSession,
-      address: {
-        ...data.address,
-        id: defaultAddress ? defaultAddress.id : -1,
-      },
+    setIsLoading(true);
+
+    void formAction({
+      ...data.address,
+      id: defaultAddress ? defaultAddress.id : -1,
     });
   };
 

@@ -1,3 +1,5 @@
+'use client';
+
 import { ArrowLeftIcon, Cross2Icon } from '@radix-ui/react-icons';
 import { useState } from 'react';
 

@@ -5,7 +5,7 @@
 import { revalidateTag } from 'next/cache';
 import { cookies } from 'next/headers';
 
-import { AddressData } from '@/types/address';
+import { Address, AddressData } from '@/types/address';
 
 const { NEXT_PUBLIC_API_URL } = process.env;
 
@@ -26,7 +26,7 @@ export async function createAddress(prevState: any, address: AddressData) {
     const { message } = (await res.json()) as { message: string };
 
     if (res.status === 200) {
-      revalidateTag('Address');
+      revalidateTag('address');
 
       return { isSuccess: true, message };
     }
@@ -37,24 +37,27 @@ export async function createAddress(prevState: any, address: AddressData) {
   }
 }
 
-export async function updateAddress(prevState: any, address: AddressData) {
+export async function updateAddress(prevState: any, address: Address) {
   try {
     const accessToken = cookies().get('access-token')?.value;
     const userType = accessToken ? 'customers' : 'guests';
 
-    const res = await fetch(`${NEXT_PUBLIC_API_URL}/${userType}/me/addresses`, {
-      method: 'PATCH',
-      headers: {
-        cookie: cookies().toString(),
-        'Content-Type': 'application/json',
+    const res = await fetch(
+      `${NEXT_PUBLIC_API_URL}/${userType}/me/addresses/${address.id}`,
+      {
+        method: 'PATCH',
+        headers: {
+          cookie: cookies().toString(),
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(address),
       },
-      body: JSON.stringify(address),
-    });
+    );
 
     const { message } = (await res.json()) as { message: string };
 
     if (res.status === 200) {
-      revalidateTag('Address');
+      revalidateTag('address');
 
       return { isSuccess: true, message };
     }
@@ -65,7 +68,7 @@ export async function updateAddress(prevState: any, address: AddressData) {
   }
 }
 
-export async function deleteAddress(id: number) {
+export async function deleteAddress(prevState: any, id: number) {
   try {
     const accessToken = cookies().get('access-token')?.value;
     const userType = accessToken ? 'customers' : 'guests';
@@ -81,7 +84,7 @@ export async function deleteAddress(id: number) {
     const { message } = (await res.json()) as { message: string };
 
     if (res.status === 200) {
-      revalidateTag('Address');
+      revalidateTag('address');
 
       return { isSuccess: true, message };
     }

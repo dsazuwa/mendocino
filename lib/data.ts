@@ -25,6 +25,7 @@ export default async function getUser() {
 export async function getClosestLocations(placeId: string) {
   const res = await fetch(
     `${NEXT_PUBLIC_API_URL}/locations/distance/${placeId}`,
+    { cache: 'force-cache' },
   );
 
   if (res.status !== 200) throw new Error('Failed to retrieve locations');
@@ -36,12 +37,13 @@ export async function getClosestLocations(placeId: string) {
 
 export async function getAddresses() {
   const accessToken = cookies().get('access-token')?.value;
-  const userType = accessToken ? 'customer' : 'user';
+  const userType = accessToken ? 'customers' : 'guests';
 
   const res = await fetch(`${NEXT_PUBLIC_API_URL}/${userType}/me/addresses`, {
     method: 'GET',
     headers: { cookie: cookies().toString() },
     next: { tags: ['address'] },
+    cache: 'force-cache',
   });
 
   const { addresses } = (await res.json()) as { addresses: Address[] };

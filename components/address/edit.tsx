@@ -1,3 +1,5 @@
+'use client';
+
 import { ArrowLeftIcon, Cross2Icon } from '@radix-ui/react-icons';
 import { useState } from 'react';
 
@@ -118,11 +120,7 @@ export function EditContent({
 
         <span className='flex-1 text-sm font-semibold'>Edit Address</span>
 
-        <DeleteAddress
-          id={address.id}
-          placeId={address.placeId}
-          handleSuccess={handleClose}
-        />
+        <DeleteAddress id={address.id} handleSuccess={handleClose} />
       </ContentHeader>
 
       <AddressForm defaultAddress={address} handleClose={handleClose} />
