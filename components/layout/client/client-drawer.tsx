@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { accountLinks, publicLinks, unauthLinks } from './client-constants';
 import DrawerLink from './client-drawer-link';
-import LogoutButton from './logout-btn';
+import { DrawerLogout } from './logout-btn';
 
 type Props = { isAuthenticated: boolean };
 
@@ -59,7 +59,7 @@ export default function ClientAppBarDrawer({ isAuthenticated }: Props) {
 
         <div className='flex flex-col sm:hidden'>
           {isAuthenticated ? (
-            <LogoutButton onClick={() => setOpen(false)} />
+            <DrawerLogout onClick={() => setOpen(false)} />
           ) : (
             <>
               {unauthLinks.map(({ name, href, Icon }, i) => (

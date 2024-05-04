@@ -1,43 +1,28 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
-
 import LogOut from '@/components/icons/log-out';
-import useAuthContext from '@/hooks/use-auth-context';
-import { useLogoutMutation } from '@/store/api/auth';
+import useLogout from '@/hooks/use-logout';
 
-export default function LogoutButton({ onClick }: { onClick?: () => void }) {
-  const [logout, { data, isSuccess }] = useLogoutMutation();
-
-  const router = useRouter();
-  const { setGuestSession } = useAuthContext();
-
-  const handleClick = () => {
-    if (onClick) onClick();
-
-    void logout();
-  };
-
-  useEffect(() => {
-    if (isSuccess && data) {
-      setGuestSession(data.guestSession);
-
-      router.push('/');
-      router.refresh();
-    }
-  }, [isSuccess, data, router, setGuestSession]);
+function AppBarLogout() {
+  const { handleLogout } = useLogout();
 
   return (
-    <button
-      onClick={() => handleClick()}
-      className='inline-flex gap-4 p-4 sm:p-0'
-    >
-      <LogOut className='w-4 fill-red-500 sm:hidden sm:fill-neutral-600' />
-
-      <span className='text-xs font-medium max-sm:text-red-500 sm:text-xxs sm:font-semibold'>
-        Log Out
-      </span>
+    <button onClick={() => handleLogout()} className='text-xxs font-semibold'>
+      Log Out
     </button>
   );
 }
+
+function DrawerLogout({ onClick }: { onClick: () => void }) {
+  const { handleLogout } = useLogout(onClick);
+
+  return (
+    <button onClick={() => handleLogout()} className='inline-flex gap-4 p-4'>
+      <LogOut className='w-4 fill-red-500' />
+
+      <span className='text-xs font-medium text-red-500'>Log Out</span>
+    </button>
+  );
+}
+
+export { AppBarLogout, DrawerLogout };

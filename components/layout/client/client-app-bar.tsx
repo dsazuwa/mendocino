@@ -5,7 +5,7 @@ import Logo from '@/components/logo';
 import getUser from '@/lib/data';
 import { unauthLinks } from './client-constants';
 import ClientAppBarDrawer from './client-drawer';
-import LogoutButton from './logout-btn';
+import { AppBarLogout } from './logout-btn';
 
 export default async function ClientAppBar() {
   const { user } = await getUser();
@@ -23,7 +23,7 @@ export default async function ClientAppBar() {
 
         <div className='ml-auto hidden gap-4 sm:flex'>
           {user ? (
-            <LogoutButton />
+            <AppBarLogout />
           ) : (
             unauthLinks.map(({ name, href }) => (
               <Link
