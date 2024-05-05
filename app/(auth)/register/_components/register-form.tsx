@@ -2,10 +2,12 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { useFormState } from 'react-dom';
 import { useForm } from 'react-hook-form';
 import { TypeOf, object, string } from 'zod';
 
+import { register } from '@/app/actions/auth';
 import Loader from '@/components/loader';
 import { Button } from '@/components/ui/button';
 import {
@@ -18,8 +20,6 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/components/ui/use-toast';
-import useAuthContext from '@/hooks/use-auth-context';
-import { useRegisterMutation } from '@/store/api/auth';
 
 const formSchema = object({
   firstName: string().trim().min(1, 'First name required'),
@@ -46,11 +46,15 @@ type FormSchema = TypeOf<typeof formSchema>;
 
 export default function RegisterForm() {
   const router = useRouter();
-  const { setGuestSession } = useAuthContext();
+
   const { toast } = useToast();
 
-  const [register, { data, isLoading, isSuccess, isError, error }] =
-    useRegisterMutation();
+  const [isLoading, setIsLoading] = useState(false);
+
+  const [state, formAction] = useFormState(register, {
+    isSuccess: false,
+    message: '',
+  });
 
   const form = useForm<FormSchema>({
     defaultValues: {
@@ -71,32 +75,29 @@ export default function RegisterForm() {
   } = form;
 
   useEffect(() => {
-    if (isSubmitSuccessful) reset();
+    if (isSubmitSuccessful) {
+      setIsLoading(true);
+      reset();
+    }
   }, [isSubmitSuccessful, reset]);
 
   useEffect(() => {
-    if (isSuccess && data) {
-      toast({ variant: 'success', description: data.message });
+    if (state.message === '') return;
 
-      setGuestSession(undefined);
+    setIsLoading(false);
+
+    if (state.isSuccess) {
+      toast({ variant: 'success', description: state.message });
       router.push('/verify');
-      router.refresh();
+    } else {
+      toast({ variant: 'destructive', description: state.message });
     }
-  }, [isSuccess, data, router, toast, setGuestSession]);
-
-  useEffect(() => {
-    if (isError)
-      toast({ variant: 'destructive', description: error as string });
-  }, [isError, error, toast]);
-
-  const handleFormSubmit = (data: FormSchema) => {
-    void register(data);
-  };
+  }, [state, router, toast]);
 
   return (
     <Form {...form}>
       <form
-        onSubmit={(event) => void handleSubmit(handleFormSubmit)(event)}
+        onSubmit={(event) => void handleSubmit(formAction)(event)}
         className='flex w-full flex-col gap-4'
       >
         <div className='flex w-full flex-col gap-2'>

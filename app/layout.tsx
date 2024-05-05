@@ -1,13 +1,10 @@
 import type { Metadata } from 'next';
 import { Montserrat } from 'next/font/google';
-import { cookies } from 'next/headers';
 import { ReactNode } from 'react';
 
 import { Toaster } from '@/components/ui/toaster';
 import { cn } from '@/lib/utils';
 import './globals.css';
-import AuthProvider from './providers/auth-provider';
-import StoreProvider from './providers/store-provider';
 
 const font = Montserrat({
   weight: ['100', '200', '300', '400', '500', '600', '700', '800', '900'],
@@ -25,8 +22,6 @@ export const metadata: Metadata = {
 type Props = Readonly<{ children: ReactNode }>;
 
 export default function RootLayout({ children }: Props) {
-  const guestSession = cookies().get('guest-session')?.value;
-
   return (
     <html lang='en'>
       <body
@@ -35,9 +30,7 @@ export default function RootLayout({ children }: Props) {
           'flex min-h-screen flex-col text-neutral-600',
         )}
       >
-        <StoreProvider>
-          <AuthProvider guestSession={guestSession}>{children}</AuthProvider>
-        </StoreProvider>
+        {children}
         <Toaster />
       </body>
     </html>

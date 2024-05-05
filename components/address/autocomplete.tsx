@@ -1,8 +1,7 @@
 'use client';
 
-import useAuthContext from '@/hooks/use-auth-context';
+import { createAddress } from '@/app/actions/address';
 import useAutocomplete from '@/hooks/use-autocomplete';
-import { useCreateAddressMutation } from '@/store/api/address';
 import { Address, AddressData } from '@/types/address';
 import Search from '../icons/search';
 import AutocompleteInput from './autocomplete-input';
@@ -13,12 +12,8 @@ type Props = { defaultValue?: Address };
 export default function Autocomplete({ defaultValue }: Props) {
   const { isLoaded, service, sessionToken, geocoder } = useAutocomplete();
 
-  const { guestSession } = useAuthContext();
-
-  const [createAddress] = useCreateAddressMutation();
-
   const handleSelect = (address: AddressData) => {
-    void createAddress({ address, guestSession });
+    void createAddress(undefined, address);
   };
 
   return isLoaded ? (
