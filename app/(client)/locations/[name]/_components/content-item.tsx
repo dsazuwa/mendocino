@@ -45,7 +45,7 @@ export default function ItemContent({
           </p>
         )}
 
-        <div className='aspect-[3/2]'>
+        <div className='aspect-[3/2] shrink-0'>
           <ItemImage
             src={`${process.env.NEXT_PUBLIC_CDN_URL}/${photoUrl}`}
             alt={name}
