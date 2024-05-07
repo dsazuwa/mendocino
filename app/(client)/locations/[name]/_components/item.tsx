@@ -58,7 +58,13 @@ export default function Item({ item }: { item: MenuItem }) {
         </div>
       </Trigger>
 
-      {open && <Content isDialog={isDialog} item={item} />}
+      {open && (
+        <Content
+          isDialog={isDialog}
+          item={item}
+          handleClose={() => setOpen(false)}
+        />
+      )}
     </Modal>
   );
 }

@@ -13,9 +13,9 @@ import ItemContent from './content-item';
 import OptionContent from './content-option';
 import { PreferencesContent } from './content-preferences';
 
-type Props = { isDialog: boolean; item: MenuItem };
+type Props = { isDialog: boolean; item: MenuItem; handleClose: () => void };
 
-export default function Content({ isDialog, item }: Props) {
+export default function Content({ isDialog, item, handleClose }: Props) {
   const Overlay = isDialog ? DialogOverlay : SheetOverlay;
   const Comp = isDialog ? DialogContent : SheetContent;
 
@@ -64,7 +64,7 @@ export default function Content({ isDialog, item }: Props) {
   return (
     <>
       {isLoading ? (
-        <Overlay>
+        <Overlay onClick={handleClose}>
           <Loader className='h-full' />
         </Overlay>
       ) : (
