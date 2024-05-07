@@ -42,9 +42,9 @@ export const getLocationMenu = async (
   next: NextFunction,
 ) => {
   try {
-    const { id } = req.params;
+    const { name } = req.params;
 
-    const menu = await locationService.getLocationMenu(parseInt(id, 10));
+    const menu = await locationService.getLocationMenu(name);
 
     res.status(200).json({ menu });
   } catch (e) {

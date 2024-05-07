@@ -105,27 +105,25 @@ BEGIN
     )
   RETURNING item_id INTO menu_item_id;
 
-  IF p_is_public THEN
-    FOR loc_id IN SELECT location_id FROM menu.locations
-    LOOP
-      INSERT INTO menu.order_menu_items
-        (
-          "location_id",
-          "item_id",
-          "status",
-          "created_at",
-          "updated_at"
-        )
-      VALUES
-        (
-          loc_id,
-          menu_item_id,
-          'available',
-          NOW(),
-          NOW()
-        );
-    END LOOP;
-  END IF;
+  FOR loc_id IN SELECT location_id FROM menu.locations
+  LOOP
+    INSERT INTO menu.order_menu_items
+      (
+        "location_id",
+        "item_id",
+        "status",
+        "created_at",
+        "updated_at"
+      )
+    VALUES
+      (
+        loc_id,
+        menu_item_id,
+        'available',
+        NOW(),
+        NOW()
+      );
+  END LOOP;
 
   RETURN menu_item_id;
 END;

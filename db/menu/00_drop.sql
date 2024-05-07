@@ -14,7 +14,7 @@ DROP FUNCTION IF EXISTS menu.insert_restaurant_and_hours(VARCHAR(255), VARCHAR(1
 -- Drop functions
 DROP FUNCTION IF EXISTS menu.get_menu();
 DROP FUNCTION IF EXISTS menu.get_active_public_menu();
-DROP FUNCTION IF EXISTS menu.get_order_menu(INTEGER);
+DROP FUNCTION IF EXISTS menu.get_order_menu(VARCHAR(255));
 DROP FUNCTION IF EXISTS menu.get_item_modifiers(INTEGER);
 DROP FUNCTION IF EXISTS menu.get_child_modifiers(INTEGER);
 DROP FUNCTION IF EXISTS menu.get_modifier(INTEGER);

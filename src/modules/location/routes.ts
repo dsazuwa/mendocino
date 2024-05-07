@@ -10,6 +10,6 @@ const locationsRouter = Router();
 
 locationsRouter.get('/', getLocations);
 locationsRouter.get('/distance/:placeId', getClosestLocations);
-locationsRouter.get('/:id/menu', getLocationMenu);
+locationsRouter.get('/:name/menu', getLocationMenu);
 
 export default locationsRouter;

@@ -41,12 +41,12 @@ const locationService = {
       .sort((a, b) => a.distance.value - b.distance.value); // within 35 miles
   },
 
-  getLocationMenu: async (locationId: number) => {
-    const query = `SELECT * FROM menu.get_order_menu($id);`;
+  getLocationMenu: async (name: string) => {
+    const query = `SELECT * FROM menu.get_order_menu($name);`;
 
     const result = (await sequelize.query(query, {
       type: QueryTypes.SELECT,
-      bind: { id: locationId },
+      bind: { name },
     })) as CategoryItems<MenuItem>[];
 
     return result;
