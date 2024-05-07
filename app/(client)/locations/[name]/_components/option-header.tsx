@@ -33,8 +33,7 @@ export default function OptionHeader({
             )}
           >
             <Icon className='h-3 w-3' />
-
-            <div className='text-xxs font-semibold'>Required</div>
+            <span className='text-xxs font-semibold'>Required</span>
           </div>
         ) : (
           <div className='py-1 text-xxs font-semibold sm:py-1.5'>

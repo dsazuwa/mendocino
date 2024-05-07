@@ -43,7 +43,9 @@ export default function Option({
           </div>
 
           {option.isSelected && !option.isValid && (
-            <div className='selections'>More Selections Required</div>
+            <div className='mt-1 inline-block bg-[#FEF0C7] px-1 py-1.5 font-semibold text-[#93370D]'>
+              More Selections Required
+            </div>
           )}
         </div>
 
