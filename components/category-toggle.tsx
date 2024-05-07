@@ -77,7 +77,7 @@ export default function CategoryToggle({ categories, className }: Props) {
 
       <Tabs
         className={cn(
-          'bg-white',
+          'flex flex-row items-center justify-center overflow-hidden bg-white',
           { 'sticky top-12': isScrolledPast },
           className,
         )}

@@ -5,6 +5,8 @@ import { ReactNode } from 'react';
 import { Toaster } from '@/components/ui/toaster';
 import { cn } from '@/lib/utils';
 import './globals.css';
+import OrderStoreProvider from './providers/order-provider';
+import QueryProvider from './providers/query-provider';
 
 const font = Montserrat({
   weight: ['100', '200', '300', '400', '500', '600', '700', '800', '900'],
@@ -30,7 +32,9 @@ export default function RootLayout({ children }: Props) {
           'flex min-h-screen flex-col text-neutral-600',
         )}
       >
-        {children}
+        <QueryProvider>
+          <OrderStoreProvider>{children}</OrderStoreProvider>
+        </QueryProvider>
         <Toaster />
       </body>
     </html>

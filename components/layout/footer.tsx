@@ -72,7 +72,7 @@ export default function Footer() {
         </div>
       </div>
 
-      <div className='bg-neutral-100'>
+      <div className='bg-neutral-50'>
         <div className='mx-auto flex max-w-screen-2xl flex-col-reverse justify-between gap-2 p-4 sm:flex-row sm:items-center sm:px-8'>
           <span className='text-xxs'>{`© MENDOCINO FARMS ${new Date().getFullYear()}. All rights reserved.`}</span>
 

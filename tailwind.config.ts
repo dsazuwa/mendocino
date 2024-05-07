@@ -20,6 +20,8 @@ const config = {
     },
 
     borderRadius: {
+      '2xl': '24px',
+      xl: '16px',
       lg: '8px',
       md: '4px',
       sm: '2px',

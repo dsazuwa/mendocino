@@ -34,3 +34,16 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+
+
+## Google Maps API key
+
+This example does not come with an API key. Running the examples locally requires a valid API key for the Google Maps Platform.
+See [the official documentation][get-api-key] on how to create and configure your own key. For this example to work you also need to enable the `Places API` in your Google Cloud Console.
+
+The API key has to be provided via an environment variable `GOOGLE_MAPS_API_KEY`. This can be done by creating a
+file named `.env` in the example directory with the following content:
+
+```shell title=".env"
+GOOGLE_MAPS_API_KEY="<YOUR API KEY HERE>"
+```
