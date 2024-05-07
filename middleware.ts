@@ -31,6 +31,9 @@ export default async function middleware(request: NextRequest) {
     nextResponse.cookies.set(authCookies.accessToken);
     nextResponse.cookies.set(authCookies.refreshToken);
     nextResponse.cookies.delete('guest-session');
+  } else if (!accessToken && refreshToken) {
+    // failed to refresh token
+    nextResponse.cookies.delete('refresh-token');
   }
 
   if (!hasAccessToken && !guestSession) {
