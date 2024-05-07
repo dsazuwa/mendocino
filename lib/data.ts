@@ -14,7 +14,7 @@ export default async function getUser() {
   const res = await fetch(`${NEXT_PUBLIC_API_URL}/users/me`, {
     method: 'GET',
     headers: { Authorization: `Bearer ${accessToken}` },
-    next: { tags: ['user'], revalidate: 600 },
+    next: { tags: ['user'] },
   });
 
   const { user } = (await res.json()) as { user: User };
