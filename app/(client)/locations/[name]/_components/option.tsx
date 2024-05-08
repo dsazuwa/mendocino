@@ -24,7 +24,7 @@ export default function Option({
   const Comp = isRadio ? RadioGroupItem : Checkbox;
 
   return (
-    <div className='flex flex-row items-center gap-3 border-b border-neutral-200 py-2 text-xs font-medium'>
+    <div className='flex flex-row items-center gap-3 border-b border-neutral-200 text-xs font-medium'>
       <Comp
         value={index + ''}
         id={option.key}
@@ -35,7 +35,7 @@ export default function Option({
 
       <Label
         htmlFor={option.key}
-        className='inline-flex w-full items-center text-xxs sm:text-xs'
+        className='inline-flex w-full items-center py-2 text-xxs hover:cursor-pointer sm:text-xs'
       >
         <div className='grow'>
           <div className='text-xs font-medium text-neutral-800 sm:text-sm'>
