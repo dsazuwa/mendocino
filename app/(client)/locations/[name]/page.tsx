@@ -1,39 +1,38 @@
 import Footer from '@/components/layout/footer';
+import { getAddresses } from '@/lib/data';
 import { MenuItem, OrderMenuResponse } from '@/types/menu';
 import Item from './_components/item';
 
-async function fetchMenu(name: string) {
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/locations/${name}/menu`,
-  );
-
-  const { menu } = (await res.json()) as OrderMenuResponse;
-
-  return menu;
-}
-
 type Props = { params: { name: string } };
 
-export default async function LocationPage({ params }: Props) {
-  const menu = await fetchMenu(params.name);
-
+export default function LocationPage({ params }: Props) {
   return (
-    <div className='flex w-full flex-1 flex-col'>
-      <div className='flex w-full flex-1 flex-col'>
-        <div className='mx-auto flex max-w-screen-xl flex-col items-center px-4 py-8 md:px-8'>
-          <div className='w-full space-y-3'>
-            {menu.map(({ category, items }, index) => (
-              <Category
-                key={`menu-section-${index}`}
-                category={category}
-                items={items}
-              />
-            ))}
-          </div>
-        </div>
+    <div className='flex w-full grow flex-col'>
+      <div className='inline-flex w-full grow'>
+        <Menu location={params.name} />
+
+        <CartPanel />
       </div>
 
       <Footer />
+    </div>
+  );
+}
+
+async function Menu({ location }: { location: string }) {
+  const { menu } = await fetchMenu(location);
+
+  return (
+    <div className='w-full'>
+      <div className='mx-auto flex max-w-[1200px] flex-col gap-3 px-4 py-8 md:px-8'>
+        {menu.map(({ category, items }, index) => (
+          <Category
+            key={`menu-section-${index}`}
+            category={category}
+            items={items}
+          />
+        ))}
+      </div>
     </div>
   );
 }
@@ -54,4 +53,20 @@ function Category({ category, items }: CategoryProps) {
       </div>
     </div>
   );
+}
+
+async function CartPanel() {
+  const { addresses } = await getAddresses();
+
+  return addresses.length > 0 ? (
+    <div className='w-80 border-l border-neutral-100 max-lg:hidden'></div>
+  ) : (
+    <></>
+  );
+}
+
+async function fetchMenu(name: string) {
+  return (await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/locations/${name}/menu`,
+  ).then((res) => res.json())) as OrderMenuResponse;
 }
