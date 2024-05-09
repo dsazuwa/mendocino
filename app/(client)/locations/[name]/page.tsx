@@ -1,7 +1,7 @@
-import CartContent from '@/components/cart/content';
+import CartPanel from '@/components/cart/panel';
 import Footer from '@/components/layout/footer';
-import { getAddresses } from '@/lib/data';
-import { MenuItem, OrderMenuResponse } from '@/types/menu';
+import { fetchLocationMenu } from '@/lib/data';
+import { MenuItem } from '@/types/menu';
 import Item from './_components/item';
 
 type Props = { params: { name: string } };
@@ -21,7 +21,7 @@ export default function LocationPage({ params }: Props) {
 }
 
 async function Menu({ location }: { location: string }) {
-  const { menu } = await fetchMenu(location);
+  const { menu } = await fetchLocationMenu(location);
 
   return (
     <div className='w-full'>
@@ -54,29 +54,4 @@ function Category({ category, items }: CategoryProps) {
       </div>
     </div>
   );
-}
-
-async function CartPanel() {
-  const { addresses } = await getAddresses();
-
-  return addresses.length > 0 ? (
-    <>
-      <div className='w-80 max-lg:hidden' />
-
-      <div
-        className='fixed right-0 h-full w-80 overflow-y-auto border-l border-neutral-100 bg-white p-4 max-lg:hidden'
-        style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-      >
-        <CartContent />
-      </div>
-    </>
-  ) : (
-    <></>
-  );
-}
-
-async function fetchMenu(name: string) {
-  return (await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/locations/${name}/menu`,
-  ).then((res) => res.json())) as OrderMenuResponse;
 }

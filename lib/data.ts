@@ -3,6 +3,7 @@ import { cookies } from 'next/headers';
 import { Address } from '@/types/address';
 import { User } from '@/types/common';
 import { LocationType } from '@/types/location';
+import { OrderMenuResponse } from '@/types/menu';
 
 const { NEXT_PUBLIC_API_URL } = process.env;
 
@@ -49,4 +50,10 @@ export async function getAddresses() {
   const { addresses } = (await res.json()) as { addresses: Address[] };
 
   return { addresses: res.status === 200 ? addresses : [] };
+}
+
+export async function fetchLocationMenu(name: string) {
+  return (await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/locations/${name}/menu`,
+  ).then((res) => res.json())) as OrderMenuResponse;
 }
