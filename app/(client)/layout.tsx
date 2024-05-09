@@ -7,7 +7,7 @@ export default function ClientLayout({ children }: { children: ReactNode }) {
     <div className='flex flex-1 flex-col'>
       <ClientAppBar />
 
-      <div className='h-12' />
+      <div className='h-16' />
 
       {children}
     </div>
