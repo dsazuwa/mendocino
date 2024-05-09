@@ -11,3 +11,22 @@ export type LocationType = {
   state: string;
   zipCode: string;
 };
+
+export type RestaurantLocation = {
+  placeId: string;
+  name: string;
+  phoneNumber: string;
+  address: string;
+  city: string;
+  state: string;
+  zipCode: string;
+  lat: number;
+  lng: number;
+  hours: LocationHours[];
+};
+
+export type LocationHours = {
+  day: string;
+  open: Date;
+  close: Date;
+};

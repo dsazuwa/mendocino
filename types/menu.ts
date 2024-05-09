@@ -1,3 +1,5 @@
+import { RestaurantLocation } from './location';
+
 export type MenuItem = {
   itemId: number;
   name: string;
@@ -30,7 +32,7 @@ export type OrderMenu = {
   items: MenuItem[];
 }[];
 
-export type OrderMenuResponse = {
+export type OrderMenuResponse = RestaurantLocation & {
   menu: OrderMenu;
   message: string;
 };
