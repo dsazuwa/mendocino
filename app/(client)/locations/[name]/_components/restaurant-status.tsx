@@ -12,9 +12,11 @@ export default function RestaurantStatus() {
 
 export function MiniRestaurantStatus() {
   return (
-    <div className='inline-flex items-center gap-1 text-xs'>
-      <Clock className='w-3.5 fill-neutral-500 text-neutral-400' />
+    <div className='inline-flex items-center gap-1 text-xxs'>
+      <Clock className='w-3 fill-neutral-500' />
       <span>Available at 9:45 AM</span>
+      <span>•</span>
+      <span>0.6 miles</span>
     </div>
   );
 }

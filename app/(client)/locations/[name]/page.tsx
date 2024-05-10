@@ -2,7 +2,8 @@ import CartPanel from '@/components/cart/panel';
 import Footer from '@/components/layout/footer';
 import { fetchLocationMenu } from '@/lib/data';
 import { MenuItem } from '@/types/menu';
-import Item from './_components/item';
+import FeaturedMenu from './_components/featured-menu';
+import ItemModal from './_components/item';
 import RestaurantDetails from './_components/restaurant-details';
 import RestaurantStatus, {
   MiniRestaurantStatus,
@@ -29,31 +30,31 @@ async function Menu({ location }: { location: string }) {
     await fetchLocationMenu(location);
 
   return (
-    <div className='w-full lg:w-[100%-320px]'>
+    <div className='w-full min-w-0 lg:w-[100%-320px]'>
       <div className='mx-auto flex max-w-[1200px] flex-col gap-5 p-4 md:px-8 md:py-6'>
-        <div>
-          <div className='text-xl font-extrabold tracking-wider text-primary-900'>
-            {name}
+        <div className='flex flex-col gap-4 sm:flex-row'>
+          <div className='w-full min-w-0 sm:w-[calc(100%-320px)]'>
+            <h1 className='text-xl font-extrabold tracking-wider text-primary-900'>
+              {name}
+            </h1>
+
+            <MiniRestaurantStatus />
+
+            <FeaturedMenu />
           </div>
 
-          <MiniRestaurantStatus />
+          <div className='flex shrink-0 flex-col gap-4 sm:max-w-80'>
+            <RestaurantStatus />
 
-          <div className='flex flex-col gap-4 sm:flex-row'>
-            <div className='w-full'></div>
-
-            <div className='flex shrink-0 flex-col gap-4 sm:max-w-80'>
-              <RestaurantStatus />
-
-              <RestaurantDetails
-                name={name}
-                address={address}
-                city={city}
-                state={state}
-                lat={lat}
-                lng={lng}
-                phoneNumber={phoneNumber}
-              />
-            </div>
+            <RestaurantDetails
+              name={name}
+              address={address}
+              city={city}
+              state={state}
+              lat={lat}
+              lng={lng}
+              phoneNumber={phoneNumber}
+            />
           </div>
         </div>
 
@@ -80,7 +81,7 @@ function Category({ category, items }: CategoryProps) {
 
       <div className='grid gap-4 sm:grid-cols-2'>
         {items.map((item, index) => (
-          <Item key={index} item={item} />
+          <ItemModal key={index} item={item} />
         ))}
       </div>
     </div>
