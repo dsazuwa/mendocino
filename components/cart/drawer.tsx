@@ -11,7 +11,7 @@ import { Button } from '../ui/button';
 import { Sheet, SheetClose, SheetContent, SheetTrigger } from '../ui/sheet';
 import CartContent from './content';
 
-export default function CartDrawer() {
+export default function CartDrawer({ restaurant }: { restaurant?: string }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const isLarge = useMediaQuery('(min-width: 1024px)');
@@ -52,7 +52,7 @@ export default function CartDrawer() {
           </SheetClose>
         </ContentHeader>
 
-        <CartContent className='px-4' />
+        <CartContent className='px-4' restaurant={restaurant} />
       </SheetContent>
     </Sheet>
   );

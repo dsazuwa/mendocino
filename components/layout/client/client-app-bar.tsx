@@ -1,3 +1,4 @@
+import { cookies } from 'next/headers';
 import Link from 'next/link';
 
 import AddressButton from '@/components/address/choose';
@@ -11,6 +12,7 @@ import { AppBarLogout } from './logout-btn';
 export default async function ClientAppBar() {
   const { user } = await getUser();
   const { addresses } = await getAddresses();
+  const restaurant = cookies().get('restaurant')?.value;
 
   return (
     <nav id='client-app-bar' className='fixed z-50 h-16 w-full bg-white'>
@@ -24,7 +26,7 @@ export default async function ClientAppBar() {
         <AddressButton addresses={addresses} />
 
         <div className='inline-flex gap-2 sm:ml-auto'>
-          {addresses.length > 0 && <CartDrawer />}
+          {addresses.length > 0 && <CartDrawer restaurant={restaurant} />}
 
           <div className='space-x-4 max-sm:hidden'>
             {user ? (

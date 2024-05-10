@@ -42,7 +42,7 @@ export default function Locations({ locations }: Props) {
           </div>
 
           <Link
-            href={`/locations/${encodeURIComponent(name)}`}
+            href={`/locations/${name}`}
             className={cn(
               buttonVariants({ variant: 'outline' }),
               'ml-auto text-xxs',

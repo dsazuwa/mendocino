@@ -41,6 +41,7 @@ export default async function middleware(request: NextRequest) {
     nextResponse.cookies.set(guestSession);
   }
 
+  setLocationCookie(request, nextResponse);
   applySetCookie(request, nextResponse);
 
   return nextResponse;
@@ -84,6 +85,19 @@ function getNextResponse(request: NextRequest, isAuthenticated: boolean) {
   }
 
   return NextResponse.next();
+}
+
+function setLocationCookie(
+  request: NextRequest,
+  nextResponse: NextResponse<unknown>,
+) {
+  if (request.nextUrl.pathname.startsWith('/locations')) {
+    const match = request.nextUrl.pathname.match(/\/locations\/(.*)/);
+    const locationName = match ? match[1] : null;
+
+    if (locationName)
+      nextResponse.cookies.set({ name: 'restaurant', value: locationName });
+  }
 }
 
 // source: https://github.com/vercel/next.js/discussions/50374#discussioncomment-6732402

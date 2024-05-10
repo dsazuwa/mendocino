@@ -2,17 +2,17 @@ import { cn, formatPrice } from '@/lib/utils';
 import NoFood from '../icons/no-food';
 import { Button } from '../ui/button';
 
-export default function CartContent({ className }: { className?: string }) {
-  const locationSelected = true;
+type Props = { className?: string; restaurant?: string };
 
-  if (!locationSelected) return <EmptyCartContent />;
+export default function CartContent({ className, restaurant }: Props) {
+  if (!restaurant) return <EmptyCartContent />;
 
   return (
     <div className={cn('space-y-2', className)}>
       <div className='flex flex-col'>
         <span className='text-xs md:text-sm'>Your cart from</span>
         <span className='text-sm font-semibold text-neutral-800 md:text-base'>
-          Mendocino Farms
+          {decodeURIComponent(restaurant)}
         </span>
       </div>
 
