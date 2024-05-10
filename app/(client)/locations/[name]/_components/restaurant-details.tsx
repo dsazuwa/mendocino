@@ -45,13 +45,7 @@ export default function RestaurantDetails({
 
   if (sm)
     return (
-      <div
-        className={cn(
-          'border border-neutral-200',
-          open && 'rounded-t-lg',
-          !open && 'rounded-lg',
-        )}
-      >
+      <div className='rounded-lg border border-neutral-200'>
         <Detail
           primaryLabel='More Store Info'
           secondaryLabel='Address, Hours, Contact'
@@ -110,7 +104,6 @@ function Details({ name, phoneNumber, address, city, state, lat, lng }: Props) {
 
       <Detail
         primaryLabel={formatPhoneNumber(phoneNumber)}
-        secondaryLabel={`${city}, ${state}`}
         PrimaryIcon={Phone}
         SecondaryIcon={ArrowTopRightIcon}
       />
@@ -161,7 +154,9 @@ function Detail({
       >
         <span className='flex flex-col items-start gap-1 py-3 text-xs'>
           <span className='font-medium text-black'>{primaryLabel}</span>
-          {secondaryLabel && <span>{secondaryLabel}</span>}
+          {secondaryLabel && (
+            <span className='text-xxs md:text-xs'>{secondaryLabel}</span>
+          )}
         </span>
 
         <div
@@ -170,7 +165,7 @@ function Detail({
             'rotate-180' && !open,
           )}
         >
-          <SecondaryIcon className={'w-3.5 shrink-0 stroke-neutral-500'} />
+          <SecondaryIcon className={'w-3.5 shrink-0 fill-neutral-500'} />
         </div>
       </span>
     </button>

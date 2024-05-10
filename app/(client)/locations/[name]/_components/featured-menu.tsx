@@ -183,7 +183,7 @@ function Items({ items }: { items: MenuItem[] }) {
 
   return (
     <>
-      <div className='mt-5 inline-flex w-full items-center'>
+      <div className='inline-flex w-full items-center'>
         <div className='flex-1 text-sm font-extrabold uppercase tracking-wider text-primary-900'>
           Featured Items
         </div>
