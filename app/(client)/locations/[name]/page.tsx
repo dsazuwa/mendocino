@@ -13,7 +13,7 @@ type Props = { params: { name: string } };
 
 export default function LocationPage({ params }: Props) {
   return (
-    <div className='flex w-full grow flex-col'>
+    <main className='flex w-full grow flex-col'>
       <div className='inline-flex w-full grow'>
         <Menu location={params.name} />
 
@@ -21,7 +21,7 @@ export default function LocationPage({ params }: Props) {
       </div>
 
       <Footer />
-    </div>
+    </main>
   );
 }
 

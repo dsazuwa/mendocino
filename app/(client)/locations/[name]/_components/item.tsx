@@ -1,7 +1,7 @@
 'use client';
 
 import { ChevronRightIcon, PlusIcon } from '@radix-ui/react-icons';
-import { forwardRef, useState } from 'react';
+import { Dispatch, SetStateAction, forwardRef, useState } from 'react';
 
 import { Dialog, DialogTrigger } from '@/components/ui/dialog';
 import { Sheet, SheetTrigger } from '@/components/ui/sheet';
@@ -11,9 +11,17 @@ import { MenuItem } from '@/types/menu';
 import Content from './content';
 import ItemImage from './item-image';
 
-type Props = { item: MenuItem; featured?: boolean };
+type Props = {
+  item: MenuItem;
+  featured?: boolean;
+  setLoadingFeatured?: Dispatch<SetStateAction<boolean>>;
+};
 
-export default function ItemModal({ item, featured }: Props) {
+export default function ItemModal({
+  item,
+  featured,
+  setLoadingFeatured,
+}: Props) {
   const [open, setOpen] = useState(false);
   const isDialog = useMediaQuery('(min-width: 640px)');
 
@@ -21,10 +29,15 @@ export default function ItemModal({ item, featured }: Props) {
   const Trigger = isDialog ? DialogTrigger : SheetTrigger;
   const Comp = featured ? FeaturedItem : Item;
 
+  const handleClick = () => {
+    if (setLoadingFeatured) setLoadingFeatured(true);
+    setOpen(!open);
+  };
+
   return (
     <Modal open={open} onOpenChange={setOpen}>
       <Trigger asChild>
-        <Comp item={item} onClick={() => setOpen(!open)} />
+        <Comp item={item} onClick={handleClick} />
       </Trigger>
 
       {open && (
@@ -32,6 +45,7 @@ export default function ItemModal({ item, featured }: Props) {
           isDialog={isDialog}
           item={item}
           handleClose={() => setOpen(false)}
+          setLoadingFeatured={setLoadingFeatured}
         />
       )}
     </Modal>

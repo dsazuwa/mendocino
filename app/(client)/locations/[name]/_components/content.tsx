@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { useEffect, useState } from 'react';
+import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 
 import { useOrderStore } from '@/app/providers/order-provider';
 import Loader from '@/components/loader';
@@ -13,9 +13,19 @@ import ItemContent from './content-item';
 import OptionContent from './content-option';
 import { PreferencesContent } from './content-preferences';
 
-type Props = { isDialog: boolean; item: MenuItem; handleClose: () => void };
+type Props = {
+  isDialog: boolean;
+  item: MenuItem;
+  handleClose: () => void;
+  setLoadingFeatured?: Dispatch<SetStateAction<boolean>>;
+};
 
-export default function Content({ isDialog, item, handleClose }: Props) {
+export default function Content({
+  isDialog,
+  item,
+  handleClose,
+  setLoadingFeatured,
+}: Props) {
   const Overlay = isDialog ? DialogOverlay : SheetOverlay;
   const Comp = isDialog ? DialogContent : SheetContent;
 
@@ -38,16 +48,21 @@ export default function Content({ isDialog, item, handleClose }: Props) {
       enabled: false,
     });
 
+  const setLoading = (val: boolean) => {
+    setIsLoading(val);
+    if (setLoadingFeatured) setLoadingFeatured(val);
+  };
+
   useEffect(() => {
     if (data) {
       buildTree(item, data.modifiers);
-      setIsLoading(false);
+      setLoading(false);
     }
   }, [item, data]);
 
   useEffect(() => {
     if (isOptionNode(current) && current.isNested && !current.isFulfilled) {
-      setIsLoading(true);
+      setLoading(true);
       void fetchChildModifiers();
     }
   }, [current]);
@@ -56,18 +71,20 @@ export default function Content({ isDialog, item, handleClose }: Props) {
     if (isOptionNode(current) && current.isNested && !current.isFulfilled) {
       if (childModifiers !== undefined) {
         addTreeNodes(current.key, childModifiers.modifiers);
-        setIsLoading(false);
+        setLoading(false);
       }
     }
   }, [childModifiers]);
 
   return (
     <>
-      {isLoading ? (
+      {isLoading && setLoadingFeatured === undefined && (
         <Overlay onClick={handleClose}>
           <Loader className='h-full' />
         </Overlay>
-      ) : (
+      )}
+
+      {!isLoading && (
         <Comp
           className={cn({
             'flex max-h-[95vh] max-w-[560px] flex-col': isDialog,

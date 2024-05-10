@@ -2,7 +2,9 @@
 
 import { ChevronLeftIcon, ChevronRightIcon } from '@radix-ui/react-icons';
 import useEmblaCarousel from 'embla-carousel-react';
+import { useState } from 'react';
 
+import Loader from '@/components/loader';
 import usePrevNextButtons from '@/hooks/use-embla-buttons';
 import { MenuItem } from '@/types/menu';
 import ItemModal from './item';
@@ -20,13 +22,13 @@ export default function FeaturedMenu() {
         'Chopped romaine, curly kale, quinoa & millet, housemade superfood krunchies, succotash with roasted corn, black beans & jicama, red onions, cilantro, cotija cheese, grape tomatoes, avocado (400 cal) with chipotle vinaigrette (250 cal)',
     },
     {
-      name: '1/2 “Not So Fried” Chicken',
-      tags: [],
-      price: 0,
-      itemId: 6,
-      photoUrl: 'BPNotSoFriedChicken',
+      name: 'Chimichurri Steak & Bacon',
+      tags: ['RGF'],
+      price: 17.48,
+      itemId: 22,
+      photoUrl: 'ChimichurriSteakSandwich',
       description:
-        "Shaved, roasted chicken breast topped with Mendo's krispies, herb aioli, mustard pickle slaw, tomatoes, pickled red onions on toasted ciabatta (450 cal) with a side of tangy mustard barbecue sauce (80 cal) or mustard pickle remoulade (120 cal)",
+        'Roasted, carved steak and applewood smoked bacon topped with marinated red peppers, caramelized onion jam, chimichurri, shredded romaine, herb aioli (640 cal) on a toasted sesame roll (300 cal)',
     },
     {
       name: 'The Impossible Taco Salad',
@@ -59,13 +61,13 @@ export default function FeaturedMenu() {
         'Curly kale, chopped romaine, housemade superfood krunchies, shaved Grana Padano cheese, red onions, grape tomatoes, avocado, lemon squeeze (290 cal) with classic Caesar dressing (340 cal)',
     },
     {
-      name: 'Chimichurri Steak & Bacon',
-      tags: ['RGF'],
-      price: 17.48,
-      itemId: 22,
-      photoUrl: 'ChimichurriSteakSandwich',
+      name: '1/2 “Not So Fried” Chicken',
+      tags: [],
+      price: 0,
+      itemId: 6,
+      photoUrl: 'BPNotSoFriedChicken',
       description:
-        'Roasted, carved steak and applewood smoked bacon topped with marinated red peppers, caramelized onion jam, chimichurri, shredded romaine, herb aioli (640 cal) on a toasted sesame roll (300 cal)',
+        "Shaved, roasted chicken breast topped with Mendo's krispies, herb aioli, mustard pickle slaw, tomatoes, pickled red onions on toasted ciabatta (450 cal) with a side of tangy mustard barbecue sauce (80 cal) or mustard pickle remoulade (120 cal)",
     },
     {
       name: 'Pink Lady Beets & Goat Cheese Salad',
@@ -170,6 +172,7 @@ export default function FeaturedMenu() {
 
 function Items({ items }: { items: MenuItem[] }) {
   const [emblaRef, emblaApi] = useEmblaCarousel({ slidesToScroll: 'auto' });
+  const [open, setOpen] = useState(false);
 
   const {
     prevBtnDisabled,
@@ -199,12 +202,26 @@ function Items({ items }: { items: MenuItem[] }) {
       </div>
 
       <div className='embla mt-4' ref={emblaRef}>
-        <div className='embla__container inline-flex gap-2.5'>
+        <div className='embla__container static gap-2.5'>
           {items.map((item, index) => (
-            <ItemModal key={`featured-item-${index}`} item={item} featured />
+            <ItemModal
+              key={`featured-item-${index}`}
+              item={item}
+              featured
+              setLoadingFeatured={setOpen}
+            />
           ))}
         </div>
       </div>
+
+      {open && (
+        <div
+          className='fixed inset-0 z-50 bg-black/80 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0'
+          onClick={() => setOpen(false)}
+        >
+          <Loader className='h-full' />
+        </div>
+      )}
     </>
   );
 }
