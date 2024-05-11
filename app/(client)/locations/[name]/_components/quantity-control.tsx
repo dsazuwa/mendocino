@@ -60,7 +60,7 @@ export default function QuantityControl({ current }: Props) {
 
       <Button
         variant='primary'
-        className='rounded-2xl px-6 text-xs sm:px-8 sm:text-sm'
+        className='mt-1 rounded-2xl px-6 text-xs sm:px-8 sm:text-sm'
       >
         {`ADD TO CART - ${formatPrice(
           getItemSelectionPrice(map, current) * quantity,
