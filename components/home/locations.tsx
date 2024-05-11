@@ -45,7 +45,7 @@ export default function Locations({ locations }: Props) {
             href={`/locations/${name}`}
             className={cn(
               buttonVariants({ variant: 'outline' }),
-              'ml-auto text-xxs',
+              'ml-auto rounded-lg text-xxs',
             )}
           >
             Order
