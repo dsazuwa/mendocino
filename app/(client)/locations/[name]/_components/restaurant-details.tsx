@@ -141,7 +141,10 @@ function Detail({
   secondaryIconClassName?: string;
 }) {
   return (
-    <button className='inline-flex w-full items-center' onClick={onClick}>
+    <button
+      className='inline-flex w-full items-center text-left'
+      onClick={onClick}
+    >
       <span className='px-4'>
         <PrimaryIcon className='w-3.5 shrink-0 fill-neutral-500' />
       </span>
