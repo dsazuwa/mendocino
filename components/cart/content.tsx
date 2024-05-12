@@ -10,7 +10,7 @@ export default function CartContent({ className, restaurant }: Props) {
   return (
     <div className={cn('space-y-2', className)}>
       <div className='flex flex-col'>
-        <span className='text-xs md:text-sm'>Your cart from</span>
+        <span className='text-xxs md:text-xs'>Your cart from</span>
         <span className='text-sm font-semibold text-neutral-800 md:text-base'>
           {decodeURIComponent(restaurant)}
         </span>
@@ -18,7 +18,7 @@ export default function CartContent({ className, restaurant }: Props) {
 
       <Button
         variant='primary'
-        className='w-full justify-between rounded-full uppercase'
+        className='w-full justify-between rounded-full text-sm uppercase'
       >
         <span>Checkout</span> <span>{formatPrice(0)}</span>
       </Button>
