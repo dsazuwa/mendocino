@@ -3,7 +3,8 @@
 import { SyntheticEvent, useEffect, useState } from 'react';
 
 import { cn } from '@/lib/utils';
-import Tabs from './tabs';
+import Tabs from './mui-tabs/tabs';
+import Tab from './mui-tabs/tab';
 
 type Props = {
   categories: string[];
@@ -19,7 +20,7 @@ export default function CategoryToggle({ categories, className }: Props) {
       (entries) => {
         setScrolledPast(!entries[0].isIntersecting);
       },
-      { threshold: 0.99, rootMargin: '-48px' },
+      { threshold: 0.75, rootMargin: '-48px' },
     );
 
     categoryToggleObserver.observe(
@@ -62,7 +63,7 @@ export default function CategoryToggle({ categories, className }: Props) {
     const categoryToggle = document.getElementById('category-toggle');
 
     if (scrollTarget && selectedTab && appBar && categoryToggle) {
-      const offset = appBar?.offsetHeight + categoryToggle?.offsetHeight + 10;
+      const offset = appBar?.offsetHeight + categoryToggle?.offsetHeight;
 
       window.scrollTo({
         top: scrollTarget.getBoundingClientRect().top + window.scrollY - offset,
@@ -76,25 +77,24 @@ export default function CategoryToggle({ categories, className }: Props) {
       <div id='category-toggle-anchor' />
 
       <Tabs
+        value={value}
+        variant='scrollable'
+        scrollButtons
+        allowScrollButtonsMobile
         className={cn(
           'z-10 flex flex-row items-center justify-center overflow-hidden bg-white',
           { 'sticky top-16': isScrolledPast },
           className,
         )}
-        value={value}
       >
         {categories.map((title, index) => (
-          <button
+          <Tab
             id={`tab-${index}`}
             key={`tab-${index}`}
-            className={cn(
-              'px-2.5 py-3 text-[0.65rem] font-medium uppercase transition-colors sm:text-[0.7rem]',
-              { 'font-semibold text-primary-600': value === index },
-            )}
+            className='text-[0.65rem] uppercase sm:text-[0.7rem]'
             onClick={handleTabClick}
-          >
-            {title}
-          </button>
+            label={title}
+          />
         ))}
       </Tabs>
     </>

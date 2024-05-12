@@ -19,3 +19,7 @@ body {
   flex: 0 0 100%;
   min-width: 0;
 }
+
+.tabs_scrollbar::-webkit-scrollbar {
+  display: none;
+}

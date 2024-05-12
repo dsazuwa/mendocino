@@ -70,7 +70,10 @@ async function Menu({ location }: { location: string }) {
           </div>
         </div>
 
-        <CategoryToggle categories={menu.map((x) => x.category)} />
+        <CategoryToggle
+          className='mt-[-20px]'
+          categories={menu.map((x) => x.category)}
+        />
 
         <div className='flex flex-col gap-5'>
           {menu.map(({ category, items }, index) => (
