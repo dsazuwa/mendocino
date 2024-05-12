@@ -29,6 +29,16 @@ const menuService = {
 
     return { menu: result, categories };
   },
+
+  getOrderMenu: async () => {
+    const query = `SELECT * FROM menu.get_order_menu('Plano');`;
+
+    const result = (await sequelize.query(query, {
+      type: QueryTypes.SELECT,
+    })) as CategoryItems<MenuItem>[];
+
+    return result;
+  },
 } as const;
 
 export default menuService;
