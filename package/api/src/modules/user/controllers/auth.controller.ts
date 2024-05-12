@@ -8,6 +8,7 @@ import {
   userService,
 } from '../services';
 import messages from '../utils/messages';
+import guestService from '../services/guest.service';
 
 export const setAuthCookies = (
   res: Response,
@@ -16,6 +17,8 @@ export const setAuthCookies = (
 ) => {
   const inFiveMins = new Date(Date.now() + 5 * 60 * 1000);
   const inSevenDays = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+
+  res.clearCookie('guest-session');
 
   res.cookie('access-token', accessToken, {
     secure: true,
@@ -196,7 +199,14 @@ export const logout = async (
     res.clearCookie('refresh-token');
     res.clearCookie('auth-flag');
 
-    res.status(200).json({ message: messages.LOGOUT });
+    const guestSession = await guestService.createGuest();
+
+    res.cookie('guest-session', guestSession, {
+      secure: true,
+      httpOnly: true,
+    });
+
+    res.status(200).json({ message: messages.LOGOUT, guestSession });
   } catch (e) {
     next(e);
   }
