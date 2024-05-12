@@ -29,6 +29,10 @@ class Location extends Model<
 
   declare zipCode: string;
 
+  declare lat: number;
+
+  declare lng: number;
+
   declare createdAt: CreationOptional<Date>;
 
   declare updatedAt: CreationOptional<Date>;
@@ -84,6 +88,16 @@ Location.init(
       validate: {
         len: [5, 5],
       },
+    },
+
+    lat: {
+      type: DataTypes.DECIMAL(8, 6),
+      allowNull: false,
+    },
+
+    lng: {
+      type: DataTypes.DECIMAL(9, 6),
+      allowNull: false,
     },
 
     createdAt: {

@@ -7,6 +7,8 @@ CREATE TABLE menu.locations (
   city VARCHAR(100) NOT NULL,
   state VARCHAR(50) NOT NULL,
   zip_code VARCHAR(5) NOT NULL,
+  lat DECIMAL(8,6) NOT NULL,
+  lng DECIMAL(9,6) NOT NULL,
   created_at TIMESTAMP NOT NULL,
   updated_at TIMESTAMP NOT NULL,
   PRIMARY KEY (location_id)

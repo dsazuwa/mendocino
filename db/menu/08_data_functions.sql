@@ -7,6 +7,8 @@ CREATE OR REPLACE FUNCTION menu.insert_restaurant_and_hours(
   city VARCHAR(100),
   state VARCHAR(50),
   zip_code VARCHAR(5),
+  lat DECIMAL(8,6),
+  lng DECIMAL(9,6),
   p_hours JSONB
 )
 RETURNS VOID AS $$
@@ -25,6 +27,8 @@ BEGIN
       "city",
       "state",
       "zip_code",
+      "lat",
+      "lng",
       "created_at",
       "updated_at"
     )
@@ -37,6 +41,8 @@ BEGIN
       city,
       state,
       zip_code,
+      lat,
+      lng,
       NOW(),
       NOW()
     )

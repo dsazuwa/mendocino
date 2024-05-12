@@ -44,9 +44,14 @@ export const getLocationMenu = async (
   try {
     const { name } = req.params;
 
+    const location = await locationService.getLocation(name);
+
+    if (location === undefined)
+      return res.status(404).json({ message: `Location (${name}) not found.` });
+
     const menu = await locationService.getLocationMenu(name);
 
-    res.status(200).json({ menu });
+    res.status(200).json({ ...location, menu });
   } catch (e) {
     next(e);
   }

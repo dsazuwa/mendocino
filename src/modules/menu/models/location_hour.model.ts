@@ -35,7 +35,8 @@ LocationHour.init(
   {
     locationId: {
       type: DataTypes.INTEGER,
-      primaryKey: true,
+      allowNull: false,
+      unique: 'composite',
     },
 
     dayOfWeek: {
@@ -49,6 +50,7 @@ LocationHour.init(
         'Sunday',
       ),
       allowNull: false,
+      unique: 'composite',
     },
 
     openTime: {

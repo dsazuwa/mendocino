@@ -42,12 +42,16 @@ export const createItem = (
     const [location] = await Location.findOrCreate({
       where: {},
       defaults: {
+        placeId:
+          'Eik1Mjk0IEJlbHQgTGluZSBSb2FkIHN1aXRlIDEwNSwgRGFsbGFzLCBUWCIlGiMKFgoUChIJkdedXjwhTIYRgj2ohiR6ZNUSCXN1aXRlIDEwNQ',
         name: 'Addison',
         phoneNumber: '9723543924',
         address: '5294 Belt Line Road, Suite 105',
         city: 'Dallas',
         state: 'TX',
         zipCode: '75254',
+        lat: 32.95222,
+        lng: -96.81745,
       },
       raw: true,
       transaction,
