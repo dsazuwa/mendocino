@@ -91,7 +91,7 @@ const Tab = React.forwardRef<
       tabIndex={selected ? 0 : -1}
       {...other}
       className={cn(
-        'relative flex min-h-[48px] min-w-[90px] max-w-[360px] shrink-0 flex-wrap items-center overflow-hidden whitespace-normal px-3 py-4 text-center font-medium leading-[1.25]',
+        'relative flex min-h-[48px] min-w-[90px] max-w-[360px] shrink-0 flex-wrap items-center overflow-hidden whitespace-normal px-3 py-4 text-center font-medium leading-[1.25] opacity-80',
         {
           'max-w-none shrink grow basis-0': fullWidth,
           'flex-col':
@@ -100,7 +100,7 @@ const Tab = React.forwardRef<
             ownerState.label &&
             iconPosition !== 'top' &&
             iconPosition !== 'bottom',
-          'font-semibold text-primary-600': selected,
+          'opacity-1 font-semibold text-primary-600': selected,
         },
         className,
       )}

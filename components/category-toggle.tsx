@@ -20,7 +20,7 @@ export default function CategoryToggle({ categories, className }: Props) {
       (entries) => {
         setScrolledPast(!entries[0].isIntersecting);
       },
-      { threshold: 0.75, rootMargin: '-48px' },
+      { threshold: 0, rootMargin: '-64px' },
     );
 
     categoryToggleObserver.observe(
@@ -43,12 +43,14 @@ export default function CategoryToggle({ categories, className }: Props) {
       });
     };
 
+    handleScroll();
+
     window.addEventListener('scroll', handleScroll);
 
     return () => {
       window.removeEventListener('scroll', handleScroll);
     };
-  }, [value, categories]);
+  }, []);
 
   const handleTabClick = (event: SyntheticEvent) => {
     event.preventDefault();

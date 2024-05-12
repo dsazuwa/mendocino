@@ -260,17 +260,14 @@ const Tabs = React.forwardRef<HTMLDivElement, TabsProps>(
       scrollButtonsHideMobile: !allowScrollButtonsMobile,
     };
 
-    const defaultIndicatorStyle: TIndicatorStyle = React.useMemo(
-      () => ({
-        top: 0,
-        right: 0,
-        bottom: 0,
-        left: 0,
-        height: 0,
-        width: 0,
-      }),
-      [],
-    );
+    const defaultIndicatorStyle: TIndicatorStyle = {
+      top: 0,
+      right: 0,
+      bottom: 0,
+      left: 0,
+      height: 0,
+      width: 0,
+    };
 
     if (process.env.NODE_ENV !== 'production') {
       if (centered && scrollable)
@@ -422,14 +419,12 @@ const Tabs = React.forwardRef<HTMLDivElement, TabsProps>(
       isRtl,
       size,
       vertical,
-      // getTabsMeta,
+      getTabsMeta,
       indicatorStyle.left,
       indicatorStyle.width,
     ]);
 
     const scroll = (scrollValue: number, { animation = true } = {}) => {
-      if (tabsRef.current === null) return;
-
       if (animation) {
         animate(scrollStart, tabsRef.current, scrollValue, {});
       } else if (tabsRef.current) {
@@ -600,7 +595,7 @@ const Tabs = React.forwardRef<HTMLDivElement, TabsProps>(
     // Don't animate on the first render.
     React.useEffect(() => {
       scrollSelectedIntoView(defaultIndicatorStyle !== indicatorStyle);
-    }, [scrollSelectedIntoView, defaultIndicatorStyle, indicatorStyle]);
+    }, [scrollSelectedIntoView, indicatorStyle]);
 
     React.useImperativeHandle(
       action,
@@ -678,8 +673,6 @@ const Tabs = React.forwardRef<HTMLDivElement, TabsProps>(
           ref={tabsRef}
           className='tabs_scrollbar'
           style={{
-            scrollbarWidth: 'none',
-            msOverflowStyle: 'none',
             [vertical ? `margin${isRtl ? 'Left' : 'Right'}` : 'marginBottom']:
               visibleScrollbar ? undefined : 0,
           }}
@@ -697,7 +690,11 @@ const Tabs = React.forwardRef<HTMLDivElement, TabsProps>(
           <TabsIndicator
             ownerState={ownerState}
             className={TabIndicatorProps.className}
-            style={{ ...indicatorStyle, ...TabIndicatorProps.style }}
+            style={{
+              transition: 'all 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;',
+              ...indicatorStyle,
+              ...TabIndicatorProps.style,
+            }}
           />
         </TabsScroller>
 
