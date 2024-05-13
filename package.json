@@ -1,0 +1,23 @@
+{
+  "name": "mendocino",
+  "version": "1.0.0",
+  "description": "",
+  "author": "dsazuwa",
+  "license": "ISC",
+  "workspaces": [
+    "packages/api",
+    "packages/next-app"
+  ],
+  "scripts": {
+    "dev:api": "npm run dev --workspace=@mendocino/api",
+    "dev:app": "npm run dev --workspace=@mendocino/next-app",
+    "dev": "concurrently -n \"BACKEND,FRONTEND\" -c \"white,green\" \"npm run dev:api\" \"npm run dev:app\""
+  },
+  "dependencies": {
+    "husky": "^9.0.11",
+    "lerna": "^8.1.2"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}

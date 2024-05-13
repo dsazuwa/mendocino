@@ -1,4 +1,4 @@
-Project spoons_db {
+Project mendocino_db {
   database_type: 'PostgreSQL'
   Note: 'A database for a restaurant website'
 }

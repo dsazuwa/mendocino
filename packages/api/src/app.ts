@@ -57,7 +57,7 @@ const createApp = () => {
   configureGoogleStrategy(passport);
 
   app.get('/api', (req: Request, res: Response) => {
-    res.status(200).json({ message: 'Welcome to Spoons API.' });
+    res.status(200).json({ message: 'Welcome to Mendocino Farms API.' });
   });
 
   app.use('/api', userRouter);

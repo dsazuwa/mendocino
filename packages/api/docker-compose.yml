@@ -1,6 +1,6 @@
 version: '3'
 
-name: spoons
+name: mendocino
 
 services:
   # Redis cache
@@ -45,7 +45,7 @@ services:
 
   # Express API Service
   api:
-    # container_name: spoons-api
+    # container_name: mendocino-api
     build:
       context: .
       dockerfile: Dockerfile

@@ -17,7 +17,7 @@ const font = Montserrat({
 });
 
 export const metadata: Metadata = {
-  title: 'Spoons',
+  title: 'Mendocino Farms',
   description: 'A food delivery app',
 };
 

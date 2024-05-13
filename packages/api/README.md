@@ -1,27 +1,27 @@
-# spoons-api
+# mendocino-api
 
-Spoons API is a RESTful API for food ordering.
+Mendocino API is a RESTful API for food ordering.
 
 ## Prerequisites
 
-Before running the Spoons API, ensure you have the following installed:
+Before running the Mendocino API, ensure you have the following installed:
 
 - Node.js (version 20.3.1)
 - PostgreSQL (version 12.15)
 
 ## Getting Started
 
-Follow the steps below to get the Spoons API up and running:
+Follow the steps below to get the Mendocino API up and running:
 
 1. Clone the repository:
 
    ```shell
-   git clone https://github.com/dsazuwa/spoons-api.git
+   git clone https://github.com/dsazuwa/mendocino.git
 
 2. Install dependencies:
 
    ```shell
-   cd spoons-api
+   cd mendocino
    npm install
    npm run prepare
 
@@ -34,7 +34,7 @@ Follow the steps below to get the Spoons API up and running:
      ```shell
      docker-compose up -d 
 
-5. The Spoons API should now be running at `http://localhost:<PORT>`.
+5. The Mendocino API should now be running at `http://localhost:<PORT>`.
 
 ## API Documentation
 For detailed information about the available API endpoints, please refer to the [API Documentation](https://documenter.getpostman.com/view/19231873/2s93z86NgN).

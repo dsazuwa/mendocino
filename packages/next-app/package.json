@@ -1,5 +1,5 @@
 {
-  "name": "spoons-app",
+  "name": "@mendocino/next-app",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -8,8 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "format": "prettier --write ./",
-    "lint-staged": "lint-staged",
-    "prepare": "husky"
+    "lint-staged": "lint-staged"
   },
   "dependencies": {
     "@googlemaps/js-api-loader": "^1.16.6",
@@ -54,7 +53,6 @@
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-jsx-a11y": "^6.8.0",
     "eslint-plugin-unicorn": "^52.0.0",
-    "husky": "^9.0.11",
     "lint-staged": "^15.2.2",
     "postcss": "^8",
     "prettier": "^3.2.5",
