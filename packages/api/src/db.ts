@@ -15,12 +15,12 @@ try {
   db = new Sequelize(url, {
     dialect: 'postgres',
     benchmark: true,
-    logging:
-      NODE_ENV === 'production' || NODE_ENV === 'development'
-        ? false
-        : (query: string, timing: number | undefined) => {
-            logger.debug(`SQL Query: ${query} Execution Time: ${timing} ms`);
-          },
+    logging: false,
+    // NODE_ENV === 'production' || NODE_ENV === 'development'
+    //   ? false
+    //   : (query: string, timing: number | undefined) => {
+    //       logger.debug(`SQL Query: ${query} Execution Time: ${timing} ms`);
+    //     },
   });
 } catch (error) {
   logger.error('Error on DB instantiation:', error);
