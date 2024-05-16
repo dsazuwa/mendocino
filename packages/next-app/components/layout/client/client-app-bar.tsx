@@ -16,8 +16,9 @@ export default async function ClientAppBar() {
   const restaurant = cookies().get('restaurant')?.value;
 
   const selectedId = getSelectedAddress(addresses);
-  const selectedAddress =
-    addresses.find((address) => address.id === selectedId) || addresses[0];
+  const selectedAddress = addresses.find(
+    (address) => address.id === selectedId,
+  );
 
   return (
     <nav id='client-app-bar' className='fixed z-50 h-16 w-full bg-white'>

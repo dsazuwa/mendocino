@@ -16,7 +16,7 @@ import { Sheet, SheetContent, SheetTrigger } from '../ui/sheet';
 import ChooseToggler from './choose-toggler';
 import { CreateContent } from './create';
 
-type Props = { addresses: Address[]; selectedAddress: Address };
+type Props = { addresses: Address[]; selectedAddress: Address | undefined };
 
 export default function AddressButton({ addresses, selectedAddress }: Props) {
   const pathname = usePathname();
@@ -30,11 +30,12 @@ export default function AddressButton({ addresses, selectedAddress }: Props) {
 function ChooseAddress({ addresses, selectedAddress }: Props) {
   const [open, setOpen] = useState(false);
   const handleClose = () => setOpen(false);
-  const { address, selectAddress } = useSelectAddress(
-    addresses,
+  const { selectedId, selectAddress } = useSelectAddress(
     selectedAddress,
     handleClose,
   );
+
+  const address = addresses.find((address) => address.id === selectedId);
 
   const isDialog = useMediaQuery('(min-width: 640px)');
   const Modal = isDialog ? Dialog : Sheet;

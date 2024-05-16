@@ -27,6 +27,8 @@ export default async function LocationSelector({ addresses }: Props) {
 }
 
 export function getSelectedAddress(addresses: Address[]) {
+  if (addresses.length === 0) return undefined;
+
   const defaultId = addresses[0].id;
   const cookieVal = cookies().get('selected-address')?.value;
 

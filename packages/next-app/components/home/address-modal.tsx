@@ -17,11 +17,13 @@ type Props = { addresses: Address[]; defaultAddress: Address };
 export default function AddressModal({ addresses, defaultAddress }: Props) {
   const [open, setOpen] = useState(false);
   const handleClose = () => setOpen(false);
-  const { address, selectAddress } = useSelectAddress(
-    addresses,
+  const { selectedId, selectAddress } = useSelectAddress(
     defaultAddress,
     handleClose,
   );
+
+  const address =
+    addresses.find((address) => address.id === selectedId) || addresses[0];
 
   const isDialog = useMediaQuery('(min-width: 640px)');
   const Modal = isDialog ? Dialog : Sheet;
