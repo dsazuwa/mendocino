@@ -5,60 +5,52 @@ import { useState } from 'react';
 
 import { DialogContent } from '@/components/ui/dialog';
 import { useMediaQuery } from '@/hooks/use-media-query';
+import useSelectAddress from '@/hooks/use-select-address';
+import { cn } from '@/lib/utils';
 import { Address } from '@/types/address';
 import ChooseToggler from '../address/choose-toggler';
 import { Dialog, DialogTrigger } from '../ui/dialog';
 import { Sheet, SheetContent, SheetTrigger } from '../ui/sheet';
 
-type Props = { addresses: Address[] };
+type Props = { addresses: Address[]; defaultAddress: Address };
 
-export default function AddressModal({ addresses }: Props) {
+export default function AddressModal({ addresses, defaultAddress }: Props) {
   const [open, setOpen] = useState(false);
-  const isDesktop = useMediaQuery('(min-width: 640px)');
-
   const handleClose = () => setOpen(false);
-
-  if (isDesktop) {
-    return (
-      <Dialog open={open} onOpenChange={setOpen}>
-        <AddressTrigger isDialog={true} addresses={addresses} />
-
-        <DialogContent className='flex max-w-lg flex-col'>
-          <ChooseToggler
-            isDialog={true}
-            addresses={addresses}
-            handleClose={handleClose}
-          />
-        </DialogContent>
-      </Dialog>
-    );
-  }
-
-  return (
-    <Sheet open={open} onOpenChange={setOpen}>
-      <AddressTrigger isDialog={true} addresses={addresses} />
-
-      <SheetContent className='flex h-screen w-full flex-col' side='right'>
-        <ChooseToggler
-          isDialog={false}
-          addresses={addresses}
-          handleClose={handleClose}
-        />
-      </SheetContent>
-    </Sheet>
+  const { address, selectAddress } = useSelectAddress(
+    addresses,
+    defaultAddress,
+    handleClose,
   );
-}
 
-type TriggerProps = { isDialog: boolean; addresses: Address[] };
-
-export function AddressTrigger({ isDialog, addresses }: TriggerProps) {
-  const Comp = isDialog ? DialogTrigger : SheetTrigger;
+  const isDialog = useMediaQuery('(min-width: 640px)');
+  const Modal = isDialog ? Dialog : Sheet;
+  const Trigger = isDialog ? DialogTrigger : SheetTrigger;
+  const Content = isDialog ? DialogContent : SheetContent;
 
   return (
-    <Comp className='inline-flex items-center gap-2'>
-      <span className='text-lg font-bold'>{addresses[0].name}</span>
+    <Modal open={open} onOpenChange={setOpen}>
+      <Trigger className='inline-flex items-center gap-2'>
+        <span className='text-lg font-bold'>{address.name}</span>
 
-      <ChevronDownIcon />
-    </Comp>
+        <ChevronDownIcon />
+      </Trigger>
+
+      <Content
+        className={cn({
+          'flex max-w-lg flex-col': isDialog,
+          'flex h-screen w-full flex-col': !isDialog,
+        })}
+        side='right'
+      >
+        <ChooseToggler
+          isDialog={isDialog}
+          addresses={addresses}
+          address={address}
+          handleClose={handleClose}
+          handleSelect={selectAddress}
+        />
+      </Content>
+    </Modal>
   );
 }

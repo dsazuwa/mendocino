@@ -13,18 +13,20 @@ import { SheetClose } from '../ui/sheet';
 type Props = {
   isDialog: boolean;
   addresses: Address[];
+  selectedAddress: Address;
   handleCreate: () => void;
   handleEdit: (i: number) => void;
+  handleSelect: (id: number) => void;
 };
 
 export default function AddressSelector({
   isDialog,
   addresses,
+  selectedAddress,
   handleCreate,
   handleEdit,
+  handleSelect,
 }: Props) {
-  const selected = 0;
-
   const Close = isDialog ? DialogClose : SheetClose;
 
   return (
@@ -42,12 +44,15 @@ export default function AddressSelector({
       </ContentHeader>
 
       <div className='flex flex-1 flex-col gap-4 p-4 sm:p-6'>
-        {addresses.map(({ name, address, zipCode }, index) => (
+        {addresses.map(({ id, name, address, zipCode }, index) => (
           <div key={`address-${index}`} className='inline-flex items-center'>
-            <button className='inline-flex flex-1 items-center gap-4 rounded-lg p-4 px-2 transition-colors duration-100 hover:bg-neutral-50'>
+            <button
+              className='inline-flex flex-1 items-center gap-4 rounded-lg p-4 px-2 transition-colors duration-100 hover:bg-neutral-50'
+              onClick={() => handleSelect(id)}
+            >
               <Location
                 className={cn('w-5 fill-neutral-600', {
-                  'fill-primary-500': selected === index,
+                  'fill-primary-500': id === selectedAddress.id,
                 })}
               />
 

@@ -2,19 +2,23 @@ import { useState } from 'react';
 
 import { Address } from '@/types/address';
 import { CreateContent } from './create';
-import AddressSelector from './selector';
 import { EditContent } from './edit';
+import AddressSelector from './selector';
 
 type Props = {
   isDialog: boolean;
   addresses: Address[];
+  address: Address;
   handleClose: () => void;
+  handleSelect: (id: number) => void;
 };
 
 export default function ChooseToggler({
   isDialog,
   addresses,
+  address,
   handleClose,
+  handleSelect,
 }: Props) {
   const [contentType, setContentType] = useState<'choose' | 'create' | 'edit'>(
     'choose',
@@ -40,6 +44,8 @@ export default function ChooseToggler({
           addresses={addresses}
           handleCreate={handleCreate}
           handleEdit={handleEdit}
+          selectedAddress={address}
+          handleSelect={handleSelect}
         />
       )}
 
