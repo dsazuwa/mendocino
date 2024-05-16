@@ -33,7 +33,7 @@ const addressService = {
         transaction,
       });
 
-      if (addressCount >= 5) return false;
+      if (addressCount >= 5) return undefined;
 
       const { addressId } = await Address.create(
         { ...address },
@@ -42,7 +42,7 @@ const addressService = {
 
       await CustomerAddress.create({ customerId, addressId }, { transaction });
 
-      return true;
+      return addressId;
     }),
 
   updateAddress: async (

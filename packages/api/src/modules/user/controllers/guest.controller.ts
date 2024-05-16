@@ -56,11 +56,8 @@ export const createAddress = async (
     if (result)
       res
         .status(200)
-        .json({ message: messages.CREATE_ADDRESS_SUCCESS, guestId: result });
-    else
-      res
-        .status(400)
-        .json({ message: messages.CREATE_ADDRESS_FAIL, guestId: null });
+        .json({ message: messages.CREATE_ADDRESS_SUCCESS, ...result });
+    else res.status(400).json({ message: messages.CREATE_ADDRESS_FAIL });
   } catch (e) {
     next(e);
   }

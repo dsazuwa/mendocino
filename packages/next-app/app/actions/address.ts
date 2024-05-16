@@ -23,10 +23,17 @@ export async function createAddress(prevState: any, address: AddressData) {
       body: JSON.stringify(address),
     });
 
-    const { message } = (await res.json()) as { message: string };
+    const { addressId, message } = (await res.json()) as {
+      addressId: number;
+      message: string;
+    };
 
     if (res.status === 200) {
       revalidateTag('address');
+      cookies().set({
+        name: 'selected-address',
+        value: addressId + '',
+      });
 
       return { isSuccess: true, message };
     }

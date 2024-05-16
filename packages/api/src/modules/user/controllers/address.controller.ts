@@ -27,10 +27,12 @@ export const createAddress = async (
   try {
     const userId = req.user?.userId ?? -1;
 
-    const result = await addressService.createAddress(userId, req.body);
+    const addressId = await addressService.createAddress(userId, req.body);
 
-    if (result)
-      res.status(200).json({ message: messages.CREATE_ADDRESS_SUCCESS });
+    if (addressId)
+      res
+        .status(200)
+        .json({ message: messages.CREATE_ADDRESS_SUCCESS, addressId });
     else res.status(400).json({ message: messages.CREATE_ADDRESS_FAIL });
   } catch (e) {
     next(e);

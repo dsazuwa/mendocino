@@ -35,7 +35,7 @@ const guestService = {
         transaction,
       });
 
-      if (addressCount >= 5) return null;
+      if (addressCount >= 5) return undefined;
 
       const { addressId } = await Address.create(
         { ...address },
@@ -46,7 +46,7 @@ const guestService = {
 
       await GuestAddress.create({ guestId: id, addressId }, { transaction });
 
-      return id;
+      return { addressId, guestId: id };
     }),
 
   updateAddress: async (
