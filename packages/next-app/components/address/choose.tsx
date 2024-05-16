@@ -83,7 +83,11 @@ function ChooseAddress({ addresses, selectedAddress }: Props) {
             handleSelect={selectAddress}
           />
         ) : (
-          <CreateContent isDialog={isDialog} handleClose={handleClose} />
+          <CreateContent
+            isDialog={isDialog}
+            handleClose={handleClose}
+            routeHomeOnSuccess
+          />
         )}
       </Content>
     </Modal>

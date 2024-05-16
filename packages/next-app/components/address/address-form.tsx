@@ -1,6 +1,8 @@
 /* eslint-disable  @typescript-eslint/no-explicit-any */
 
 import { zodResolver } from '@hookform/resolvers/zod';
+import { setCookie } from 'cookies-next';
+import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useFormState } from 'react-dom';
 import { useForm } from 'react-hook-form';
@@ -60,10 +62,19 @@ const formSchema = object({
 
 type FormSchema = TypeOf<typeof formSchema>;
 
-type Props = { defaultAddress?: Address; handleClose: () => void };
+type Props = {
+  defaultAddress?: Address;
+  routeHomeOnSuccess?: boolean;
+  handleClose: () => void;
+};
 
-export default function AddressForm({ defaultAddress, handleClose }: Props) {
+export default function AddressForm({
+  defaultAddress,
+  routeHomeOnSuccess,
+  handleClose,
+}: Props) {
   const { toast } = useToast();
+  const router = useRouter();
 
   const [address, setAddress] = useState<AddressData | undefined>(
     defaultAddress,
@@ -73,7 +84,11 @@ export default function AddressForm({ defaultAddress, handleClose }: Props) {
 
   const [state, formAction] = useFormState(
     defaultAddress ? updateAddress : createAddress,
-    { isSuccess: false, message: '' },
+    {
+      isSuccess: false,
+      addressId: undefined,
+      message: '',
+    },
   );
 
   const form = useForm<FormSchema>({
@@ -98,10 +113,17 @@ export default function AddressForm({ defaultAddress, handleClose }: Props) {
 
     if (state.isSuccess) {
       handleClose();
+
+      if (routeHomeOnSuccess) {
+        setCookie('selected-address', state.addressId);
+
+        router.push('/');
+        router.refresh();
+      }
     } else {
       toast({ variant: 'destructive', description: state.message });
     }
-  }, [state, handleClose, toast]);
+  }, [state, routeHomeOnSuccess, handleClose, toast, router]);
 
   const handleFormSubmit = (data: FormSchema) => {
     setIsLoading(true);

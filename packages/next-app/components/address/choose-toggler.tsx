@@ -54,6 +54,7 @@ export default function ChooseToggler({
           isDialog={isDialog}
           handleReturn={handleReturn}
           handleClose={handleClose}
+          routeHomeOnSuccess
         />
       )}
 

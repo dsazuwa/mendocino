@@ -5,6 +5,7 @@ import { useState } from 'react';
 
 import { DialogClose, DialogContent } from '@/components/ui/dialog';
 import { useMediaQuery } from '@/hooks/use-media-query';
+import { cn } from '@/lib/utils';
 import ContentHeader from '../content-header';
 import LinkButton from '../link-button';
 import { Button } from '../ui/button';
@@ -14,42 +15,30 @@ import AddressForm from './address-form';
 
 export default function CreateAddress() {
   const [open, setOpen] = useState(false);
-  const isDesktop = useMediaQuery('(min-width: 640px)');
+  const isDialog = useMediaQuery('(min-width: 640px)');
 
   const handleClose = () => setOpen(false);
 
-  if (isDesktop) {
-    return (
-      <Dialog open={open} onOpenChange={setOpen}>
-        <Trigger isDialog={true} />
-
-        <DialogContent className='flex max-w-lg flex-col'>
-          <CreateContent isDialog={false} handleClose={handleClose} />
-        </DialogContent>
-      </Dialog>
-    );
-  }
+  const Modal = isDialog ? Dialog : Sheet;
+  const Trigger = isDialog ? DialogTrigger : SheetTrigger;
+  const Content = isDialog ? DialogContent : SheetContent;
 
   return (
-    <Sheet open={open} onOpenChange={setOpen}>
-      <Trigger isDialog={true} />
+    <Modal open={open} onOpenChange={setOpen}>
+      <Trigger asChild>
+        <LinkButton className='sm:px-2'>Create Address</LinkButton>
+      </Trigger>
 
-      <SheetContent className='flex h-screen w-full flex-col' side='right'>
+      <Content
+        className={cn({
+          'flex max-w-lg flex-col': isDialog,
+          'flex h-screen w-full flex-col': !isDialog,
+        })}
+        side='right'
+      >
         <CreateContent isDialog={false} handleClose={handleClose} />
-      </SheetContent>
-    </Sheet>
-  );
-}
-
-type TriggerProps = { isDialog: boolean };
-
-export function Trigger({ isDialog }: TriggerProps) {
-  const Comp = isDialog ? DialogTrigger : SheetTrigger;
-
-  return (
-    <Comp asChild>
-      <LinkButton className='sm:px-2'>Create Address</LinkButton>
-    </Comp>
+      </Content>
+    </Modal>
   );
 }
 
@@ -57,12 +46,14 @@ type ContentProps = {
   isDialog: boolean;
   handleClose: () => void;
   handleReturn?: () => void;
+  routeHomeOnSuccess?: boolean;
 };
 
 export function CreateContent({
   isDialog,
   handleClose,
   handleReturn,
+  routeHomeOnSuccess,
 }: ContentProps) {
   const Comp = isDialog ? DialogClose : SheetClose;
 
@@ -88,7 +79,10 @@ export function CreateContent({
         <span className='flex-1 text-sm font-semibold'>Create Address</span>
       </ContentHeader>
 
-      <AddressForm handleClose={handleClose} />
+      <AddressForm
+        handleClose={handleClose}
+        routeHomeOnSuccess={routeHomeOnSuccess}
+      />
     </>
   );
 }

@@ -30,21 +30,23 @@ export async function createAddress(prevState: any, address: AddressData) {
 
     if (res.status === 200) {
       revalidateTag('address');
-      cookies().set({
-        name: 'selected-address',
-        value: addressId + '',
-      });
 
-      return { isSuccess: true, message };
+      return { isSuccess: true, addressId, message };
     }
 
-    return { isSuccess: false, message };
+    return { isSuccess: false, addressId: undefined, message };
   } catch (e) {
-    return { isSuccess: false, message: 'Error creating address' };
+    return {
+      isSuccess: false,
+      addressId: undefined,
+      message: 'Error creating address',
+    };
   }
 }
 
 export async function updateAddress(prevState: any, address: Address) {
+  const { id: addressId } = address;
+
   try {
     const accessToken = cookies().get('access-token')?.value;
     const userType = accessToken ? 'customers' : 'guests';
@@ -66,12 +68,12 @@ export async function updateAddress(prevState: any, address: Address) {
     if (res.status === 200) {
       revalidateTag('address');
 
-      return { isSuccess: true, message };
+      return { isSuccess: true, addressId, message };
     }
 
-    return { isSuccess: false, message };
+    return { isSuccess: false, addressId, message };
   } catch (e) {
-    return { isSuccess: false, message: 'Error updating address' };
+    return { isSuccess: false, addressId, message: 'Error updating address' };
   }
 }
 
