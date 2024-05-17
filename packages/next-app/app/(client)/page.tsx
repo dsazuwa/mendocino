@@ -1,11 +1,10 @@
-import { Suspense } from 'react';
+import { cookies } from 'next/headers';
 
 import AddressInput from '@/components/home/address-input';
 import LocationSelector from '@/components/home/location-selector';
-import Location from '@/components/icons/location';
 import Footer from '@/components/layout/footer';
-import { Skeleton } from '@/components/ui/skeleton';
 import { getAddresses } from '@/lib/data';
+import { Address } from '@/types/address';
 
 export default async function Home() {
   const { addresses } = await getAddresses();
@@ -16,9 +15,7 @@ export default async function Home() {
         {addresses.length === 0 ? (
           <AddressInput />
         ) : (
-          <Suspense fallback={<Loading />}>
-            <LocationSelector addresses={addresses} />
-          </Suspense>
+          <LocationSelectorWrapper addresses={addresses} />
         )}
       </main>
 
@@ -27,34 +24,29 @@ export default async function Home() {
   );
 }
 
-function Loading() {
-  return (
-    <div className='flex flex-col items-center justify-center gap-4'>
-      <Skeleton className='h-8 w-10/12 rounded-lg sm:w-7/12' />
+function LocationSelectorWrapper({ addresses }: { addresses: Address[] }) {
+  const selectedId = getSelectedAddress(addresses);
+  const selectedAddress =
+    addresses.find((address) => address.id === selectedId) || addresses[0];
 
-      <div className='w-full space-y-6'>
-        <LocationSkeleton />
-        <LocationSkeleton />
-      </div>
-    </div>
+  return (
+    <LocationSelector addresses={addresses} selectedAddress={selectedAddress} />
   );
 }
 
-function LocationSkeleton() {
-  return (
-    <div className='inline-flex w-full items-center gap-3'>
-      <div className='flex flex-col items-center gap-2'>
-        <Location className='w-6 flex-shrink-0 fill-primary-500' />
-        <Skeleton className='h-2 w-8' />
-      </div>
+export function getSelectedAddress(addresses: Address[]) {
+  if (addresses.length === 0) return undefined;
 
-      <div className='flex-1 space-y-2'>
-        <Skeleton className='h-4 w-11/12' />
-        <Skeleton className='h-2 w-4/12' />
-        <Skeleton className='h-2 w-6/12' />
-      </div>
+  const defaultId = addresses[0].id;
+  const cookieVal = cookies().get('selected-address')?.value;
 
-      <Skeleton className='h-10 w-16 rounded-lg' />
-    </div>
-  );
+  const parsedVal =
+    cookieVal === undefined || isNaN(parseInt(cookieVal))
+      ? undefined
+      : parseInt(cookieVal);
+
+  if (parsedVal === undefined) return defaultId;
+
+  const isValidId = addresses.some((address) => address.id === parsedVal);
+  return isValidId ? parsedVal : defaultId;
 }

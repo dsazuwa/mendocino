@@ -1,8 +1,8 @@
 import { cookies } from 'next/headers';
 import Link from 'next/link';
 
+import { getSelectedAddress } from '@/app/(client)/page';
 import CartDrawer from '@/components/cart/drawer';
-import { getSelectedAddress } from '@/components/home/location-selector';
 import Logo from '@/components/logo';
 import getUser, { getAddresses } from '@/lib/data';
 import AddressButton from './address-button';

@@ -31,6 +31,7 @@ export const addressApi = createApi({
   baseQuery: baseQueryWithReauth,
 
   endpoints: (build) => ({
+    // TODO: delete cached data on associated address deletion
     getClosestLocations: build.query<{ locations: LocationType[] }, string>({
       query(placeId) {
         return {
@@ -41,6 +42,8 @@ export const addressApi = createApi({
       providesTags: (result, error, placeId) => [
         { type: 'Location', id: placeId },
       ],
+
+      keepUnusedDataFor: 6000,
     }),
 
     getAddresses: build.query<
@@ -134,6 +137,7 @@ export const addressApi = createApi({
 
 export const {
   useGetClosestLocationsQuery,
+  useLazyGetClosestLocationsQuery,
   useGetAddressesQuery,
   useCreateAddressMutation,
   useUpdateAddressMutation,
