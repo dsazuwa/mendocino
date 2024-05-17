@@ -64,7 +64,7 @@ export default function LocationSelector({
             <ChooseToggler
               isDialog={isDialog}
               addresses={addresses}
-              address={address}
+              selectedAddress={address}
               handleClose={handleClose}
               handleSelect={selectAddress}
             />

@@ -8,7 +8,7 @@ import AddressSelector from './selector';
 type Props = {
   isDialog: boolean;
   addresses: Address[];
-  address: Address;
+  selectedAddress: Address;
   handleClose: () => void;
   handleSelect: (id: number) => void;
 };
@@ -16,7 +16,7 @@ type Props = {
 export default function ChooseToggler({
   isDialog,
   addresses,
-  address,
+  selectedAddress,
   handleClose,
   handleSelect,
 }: Props) {
@@ -52,7 +52,7 @@ export default function ChooseToggler({
           addresses={addresses}
           handleCreate={handleCreate}
           handleEdit={handleEdit}
-          selectedAddress={address}
+          selectedAddress={selectedAddress}
           handleSelect={handleSelect}
         />
       )}

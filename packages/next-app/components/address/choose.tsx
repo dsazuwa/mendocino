@@ -74,7 +74,7 @@ export default function ChooseAddress({
           <ChooseToggler
             isDialog={isDialog}
             addresses={addresses}
-            address={address}
+            selectedAddress={address}
             handleClose={handleClose}
             handleSelect={selectAddress}
           />
