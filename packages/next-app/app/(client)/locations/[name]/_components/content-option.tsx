@@ -47,13 +47,13 @@ export default function OptionContent({ itemName, current }: Props) {
         </div>
       </ContentHeader>
 
-      <div className='flex flex-col gap-5 p-4 pb-6'>
+      <div className='flex flex-col gap-5 overflow-y-auto p-4 pb-6'>
         {current.children.map((key) => (
           <OptionGroup key={key} modifier={key} />
         ))}
       </div>
 
-      <ContentFooter className='inline-flex sm:py-4'>
+      <ContentFooter className='inline-flex'>
         <Button
           variant='primary'
           className='w-full rounded-2xl uppercase'
