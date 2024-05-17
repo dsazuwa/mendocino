@@ -1,4 +1,3 @@
-import { useQuery } from '@tanstack/react-query';
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 
 import { useOrderStore } from '@/app/providers/order-provider';
@@ -6,9 +5,12 @@ import Loader from '@/components/loader';
 import { DialogContent, DialogOverlay } from '@/components/ui/dialog';
 import { SheetContent, SheetOverlay } from '@/components/ui/sheet';
 import { cn } from '@/lib/utils';
+import {
+  useGetItemModifiersQuery,
+  useLazyGetChildModifierQuery,
+} from '@/redux/api/modifier';
 import { isItemNode, isOptionNode } from '@/stores/order/typeguard';
-import { ItemNode, OptionNode } from '@/stores/order/types';
-import { MenuItem, Modifier } from '@/types/menu';
+import { MenuItem } from '@/types/menu';
 import ItemContent from './content-item';
 import OptionContent from './content-option';
 import { PreferencesContent } from './content-preferences';
@@ -36,17 +38,10 @@ export default function Content({
   const buildTree = useOrderStore((state) => state.buildTree);
   const addTreeNodes = useOrderStore((state) => state.addTreeNodes);
 
-  const { data } = useQuery<Modifiers>({
-    queryKey: ['item-modifiers'],
-    queryFn: () => getModifiers(item.itemId),
-  });
+  const { data: modifiers } = useGetItemModifiersQuery(item.itemId);
 
-  const { data: childModifiers, refetch: fetchChildModifiers } =
-    useQuery<ChildModifiers>({
-      queryKey: ['child-modifiers'],
-      queryFn: () => getChildModifiers(current),
-      enabled: false,
-    });
+  const [fetchChildModifiers, { data: childModifiers }] =
+    useLazyGetChildModifierQuery(undefined);
 
   const setLoading = (val: boolean) => {
     setIsLoading(val);
@@ -54,16 +49,16 @@ export default function Content({
   };
 
   useEffect(() => {
-    if (data) {
-      buildTree(item, data.modifiers);
+    if (modifiers) {
+      buildTree(item, modifiers.modifiers);
       setLoading(false);
     }
-  }, [item, data]);
+  }, [item, modifiers]);
 
   useEffect(() => {
     if (isOptionNode(current) && current.isNested && !current.isFulfilled) {
       setLoading(true);
-      void fetchChildModifiers();
+      void fetchChildModifiers(current.id);
     }
   }, [current]);
 
@@ -113,21 +108,4 @@ export default function Content({
       )}
     </>
   );
-}
-
-type Modifiers = { modifiers: Modifier[] };
-type ChildModifiers = { name: string; modifiers: Modifier[] };
-
-async function getModifiers(id: number) {
-  return (await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/menu/modifiers/item/${id}`,
-  ).then((res) => res.json())) as Modifiers;
-}
-
-async function getChildModifiers(current: ItemNode | OptionNode | undefined) {
-  if (!isOptionNode(current)) throw new Error('');
-
-  return (await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/menu/modifiers/child/${current.id}`,
-  ).then((res) => res.json())) as ChildModifiers;
 }
