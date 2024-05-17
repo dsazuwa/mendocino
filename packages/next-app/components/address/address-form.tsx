@@ -116,10 +116,10 @@ export default function AddressForm({
 
       if (routeHomeOnSuccess) {
         setCookie('selected-address', state.addressId);
-
         router.push('/');
-        router.refresh();
       }
+
+      router.refresh();
     } else {
       toast({ variant: 'destructive', description: state.message });
     }

@@ -1,7 +1,6 @@
 'use client';
 
 import { ChevronDownIcon } from '@radix-ui/react-icons';
-import { usePathname } from 'next/navigation';
 import { useState } from 'react';
 
 import Location from '@/components/icons/location';
@@ -16,18 +15,15 @@ import { Sheet, SheetContent, SheetTrigger } from '../ui/sheet';
 import ChooseToggler from './choose-toggler';
 import { CreateContent } from './create';
 
-type Props = { addresses: Address[]; selectedAddress: Address | undefined };
+export type ChooseAddressProps = {
+  addresses: Address[];
+  selectedAddress: Address | undefined;
+};
 
-export default function AddressButton({ addresses, selectedAddress }: Props) {
-  const pathname = usePathname();
-
-  if (pathname === '/') return <></>;
-  return (
-    <ChooseAddress addresses={addresses} selectedAddress={selectedAddress} />
-  );
-}
-
-function ChooseAddress({ addresses, selectedAddress }: Props) {
+export default function ChooseAddress({
+  addresses,
+  selectedAddress,
+}: ChooseAddressProps) {
   const [open, setOpen] = useState(false);
   const handleClose = () => setOpen(false);
   const { selectedId, selectAddress } = useSelectAddress(

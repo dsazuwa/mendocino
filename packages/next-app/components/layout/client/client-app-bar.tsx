@@ -1,11 +1,11 @@
 import { cookies } from 'next/headers';
 import Link from 'next/link';
 
-import AddressButton from '@/components/address/choose';
 import CartDrawer from '@/components/cart/drawer';
 import { getSelectedAddress } from '@/components/home/location-selector';
 import Logo from '@/components/logo';
 import getUser, { getAddresses } from '@/lib/data';
+import AddressButton from './address-button';
 import { unauthLinks } from './client-constants';
 import ClientAppBarDrawer from './client-drawer';
 import { AppBarLogout } from './logout-btn';
@@ -16,9 +16,9 @@ export default async function ClientAppBar() {
   const restaurant = cookies().get('restaurant')?.value;
 
   const selectedId = getSelectedAddress(addresses);
-  const selectedAddress = addresses.find(
-    (address) => address.id === selectedId,
-  );
+  const selectedAddress =
+    addresses.find((address) => address.id === selectedId) ||
+    (addresses.length > 0 ? addresses[0] : undefined);
 
   return (
     <nav id='client-app-bar' className='fixed z-50 h-16 w-full bg-white'>
