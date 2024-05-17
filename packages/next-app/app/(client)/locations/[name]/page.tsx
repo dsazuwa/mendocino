@@ -14,12 +14,14 @@ import CategoryToggle from '@/components/category-toggle';
 type Props = { params: { name: string } };
 
 export default function LocationPage({ params }: Props) {
+  const isCartEmpty = true;
+
   return (
     <main className='flex w-full grow flex-col'>
       <div className='inline-flex w-full grow'>
         <Menu location={params.name} />
 
-        <CartPanel />
+        {!isCartEmpty && <CartPanel />}
       </div>
 
       <Footer />
