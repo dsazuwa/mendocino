@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { Address } from '@/types/address';
 import { CreateContent } from './create';
@@ -35,6 +35,14 @@ export default function ChooseToggler({
   };
 
   const handleReturn = () => setContentType('choose');
+
+  useEffect(() => {
+    if (index >= addresses.length) {
+      handleClose();
+    }
+  }, [addresses]);
+
+  if (index >= addresses.length) return <></>;
 
   return (
     <>
