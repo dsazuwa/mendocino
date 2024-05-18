@@ -144,14 +144,12 @@ export default function AddressForm({
           <AutocompleteMap selected={address} onSelect={handleSelect} />
 
           <div className='flex-1 space-y-4'>
-            {defaultAddress && (
+            {address && (
               <div className='flex flex-col items-start gap-1'>
-                <span className='text-sm font-semibold'>
-                  {defaultAddress.name}
-                </span>
+                <span className='text-sm font-semibold'>{address.name}</span>
 
                 <span className='text-xs'>
-                  {[defaultAddress.address, defaultAddress.zipCode].join(', ')}
+                  {[address.address, address.zipCode].join(', ')}
                 </span>
               </div>
             )}
