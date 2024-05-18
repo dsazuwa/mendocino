@@ -147,13 +147,14 @@ export default function AutocompleteInput({
           placeholder={placeholder}
           type='search'
           {...getInputProps()}
+          autoFocus
         />
       </InputContainer>
 
       <div className='relative mt-1'>
         <div
           className={cn(
-            'rounded-xl absolute top-0 z-10 w-full bg-neutral-50 outline-none animate-in fade-in-0 zoom-in-95',
+            'absolute top-0 z-10 w-full rounded-xl bg-neutral-50 outline-none animate-in fade-in-0 zoom-in-95',
             { hidden: !isOpen },
           )}
         >
