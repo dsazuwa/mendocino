@@ -115,7 +115,7 @@ export default function VerifyForm() {
             render={({ field }) => (
               <FormItem>
                 <FormControl>
-                  <InputOTP maxLength={5} {...field}>
+                  <InputOTP maxLength={5} {...field} autoFocus>
                     <InputOTPGroup className='gap-2'>
                       <InputOTPSlot index={0} className='rounded-md border-l' />
                       <InputOTPSlot index={1} className='rounded-md border-l' />
