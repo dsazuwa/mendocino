@@ -1,8 +1,11 @@
+import Image from 'next/image';
 import { useEffect, useState } from 'react';
 
 import useAutocomplete from '@/hooks/use-autocomplete';
+import { cn } from '@/lib/utils';
 import { AddressData } from '@/types/address';
 import Search from '../icons/search';
+import { Skeleton } from '../ui/skeleton';
 import AutocompleteInput from './autocomplete-input';
 import InputContainer from './autocomplete-input-container';
 
@@ -27,6 +30,7 @@ export default function AutocompleteMap({ selected, onSelect }: Props) {
     return `https://maps.googleapis.com/maps/api/staticmap?${mapCenter}&${mapSize}&${mapZoom}&${marker}&${mapType}&key=${apiKey}`;
   };
 
+  const [isMapLoading, setMapLoading] = useState(false);
   const [mapURL, setMapURL] = useState(
     selected
       ? getMapURL(selected)
@@ -37,6 +41,7 @@ export default function AutocompleteMap({ selected, onSelect }: Props) {
     if (!selected) return;
 
     setMapURL(getMapURL(selected));
+    setMapLoading(false);
   }, [selected]);
 
   return (
@@ -53,11 +58,21 @@ export default function AutocompleteMap({ selected, onSelect }: Props) {
         <InputContainer Icon={Search} />
       )}
 
-      <img
-        src={mapURL}
-        alt='map'
-        className='aspect-video rounded-md object-cover'
-      />
+      <div>
+        {!isMapLoading && <Skeleton className='aspect-video' />}
+        <Image
+          src={mapURL}
+          alt='map'
+          width={0}
+          height={0}
+          sizes='100vw'
+          className={cn('aspect-video object-cover', {
+            'h-full w-full': isMapLoading,
+            'h-0 w-auto': !isMapLoading,
+          })}
+          onLoad={() => setMapLoading(true)}
+        />
+      </div>
     </>
   );
 }

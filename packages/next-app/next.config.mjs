@@ -2,7 +2,7 @@
 const nextConfig = {
   reactStrictMode: true,
   images: {
-    domains: ['res.cloudinary.com', 'maps.googleapis.com'],
+    domains: ['res.cloudinary.com', 'maps.googleapis.com', 'www.adampack.com'],
   },
 
   logging: {
