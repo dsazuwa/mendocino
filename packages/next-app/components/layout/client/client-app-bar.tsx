@@ -29,28 +29,30 @@ export default async function ClientAppBar() {
           <Logo />
         </Link>
 
-        <AddressButton
-          addresses={addresses}
-          selectedAddress={selectedAddress}
-        />
+        <div className='inline-flex flex-1 justify-end sm:justify-between'>
+          <AddressButton
+            addresses={addresses}
+            selectedAddress={selectedAddress}
+          />
 
-        <div className='inline-flex gap-2 sm:ml-auto'>
-          {addresses.length > 0 && <CartDrawer restaurant={restaurant} />}
+          <div className='inline-flex gap-2'>
+            {addresses.length > 0 && <CartDrawer restaurant={restaurant} />}
 
-          <div className='space-x-4 max-sm:hidden'>
-            {user ? (
-              <AppBarLogout />
-            ) : (
-              unauthLinks.map(({ name, href }) => (
-                <Link
-                  className='text-xxs font-semibold'
-                  key={`${name}-link`}
-                  href={href}
-                >
-                  {name}
-                </Link>
-              ))
-            )}
+            <div className='space-x-4 max-sm:hidden'>
+              {user ? (
+                <AppBarLogout />
+              ) : (
+                unauthLinks.map(({ name, href }) => (
+                  <Link
+                    className='text-xxs font-semibold'
+                    key={`${name}-link`}
+                    href={href}
+                  >
+                    {name}
+                  </Link>
+                ))
+              )}
+            </div>
           </div>
         </div>
       </div>
