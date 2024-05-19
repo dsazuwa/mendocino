@@ -6,7 +6,6 @@ export type OrderState = {
   current: ItemNode | OptionNode | undefined;
 };
 
-// export type TreeMap = Map<string, ItemNode | ModifierNode | OptionNode>;
 export type TreeMap = {
   [nodeId: string]: ItemNode | ModifierNode | OptionNode;
 };

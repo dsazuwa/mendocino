@@ -20,8 +20,7 @@ export const getModifier = (map: TreeMap, key: string) => {
 export const getModifierParent = (map: TreeMap, key: string) => {
   const node = map[key];
 
-  if (isModifierNode(node) || node === undefined)
-    throw new Error('Invalid modifier parent node');
+  if (isModifierNode(node)) throw new Error('Invalid modifier parent node');
 
   return node;
 };

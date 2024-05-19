@@ -5,7 +5,6 @@ import { ReactNode } from 'react';
 import { Toaster } from '@/components/ui/toaster';
 import { cn } from '@/lib/utils';
 import './globals.css';
-import OrderStoreProvider from './providers/order-provider';
 import ReduxProvider from './providers/redux-provider';
 
 const font = Montserrat({
@@ -32,9 +31,7 @@ export default function RootLayout({ children }: Props) {
           'flex min-h-screen flex-col text-neutral-600',
         )}
       >
-        <ReduxProvider>
-          <OrderStoreProvider>{children}</OrderStoreProvider>
-        </ReduxProvider>
+        <ReduxProvider>{children}</ReduxProvider>
         <Toaster />
       </body>
     </html>

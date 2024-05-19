@@ -7,25 +7,25 @@ import {
   getOption,
 } from './node-selectors';
 import { validateModifier, validateOption } from './node-validators';
-import { ItemNode, OptionNode, OrderState, TreeMap } from './types';
+import { ItemNode, OptionNode, OrderState } from './types';
 
 export const buildModifiersAndOptions = (
-  map: TreeMap,
+  state: OrderState,
   modifiers: Modifier[],
   parent: ItemNode | OptionNode,
 ) => {
   modifiers?.forEach((modifier) => {
     const modifierNode = createModifierNode(modifier, parent);
-    map[modifierNode.key] = modifierNode;
+    state.map[modifierNode.key] = modifierNode;
 
     modifier.options.forEach((option) => {
       const optionNode = createOptionNode(option, modifierNode);
 
-      map[optionNode.key] = optionNode;
-      validateOption(map, optionNode);
+      state.map[optionNode.key] = optionNode;
+      validateOption(state.map, optionNode);
     });
 
-    validateModifier(map, modifierNode);
+    validateModifier(state.map, modifierNode);
   });
 };
 
@@ -65,7 +65,6 @@ export const updateQuantity = (
 
   const node = getItem(state.map, key);
   node.quantity = newQuantity;
-
   state.map[key] = node;
 
   if (state.current && state.current.key === key) state.current = node;

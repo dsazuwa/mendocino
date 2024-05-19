@@ -1,6 +1,5 @@
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 
-import { useOrderStore } from '@/app/providers/order-provider';
 import Loader from '@/components/loader';
 import { DialogContent, DialogOverlay } from '@/components/ui/dialog';
 import { SheetContent, SheetOverlay } from '@/components/ui/sheet';
@@ -9,7 +8,13 @@ import {
   useGetItemModifiersQuery,
   useLazyGetChildModifierQuery,
 } from '@/redux/api/modifier';
-import { isItemNode, isOptionNode } from '@/stores/order/typeguard';
+import { useAppDispatch, useAppSelector } from '@/redux/hooks';
+import {
+  addTreeNodes,
+  buildTree,
+  isItemNode,
+  isOptionNode,
+} from '@/redux/slices/order';
 import { MenuItem } from '@/types/menu';
 import ItemContent from './content-item';
 import OptionContent from './content-option';
@@ -34,9 +39,8 @@ export default function Content({
   const [isLoading, setIsLoading] = useState(true);
   const [openPreferences, setOpenPreferences] = useState(false);
 
-  const current = useOrderStore((state) => state.current);
-  const buildTree = useOrderStore((state) => state.buildTree);
-  const addTreeNodes = useOrderStore((state) => state.addTreeNodes);
+  const dispatch = useAppDispatch();
+  const current = useAppSelector((state) => state.orderState.current);
 
   const { data: modifiers } = useGetItemModifiersQuery(item.itemId);
 
@@ -50,7 +54,7 @@ export default function Content({
 
   useEffect(() => {
     if (modifiers) {
-      buildTree(item, modifiers.modifiers);
+      dispatch(buildTree({ item, modifiers: modifiers.modifiers }));
       setLoading(false);
     }
   }, [item, modifiers]);
@@ -65,7 +69,12 @@ export default function Content({
   useEffect(() => {
     if (isOptionNode(current) && current.isNested && !current.isFulfilled) {
       if (childModifiers !== undefined) {
-        addTreeNodes(current.key, childModifiers.modifiers);
+        dispatch(
+          addTreeNodes({
+            modifiers: childModifiers.modifiers,
+            parentKey: current.key,
+          }),
+        );
         setLoading(false);
       }
     }

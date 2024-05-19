@@ -1,24 +1,26 @@
-import { ChangeEvent } from 'react';
 import { MinusCircledIcon, PlusCircledIcon } from '@radix-ui/react-icons';
+import { ChangeEvent } from 'react';
 
-import { useOrderStore } from '@/app/providers/order-provider';
 import ContentFooter from '@/components/content-footer';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { formatPrice } from '@/lib/utils';
-import { getItemSelectionPrice } from '@/stores/order/selection-utils';
-import { ItemNode } from '@/stores/order/types';
+import { useAppDispatch, useAppSelector } from '@/redux/hooks';
+import {
+  ItemNode,
+  decrementQuantity,
+  getItemSelectionPrice,
+  incrementQuantity,
+  setQuantity,
+} from '@/redux/slices/order';
 
 type Props = { current: ItemNode };
 
 export default function QuantityControl({ current }: Props) {
   const { key, quantity } = current;
 
-  const map = useOrderStore((state) => state.map);
-
-  const setQuantity = useOrderStore((state) => state.setQuantity);
-  const incrementQuantity = useOrderStore((state) => state.incrementQuantity);
-  const decrementQuantity = useOrderStore((state) => state.decrementQuantity);
+  const dispatch = useAppDispatch();
+  const map = useAppSelector((state) => state.orderState.map);
 
   const limitDigits = (value: string) => value.replace(/\D/g, '').slice(0, 3);
 
@@ -26,7 +28,15 @@ export default function QuantityControl({ current }: Props) {
     const val = limitDigits(e.target.value);
     const quantity = Number.parseInt(val || '1', 10);
 
-    setQuantity(current.key, quantity);
+    dispatch(setQuantity({ key: current.key, quantity }));
+  };
+
+  const handleDecrement = () => {
+    dispatch(decrementQuantity(key));
+  };
+
+  const handleIncrement = () => {
+    dispatch(incrementQuantity(key));
   };
 
   return (
@@ -36,7 +46,7 @@ export default function QuantityControl({ current }: Props) {
         size='icon'
         className='h-11 w-11 fill-neutral-500 hover:bg-neutral-100 disabled:fill-neutral-200'
         disabled={quantity === 1}
-        onClick={() => decrementQuantity(key)}
+        onClick={handleDecrement}
       >
         <MinusCircledIcon className='h-6 w-6' />
       </Button>
@@ -44,7 +54,7 @@ export default function QuantityControl({ current }: Props) {
       <Input
         variant='ghost'
         className='w-16 rounded-lg px-3 py-7 text-center text-xs font-medium'
-        value={current.quantity}
+        value={quantity}
         onChange={handleChange}
       />
 
@@ -53,7 +63,7 @@ export default function QuantityControl({ current }: Props) {
         size='icon'
         className='h-11 w-11 fill-neutral-500 hover:bg-neutral-100 disabled:fill-neutral-200'
         disabled={quantity === 999}
-        onClick={() => incrementQuantity(key)}
+        onClick={handleIncrement}
       >
         <PlusCircledIcon className='h-6 w-6' />
       </Button>

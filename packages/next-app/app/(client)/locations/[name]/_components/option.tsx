@@ -4,7 +4,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { RadioGroupItem } from '@/components/ui/radio-group';
 import { formatPrice } from '@/lib/utils';
-import { OptionNode } from '@/stores/order/types';
+import { OptionNode } from '@/redux/slices/order';
 
 type Props = {
   index: number;

@@ -1,24 +1,27 @@
 import { ArrowLeftIcon } from '@radix-ui/react-icons';
 
-import { useOrderStore } from '@/app/providers/order-provider';
 import ContentFooter from '@/components/content-footer';
 import ContentHeader from '@/components/content-header';
 import { Button } from '@/components/ui/button';
 import { formatPrice } from '@/lib/utils';
-import { getOptionSelectionPrice } from '@/stores/order/selection-utils';
-import { OptionNode } from '@/stores/order/types';
+import { useAppDispatch, useAppSelector } from '@/redux/hooks';
+import {
+  getOptionSelectionPrice,
+  OptionNode,
+  returnToParent,
+} from '@/redux/slices/order';
 import OptionGroup from './option-group';
 
 type Props = { itemName: string; current: OptionNode };
 
 export default function OptionContent({ itemName, current }: Props) {
-  const map = useOrderStore((state) => state.map);
-  const returnToParent = useOrderStore((state) => state.returnToParent);
+  const dispatch = useAppDispatch();
+  const map = useAppSelector((state) => state.orderState.map);
 
   const selectionPrice = getOptionSelectionPrice(map, current);
 
   const handleBack = () => {
-    returnToParent(current.key);
+    dispatch(returnToParent(current.key));
   };
 
   const handleSave = () => {

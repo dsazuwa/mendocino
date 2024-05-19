@@ -4,6 +4,7 @@ import { addressApi } from './api/address';
 import { authApi } from './api/auth';
 import { modifierApi } from './api/modifier';
 import { userApi } from './api/user';
+import { orderReducer } from './slices/order';
 
 export const makeStore = () => {
   return configureStore({
@@ -12,6 +13,8 @@ export const makeStore = () => {
       [addressApi.reducerPath]: addressApi.reducer,
       [userApi.reducerPath]: userApi.reducer,
       [modifierApi.reducerPath]: modifierApi.reducer,
+
+      orderState: orderReducer,
     },
 
     middleware: (getDefaultMiddleware) =>

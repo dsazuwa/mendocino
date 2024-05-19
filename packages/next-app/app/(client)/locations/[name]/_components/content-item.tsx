@@ -4,7 +4,7 @@ import ContentHeader from '@/components/content-header';
 import { Button } from '@/components/ui/button';
 import { DialogClose } from '@/components/ui/dialog';
 import { SheetClose } from '@/components/ui/sheet';
-import { ItemNode } from '@/stores/order/types';
+import { ItemNode } from '@/redux/slices/order';
 import { Preferences } from './content-preferences';
 import ItemImage from './item-image';
 import OptionGroup from './option-group';

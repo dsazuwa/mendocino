@@ -1,25 +1,27 @@
-import { useOrderStore } from '@/app/providers/order-provider';
 import { RadioGroup } from '@/components/ui/radio-group';
-import { getModifier, getOption } from '@/stores/order/node-selectors';
+import { useAppDispatch, useAppSelector } from '@/redux/hooks';
+import {
+  getModifier,
+  getOption,
+  multiSelectOption,
+  singleSelectOption,
+} from '@/redux/slices/order';
 import Option from './option';
 import OptionHeader from './option-header';
 
 export default function OptionGroup({ modifier }: { modifier: string }) {
-  const map = useOrderStore((state) => state.map);
-
-  const singleSelectOption = useOrderStore((state) => state.singleSelectOption);
+  const dispatch = useAppDispatch();
+  const map = useAppSelector((state) => state.orderState.map);
 
   const { key, name, maxSelection, children, isRequired, isValid } =
     getModifier(map, modifier);
 
   const handleSingleSelect = (index: number) => {
-    singleSelectOption(key, index);
+    dispatch(singleSelectOption({ key, index }));
   };
 
-  const multiSelectOption = useOrderStore((state) => state.multiSelectOption);
-
   const handleMultiSelect = (index: number) => {
-    multiSelectOption(key, index);
+    dispatch(multiSelectOption({ key, index }));
   };
 
   return (
