@@ -58,20 +58,21 @@ export default function AutocompleteMap({ selected, onSelect }: Props) {
         <InputContainer Icon={Search} />
       )}
 
-      <div>
-        {!isMapLoading && <Skeleton className='aspect-video' />}
+      <div className='aspect-video'>
         <Image
           src={mapURL}
           alt='map'
           width={0}
           height={0}
           sizes='100vw'
-          className={cn('aspect-video object-cover', {
+          className={cn('object-cover', {
             'h-full w-full': isMapLoading,
             'h-0 w-auto': !isMapLoading,
           })}
           onLoad={() => setMapLoading(true)}
         />
+
+        {!isMapLoading && <Skeleton className='h-full w-full' />}
       </div>
     </>
   );

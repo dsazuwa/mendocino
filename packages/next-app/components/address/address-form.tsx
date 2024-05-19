@@ -135,12 +135,132 @@ export default function AddressForm({
   };
 
   return (
-    <Form {...form}>
-      <form
-        className='flex flex-1 flex-col'
-        onSubmit={(event) => void handleSubmit(handleFormSubmit)(event)}
-      >
-        <div className='flex flex-col space-y-4 p-4 sm:p-6'>
+    <>
+      <Form {...form}>
+        <form
+          id='addressForm'
+          className='flex flex-col overflow-y-auto'
+          onSubmit={(event) => void handleSubmit(handleFormSubmit)(event)}
+        >
+          <div className='space-y-4 p-4 sm:p-6'>
+            <AutocompleteMap selected={address} onSelect={handleSelect} />
+
+            <div className='space-y-4'>
+              {address && (
+                <div className='flex flex-col items-start gap-1'>
+                  <span className='text-sm font-semibold'>{address.name}</span>
+
+                  <span className='text-xs'>
+                    {[address.address, address.zipCode].join(', ')}
+                  </span>
+                </div>
+              )}
+
+              <FormField
+                control={control}
+                name='suite'
+                render={({ field }) => (
+                  <FormItem className='inline-flex w-full items-center gap-2'>
+                    <FormLabel className='text-xs font-semibold'>
+                      Apt/Suite
+                    </FormLabel>
+
+                    <FormControl>
+                      <Input
+                        {...field}
+                        className='h-[46px] text-xxs'
+                        placeholder='Apt 401 or Suite 1203'
+                      />
+                    </FormControl>
+
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={control}
+                name='dropOffOption'
+                render={({ field }) => (
+                  <FormItem className='space-y-2'>
+                    <FormLabel className='text-xs font-semibold'>
+                      Drop-off Options
+                    </FormLabel>
+
+                    <FormControl>
+                      <RadioGroup
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                        className='gap-0'
+                      >
+                        <FormItem className='flex items-center gap-4'>
+                          <FormControl>
+                            <RadioGroupItem value='Hand it to me' />
+                          </FormControl>
+
+                          <FormLabel underline>Hand it to me</FormLabel>
+                        </FormItem>
+
+                        <FormItem className='flex items-center gap-4'>
+                          <FormControl>
+                            <RadioGroupItem value='Leave it at my door' />
+                          </FormControl>
+
+                          <FormLabel underline>Leave it at my door</FormLabel>
+                        </FormItem>
+                      </RadioGroup>
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={control}
+                name='dropOffInstruction'
+                render={({ field }) => (
+                  <FormItem className='space-y-4'>
+                    <FormLabel className='text-xs font-semibold'>
+                      Drop-off Instructions
+                    </FormLabel>
+
+                    <FormControl>
+                      <Textarea
+                        {...field}
+                        className='min-h-20 text-xs'
+                        maxLength={225}
+                        placeholder='eg. ring the bell after dropoff, leave next to the porch, call upon arrival, etc.'
+                      />
+                    </FormControl>
+
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+          </div>
+        </form>
+      </Form>
+
+      <ContentFooter className='mt-auto'>
+        <Button
+          form='addressForm'
+          type='submit'
+          variant='primary'
+          className='w-full'
+          disabled={
+            isLoading || !address || address.placeId === defaultAddress?.placeId
+          }
+        >
+          {isLoading ? <Loader size='sm' /> : 'Save'}
+        </Button>
+      </ContentFooter>
+    </>
+  );
+}
+
+{
+  /*
+<div className='flex flex-col space-y-4 overflow-y-auto p-4 sm:p-6'>
           <AutocompleteMap selected={address} onSelect={handleSelect} />
 
           <div className='flex-1 space-y-4'>
@@ -236,22 +356,5 @@ export default function AddressForm({
             />
           </div>
         </div>
-
-        <ContentFooter>
-          <Button
-            type='submit'
-            variant='primary'
-            className='w-full'
-            disabled={
-              isLoading ||
-              !address ||
-              address.placeId === defaultAddress?.placeId
-            }
-          >
-            {isLoading ? <Loader size='sm' /> : 'Save'}
-          </Button>
-        </ContentFooter>
-      </form>
-    </Form>
-  );
+       */
 }

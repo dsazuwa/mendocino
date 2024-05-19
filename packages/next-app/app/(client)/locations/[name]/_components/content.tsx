@@ -91,7 +91,7 @@ export default function Content({
       {!isLoading && (
         <Comp
           className={cn({
-            'flex max-h-[95vh] max-w-[560px] flex-col': isDialog,
+            'flex max-w-[560px] flex-col': isDialog,
             'flex h-full w-full flex-col': !isDialog,
           })}
           side='left'

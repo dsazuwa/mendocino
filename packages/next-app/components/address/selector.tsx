@@ -43,7 +43,7 @@ export default function AddressSelector({
         <span className='flex-1 text-sm font-semibold'>Delivery Address</span>
       </ContentHeader>
 
-      <div className='flex flex-1 flex-col gap-4 p-4 sm:p-6'>
+      <div className='flex flex-1 flex-col gap-4 overflow-y-auto p-4 sm:p-6'>
         {addresses.map(({ id, name, address, zipCode }, index) => (
           <div key={`address-${index}`} className='inline-flex items-center'>
             <button
