@@ -114,7 +114,12 @@ export default function ChangePasswordForm({ email, code }: Props) {
                 <FormLabel className='text-xs'>Password</FormLabel>
 
                 <FormControl>
-                  <Input {...field} className='text-xs' type='password' />
+                  <Input
+                    {...field}
+                    className='text-xs'
+                    type='password'
+                    autoFocus
+                  />
                 </FormControl>
 
                 <FormMessage />

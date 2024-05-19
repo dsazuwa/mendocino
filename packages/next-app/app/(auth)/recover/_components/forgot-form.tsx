@@ -87,7 +87,7 @@ export default function ForgotPasswordForm({ handleFlowChange }: Props) {
                 <FormLabel className='text-xs'>Email</FormLabel>
 
                 <FormControl>
-                  <Input {...field} className='text-xs' />
+                  <Input {...field} className='text-xs' autoFocus />
                 </FormControl>
 
                 <FormMessage />

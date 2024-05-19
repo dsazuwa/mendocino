@@ -110,7 +110,12 @@ export default function RegisterForm() {
                   <FormLabel className='text-xs'>First Name</FormLabel>
 
                   <FormControl>
-                    <Input {...field} className='w-full text-xs' />
+                    <Input
+                      {...field}
+                      className='w-full text-xs'
+                      autoComplete='new-password'
+                      autoFocus
+                    />
                   </FormControl>
 
                   <FormMessage />
@@ -126,7 +131,11 @@ export default function RegisterForm() {
                   <FormLabel className='text-xs'>Last Name</FormLabel>
 
                   <FormControl>
-                    <Input {...field} className='w-full text-xs' />
+                    <Input
+                      {...field}
+                      className='w-full text-xs'
+                      autoComplete='new-password'
+                    />
                   </FormControl>
 
                   <FormMessage />
@@ -143,7 +152,11 @@ export default function RegisterForm() {
                 <FormLabel className='text-xs'>Email Address</FormLabel>
 
                 <FormControl>
-                  <Input {...field} className='w-full text-xs' />
+                  <Input
+                    {...field}
+                    className='w-full text-xs'
+                    autoComplete='new-password'
+                  />
                 </FormControl>
 
                 <FormMessage />
@@ -163,6 +176,7 @@ export default function RegisterForm() {
                     {...field}
                     className='w-full text-xs'
                     type='password'
+                    autoComplete='new-password'
                   />
                 </FormControl>
 
@@ -183,6 +197,7 @@ export default function RegisterForm() {
                     {...field}
                     className='w-full text-xs'
                     type='password'
+                    autoComplete='new-password'
                   />
                 </FormControl>
 
