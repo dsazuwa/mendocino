@@ -1,4 +1,15 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+<div align="center"> 
+    <h1 align="center">Food Delivery Website</h1>
+    <img src="https://github.com/dsazuwa/mendocino/assets/89839770/9f1b8d2a-2ebe-495e-8ad6-1af76524351e" />
+</div>
+
+## Tech Stack
+- TypeScript
+- React.js
+- Next.js 14 with App Router
+- Tailwind CSS and Shadcn-ui
+- Redux RTK query
+- Google Maps JavaScript API Loader
 
 ## Getting Started
 1. Clone the repo
@@ -26,7 +37,6 @@ This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next
     npm run dev
     ```
 6. Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
 
 ## Project Structure
 ```
