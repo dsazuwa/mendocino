@@ -35,7 +35,7 @@ export default async function ClientAppBar() {
             selectedAddress={selectedAddress}
           />
 
-          <div className='ml-auto inline-flex gap-2'>
+          <div className='inline-flex gap-2 sm:ml-auto'>
             {addresses.length > 0 && <CartDrawer restaurant={restaurant} />}
 
             <div className='space-x-4 max-sm:hidden'>
