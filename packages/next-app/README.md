@@ -1,49 +1,85 @@
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
 ## Getting Started
+1. Clone the repo
+    ```bash
+    git clone https://github.com/dsazuwa/mendocino
+    ```
+    
+2. Go to the project folder
+    ```bash
+    cd packages/next-app
+    ```
+    
+3. Set up your .env file
+    - Duplicate the `.env.sample` to `.env`
+    - Fill in the missing variables
+    - Follow the instructions at Google Maps API documentation to create a [Map ID](https://developers.google.com/maps/documentation/get-map-id) and a [Places API Key](https://developers.google.com/maps/documentation/javascript/get-api-key)
+      
+4. Install dependencies
+    ```bash
+    npm install
+    ```
+    
+5. Run the development server
+   ```bash
+    npm run dev
+    ```
+6. Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-First, run the development server:
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## Project Structure
 ```
+    next-app/
+    ├── app/
+    │   ├── (auth)/                      # Authentication related routes
+    │   │   ├── verify/
+    │   │   ├── login/
+    │   │   ├── recover/
+    │   │   ├── register/
+    │   │   └── layout.tsx
+    │   ├── (client)/                    # Client specific routes
+    │   │   ├── account/
+    │   │   │   ├── (main)/
+    │   │   │   │   ├── addresses/
+    │   │   │   │   ├── profile/
+    │   │   │   │   └── layout.tsx
+    │   │   │   ├── manage/
+    │   │   │   ├── password/
+    │   │   │   ├── page.tsx
+    │   │   │   └── layout.tsx
+    │   │   ├── locations/               # Store front page e.g. /locations/West%20Village
+    │   │   │   └── [name]/
+    │   │   │       └── page.tsx
+    │   │   ├── menu/                    # Public menu
+    │   │   ├── page.tsx                 # Home
+    │   │   └── layout.tsx
+    │   ├── actions/                     # Server side actions
+    │   ├── providers/                   # Context providers eg. redux, tanstack-query, zustand, context, etc.
+    │   └──layout.tsx
+    ├── components/
+    │   ├── address/
+    │   ├── cart/
+    │   ├── home/
+    │   ├── icons/
+    │   ├── layout/
+    │   ├── mui-tabs/                    # MUI Tab component adjusted to work with Next.js + Tailwind
+    │   ├── ...
+    │   └── ui/                          # Shadcn-ui components
+    ├── hooks/
+    ├── lib/
+    │   ├── auth.utils.ts                # Authentication specific utility functions
+    │   ├── data.ts                      # Server side data fetching function
+    │   └── utils.ts
+    ├── redux
+    │   ├── api/
+    │   ├── slices/
+    │   │   └── order/                   # reducers for managing menu item and modifier state in locations/[name]
+    │   ├── base-query.ts                # handles refreshing access token and retrying request in event of a 401 error
+    │   ├── hooks.ts
+    │   └── index.ts
+    ├── types/
+    └── middleware.ts                   # handles JWT cookies rotation and route protection
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
-
-
-## Google Maps API key
-
-This example does not come with an API key. Running the examples locally requires a valid API key for the Google Maps Platform.
-See [the official documentation][get-api-key] on how to create and configure your own key. For this example to work you also need to enable the `Places API` in your Google Cloud Console.
-
-The API key has to be provided via an environment variable `GOOGLE_MAPS_API_KEY`. This can be done by creating a
-file named `.env` in the example directory with the following content:
-
-```shell title=".env"
-GOOGLE_MAPS_API_KEY="<YOUR API KEY HERE>"
 ```
